@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.egg-info/
+.venv/
+
+# Tooling, editor, OS
+.ruff_cache/
+.pytest_cache/
+.claude/
+.DS_Store
+.env
+.env.local
+
+# Logs
+*.log
+*.out
+
+# Large inputs and run outputs
+data/
+os_opendata/
+results/
+
+# Model weights and training artifacts — only the fold routing map is tracked
+models/*
+!models/fold_assignment.json
+
+# Vendored MINIMA-LoFTR weights (code is tracked; fetch via MINIMA/weights/download.sh)
+MINIMA/weights/*.ckpt
+MINIMA/weights/*.pth
+
+# Heavy training images — under training/dataset/ only rotation_annotations.json is tracked
+training/dataset/maps/
+training/dataset/boundary_masks/
+training/outputs/
+
+# Cached out-of-fold predictions — regenerable via training/eval/
+training/eval/predictions/
+
+# Human boundary annotations
+boundary_annotations/
