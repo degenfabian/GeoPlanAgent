@@ -1,0 +1,85 @@
+[project]
+name = "GeoPlanAgent"
+version = "1.0.0"
+description = "GeoPlanAgent: georeferenced boundary extraction from UK planning documents (Plan2Map)"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Fabian Degen", email = "fabidegen@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = [
+    # Core
+    "numpy>=2.2.6",
+    "opencv-python>=4.11.0.86",
+    "requests>=2.32.5",
+    "python-dotenv>=1.0.0",
+    "shapely>=2.0.0",
+    "Pillow>=10.0.0",
+    "PyMuPDF>=1.24.0",
+    # ML / SAM3
+    "torch>=2.0.0",
+    "torchvision>=0.15.0",
+    "transformers>=5.3.0",  # >=5 ships Sam3Model/Sam3Processor
+    "peft>=0.10.0",
+    "huggingface-hub>=1.5.0",
+    # Geospatial
+    "geopandas>=0.14.0",
+    "contextily>=1.7.0",
+    "osmnx>=2.0.7",
+    "geopy>=2.4.1",
+    # Visualization
+    "matplotlib>=3.10.8",
+    # Image matching (MINIMA)
+    "kornia>=0.7.0",
+    "einops>=0.8.2",
+    "scipy>=1.10.0",
+    # PDF processing
+    "pdf2image>=1.17.0",
+    # OCR (rotation detection)
+    "pytesseract>=0.3.13",
+    # Benchmark
+    "openpyxl>=3.1.5",
+    "scikit-image>=0.25.2",
+    "scikit-learn>=1.7.2",
+    # LLM agent
+    "openai>=2.14.0",
+    "pydantic-ai-slim[openrouter]>=1.81.0",
+    # OCR (text_extraction + scale_bar_ocr fallbacks)
+    "easyocr>=1.7.2",
+    "pyobjc-framework-vision>=12.1; sys_platform == 'darwin'",
+    "pyobjc-framework-quartz>=12.1; sys_platform == 'darwin'",
+    # MINIMA-LoFTR config dependency
+    "yacs>=0.1.8",
+    "rapidfuzz>=3.14.5",
+    "pyshp>=3.0.13",
+]
+
+[project.optional-dependencies]
+training = [
+    "albumentations>=2.0.8",
+    "segmentation-models-pytorch>=0.5.0",
+    "pytorch-lightning>=2.6.1",
+    "tensorboardx>=2.6.4",
+    "tqdm>=4.60.0",
+]
+annotation = [
+    # Flask web UIs for hand-annotating boundaries/rotations
+    # (training/annotation/{boundary,rotation}_annotator.py)
+    "flask>=3.0",
+]
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "ruff>=0.14.10",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+# One-line guards (E701/E702) and small lambdas (E731) are house style;
+# E402 covers the deliberate sys.path bootstrap in entry-point scripts.
+ignore = ["E402", "E701", "E702", "E731"]
