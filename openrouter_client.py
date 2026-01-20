@@ -1,6 +1,6 @@
 """
 OpenRouter Client - Unified LLM interface supporting multiple models
-Supports Claude, GPT-4o, Gemini, and other models via OpenRouter API
+Supports Claude Opus 4.5, GPT-5.2, Gemini 3 Pro, and other models via OpenRouter API
 
 This module provides multiple approaches for extracting GeoJSON from UK planning documents:
 1. Baseline: Direct LLM extraction (extract_geojson_from_pdf)
@@ -19,7 +19,6 @@ from typing import Optional, Dict, Any, List, Tuple
 import requests
 from dotenv import load_dotenv
 
-# CV and geo imports (used for boundary visualization and refinement)
 import cv2
 import numpy as np
 
@@ -59,7 +58,7 @@ class OpenRouterClient:
     MODELS = {
         "claude-opus": "anthropic/claude-opus-4.5",
         "gpt-5.2": "openai/gpt-5.2-pro",
-        "gemini-pro": "google/gemini-3-pro-preview",  # Only a preview, should we still benchmark on it? TODO
+        "gemini-pro": "google/gemini-3-pro-preview",
     }
 
     DEFAULT_HSV_LOWER_RANGE = [5, 80, 80]  # Orange-ish
@@ -96,10 +95,6 @@ class OpenRouterClient:
         self.base_url = base_url
 
         print(f"OpenRouterClient initialized with model: {self.model}")
-
-    # =========================================================================
-    # JSON Parsing
-    # =========================================================================
 
     def _parse_json_from_response(self, content: str) -> Optional[Dict[str, Any]]:
         """Extract JSON from LLM response, handling markdown code blocks."""
@@ -142,10 +137,7 @@ class OpenRouterClient:
 
         return None
 
-    # =========================================================================
     # Core API Methods
-    # =========================================================================
-
     def _chat_with_attachment(
         self,
         prompt: str,
@@ -292,7 +284,7 @@ class OpenRouterClient:
             if parsed:
                 result["parsed_json"] = parsed
             else:
-                result["json_error"] = "Could not extract valid JSON from response"
+                result["error"] = "Could not extract valid JSON from response"
                 result["success"] = False
 
             return result
@@ -304,9 +296,7 @@ class OpenRouterClient:
                 "processing_time": time.time() - start_time,
             }
 
-    # =========================================================================
     # Method 1: Extract GeoJSON from PDF directly
-    # =========================================================================
 
     def extract_geojson_from_pdf(
         self, pdf_path: str, context: Optional[str] = None
@@ -324,46 +314,46 @@ class OpenRouterClient:
         # f-string with conditional: only includes context line if context is provided
         prompt = f"""You are a GIS analyst specializing in UK planning documents.
 
-                    Analyze this planning document and extract the geographic boundary of the planning area as GeoJSON.
+Analyze this planning document and extract the geographic boundary of the planning area as GeoJSON.
 
-                    Task:
-                    1. Identify if the document contains a map showing the planning area boundary
-                    2. Look for coordinate information (latitude/longitude, OS grid references, or textual descriptions)
-                    3. Extract or infer the boundary polygon(s)
+Task:
+1. Identify if the document contains a map showing the planning area boundary
+2. Look for coordinate information (latitude/longitude, OS grid references, or textual descriptions)
+3. Extract or infer the boundary polygon(s)
 
-                    Requirements:
-                    - Output a valid GeoJSON Feature with MultiPolygon geometry
-                    - Always use "MultiPolygon" type (even for single connected areas, wrap it in MultiPolygon format)
-                    - Coordinates must be in [longitude, latitude] format (WGS84)
-                    - If the document shows multiple disconnected areas, include all of them in the MultiPolygon
-                    - If the document lacks precise coordinates, make a reasonable estimate based on:
-                      * Street names and landmarks mentioned
-                      * The map boundaries if visible
-                      * The administrative area description
+Requirements:
+- Output a valid GeoJSON Feature with MultiPolygon geometry
+- Always use "MultiPolygon" type (even for single connected areas, wrap it in MultiPolygon format)
+- Coordinates must be in [longitude, latitude] format (WGS84)
+- If the document shows multiple disconnected areas, include all of them in the MultiPolygon
+- If the document lacks precise coordinates, make a reasonable estimate based on:
+  * Street names and landmarks mentioned
+  * The map boundaries if visible
+  * The administrative area description
 
-                    {f"Additional context: {context}" if context else ""}
+{f"Additional context: {context}" if context else ""}
 
-                    Output only valid GeoJSON in this exact format:
-                    {{
-                    "type": "Feature",
-                    "geometry": {{
-                        "type": "MultiPolygon",
-                        "coordinates": [
-                            [[[lon1, lat1], [lon2, lat2], [lon3, lat3], [lon1, lat1]]],
-                            [[[lon4, lat4], [lon5, lat5], [lon6, lat6], [lon4, lat4]]]
-                        ]
-                    }},
-                    "properties": {{
-                        "source": "planning_document",
-                        "confidence": "high|medium|low",
-                        "method": "description of extraction method"
-                    }}
-                    }}
+Output only valid GeoJSON in this exact format:
+{{
+"type": "Feature",
+"geometry": {{
+    "type": "MultiPolygon",
+    "coordinates": [
+        [[[lon1, lat1], [lon2, lat2], [lon3, lat3], [lon1, lat1]]],
+        [[[lon4, lat4], [lon5, lat5], [lon6, lat6], [lon4, lat4]]]
+    ]
+}},
+"properties": {{
+    "source": "planning_document",
+    "confidence": "high|medium|low",
+    "method": "description of extraction method"
+}}
+}}
 
-                    Notes:
-                    - For a single connected area, use one polygon in the MultiPolygon array
-                    - For multiple disconnected areas, use multiple polygons in the array
-                    - Each polygon must close (first and last coordinate pairs must be identical)"""
+Notes:
+- For a single connected area, use one polygon in the MultiPolygon array
+- For multiple disconnected areas, use multiple polygons in the array
+- Each polygon must close (first and last coordinate pairs must be identical)"""
 
         system_message = (
             "You are a GIS analyst. Always respond with valid GeoJSON only."
@@ -378,10 +368,7 @@ class OpenRouterClient:
 
         return result
 
-    # =========================================================================
-    # Method 2: Linear Transformation (CV + Center/Scale Estimation)
-    # Adapted from azure_openai/planning_better_toy_1.py
-    # =========================================================================
+    # Method 2: Linear Transformation (CV + Center/Scale Estimation) -> Proposed workflow
 
     def _analyze_document(self, pdf_path: str) -> Dict[str, Any]:
         """
@@ -406,131 +393,118 @@ class OpenRouterClient:
             - upper_hsv: [H, S, V] (if color method)
             - confidence: str
         """
-        prompt = """Analyze this UK planning document completely. I need FOUR pieces of information:
+        prompt = """Analyze this UK planning document for GeoJSON extraction.
 
-                    ═══════════════════════════════════════════════════════════════════════════════
-                    TASK 0: CHECK IF PLANNING AREA COVERS AN ENTIRE DISTRICT
-                    ═══════════════════════════════════════════════════════════════════════════════
+TASK 1: FIND THE MAP PAGE
 
-                    Determine if the planning area covers an ENTIRE administrative district/borough.
+Look through the PDF for a page containing a planning area map with a boundary.
 
-                    Set covers_district=true if the document explicitly states the planning area is:
-                    - An entire London Borough (e.g., "London Borough of Barking and Dagenham")
-                    - An entire Royal Borough (e.g., "Royal Borough of Kensington and Chelsea")
-                    - An entire district/city (e.g., "City of Westminster")
-                    - A whole ward or parish
+Use ZERO-BASED page indexing (first page = 0, second page = 1, etc.)
 
-                    Look for phrases like:
-                    - "The land comprising the entire borough of..."
-                    - "All of [district name]"
-                    - "The whole area of..."
-                    - Document title containing just a borough/district name
+If NO MAP exists, set has_map=false and SKIP to TASK 2 only.
 
-                    If covers_district=true, provide district_name in OSM-compatible format:
-                    - "London Borough of Barking and Dagenham, London, UK"
-                    - "Royal Borough of Kensington and Chelsea, London, UK"
-                    - "City of Westminster, London, UK"
+TASK 2: CHECK IF PLANNING AREA COVERS AN ENTIRE DISTRICT
 
-                    If the planning area is a SPECIFIC SITE within a district, set covers_district=false.
+This is CRITICAL for documents WITHOUT maps - it's our only way to extract a boundary.
 
-                    ═══════════════════════════════════════════════════════════════════════════════
-                    TASK 1: FIND THE MAP PAGE
-                    ═══════════════════════════════════════════════════════════════════════════════
+Set covers_district=true if the document explicitly states the planning area is:
+- An entire London Borough (e.g., "London Borough of Barking and Dagenham")
+- An entire Royal Borough (e.g., "Royal Borough of Kensington and Chelsea")
+- An entire district/city (e.g., "City of Westminster")
+- A whole ward or parish
 
-                    Look through the PDF and find the page containing the planning area map.
+Look for phrases like:
+- "The land comprising the entire borough of..."
+- "All of [district name]"
+- "The whole area of..."
+- Document title containing just a borough/district name
 
-                    Use ZERO-BASED page indexing:
-                    - First page = page 0
-                    - Second page = page 1
-                    - Third page = page 2
+If covers_district=true, you MUST provide district_name in OSM-geocodable format:
+- "London Borough of Barking and Dagenham, London, UK"
+- "Royal Borough of Kensington and Chelsea, London, UK"
+- "City of Westminster, London, UK"
 
-                    ═══════════════════════════════════════════════════════════════════════════════
-                    TASK 2: IDENTIFY CENTER LOCATION AND SCALE
-                    ═══════════════════════════════════════════════════════════════════════════════
+The district_name MUST be specific enough to look up in OpenStreetMap.
 
-                    Find a place name that represents the CENTER of the planning area.
+If the planning area is a SPECIFIC SITE within a district, set covers_district=false.
 
-                    REQUIREMENTS for center_place:
-                    1. Choose a location IN OR NEAR THE CENTER of the planning area
-                    2. Prefer names that geocode well in OpenStreetMap
-                    3. AVOID generic names like "High Street"
-                    4. Include city/town for context (e.g., "Peckham, London")
+TASK 3: CENTER, SCALE, AND BOUNDARY METHOD (ONLY if has_map=true AND covers_district=false)
 
-                    SCALE: The scale_meters value = TOTAL WIDTH of map area in meters.
+Skip this entire task if has_map=false OR covers_district=true.
 
-                    Scale clues (in order of reliability):
-                    1. Scale bar - measure how many times it fits across the map, multiply
-                    2. Scale ratio (e.g., "1:2500") - for A4: 210mm × 2500 = 525m
-                    3. Known features - estimate distances between recognizable landmarks
+CENTER: Find a place name representing the CENTER of the planning area.
+- Choose a location IN OR NEAR THE CENTER
+- Prefer names that geocode well in OpenStreetMap
+- AVOID generic names like "High Street"
+- Include city/town for context (e.g., "Peckham, London")
 
-                    ═══════════════════════════════════════════════════════════════════════════════
-                    TASK 3: DETERMINE BOUNDARY EXTRACTION METHOD
-                    ═══════════════════════════════════════════════════════════════════════════════
+SCALE: The scale_meters value = TOTAL WIDTH of map area in meters.
+Scale clues (in order of reliability):
+1. Scale bar - measure how many times it fits across the map, multiply
+2. Scale ratio (e.g., "1:2500") - for A4: 210mm × 2500 = 525m
+3. Known features - estimate distances between recognizable landmarks
 
-                    (Skip if covers_district=true - we'll use OSM boundary instead)
+BOUNDARY METHOD: Look at the planning area boundary on the map.
 
-                    Look at the planning area boundary on the map:
-                    - A FILLED/SHADED REGION (pink, red, orange, blue shading)
-                    - A COLORED BOUNDARY LINE
-                    - A BLACK/DARK boundary line
+COLOR-BASED (boundary_method="color"): Use when boundary is colored
+- Specify HSV range (OpenCV: H=0-179, S=0-255, V=0-255)
 
-                    Choose extraction method:
+FOR FILLED REGIONS (lower saturation ~30-50):
+* Pink/Magenta: H=140-175, S=30-150, V=150-255
+* Light red/salmon: H=0-10, S=30-150, V=150-255
+* Light orange: H=5-25, S=30-150, V=150-255
+* Light blue: H=90-130, S=30-150, V=150-255
 
-                    1. COLOR-BASED: Use when boundary is colored
-                    - Specify HSV range (OpenCV: H=0-179, S=0-255, V=0-255)
+FOR BOLD LINES (higher saturation ~70+):
+* Red line: H=0-10, S=70-255, V=80-255
+* Orange line: H=5-25, S=70-255, V=80-255
+* Blue line: H=90-130, S=70-255, V=80-255
 
-                    FOR FILLED REGIONS (lower saturation ~30-50):
-                    * Pink/Magenta: H=140-175, S=30-150, V=150-255
-                    * Light red/salmon: H=0-10, S=30-150, V=150-255
-                    * Light orange: H=5-25, S=30-150, V=150-255
-                    * Light blue: H=90-130, S=30-150, V=150-255
+EDGE-BASED (boundary_method="edge"): Use when boundary is BLACK or DARK
 
-                    FOR BOLD LINES (higher saturation ~70+):
-                    * Red line: H=0-10, S=70-255, V=80-255
-                    * Orange line: H=5-25, S=70-255, V=80-255
-                    * Blue line: H=90-130, S=70-255, V=80-255
+OUTPUT FORMAT (valid JSON only)
 
-                    2. EDGE-BASED: Use when boundary is BLACK or DARK
+Case 1 - No map, covers entire district (OSM lookup from text):
+{
+    "has_map": false,
+    "page_index": null,
+    "covers_district": true,
+    "district_name": "London Borough of X, London, UK"
+}
 
-                    ═══════════════════════════════════════════════════════════════════════════════
-                    OUTPUT FORMAT (valid JSON only)
-                    ═══════════════════════════════════════════════════════════════════════════════
+Case 2 - Has map, covers entire district (OSM lookup, map for reference only):
+{
+    "has_map": true,
+    "page_index": 0,
+    "covers_district": true,
+    "district_name": "London Borough of X, London, UK"
+}
 
-                    If covers_district=true (use OSM lookup):
-                    {
-                        "has_map": true,
-                        "page_index": 0,
-                        "covers_district": true,
-                        "district_name": "London Borough of X, London, UK",
-                        "center_place": "...",
-                        "center_lat": 51.5,
-                        "center_lon": -0.15,
-                        "scale_meters": 5000,
-                        "scale_source": "estimated",
-                        "boundary_method": null,
-                        "confidence": "high"
-                    }
+Case 3 - Has map, specific site (linear transform):
+{
+    "has_map": true,
+    "page_index": 0,
+    "covers_district": false,
+    "district_name": null,
+    "center_place": "Specific place, City",
+    "center_lat": 51.5,
+    "center_lon": -0.15,
+    "scale_meters": 1000,
+    "scale_source": "scale_bar|scale_ratio|estimated",
+    "boundary_method": "color",
+    "lower_hsv": [H, S, V],
+    "upper_hsv": [H, S, V],
+    "boundary_reason": "pink shaded region",
+    "confidence": "high|medium|low"
+}
 
-                    If covers_district=false (use linear transform):
-                    {
-                        "has_map": true,
-                        "page_index": 0,
-                        "covers_district": false,
-                        "district_name": null,
-                        "center_place": "Specific place, City",
-                        "center_lat": 51.5,
-                        "center_lon": -0.15,
-                        "scale_meters": 1000,
-                        "scale_source": "scale_bar|scale_ratio|estimated",
-                        "boundary_method": "color",
-                        "lower_hsv": [H, S, V],
-                        "upper_hsv": [H, S, V],
-                        "boundary_reason": "pink shaded region",
-                        "confidence": "high|medium|low"
-                    }
-
-                    If no map found:
-                    {"has_map": false, "page_index": null}"""
+Case 4 - No map, no district coverage (CANNOT extract):
+{
+    "has_map": false,
+    "page_index": null,
+    "covers_district": false,
+    "district_name": null
+}"""
 
         result = self.chat_with_pdf(
             pdf_path=pdf_path,
@@ -540,84 +514,19 @@ class OpenRouterClient:
 
         if result.get("parsed_json"):
             data = result["parsed_json"]
-            print(f"Document analysis complete:")
-            print(f"  Map page: {data.get('page_index')}")
             if data.get("covers_district"):
-                print(f"  Covers entire district: {data.get('district_name')}")
+                print(
+                    f"Analysis: page {data.get('page_index')}, district={data.get('district_name')}"
+                )
             else:
                 print(
-                    f"  Center: {data.get('center_place')} ({data.get('center_lat')}, {data.get('center_lon')})"
+                    f"Analysis: page {data.get('page_index')}, center={data.get('center_place')}, scale={data.get('scale_meters')}m, method={data.get('boundary_method')}"
                 )
-                print(
-                    f"  Scale: {data.get('scale_meters')}m (source: {data.get('scale_source')})"
-                )
-                print(f"  Boundary method: {data.get('boundary_method')}")
-                if data.get("boundary_method") == "color":
-                    print(
-                        f"  HSV range: {data.get('lower_hsv')} to {data.get('upper_hsv')}"
-                    )
-            print(f"  Confidence: {data.get('confidence')}")
             return data
 
-        # Return defaults if parsing fails
-        print("Document analysis failed, using defaults")
-        return {
-            "has_map": False,
-            "page_index": None,
-        }
+        print("Analysis failed, no map found")
+        return {"has_map": False, "page_index": None}
 
-    # =========================================================================
-    # CHANGE START: Helper function to save intermediate refinement visualizations
-    # =========================================================================
-    def _save_intermediate_refinement_png(
-        self,
-        image_base64: str,
-        iteration: int,
-        output_dir: str = "refinement_debug",
-        prefix: str = "refinement",
-    ) -> Optional[str]:
-        """
-        Save an intermediate refinement visualization as a PNG file.
-
-        This is a helper function for debugging the iterative refinement process.
-        Can be easily removed later by deleting this function and its calls.
-
-        Args:
-            image_base64: Base64-encoded PNG image
-            iteration: Current iteration number (0 for initial guess)
-            output_dir: Directory to save images (default: refinement_debug)
-            prefix: Filename prefix (default: refinement)
-
-        Returns:
-            Path to saved file, or None if saving failed
-        """
-        try:
-            # Create output directory if it doesn't exist
-            output_path = Path(output_dir)
-            output_path.mkdir(parents=True, exist_ok=True)
-
-            # Generate filename with iteration number
-            filename = f"{prefix}_iter_{iteration:02d}.png"
-            filepath = output_path / filename
-
-            # Decode and save
-            image_bytes = base64.b64decode(image_base64)
-            with open(filepath, "wb") as f:
-                f.write(image_bytes)
-
-            print(f"  [DEBUG] Saved intermediate visualization: {filepath}")
-            return str(filepath)
-        except Exception as e:
-            print(f"  [DEBUG] Failed to save intermediate PNG: {e}")
-            return None
-
-    # =========================================================================
-    # CHANGE END: Helper function to save intermediate refinement visualizations
-    # =========================================================================
-
-    # =========================================================================
-    # Iterative refinement using landmark-based visual comparison
-    # =========================================================================
     def _refine_placement_with_llm(
         self,
         map_image_b64: str,
@@ -628,7 +537,6 @@ class OpenRouterClient:
         image_height: int,
         image_width: int,
         max_iterations: int = 5,
-        save_intermediate_pngs: bool = True,
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         """
         Iteratively refine boundary placement by comparing landmarks in PDF vs OSM.
@@ -640,7 +548,7 @@ class OpenRouterClient:
         lat, lon = current_center
         scale = current_scale
         geojson = current_geojson
-        log = []
+        refinement_log = []
 
         METERS_PER_DEGREE_LAT = 111111.0
 
@@ -648,7 +556,7 @@ class OpenRouterClient:
             # Visualize current placement on OSM
             viz = visualize_geojson_boundary(geojson)
             if not viz.get("success"):
-                log.append(
+                refinement_log.append(
                     {
                         "iteration": i + 1,
                         "status": "viz_failed",
@@ -657,17 +565,7 @@ class OpenRouterClient:
                 )
                 break
 
-            if save_intermediate_pngs:
-                self._save_intermediate_refinement_png(
-                    image_base64=viz["image_base64"],
-                    iteration=i,
-                    output_dir="refinement_debug",
-                    prefix="osm_visualization",
-                )
-
-            # =================================================================
             # Refinement prompt - landmark-based comparison
-            # =================================================================
             prompt = f"""You are comparing two maps to check if the red boundary is correctly positioned.
 
 IMAGE 1 (FIRST): Original PDF map showing the CORRECT boundary (pink/red shaded area)
@@ -675,9 +573,7 @@ IMAGE 2 (SECOND): OSM map showing our CURRENT boundary placement (red outline)
 
 Map scale: ~{scale:.0f}m width
 
-══════════════════════════════════════════════════════════════════════════════
 TASK: Check if the boundary aligns correctly with landmarks
-══════════════════════════════════════════════════════════════════════════════
 
 1. Find a LANDMARK visible in BOTH images (road, junction, building, railway)
 
@@ -689,9 +585,7 @@ TASK: Check if the boundary aligns correctly with landmarks
 
 4. If they don't match, calculate how to shift the OSM boundary to match the PDF
 
-══════════════════════════════════════════════════════════════════════════════
 DIRECTION REFERENCE (this is critical!):
-══════════════════════════════════════════════════════════════════════════════
 
 Think about it this way:
 - If the boundary in OSM is TOO FAR NORTH compared to PDF → move it SOUTH → shift_north_m = NEGATIVE
@@ -699,9 +593,7 @@ Think about it this way:
 - If the boundary in OSM is TOO FAR EAST compared to PDF → move it WEST → shift_east_m = NEGATIVE
 - If the boundary in OSM is TOO FAR WEST compared to PDF → move it EAST → shift_east_m = POSITIVE
 
-══════════════════════════════════════════════════════════════════════════════
 OUTPUT (JSON only):
-══════════════════════════════════════════════════════════════════════════════
 
 {{
     "assessment": "good" or "needs_adjustment",
@@ -715,9 +607,7 @@ OUTPUT (JSON only):
 
 Remember: shift values move the boundary. NEGATIVE shift_north_m moves it SOUTH."""
 
-            # =================================================================
             # Send to LLM
-            # =================================================================
             result = self.chat_with_images(
                 images_base64=[map_image_b64, viz["image_base64"]],
                 prompt=prompt,
@@ -726,25 +616,17 @@ Remember: shift values move the boundary. NEGATIVE shift_north_m moves it SOUTH.
 
             parsed = result.get("parsed_json")
             if not parsed:
-                log.append({"iteration": i + 1, "status": "parse_failed"})
+                refinement_log.append({"iteration": i + 1, "status": "parse_failed"})
                 continue
 
-            log.append({"iteration": i + 1, **parsed})
+            refinement_log.append({"iteration": i + 1, **parsed})
 
-            # Print info
             assessment = parsed.get("assessment", "unknown")
             landmark = parsed.get("landmark", "unknown")
-            print(f"[Refinement {i + 1}] {assessment}")
-            print(f"  Landmark: {landmark}")
-            if parsed.get("pdf_boundary_position"):
-                print(f"  PDF: {parsed.get('pdf_boundary_position')}")
-            if parsed.get("osm_boundary_position"):
-                print(f"  OSM: {parsed.get('osm_boundary_position')}")
-            if parsed.get("direction_reasoning"):
-                print(f"  Reasoning: {parsed.get('direction_reasoning')}")
 
             # Stop if alignment is good
             if assessment == "good":
+                print(f"Refinement {i + 1}: good (landmark: {landmark})")
                 break
 
             # Get shift values
@@ -753,16 +635,16 @@ Remember: shift values move the boundary. NEGATIVE shift_north_m moves it SOUTH.
 
             # Skip tiny adjustments
             if abs(shift_north_m) < 5 and abs(shift_east_m) < 5:
-                print("  Adjustments too small, stopping")
+                print(f"Refinement {i + 1}: converged (shift <5m)")
                 break
 
-            print(f"  Shift: north={shift_north_m:+.0f}m, east={shift_east_m:+.0f}m")
+            print(
+                f"Refinement {i + 1}: shift {shift_north_m:+.0f}m N, {shift_east_m:+.0f}m E (landmark: {landmark})"
+            )
 
             # Apply shifts
             lat += shift_north_m / METERS_PER_DEGREE_LAT
             lon += shift_east_m / (METERS_PER_DEGREE_LAT * np.cos(np.radians(lat)))
-
-            print(f"  New center: ({lat:.6f}, {lon:.6f})")
 
             # Re-transform boundary with new center
             transform_result = pixels_to_geo_linear(
@@ -782,7 +664,7 @@ Remember: shift values move the boundary. NEGATIVE shift_north_m moves it SOUTH.
                         "coordinates": [geojson["geometry"]["coordinates"]],
                     }
             else:
-                log.append(
+                refinement_log.append(
                     {
                         "iteration": i + 1,
                         "status": "transform_failed",
@@ -791,23 +673,8 @@ Remember: shift values move the boundary. NEGATIVE shift_north_m moves it SOUTH.
                 )
                 break
 
-        # Save final visualization
-        if save_intermediate_pngs:
-            final_viz = visualize_geojson_boundary(geojson)
-            if final_viz.get("success"):
-                self._save_intermediate_refinement_png(
-                    image_base64=final_viz["image_base64"],
-                    iteration=i + 1,
-                    output_dir="refinement_debug",
-                    prefix="osm_visualization_FINAL",
-                )
-
-        geojson["properties"]["refinement_iterations"] = len(log)
-        return geojson, log
-
-    # =========================================================================
-    # END Iterative refinement
-    # =========================================================================
+        geojson["properties"]["refinement_iterations"] = len(refinement_log)
+        return geojson, refinement_log
 
     def _select_boundary_candidate(
         self,
@@ -816,6 +683,10 @@ Remember: shift values move the boundary. NEGATIVE shift_north_m moves it SOUTH.
     ) -> List[List[int]]:
         """
         Use LLM to select the correct planning boundary from multiple candidates.
+        This is done because the boundary extraction tools may not always extract the correct boundary,
+        for example if the planning area in the original map is drawn in red but there is also a large
+        red circular seal on that same pdf page, the boundary extraction tools may extract the large red circular seal instead of the planning area.
+        Therefore, we need to use the LLM to select the correct boundary from the multiple candidates.
 
         Args:
             image_base64: Original map image
@@ -825,27 +696,26 @@ Remember: shift values move the boundary. NEGATIVE shift_north_m moves it SOUTH.
             The selected boundary pixels
         """
         # Visualize each candidate with a different color
-        colors = [
-            (0, 255, 0),    # Green
-            (0, 0, 255),    # Blue
-            (255, 255, 0),  # Yellow
-            (255, 0, 255),  # Magenta
-        ]
+        color = (
+            0,
+            255,
+            0,
+        )  # Green (planning boundaries in original document are usually not green so it will be easy for the model to distinguish the proposed boundary)
 
         visualized_images = []
-        for i, candidate in enumerate(candidates[:4]):  # Limit to 5 candidates
-            color = colors[i % len(colors)]
+        for i, candidate in enumerate(candidates[:5]):  # Limit to 5 candidates
             viz = self.visualize_boundary_on_image(
                 image_base64,
                 candidate,
-                output_path=f"candidate_{i}.png",
                 line_color=color,
                 fill_color=(*color, 50),
             )
+
             if viz.get("success"):
                 visualized_images.append(viz["image_base64"])
 
         if not visualized_images:
+            # Default to the first candidate (which is boundary with largest area because the candidates are sorted by area in descending order)
             return candidates[0]
 
         # Include original image first, then the candidate visualizations
@@ -867,10 +737,9 @@ Return JSON: {{"selected_index": <0-based index of correct candidate>}}"""
         if result.get("parsed_json") and "selected_index" in result["parsed_json"]:
             idx = result["parsed_json"]["selected_index"]
             if 0 <= idx < len(candidates):
-                print(f"  LLM selected candidate {idx}")
                 return candidates[idx]
 
-        print("  LLM selection failed, using largest candidate")
+        # Default to the first candidate (which is boundary with largest area because the candidates are sorted by area in descending order)
         return candidates[0]
 
     def visualize_boundary_on_image(
@@ -947,12 +816,9 @@ Return JSON: {{"selected_index": <0-based index of correct candidate>}}"""
             if output_path:
                 cv2.imwrite(output_path, img)
                 result["output_path"] = output_path
-                print(f"Saved boundary visualization to: {output_path}")
 
             return result
 
-        except ImportError as e:
-            return {"success": False, "error": f"Missing dependency: {e}"}
         except Exception as e:
             return {"success": False, "error": f"Visualization failed: {e}"}
 
@@ -979,66 +845,56 @@ Return JSON: {{"selected_index": <0-based index of correct candidate>}}"""
         This method reuses the tools/ package to avoid code duplication.
         """
         start_time = time.time()
-        method_log = []
 
         try:
             # Combined analysis: single API call for all document info
             analysis = self._analyze_document(pdf_path)
-            method_log.append(f"Combined document analysis complete")
-            print(analysis)
-            if not analysis.get("has_map"):
-                return {
-                    "success": False,
-                    "error": "No planning map found in PDF",
-                    "method_log": method_log,
-                }
 
-            # Check if planning area covers an entire district
+            # Try district lookup first (works even without a map)
             if analysis.get("covers_district") and analysis.get("district_name"):
                 district_name = analysis["district_name"]
-                method_log.append(
-                    f"Planning area covers entire district: {district_name}"
-                )
-                print(f"Using OSM district lookup for: {district_name}")
-
-                # Use district lookup instead of linear transform
                 lookup_result = lookup_district_boundary(district_name)
 
-                if not lookup_result.get("success"):
-                    # Fall back to linear transform if lookup fails
-                    print(f"District lookup failed: {lookup_result.get('error')}")
-                    print("Falling back to linear transformation...")
-                    method_log.append(
-                        f"District lookup failed, using linear transform fallback"
-                    )
-                else:
+                if lookup_result.get("success"):
                     geojson = lookup_result["geojson"]
-
-                    # Ensure MultiPolygon format
                     geom = geojson.get("geometry", {})
                     if geom.get("type") == "Polygon":
                         geojson["geometry"] = {
                             "type": "MultiPolygon",
                             "coordinates": [geom["coordinates"]],
                         }
-
                     geojson["properties"]["source"] = "osm_district_lookup"
                     geojson["properties"]["district_name"] = district_name
-
+                    print(
+                        f"Output: district_lookup, time={time.time() - start_time:.1f}s"
+                    )
                     return {
                         "success": True,
                         "parsed_json": geojson,
                         "method": "district_lookup",
-                        "district_name": district_name,
-                        "method_log": method_log,
                         "processing_time": time.time() - start_time,
                     }
+                elif not analysis.get("has_map"):
+                    # No map and district lookup failed - cannot proceed
+                    return {
+                        "success": False,
+                        "error": f"District lookup failed for '{district_name}' and no map available for boundary extraction",
+                        "processing_time": time.time() - start_time,
+                    }
+                else:
+                    # District lookup failed but we have a map - fall back to linear transform
+                    print(f"District lookup failed, falling back to linear transform")
+
+            # Check if we have a map for linear transform
+            if not analysis.get("has_map"):
+                return {
+                    "success": False,
+                    "error": "No planning map found in PDF and no district boundary identified",
+                    "processing_time": time.time() - start_time,
+                }
 
             # Linear transformation path
             map_page = analysis.get("page_index")
-            method_log.append(f"Map page: {map_page}")
-
-            # Get center coordinates - try geocoding the place name for accuracy
             center_place = analysis.get("center_place")
             lat_center = analysis.get("center_lat", self.DEFAULT_CENTER_LAT)
             lon_center = analysis.get("center_lon", self.DEFAULT_CENTER_LON)
@@ -1050,7 +906,9 @@ Return JSON: {{"selected_index": <0-based index of correct candidate>}}"""
                     lat_center = geocode_result["latitude"]
                     lon_center = geocode_result["longitude"]
                     center_detection_method = f"geocoded:{center_place}"
-                    print(f"Geocoded '{center_place}' -> ({lat_center}, {lon_center})")
+                    print(
+                        f"Geocoded: {center_place} -> ({lat_center:.4f}, {lon_center:.4f})"
+                    )
 
             scale_m = analysis.get("scale_meters", self.DEFAULT_SCALE_METERS)
             scale_source = analysis.get("scale_source", "unknown")
@@ -1058,17 +916,11 @@ Return JSON: {{"selected_index": <0-based index of correct candidate>}}"""
                 f"{center_detection_method} | scale:{scale_source}"
             )
 
-            # Boundary extraction params from combined analysis
+            # Boundary extraction
             boundary_method = analysis.get("boundary_method", "color")
             lower_hsv = analysis.get("lower_hsv", self.DEFAULT_HSV_LOWER_RANGE)
             upper_hsv = analysis.get("upper_hsv", self.DEFAULT_HSV_UPPER_RANGE)
 
-            method_log.append(
-                f"Center: ({lat_center}, {lon_center}), scale: {scale_m}m"
-            )
-            method_log.append(f"Boundary method: {boundary_method}")
-
-            # Convert PDF page to image using tools package
             pdf_result = get_pdf_page_as_image(pdf_path, page_index=map_page)
             if not pdf_result.get("success"):
                 return {
@@ -1077,28 +929,30 @@ Return JSON: {{"selected_index": <0-based index of correct candidate>}}"""
                 }
             img_b64 = pdf_result["image_base64"]
 
-            # Extract boundary using the method from combined analysis
-            print(f"Extracting boundary with method: {boundary_method}")
             if boundary_method == "edge":
                 result = extract_region_boundary(img_b64)
             else:
-                print(f"  HSV range: {lower_hsv} to {upper_hsv}")
                 result = extract_color_boundary(img_b64, lower_hsv, upper_hsv)
 
-            if result.get("success"):
-                image_height = result["image_height"]
-                image_width = result["image_width"]
-                candidates = result["candidates"]
+            if not result.get("success"):
+                return {
+                    "success": False,
+                    "error": result.get("error", "Boundary extraction failed"),
+                    "processing_time": time.time() - start_time,
+                }
 
-                # If multiple candidates, let LLM choose the correct one
-                if len(candidates) > 1:
-                    boundary_pixels = self._select_boundary_candidate(img_b64, candidates)
-                else:
-                    boundary_pixels = candidates[0]
-            else:
-                raise RuntimeError(result.get("error", "Boundary extraction failed"))
+            image_height = result["image_height"]
+            image_width = result["image_width"]
+            candidates = result["candidates"]
+            if len(candidates) < 1:
+                return {
+                    "success": False,
+                    "error": f"Expected 1 or more boundary candidates, got {len(candidates)}",
+                    "processing_time": time.time() - start_time,
+                }
+            boundary_pixels = self._select_boundary_candidate(img_b64, candidates)
 
-            method_log.append(f"Extracted boundary with {len(boundary_pixels)} points")
+            print(f"Boundary: {len(boundary_pixels)} points extracted")
 
             # Create center tuple for refinement step
             center = (lat_center, lon_center)
@@ -1114,7 +968,11 @@ Return JSON: {{"selected_index": <0-based index of correct candidate>}}"""
             )
 
             if not transform_result.get("success"):
-                raise RuntimeError(transform_result.get("error", "Transform failed"))
+                return {
+                    "success": False,
+                    "error": transform_result.get("error", "Transform failed"),
+                    "processing_time": time.time() - start_time,
+                }
 
             geojson = transform_result["geojson"]
 
@@ -1129,18 +987,9 @@ Return JSON: {{"selected_index": <0-based index of correct candidate>}}"""
             # Add center detection method (not in tools output)
             geojson["properties"]["center_detection_method"] = center_detection_method
 
-            self.visualize_boundary_on_image(
-                image_base64=img_b64,
-                boundary_pixels=boundary_pixels,
-                output_path="boundary.png",
-            )
-
-            # Step 7: Optional iterative refinement
+            # Optional iterative refinement
             refinement_log = []
             if iterative_refinement:
-                method_log.append("Starting iterative refinement...")
-                print("Starting iterative refinement using visual feedback...")
-
                 geojson, refinement_log = self._refine_placement_with_llm(
                     map_image_b64=img_b64,
                     current_geojson=geojson,
@@ -1152,32 +1001,18 @@ Return JSON: {{"selected_index": <0-based index of correct candidate>}}"""
                     max_iterations=max_refinement_iterations,
                 )
 
-                method_log.append(
-                    f"Refinement completed: {len(refinement_log)} iterations"
-                )
-                for log_entry in refinement_log:
-                    method_log.append(
-                        f"  Iteration {log_entry.get('iteration', '?')}: {log_entry.get('assessment', log_entry.get('status', 'unknown'))}"
-                    )
-
-            result = {
+            print(f"Output: linear_transform, time={time.time() - start_time:.1f}s")
+            return {
                 "success": True,
                 "parsed_json": geojson,
                 "method": "linear_transform",
-                "method_log": method_log,
                 "processing_time": time.time() - start_time,
             }
-
-            if refinement_log:
-                result["refinement_log"] = refinement_log
-
-            return result
 
         except Exception as e:
             return {
                 "success": False,
                 "error": str(e),
-                "method_log": method_log,
                 "processing_time": time.time() - start_time,
             }
 
@@ -1527,13 +1362,7 @@ Return JSON: {{"selected_index": <0-based index of correct candidate>}}"""
                             tool_args = (
                                 json.loads(tool_args_str) if tool_args_str else {}
                             )
-                        except json.JSONDecodeError as e:
-                            print(
-                                f"[Iteration {iteration}] Failed to parse arguments for {tool_name}: {e}"
-                            )
-                            print(
-                                f"  Raw arguments: {tool_args_str[:200] if tool_args_str else '(empty)'}"
-                            )
+                        except json.JSONDecodeError:
                             tool_args = {}
 
                         iterations.append(
@@ -1549,34 +1378,10 @@ Return JSON: {{"selected_index": <0-based index of correct candidate>}}"""
                             }
                         )
 
-                        print(f"[Iteration {iteration}] Agent calling: {tool_name}")
-                        print(f"  All args: {list(tool_args.keys())}")
-                        if tool_name == "extract_color_boundary":
-                            print(f"  Raw args string: {tool_args_str}")
-                            print(
-                                f"  HSV lower: {tool_args.get('lower_hsv')}, upper: {tool_args.get('upper_hsv')}"
-                            )
-                            print(f"  Has image_base64: {'image_base64' in tool_args}")
-
                         # Execute the tool
                         result = self._execute_agentic_tool(
                             tool_name, tool_args, context
                         )
-
-                        # Log result status
-                        if result.get("success"):
-                            print(f"  Result: SUCCESS")
-                            if tool_name in (
-                                "extract_color_boundary",
-                                "extract_region_boundary",
-                            ):
-                                print(
-                                    f"  Boundary points: {len(result.get('boundary_pixels', []))}"
-                                )
-                        else:
-                            print(
-                                f"  Result: FAILED - {result.get('error', 'unknown error')}"
-                            )
 
                         # Store successful geojson results
                         if result.get("success") and result.get("geojson"):
@@ -1625,7 +1430,6 @@ Return JSON: {{"selected_index": <0-based index of correct candidate>}}"""
                         }
 
                     # If no geojson and no tool calls, we're stuck
-                    print(f"[Iteration {iteration}] No tool calls and no GeoJSON found")
                     break
 
             # If we exhausted iterations without a result
@@ -1655,20 +1459,15 @@ Return JSON: {{"selected_index": <0-based index of correct candidate>}}"""
                 }
 
         except Exception as e:
-            import traceback
-
             return {
                 "success": False,
                 "error": str(e),
-                "traceback": traceback.format_exc(),
                 "method": "agentic",
                 "agent_iterations": iterations,
                 "processing_time": time.time() - start_time,
             }
 
-    # =========================================================================
     # Unified Extraction Method
-    # =========================================================================
 
     def extract_geojson(
         self,
@@ -1716,8 +1515,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--method",
         choices=["baseline", "linear_transform", "agentic"],
-        default="baseline",
-        help="Extraction method to use (default: baseline)",
+        default="linear_transform",
+        help="Extraction method to use (default: linear_transform)",
     )
     parser.add_argument(
         "--model",
@@ -1745,11 +1544,7 @@ if __name__ == "__main__":
 
     client = OpenRouterClient(model=args.model)
 
-    print(f"\nExtracting GeoJSON using method: {args.method}")
-    print(f"PDF: {args.pdf_path}")
-    if args.iterative:
-        print(f"Iterative refinement: ENABLED (max {args.max_iterations} iterations)")
-    print("-" * 50)
+    print(f"Extracting: {args.pdf_path} (method={args.method})")
 
     # Build kwargs for the extraction method
     extraction_kwargs = {}
@@ -1757,38 +1552,14 @@ if __name__ == "__main__":
         extraction_kwargs["iterative_refinement"] = True
         extraction_kwargs["max_refinement_iterations"] = args.max_iterations
 
-    # Use the unified extraction method
     response = client.extract_geojson(
         args.pdf_path, method=args.method, **extraction_kwargs
     )
 
     if response.get("success") and response.get("parsed_json"):
         geojson = response["parsed_json"]
-
         with open(args.output, "w") as f:
             json.dump(geojson, f, indent=2)
-
-        print(f"\nSuccess! GeoJSON saved to {args.output}")
-        print(f"Method used: {response.get('method', args.method)}")
-        print(f"Processing time: {response.get('processing_time', 0):.2f}s")
-
-        if response.get("method_log"):
-            print("\nMethod log:")
-            for step in response["method_log"]:
-                print(f"  - {step}")
-
-        if response.get("refinement_log"):
-            print("\nRefinement details:")
-            for entry in response["refinement_log"]:
-                iteration = entry.get("iteration", "?")
-                assessment = entry.get("assessment", entry.get("status", "unknown"))
-                observations = entry.get("observations", "")[:80]
-                print(f"  Iteration {iteration}: {assessment}")
-                if observations:
-                    print(f"    {observations}...")
+        print(f"Success: {args.output} ({response.get('processing_time', 0):.1f}s)")
     else:
-        print("\nFailed to extract GeoJSON:")
-        print(response.get("json_error") or response.get("error"))
-        if response.get("content"):
-            print("\nRaw response:")
-            print(response.get("content", "")[:500])
+        print(f"Failed: {response.get('error')}")

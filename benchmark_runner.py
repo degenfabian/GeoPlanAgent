@@ -84,17 +84,32 @@ class BenchmarkRunner:
         geojson_files = list(folder_path.glob(geojson_file_name))
         return geojson_files[0] if geojson_files else None
 
+    def _get_method_dir_name(
+        self, method: str, iterative_refinement: bool = False
+    ) -> str:
+        """
+        Get the directory name for a method configuration.
+
+        For linear_transform, appends _iterative or _non_iterative based on the flag.
+        """
+        if method == "linear_transform":
+            suffix = "_iterative" if iterative_refinement else "_non_iterative"
+            return f"{method}{suffix}"
+        return method
+
     def save_result(
         self,
         model_name: str,
         example_id: str,
         folder_name: str,
         result_data: Dict[str, Any],
+        method: str = "linear_transform",
+        iterative_refinement: bool = False,
     ):
         """
         Save benchmark result for a single example.
 
-        Creates folder structure: results_dir/model_name/folder_name/
+        Creates folder structure: results_dir/model_name/method_name/folder_name/
         Saves:
         - response.json: Full model response
         - predicted.geojson: Extracted GeoJSON (if successful)
@@ -102,7 +117,8 @@ class BenchmarkRunner:
         """
         # Replace "/" with "_" in model names to create valid directory names
         # (e.g., "anthropic/claude-sonnet" becomes "anthropic_claude-sonnet")
-        result_dir = self.results_dir / model_name.replace("/", "_") / folder_name
+        method_dir = self._get_method_dir_name(method, iterative_refinement)
+        result_dir = self.results_dir / model_name.replace("/", "_") / method_dir / folder_name
         result_dir.mkdir(parents=True, exist_ok=True)
 
         response_path = result_dir / "response.json"
@@ -137,6 +153,8 @@ class BenchmarkRunner:
         client: OpenRouterClient,
         example_row: pd.Series,
         model_name: str,
+        method: str = "linear_transform",
+        iterative_refinement: bool = False,
     ) -> Dict[str, Any]:
         """
         Run benchmark on a single example.
@@ -145,6 +163,8 @@ class BenchmarkRunner:
             client: OpenRouterClient instance
             example_row: Row from dataset DataFrame
             model_name: Name of the model being tested
+            method: Extraction method ("baseline", "linear_transform", "agentic")
+            iterative_refinement: Whether to use iterative refinement (only for linear_transform)
 
         Returns:
             Result dictionary with metrics and response data
@@ -166,6 +186,8 @@ class BenchmarkRunner:
             "example_id": example_id,
             "folder_name": folder_name,
             "model": model_name,
+            "method": method,
+            "iterative_refinement": iterative_refinement,
             "timestamp": datetime.now().isoformat(),
             "success": False,
             "full_response": {},
@@ -183,9 +205,16 @@ class BenchmarkRunner:
             return result
 
         try:
-            print(f"  Calling {model_name} to extract GeoJSON...")
-            response = client.extract_geojson_from_pdf(
+            print(f"  Calling {model_name} to extract GeoJSON (method={method})...")
+
+            # Build kwargs based on method
+            extract_kwargs = {"method": method}
+            if method == "linear_transform":
+                extract_kwargs["iterative_refinement"] = iterative_refinement
+
+            response = client.extract_geojson(
                 pdf_path=str(pdf_path),
+                **extract_kwargs,
             )
 
             result["full_response"] = response
@@ -230,6 +259,8 @@ class BenchmarkRunner:
     def run_benchmark(
         self,
         model_names: List[str],
+        method: str = "linear_transform",
+        iterative_refinement: bool = False,
         max_examples: Optional[int] = None,
         start_from: int = 0,
     ):
@@ -238,13 +269,18 @@ class BenchmarkRunner:
 
         Args:
             model_names: List of model names/identifiers to test
+            method: Extraction method ("baseline", "linear_transform", "agentic")
+            iterative_refinement: Whether to use iterative refinement (only for linear_transform)
             max_examples: Maximum number of examples to test (None for all)
             start_from: Index to start from (for resuming)
         """
+        method_dir = self._get_method_dir_name(method, iterative_refinement)
+
         print(f"\n{'=' * 80}")
         print(f"Starting Benchmark Run")
         print(f"{'=' * 80}")
         print(f"Models: {', '.join(model_names)}")
+        print(f"Method: {method_dir}")
         print(f"Total examples in dataset: {len(self.dataset_filtered)}")
         if max_examples:
             print(
@@ -275,7 +311,13 @@ class BenchmarkRunner:
             failed = 0
 
             for idx, row in dataset_filtered_slice.iterrows():
-                result = self.run_single_example(client, row, model_name)
+                result = self.run_single_example(
+                    client,
+                    row,
+                    model_name,
+                    method=method,
+                    iterative_refinement=iterative_refinement,
+                )
                 results.append(result)
 
                 self.save_result(
@@ -283,6 +325,8 @@ class BenchmarkRunner:
                     example_id=result["example_id"],
                     folder_name=result["folder_name"],
                     result_data=result,
+                    method=method,
+                    iterative_refinement=iterative_refinement,
                 )
 
                 if result["success"]:
@@ -295,19 +339,28 @@ class BenchmarkRunner:
                     f"(Success: {successful}, Failed: {failed})"
                 )
 
-            self._save_model_summary(model_name, results)
+            self._save_model_summary(
+                model_name, results, method=method, iterative_refinement=iterative_refinement
+            )
 
             print(f"\n{'=' * 80}")
-            print(f"Completed {model_name}")
+            print(f"Completed {model_name} ({method_dir})")
             print(
                 f"Success: {successful}/{len(dataset_filtered_slice)} ({100 * successful / len(dataset_filtered_slice):.1f}%)"
             )
             print(f"{'=' * 80}\n")
 
-    def _save_model_summary(self, model_name: str, results: List[Dict[str, Any]]):
-        """Save summary statistics for a model."""
-        model_dir = self.results_dir / model_name.replace("/", "_")
-        summary_path = model_dir / "summary.json"
+    def _save_model_summary(
+        self,
+        model_name: str,
+        results: List[Dict[str, Any]],
+        method: str = "linear_transform",
+        iterative_refinement: bool = False,
+    ):
+        """Save summary statistics for a model and method configuration."""
+        method_dir = self._get_method_dir_name(method, iterative_refinement)
+        model_method_dir = self.results_dir / model_name.replace("/", "_") / method_dir
+        summary_path = model_method_dir / "summary.json"
 
         # Filter to only successful results for metric calculation
         successful_results = [r for r in results if r["success"]]
@@ -329,6 +382,8 @@ class BenchmarkRunner:
 
             summary = {
                 "model": model_name,
+                "method": method,
+                "iterative_refinement": iterative_refinement if method == "linear_transform" else None,
                 "total_examples": len(results),
                 "successful": len(successful_results),
                 "failed": len(results) - len(successful_results),
@@ -370,6 +425,8 @@ class BenchmarkRunner:
         else:
             summary = {
                 "model": model_name,
+                "method": method,
+                "iterative_refinement": iterative_refinement if method == "linear_transform" else None,
                 "total_examples": len(results),
                 "successful": 0,
                 "failed": len(results),
@@ -389,16 +446,19 @@ if __name__ == "__main__":
     print(runner.dataset_filtered.head())
 
     models_to_test = [
-        "claude-sonnet",
-        # "claude-opus",
+        "claude-opus",
         # "gpt-5.2",
         # "gemini-pro",
     ]
 
+    # Available methods: "baseline", "linear_transform", "agentic"
+    # For linear_transform, set iterative_refinement=True/False
     runner.run_benchmark(
         model_names=models_to_test,
-        max_examples=3,
-        start_from=0,
+        method="linear_transform",
+        iterative_refinement=True,  # Set to False for linear_transform_non_iterative
+        max_examples=10,
+        start_from=90,
     )
 
     print("\n" + "=" * 80)

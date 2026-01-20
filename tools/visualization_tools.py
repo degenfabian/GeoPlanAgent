@@ -18,11 +18,13 @@ from typing import Dict, Any
 import geopandas as gpd
 import contextily as ctx
 from shapely.geometry import shape
+from PIL import Image
 
 
 def visualize_geojson_boundary(
     geojson_data: Dict[str, Any],
-    padding: float = 3.0,
+    padding: float = 2.0,
+    max_size: int = 1024,
 ) -> Dict[str, Any]:
     """
     Visualize a GeoJSON boundary on an OpenStreetMap basemap.
@@ -32,8 +34,10 @@ def visualize_geojson_boundary(
 
     Args:
         geojson_data: GeoJSON Feature object containing the boundary polygon.
-        padding: Padding around boundary as fraction of boundary size (default: 1.0).
+        padding: Padding around boundary as fraction of boundary size (default: 3.0).
                  A value of 1.0 means 100% extra space on each side.
+        max_size: Maximum dimension (width or height) in pixels (default: 1024).
+                  Images larger than this will be resized to fit API constraints.
 
     Returns:
         Dict containing:
@@ -105,13 +109,26 @@ def visualize_geojson_boundary(
 
         plt.tight_layout()
 
-        # Convert to base64
+        # Convert to image buffer
         buf = io.BytesIO()
-        plt.savefig(buf, format="png", dpi=300, bbox_inches="tight")
+        plt.savefig(buf, format="png", dpi=150, bbox_inches="tight")
         plt.close(fig)
         buf.seek(0)
-        img_base64 = base64.b64encode(buf.read()).decode("utf-8")
+
+        # Load image and resize if needed
+        img = Image.open(buf)
+        if img.width > max_size or img.height > max_size:
+            ratio = min(max_size / img.width, max_size / img.height)
+            new_size = (int(img.width * ratio), int(img.height * ratio))
+            img = img.resize(new_size, Image.Resampling.LANCZOS)
+
+        # Convert to base64
+        output_buf = io.BytesIO()
+        img.save(output_buf, format="PNG")
+        output_buf.seek(0)
+        img_base64 = base64.b64encode(output_buf.read()).decode("utf-8")
         buf.close()
+        output_buf.close()
 
         return {
             "success": True,

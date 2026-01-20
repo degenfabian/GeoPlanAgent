@@ -17,7 +17,7 @@ def get_pdf_page_as_image(
     pdf_path: str,
     page_index: int = 0,
     dpi: int = 200,
-    max_size: int = 2048,
+    max_size: int = 1024,
 ) -> Dict[str, Any]:
     """
     Convert a specific PDF page to a base64-encoded image.
@@ -46,7 +46,7 @@ def get_pdf_page_as_image(
         max_size (int):
             Maximum dimension (width or height) in pixels. Images larger than this
             will be resized while preserving aspect ratio.
-            Default: 2048 (suitable for most vision APIs)
+            Default: 1024 (suitable for most vision APIs)
 
     Returns:
         Dict containing:

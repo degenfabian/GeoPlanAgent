@@ -207,3 +207,12 @@ def calculate_spatial_metrics(
         metrics["validation_error"] = f"Calculation error: {e}"
 
     return metrics
+
+
+if __name__ == "__main__":
+    ground_truth_geojson = load_geojson(
+        "evaluation_data/A4_094:LL:013/7010006945.geojson"
+    )
+    predicted_geojson = load_geojson("output.geojson")
+    metrics = calculate_spatial_metrics(ground_truth_geojson, predicted_geojson)
+    print(metrics)
