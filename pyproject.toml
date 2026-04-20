@@ -1,29 +1,56 @@
 [project]
 name = "GeoMapAgent"
 version = "0.1.0"
-description = "Planning Document GeoJSON Extraction Benchmark - Evaluating LLM performance on spatial data extraction"
+description = "Planning boundary extraction from UK planning document PDFs via fine-tuned SAM3 + road matching"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "matplotlib>=3.10.8",
+    # Core
     "numpy>=2.2.6",
-    "openai>=2.14.0",
-    "pandas>=2.3.3",
+    "opencv-python>=4.11.0.86",
     "requests>=2.32.5",
     "python-dotenv>=1.0.0",
     "shapely>=2.0.0",
-    "folium>=0.14.0",
-    "gspread>=6.0.0",
-    "google-auth>=2.23.0",
-    "dotenv>=0.9.9",
-    "ruff>=0.14.10",
-    "openpyxl>=3.1.5",
-    "pdf2image>=1.17.0",
-    "opencv-python>=4.11.0.86",
-    "osmnx>=2.0.7",
-    "scikit-image>=0.25.2",
-    "cartopy>=0.25.0",
-    "geopy>=2.4.1",
-    "pytesseract>=0.3.13",
+    "Pillow>=10.0.0",
+    "PyMuPDF>=1.24.0",
+    # ML / SAM3
+    "torch>=2.0.0",
+    "torchvision>=0.15.0",
+    "transformers>=4.40.0",
+    "peft>=0.10.0",
+    "huggingface-hub>=1.5.0",
+    # Geospatial
+    "geopandas>=0.14.0",
     "contextily>=1.7.0",
+    "osmnx>=2.0.7",
+    "geopy>=2.4.1",
+    # Visualization
+    "matplotlib>=3.10.8",
+    # Image matching (MINIMA)
+    "kornia>=0.7.0",
+    "einops>=0.8.2",
+    "scipy>=1.10.0",
+    # PDF processing
+    "pdf2image>=1.17.0",
+    # OCR (rotation detection)
+    "pytesseract>=0.3.13",
+    # Benchmark
+    "openpyxl>=3.1.5",
+    "scikit-image>=0.25.2",
+    "scikit-learn>=1.7.2",
+    # LLM agent
+    "openai>=2.14.0",
+    "pydantic-ai-slim[openrouter]>=1.81.0",
+]
+
+[project.optional-dependencies]
+training = [
+    "albumentations>=2.0.8",
+    "segmentation-models-pytorch>=0.5.0",
+    "pytorch-lightning>=2.6.1",
+    "tensorboardx>=2.6.4",
+    "tqdm>=4.60.0",
+]
+dev = [
+    "ruff>=0.14.10",
 ]

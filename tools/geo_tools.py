@@ -12,16 +12,103 @@ Additionally, a DISTRICT LOOKUP tool is provided for when the planning area
 corresponds to an entire administrative district.
 """
 
+import re
 import numpy as np
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional, Tuple
 import json
 
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
 import osmnx as ox
+from pyproj import Transformer
 
 # Average meters per degree of latitude
 METERS_PER_DEGREE_LAT = 111111.0
+
+# ── OS Grid Reference → WGS84 ───────────────────────────────────────────────
+
+# OS National Grid: 2-letter prefix → (easting, northing) base in metres.
+# Standard formula: each letter is 0-24 (A-Z skipping I).
+_OS_GRID_LETTERS = {}
+for _c1 in range(26):
+    if _c1 == 8: continue  # skip I
+    _l1 = _c1 - (1 if _c1 > 8 else 0)  # 0-24 index
+    for _c2 in range(26):
+        if _c2 == 8: continue
+        _l2 = _c2 - (1 if _c2 > 8 else 0)
+        e = ((_l1 - 2) % 5) * 5 + (_l2 % 5)
+        n = 19 - 5 * (_l1 // 5) - (_l2 // 5)
+        if 0 <= e <= 9 and 0 <= n <= 24:  # valid GB range
+            _OS_GRID_LETTERS[chr(_c1 + 65) + chr(_c2 + 65)] = (e * 100000, n * 100000)
+
+_OSGB_TO_WGS84 = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True)
+
+
+def os_grid_ref_to_latlon(grid_ref: str) -> Optional[Tuple[float, float]]:
+    """Convert OS grid reference string to (lat, lon) WGS84.
+
+    Accepts formats like "TG 210 080", "TG 2105 0803", "TG2108",
+    "TG 21 08", "TR 206 48" (asymmetric), with or without spaces.
+    Strips trailing compass directions like "SE", "NW" etc.
+
+    Returns (lat, lon) or None if parsing fails.
+    """
+    s = grid_ref.strip().upper().replace(",", "").replace("  ", " ")
+    # Strip trailing compass directions (e.g., "TR 34 SE" → "TR 34")
+    s = re.sub(r"\s+[NSEW]{1,2}$", "", s)
+
+    # Reject range-style refs (e.g., "TR 2562-63", "TG 20-22 08-10")
+    if "-" in s:
+        return None
+
+    # Try 2-part format: "TG 210 080" or "TG210 080"
+    m = re.match(r"([A-Z]{2})\s*(\d+)\s+(\d+)$", s)
+    if not m:
+        # Try compact form (with or without space): "TG210080" or "TG2108" or "TG 2638"
+        m = re.match(r"([A-Z]{2})\s*(\d+)$", s)
+        if not m:
+            return None
+        letters, digits = m.group(1), m.group(2)
+        if len(digits) % 2 != 0:
+            # Odd number of digits — try dropping last digit
+            digits = digits[:-1]
+        if len(digits) < 2:
+            return None
+        half = len(digits) // 2
+        east_digits, north_digits = digits[:half], digits[half:]
+    else:
+        letters = m.group(1)
+        east_digits, north_digits = m.group(2), m.group(3)
+
+    if letters not in _OS_GRID_LETTERS:
+        return None
+
+    # Reject low-resolution refs: need at least 4 total digits (2+2 = 1km)
+    total_digits = len(east_digits) + len(north_digits)
+    if total_digits < 4:
+        return None
+
+    # Handle asymmetric digit counts by padding shorter to match longer
+    max_len = max(len(east_digits), len(north_digits))
+    east_digits = east_digits.ljust(max_len, "0")
+    north_digits = north_digits.ljust(max_len, "0")
+
+    # Pad to 5 digits (1m resolution)
+    east_digits = east_digits.ljust(5, "0")
+    north_digits = north_digits.ljust(5, "0")
+
+    base_e, base_n = _OS_GRID_LETTERS[letters]
+    easting = base_e + int(east_digits)
+    northing = base_n + int(north_digits)
+
+    # Convert OSGB36 → WGS84
+    lon, lat = _OSGB_TO_WGS84.transform(easting, northing)
+
+    # Validate result is within UK bounding box (49-61°N, -8.5-2°E)
+    if not (49.0 <= lat <= 61.0 and -8.5 <= lon <= 2.0):
+        return None
+
+    return lat, lon
 
 # Minimum points required to form a valid polygon
 MIN_POLYGON_POINTS = 3
@@ -192,7 +279,7 @@ def pixels_to_geo_linear(
 
 
 def lookup_district_boundary(
-    district_name: str, include_parent: bool = True
+    district_name: str,
 ) -> Dict[str, Any]:
     """
     Look up the boundary of an administrative district from OpenStreetMap.
@@ -219,10 +306,6 @@ def lookup_district_boundary(
             - "Royal Borough of Kensington and Chelsea, London, UK"
             - "Rowley Green, London Borough of Barnet, London, UK"
             - "City of Westminster, London, UK"
-
-        include_parent (bool):
-            Whether to include parent administrative area names.
-            Default: True. Setting to True helps with disambiguation.
 
     Returns:
         Dict containing:
@@ -308,6 +391,27 @@ def lookup_district_boundary(
         return {"success": False, "error": f"District lookup failed: {str(e)}"}
 
 
+def try_district_boundary(analysis: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """If analysis says covers_district, look up boundary and normalize to MultiPolygon.
+
+    Returns GeoJSON Feature dict on success, None otherwise.
+    """
+    if not (analysis.get("covers_district") and analysis.get("district_name")):
+        return None
+    lookup = lookup_district_boundary(analysis["district_name"])
+    if not lookup.get("success"):
+        return None
+    geojson = lookup["geojson"]
+    geom = geojson.get("geometry", {})
+    if geom.get("type") == "Polygon":
+        geojson["geometry"] = {
+            "type": "MultiPolygon",
+            "coordinates": [geom["coordinates"]],
+        }
+    geojson["properties"]["source"] = "osm_district_lookup"
+    return geojson
+
+
 def geocode_address(address: str) -> Dict[str, Any]:
     """
     Convert an address or place name to geographic coordinates.
@@ -335,25 +439,37 @@ def geocode_address(address: str) -> Dict[str, Any]:
         - "display_name" (str): Full name returned by geocoder
         - "address_components" (Dict): Parsed address components
     """
-    try:
-        geolocator = Nominatim(user_agent="planning_doc_extractor")
-        location = geolocator.geocode(address, timeout=10)
+    geolocator = Nominatim(user_agent="planning_doc_extractor")
+    last_error = None
 
-        if location is None:
-            return {"success": False, "error": f"Could not geocode address: {address}"}
+    for attempt in range(3):
+        if attempt > 0:
+            wait = 2 ** attempt
+            print(f"    WARN:Nominatim retry {attempt}/2 after {wait}s...")
+            import time as _time
+            _time.sleep(wait)
+        try:
+            location = geolocator.geocode(address, timeout=10)
 
-        return {
-            "success": True,
-            "latitude": location.latitude,
-            "longitude": location.longitude,
-            "display_name": location.address,
-            "raw": location.raw,
-        }
+            if location is None:
+                return {"success": False, "error": f"Could not geocode: {address}"}
 
-    except GeocoderTimedOut:
-        return {"success": False, "error": "Geocoding request timed out. Try again."}
-    except Exception as e:
-        return {"success": False, "error": f"Geocoding failed: {str(e)}"}
+            return {
+                "success": True,
+                "latitude": location.latitude,
+                "longitude": location.longitude,
+                "display_name": location.address,
+                "raw": location.raw,
+            }
+
+        except GeocoderTimedOut:
+            last_error = "Geocoding request timed out"
+            continue
+        except Exception as e:
+            return {"success": False, "error": f"Geocoding failed: {str(e)}"}
+
+    print(f"    WARN:Nominatim: all retries failed for '{address[:40]}'")
+    return {"success": False, "error": f"Nominatim timed out after 3 retries: {address}"}
 
 
 # Tool definitions for LLM function calling
@@ -437,10 +553,6 @@ NAMING TIPS:
                     "district_name": {
                         "type": "string",
                         "description": "Full name of the district (be specific to avoid ambiguity)",
-                    },
-                    "include_parent": {
-                        "type": "boolean",
-                        "description": "Include parent administrative areas in lookup. Default: true",
                     },
                 },
                 "required": ["district_name"],

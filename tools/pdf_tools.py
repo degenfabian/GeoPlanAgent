@@ -5,12 +5,61 @@ This module provides tools for converting PDF documents to images
 for further processing (boundary extraction, analysis, etc.).
 """
 
+import os
 import base64
 import io
 from typing import Dict, Any
 
+import cv2
+import numpy as np
 from pdf2image import convert_from_path
 from PIL import Image
+
+
+# ── High-resolution PDF rendering ────────────────────────────────────────────
+
+def render_pdf_page(pdf_path, page_index, dpi=200):
+    """Render a single PDF page as a numpy BGR image at full resolution.
+
+    Uses PyMuPDF (fitz) for fast rendering. Falls back to pdf2image.
+    """
+    try:
+        import fitz
+        doc = fitz.open(pdf_path)
+        page = doc[page_index]
+        mat = fitz.Matrix(dpi / 72, dpi / 72)
+        pix = page.get_pixmap(matrix=mat)
+        img = np.frombuffer(pix.samples, dtype=np.uint8).reshape(
+            pix.height, pix.width, pix.n
+        )
+        doc.close()
+        if img.shape[2] == 4:
+            img = img[:, :, :3]
+        return cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    except ImportError:
+        pages = convert_from_path(
+            pdf_path, dpi=dpi,
+            first_page=page_index + 1, last_page=page_index + 1,
+        )
+        if not pages:
+            return None
+        return cv2.cvtColor(np.array(pages[0]), cv2.COLOR_RGB2BGR)
+
+
+def find_pdf_for_case(case_folder, eval_dir=None):
+    """Find the PDF file in evaluation_data/<case>/."""
+    if eval_dir is None:
+        eval_dir = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "evaluation_data",
+        )
+    case_dir = os.path.join(eval_dir, case_folder)
+    if not os.path.isdir(case_dir):
+        return None
+    pdfs = [f for f in os.listdir(case_dir) if f.lower().endswith(".pdf")]
+    if not pdfs:
+        return None
+    return os.path.join(case_dir, pdfs[0])
 
 
 def get_pdf_page_as_image(

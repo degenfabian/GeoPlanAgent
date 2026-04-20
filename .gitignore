@@ -3,6 +3,44 @@
 .env.*.local
 .venv/*
 .ruff_cache/*
-__pycache__/*
+__pycache__/
+*.DS_Store
+
+# Results and caches
+results/
+cache/
+*_results/
+*_cache/
+llm_cache_v2/
+llm_cache_v2_sam3_viz/
+os_tile_cache/
+osm_tile_cache/
+os_opendata/
+
+# Log files
+*.log
+*.out
+
+# External dependency repos (cloned, not part of this project)
+MapSAM/
+MapSAM2/
+MINIMA/
+MatchAnything/
+
+# Model weights (large files)
+models/
+training/outputs/
+training/synthetic_data/
+training/controlnet_data/
+training/data/
+
+# Annotation datasets (training data)
+boundary_annotation_dataset/
+road_annotation_dataset/
+
+# Evaluation data
 evaluation_data/*
-.DS_Store
+
+# IoU-split case folders (derived from benchmark results, not source)
+cases_iou_below_*/
+cases_iou_at_or_above_*/

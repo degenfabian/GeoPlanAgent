@@ -1,467 +1,483 @@
 """
-Benchmark Runner - Evaluate LLM performance on planning document GeoJSON extraction
+Benchmark Runner - Evaluate planning document GeoJSON extraction
 
-This script:
-1. Reads the evaluation dataset from Excel
-2. Iterates through each planning document
-3. Uses LLM to extract GeoJSON boundaries
-4. Compares with ground truth using IoU and other metrics
-5. Saves results and model responses for analysis
+Runs the unified tool-calling agent on the evaluation dataset.
+The agent reads each PDF, geocodes locations, positions the map via MINIMA,
+extracts boundaries with SAM3, and verifies — all through tool calls.
+
+Usage:
+    uv run benchmark_runner.py --model claude-sonnet                  # default
+    uv run benchmark_runner.py --max-cases 5                          # quick test
+    uv run benchmark_runner.py --cases 12:00116:ART4                  # specific case
+    uv run benchmark_runner.py --max-iterations 3                     # limit agent turns
 """
 
-import numpy as np
+import time
 import json
+import signal
+import traceback
+import numpy as np
 import pandas as pd
+import cv2
 from pathlib import Path
-from typing import Dict, Any, List, Optional
 from datetime import datetime
-from openrouter_client import OpenRouterClient
-from geojson_metrics import (
-    load_geojson,
-    calculate_spatial_metrics,
-)
+
+from tools.geojson_metrics import load_geojson, calculate_spatial_metrics
+
+# ── Training data exclusion (SAM3 + MapSAM contamination) ────────────────────
+EXCLUDE_SL_NOS = {1, 3, 5, 6, 11, 13, 15, 21, 22, 23, 33, 34, 49, 54, 59,
+                  79, 84, 86, 88, 89, 125, 139, 230, 236, 246, 255, 256}
 
 
-class BenchmarkRunner:
-    """
-    Run planning document GeoJSON extraction benchmark across multiple models.
-    """
+# ── Model Loading ────────────────────────────────────────────────────────────
 
-    def __init__(
-        self,
-        dataset_excel_path: str = "evaluation_data/0_planning_dataset_list.xlsx",
-        evaluation_data_dir: str = "evaluation_data",
-        results_dir: str = "benchmark_results",
-    ):
-        """
-        Initialize benchmark runner.
+def load_models():
+    """Load SAM3 fine-tuned model and MINIMA matcher."""
+    from tools.sam3_boundary import load_sam3_ft
+    from tools.positioning import load_minima
 
-        Args:
-            dataset_excel_path: Path to Excel file containing dataset info
-            evaluation_data_dir: Directory containing evaluation data folders
-            results_dir: Directory to save benchmark results
-        """
-        self.dataset_excel_path = dataset_excel_path
-        self.evaluation_data_dir = Path(evaluation_data_dir)
-        self.results_dir = Path(results_dir)
-        self.results_dir.mkdir(exist_ok=True)
+    state = {}
+    state["sam3_ft"] = load_sam3_ft()
+    state["minima"] = load_minima()
+    return state
 
-        # Load both sheets from the Excel file
-        dataset_all = pd.read_excel(
-            dataset_excel_path, sheet_name="0_planning_dataset_list"
-        )
-        dataset_removed = pd.read_excel(
-            dataset_excel_path, sheet_name="Shape Mismatch list"
-        )
 
-        # Filter out entries whose ID appears in the "Shape Mismatch list" sheet
-        # The ~ operator negates the boolean mask, so we keep rows NOT in the mismatch list
-        self.dataset_filtered = dataset_all[
-            ~dataset_all["Unique ID (Folder_Name)"].isin(
-                dataset_removed["Unique ID (Folder_Name)"]
-            )
-        ]
-        print(f"Loaded dataset with {len(self.dataset_filtered)} examples")
+# ── Visualization ────────────────────────────────────────────────────────────
 
-    def get_pdf_path(self, folder_name: str) -> Optional[Path]:
-        """Find the PDF file in the specified folder."""
-        folder_path = self.evaluation_data_dir / folder_name
-        if not folder_path.exists():
-            return None
+def save_visualizations(result_dir, map_img, boundary_mask, predicted_geojson,
+                         gt_geojson):
+    """Save per-case visualizations."""
+    result_dir = Path(result_dir)
 
-        # glob("*.pdf") finds all files matching the pattern in the directory (there is only one PDF file in the folder)
-        pdf_files = list(folder_path.glob("*.pdf"))
-        return pdf_files[0] if pdf_files else None
+    if map_img is not None:
+        cv2.imwrite(str(result_dir / "viz_map.png"), map_img)
 
-    def get_ground_truth_geojson_path(
-        self, folder_name, geojson_file_name: str
-    ) -> Optional[Path]:
-        """Find the ground truth GeoJSON file in the specified folder."""
-        folder_path = self.evaluation_data_dir / folder_name
-        if not folder_path.exists():
-            return None
+    if boundary_mask is not None and map_img is not None:
+        overlay = map_img.copy()
+        overlay[boundary_mask > 0] = [0, 0, 255]
+        blended = cv2.addWeighted(map_img, 0.6, overlay, 0.4, 0)
+        cv2.imwrite(str(result_dir / "viz_boundary.png"), blended)
 
-        geojson_files = list(folder_path.glob(geojson_file_name))
-        return geojson_files[0] if geojson_files else None
-
-    def _get_method_dir_name(
-        self, method: str, iterative_refinement: bool = False
-    ) -> str:
-        """
-        Get the directory name for a method configuration.
-
-        For linear_transform, appends _iterative or _non_iterative based on the flag.
-        """
-        if method == "linear_transform":
-            suffix = "_iterative" if iterative_refinement else "_non_iterative"
-            return f"{method}{suffix}"
-        return method
-
-    def save_result(
-        self,
-        model_name: str,
-        example_id: str,
-        folder_name: str,
-        result_data: Dict[str, Any],
-        method: str = "linear_transform",
-        iterative_refinement: bool = False,
-    ):
-        """
-        Save benchmark result for a single example.
-
-        Creates folder structure: results_dir/model_name/method_name/folder_name/
-        Saves:
-        - response.json: Full model response
-        - predicted.geojson: Extracted GeoJSON (if successful)
-        - metrics.json: Performance metrics
-        """
-        # Replace "/" with "_" in model names to create valid directory names
-        # (e.g., "anthropic/claude-sonnet" becomes "anthropic_claude-sonnet")
-        method_dir = self._get_method_dir_name(method, iterative_refinement)
-        result_dir = self.results_dir / model_name.replace("/", "_") / method_dir / folder_name
-        result_dir.mkdir(parents=True, exist_ok=True)
-
-        response_path = result_dir / "response.json"
-        with open(response_path, "w") as f:
-            # indent=2 makes the JSON human-readable with 2-space indentation
-            json.dump(result_data["full_response"], f, indent=2)
-
-        if result_data.get("predicted_geojson"):
-            predicted_path = result_dir / "predicted.geojson"
-            with open(predicted_path, "w") as f:
-                json.dump(result_data["predicted_geojson"], f, indent=2)
-
-        metrics_path = result_dir / "metrics.json"
-        metrics_data = {
-            "example_id": example_id,
-            "folder_name": folder_name,
-            "model": model_name,
-            "timestamp": result_data["timestamp"],
-            "success": result_data["success"],
-            "processing_time": result_data.get("processing_time", 0),
-            "tokens": result_data.get("tokens", {}),
-            "spatial_metrics": result_data.get("spatial_metrics", {}),
-            "error": result_data.get("error"),
-        }
-        with open(metrics_path, "w") as f:
-            json.dump(metrics_data, f, indent=2)
-
-        print(f"  Saved results to {result_dir}")
-
-    def run_single_example(
-        self,
-        client: OpenRouterClient,
-        example_row: pd.Series,
-        model_name: str,
-        method: str = "linear_transform",
-        iterative_refinement: bool = False,
-    ) -> Dict[str, Any]:
-        """
-        Run benchmark on a single example.
-
-        Args:
-            client: OpenRouterClient instance
-            example_row: Row from dataset DataFrame
-            model_name: Name of the model being tested
-            method: Extraction method ("baseline", "linear_transform", "agentic")
-            iterative_refinement: Whether to use iterative refinement (only for linear_transform)
-
-        Returns:
-            Result dictionary with metrics and response data
-        """
-        folder_name = example_row["Unique ID (Folder_Name)"]
-        example_id = str(example_row["Sl no"])
-
-        print(f"\nProcessing example {example_id}: {folder_name}")
-
-        pdf_path = self.get_pdf_path(folder_name)
-
-        # Extract just the filename from the full path stored in the Excel column
-        geojson_file_name = example_row["geojson ID (for sanity check)"].split("/")[-1]
-        gt_geojson_path = self.get_ground_truth_geojson_path(
-            folder_name, geojson_file_name
-        )
-
-        result = {
-            "example_id": example_id,
-            "folder_name": folder_name,
-            "model": model_name,
-            "method": method,
-            "iterative_refinement": iterative_refinement,
-            "timestamp": datetime.now().isoformat(),
-            "success": False,
-            "full_response": {},
-            "spatial_metrics": {},
-        }
-
-        if not pdf_path or not pdf_path.exists():
-            result["error"] = f"PDF not found in {folder_name}"
-            print(f"  Error: {result['error']}")
-            return result
-
-        if not gt_geojson_path or not gt_geojson_path.exists():
-            result["error"] = f"Ground truth GeoJSON not found in {folder_name}"
-            print(f"  Error: {result['error']}")
-            return result
-
+    if predicted_geojson is not None:
         try:
-            print(f"  Calling {model_name} to extract GeoJSON (method={method})...")
-
-            # Build kwargs based on method
-            extract_kwargs = {"method": method}
-            if method == "linear_transform":
-                extract_kwargs["iterative_refinement"] = iterative_refinement
-
-            response = client.extract_geojson(
-                pdf_path=str(pdf_path),
-                **extract_kwargs,
+            from tools.visualization_tools import visualize_comparison
+            visualize_comparison(
+                predicted_geojson=predicted_geojson,
+                ground_truth_geojson=gt_geojson,
+                output_path=str(result_dir / "viz_comparison.png"),
             )
-
-            result["full_response"] = response
-            result["processing_time"] = response.get("processing_time", 0)
-            result["tokens"] = response.get("tokens", {})
-
-            if not response.get("success"):
-                # Use 'error' if it exists, otherwise fall back to 'json_error'
-                result["error"] = response.get("error") or response.get("json_error")
-                print(f"  Error: {result['error']}")
-                return result
-
-            predicted_geojson = response.get("parsed_json")
-            if not predicted_geojson:
-                result["error"] = "No GeoJSON in response"
-                print(f"  Error: {result['error']}")
-                return result
-
-            result["predicted_geojson"] = predicted_geojson
-
-            gt_geojson = load_geojson(str(gt_geojson_path))
-            if not gt_geojson:
-                result["error"] = "Failed to load ground truth GeoJSON"
-                print(f"  Error: {result['error']}")
-                return result
-
-            print("  Calculating spatial metrics...")
-            spatial_metrics = calculate_spatial_metrics(gt_geojson, predicted_geojson)
-            result["spatial_metrics"] = spatial_metrics
-            result["success"] = True
-
-            print(f"  IoU: {spatial_metrics['iou']:.4f}")
-            print(f"  F1 Score: {spatial_metrics['f1_score']:.4f}")
-            print(f"  Processing time: {result['processing_time']:.2f}s")
-
         except Exception as e:
-            result["error"] = str(e)
-            print(f"  Exception: {e}")
+            print(f"  Viz failed: {e}")
 
-        return result
 
-    def run_benchmark(
-        self,
-        model_names: List[str],
-        method: str = "linear_transform",
-        iterative_refinement: bool = False,
-        max_examples: Optional[int] = None,
-        start_from: int = 0,
-    ):
-        """
-        Run full benchmark across multiple models.
+# ── Main Runner ──────────────────────────────────────────────────────────────
 
-        Args:
-            model_names: List of model names/identifiers to test
-            method: Extraction method ("baseline", "linear_transform", "agentic")
-            iterative_refinement: Whether to use iterative refinement (only for linear_transform)
-            max_examples: Maximum number of examples to test (None for all)
-            start_from: Index to start from (for resuming)
-        """
-        method_dir = self._get_method_dir_name(method, iterative_refinement)
+def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
+                  dpi=200, max_iterations=8,
+                  dataset_path="evaluation_data/0_planning_dataset_list.xlsx",
+                  eval_dir="evaluation_data",
+                  only_cases=None, force=False,
+                  hard_first=False, prev_results_dir=None,
+                  enable_critic=True):
+    """Run benchmark using the unified tool-calling agent.
 
-        print(f"\n{'=' * 80}")
-        print(f"Starting Benchmark Run")
-        print(f"{'=' * 80}")
-        print(f"Models: {', '.join(model_names)}")
-        print(f"Method: {method_dir}")
-        print(f"Total examples in dataset: {len(self.dataset_filtered)}")
-        if max_examples:
-            print(
-                f"Testing on: {max_examples} examples (starting from index {start_from})"
+    Args:
+        model_name: OpenRouter model identifier.
+        output_dir: Base output directory for results.
+        max_cases: Limit number of cases to run.
+        start_from: Skip first N cases.
+        dpi: PDF rendering DPI.
+        max_iterations: Max agent turns per case.
+        only_cases: If set, only run these specific folder names.
+        enable_critic: Run Phase 3 Commenter VLM critic after worker finishes.
+    """
+    from tools.agent import run_agent
+
+    dataset = pd.read_excel(dataset_path, sheet_name="0_planning_dataset_list")
+    n_total = len(dataset)
+
+    # Filter to cases that exist in eval_dir
+    eval_path = Path(eval_dir)
+    dataset = dataset[dataset["Unique ID (Folder_Name)"].apply(
+        lambda f: (eval_path / str(f)).exists())]
+    n_exists = len(dataset)
+
+    # Exclude training data (SAM3/MapSAM contamination)
+    dataset = dataset[~dataset["Sl no"].isin(EXCLUDE_SL_NOS)]
+    print(f"Dataset: {len(dataset)} cases "
+          f"({n_total} in Excel, {n_total - n_exists} missing from disk, "
+          f"{len(EXCLUDE_SL_NOS)} training excluded)")
+
+    # Filter to specific cases if requested
+    if only_cases:
+        dataset = dataset[dataset["Unique ID (Folder_Name)"].apply(
+            lambda f: str(f) in only_cases)]
+        print(f"Filtered to {len(dataset)} specific cases: {only_cases}")
+    else:
+        dataset = dataset.iloc[start_from:]
+        if max_cases:
+            dataset = dataset.head(max_cases)
+    # ── Hard-first ordering: prioritize previously failing cases ──────────
+    if hard_first:
+        # Find previous results to sort by IoU (worst first)
+        if prev_results_dir is None:
+            prev_results_dir = Path(output_dir) / model_name.replace("/", "_")
+        else:
+            prev_results_dir = Path(prev_results_dir)
+
+        prev_ious = {}
+        if prev_results_dir.exists():
+            for case_dir in prev_results_dir.iterdir():
+                mf = case_dir / "metrics.json"
+                if mf.exists():
+                    try:
+                        m = json.loads(mf.read_text())
+                        prev_ious[case_dir.name] = m.get("iou", 1.0)
+                    except Exception:
+                        prev_ious[case_dir.name] = 1.0
+
+        def _sort_key(row):
+            folder = str(row["Unique ID (Folder_Name)"])
+            iou = prev_ious.get(folder)
+            if iou is None:
+                return (1, 0.5)  # unseen cases go after failures but before successes
+            return (0 if iou < 0.5 else 2, iou)
+
+        dataset = dataset.assign(
+            _sort_key=dataset.apply(_sort_key, axis=1)
+        ).sort_values("_sort_key").drop(columns=["_sort_key"])
+
+        n_hard = sum(1 for f in dataset["Unique ID (Folder_Name)"]
+                     if prev_ious.get(str(f), 1.0) < 0.5)
+        n_unseen = sum(1 for f in dataset["Unique ID (Folder_Name)"]
+                       if str(f) not in prev_ious)
+        print(f"Hard-first ordering: {n_hard} hard cases (IoU<0.5), "
+              f"{n_unseen} unseen, {len(dataset) - n_hard - n_unseen} good")
+
+    print(f"Running: {len(dataset)} cases\n")
+
+    models_state = load_models()
+
+    output_path = Path(output_dir) / model_name.replace("/", "_")
+    all_results = []
+
+    for case_idx, (_, row) in enumerate(dataset.iterrows()):
+        folder_name = str(row["Unique ID (Folder_Name)"])
+        sl_no = int(row["Sl no"])
+        geojson_file = str(row["geojson ID (for sanity check)"]).split("/")[-1]
+
+        print(f"\n{'─' * 70}")
+        print(f"[{case_idx+1}/{len(dataset)}] Sl {sl_no}: {folder_name}")
+
+        folder_path = eval_path / folder_name
+        pdf_files = list(folder_path.glob("*.pdf")) if folder_path.exists() else []
+        if not pdf_files:
+            print("  SKIP: no PDF")
+            all_results.append({
+                "folder": folder_name, "sl_no": sl_no, "error": "no PDF"
+            })
+            continue
+
+        # Prefer PDFs with "map" in filename (dedicated map files)
+        map_pdfs = [p for p in pdf_files if "map" in p.name.lower()]
+        pdf_path = map_pdfs[0] if map_pdfs else pdf_files[0]
+        gt_files = list(folder_path.glob(geojson_file))
+        if not gt_files:
+            gt_files = list(folder_path.glob("*.geojson"))
+        gt_geojson = load_geojson(str(gt_files[0])) if gt_files else None
+
+        # Check for cached result
+        case_dir = output_path / folder_name
+        cached_metrics = case_dir / "metrics.json"
+        if cached_metrics.exists() and not force:
+            prev = json.loads(cached_metrics.read_text())
+            print(f"  [cached] IoU={prev.get('iou', 0):.3f}")
+            all_results.append({
+                "folder": folder_name, "sl_no": sl_no,
+                **{k: v for k, v in prev.items()
+                   if k not in ("sl_no",)}
+            })
+            continue
+
+        # ── Run the agent ──
+        try:
+            t0 = time.time()
+            result = run_agent(
+                pdf_path=str(pdf_path),
+                models_state=models_state,
+                model_name=model_name,
+                max_iterations=max_iterations,
+                dpi=dpi,
+                verbose=True,
+                enable_critic=enable_critic,
             )
-        print(f"Results directory: {self.results_dir}")
-        print(f"{'=' * 80}\n")
+            dt = time.time() - t0
 
-        # iloc[start_from:] selects all rows from index start_from onwards
-        dataset_filtered_slice = self.dataset_filtered.iloc[start_from:]
-        if max_examples:
-            # head(n) returns only the first n rows
-            dataset_filtered_slice = dataset_filtered_slice.head(max_examples)
-
-        for model_name in model_names:
-            print(f"\n{'=' * 80}")
-            print(f"Testing Model: {model_name}")
-            print(f"{'=' * 80}")
-
-            try:
-                client = OpenRouterClient(model=model_name)
-            except Exception as e:
-                print(f"Failed to initialize client for {model_name}: {e}")
+            if not result.get("success"):
+                err = result.get("error", "agent failed")
+                print(f"  Error: {err}")
+                # Fail fast only on invalid model ID (don't waste 200 cases)
+                if "not a valid model ID" in str(err):
+                    print("\n  FATAL: Invalid model ID, stopping benchmark.")
+                    break
+                # Still save what we can from failed cases
+                case_dir.mkdir(parents=True, exist_ok=True)
+                (case_dir / "metrics.json").write_text(json.dumps({
+                    "sl_no": sl_no, "error": err,
+                    "processing_time": dt,
+                    "agent_stats": result.get("agent_stats", {}),
+                }, indent=2, default=str))
+                msg_log = result.get("message_log", [])
+                if msg_log:
+                    (case_dir / "message_log.json").write_text(
+                        json.dumps(msg_log, indent=2, default=str))
+                # Save partial geojson if any
+                partial_gj = result.get("geojson")
+                if partial_gj:
+                    (case_dir / "predicted.geojson").write_text(
+                        json.dumps(partial_gj, indent=2))
+                all_results.append({
+                    "folder": folder_name, "sl_no": sl_no,
+                    "error": err,
+                    "processing_time": dt,
+                })
                 continue
 
-            results = []
-            successful = 0
-            failed = 0
+            geojson = result.get("geojson")
+            mi = result.get("match_info", {})
 
-            for idx, row in dataset_filtered_slice.iterrows():
-                result = self.run_single_example(
-                    client,
-                    row,
-                    model_name,
-                    method=method,
-                    iterative_refinement=iterative_refinement,
-                )
-                results.append(result)
+            # Compute metrics
+            metrics = {}
+            if gt_geojson and geojson:
+                metrics = calculate_spatial_metrics(gt_geojson, geojson)
 
-                self.save_result(
-                    model_name=model_name,
-                    example_id=result["example_id"],
-                    folder_name=result["folder_name"],
-                    result_data=result,
-                    method=method,
-                    iterative_refinement=iterative_refinement,
-                )
+            iou = metrics.get("iou", 0)
+            crit = result.get("critic_final_decision") or "-"
+            rot_applied = result.get("critic_applied_rotation_deg")
+            crit_extra = ""
+            if rot_applied:
+                crit_extra += f" rot={rot_applied}"
+            if result.get("critic_worker_reentered"):
+                crit_extra += " worker_re"
+            print(f"  IoU={iou:.3f}  inliers={mi.get('n_inliers', 0)}  "
+                  f"critic={crit}{crit_extra}  "
+                  f"t={dt:.1f}s  reason={result.get('agent_reason', '')[:60]}")
 
-                if result["success"]:
-                    successful += 1
-                else:
-                    failed += 1
-
-                print(
-                    f"  Progress: {successful + failed}/{len(dataset_filtered_slice)} "
-                    f"(Success: {successful}, Failed: {failed})"
+            # Save results — cache everything for offline analysis
+            case_dir.mkdir(parents=True, exist_ok=True)
+            if geojson:
+                (case_dir / "predicted.geojson").write_text(
+                    json.dumps(geojson, indent=2)
                 )
 
-            self._save_model_summary(
-                model_name, results, method=method, iterative_refinement=iterative_refinement
-            )
+            # Core metrics (used for cache-hit detection on re-runs)
+            (case_dir / "metrics.json").write_text(json.dumps({
+                "sl_no": sl_no,
+                "match_info": mi,
+                "processing_time": dt,
+                "agent_accepted": result.get("agent_accepted"),
+                "agent_reason": result.get("agent_reason"),
+                "agent_stats": result.get("agent_stats", {}),
+                **metrics,
+            }, indent=2, default=str))
 
-            print(f"\n{'=' * 80}")
-            print(f"Completed {model_name} ({method_dir})")
-            print(
-                f"Success: {successful}/{len(dataset_filtered_slice)} ({100 * successful / len(dataset_filtered_slice):.1f}%)"
-            )
-            print(f"{'=' * 80}\n")
+            # Full message log (every tool call, return, and reasoning text)
+            msg_log = result.get("message_log", [])
+            if msg_log:
+                (case_dir / "message_log.json").write_text(
+                    json.dumps(msg_log, indent=2, default=str)
+                )
 
-    def _save_model_summary(
-        self,
-        model_name: str,
-        results: List[Dict[str, Any]],
-        method: str = "linear_transform",
-        iterative_refinement: bool = False,
-    ):
-        """Save summary statistics for a model and method configuration."""
-        method_dir = self._get_method_dir_name(method, iterative_refinement)
-        model_method_dir = self.results_dir / model_name.replace("/", "_") / method_dir
-        summary_path = model_method_dir / "summary.json"
+            # Reader phase extraction (what the LLM read from the PDF)
+            pdf_info = result.get("agent_stats", {}).get("pdf_info")
+            if pdf_info:
+                (case_dir / "pdf_info.json").write_text(
+                    json.dumps(pdf_info, indent=2, default=str)
+                )
 
-        # Filter to only successful results for metric calculation
-        successful_results = [r for r in results if r["success"]]
+            # Boundary mask (binary, for re-projection experiments)
+            mask = result.get("mask")
+            if mask is not None:
+                cv2.imwrite(str(case_dir / "boundary_mask.png"), mask)
 
-        if successful_results:
-            ious = np.array([r["spatial_metrics"]["iou"] for r in successful_results])
-            precisions = np.array(
-                [r["spatial_metrics"]["precision"] for r in successful_results]
-            )
-            recalls = np.array(
-                [r["spatial_metrics"]["recall"] for r in successful_results]
-            )
-            f1_scores = np.array(
-                [r["spatial_metrics"]["f1_score"] for r in successful_results]
-            )
-            processing_times = np.array(
-                [r["processing_time"] for r in successful_results]
-            )
+            # Affine transform (for re-projection without re-running MINIMA)
+            affine_H = result.get("affine_H")
+            if affine_H is not None:
+                np.save(str(case_dir / "affine_H.npy"), affine_H)
 
-            summary = {
-                "model": model_name,
-                "method": method,
-                "iterative_refinement": iterative_refinement if method == "linear_transform" else None,
-                "total_examples": len(results),
-                "successful": len(successful_results),
-                "failed": len(results) - len(successful_results),
-                "success_rate": len(successful_results) / len(results),
-                "metrics": {
-                    "iou": {
-                        "mean": ious.mean(),
-                        "min": ious.min(),
-                        "max": ious.max(),
-                        "median": np.median(ious),
-                    },
-                    "precision": {
-                        "mean": np.mean(precisions),
-                        "min": np.min(precisions),
-                        "max": np.max(precisions),
-                        "median": np.median(precisions),
-                    },
-                    "recall": {
-                        "mean": np.mean(recalls),
-                        "min": np.min(recalls),
-                        "max": np.max(recalls),
-                        "median": np.median(recalls),
-                    },
-                    "f1_score": {
-                        "mean": np.mean(f1_scores),
-                        "min": np.min(f1_scores),
-                        "max": np.max(f1_scores),
-                        "median": np.median(f1_scores),
-                    },
-                    "processing_time": {
-                        "mean": np.mean(processing_times),
-                        "min": np.min(processing_times),
-                        "max": np.max(processing_times),
-                        "total": np.sum(processing_times),
-                    },
-                },
-                "timestamp": datetime.now().isoformat(),
+            # Tile info metadata (zoom, tx/ty_min for coordinate conversion)
+            tile_meta = result.get("tile_info_meta", {})
+            if tile_meta:
+                (case_dir / "tile_info.json").write_text(
+                    json.dumps(tile_meta, indent=2, default=str)
+                )
+
+            # Instance candidate overlays (each candidate on the map)
+            candidate_overlays = result.get("candidate_overlays", [])
+            if candidate_overlays:
+                for i, overlay in enumerate(candidate_overlays):
+                    cv2.imwrite(str(case_dir / f"candidate_{i}.png"), overlay)
+
+            # Final selected boundary overlay
+            selected_overlay = result.get("selected_overlay")
+            if selected_overlay is not None:
+                cv2.imwrite(str(case_dir / "selected_boundary.png"),
+                            selected_overlay)
+
+            # Which candidate indices were selected
+            selected_indices = result.get("selected_indices")
+            if selected_indices is not None:
+                (case_dir / "selected_indices.json").write_text(
+                    json.dumps({"selected_indices": selected_indices})
+                )
+
+            # Phase 3 critic artifacts
+            critic_iters = result.get("critic_iterations") or []
+            if critic_iters:
+                (case_dir / "critic_log.json").write_text(json.dumps({
+                    "iterations": critic_iters,
+                    "final_decision": result.get("critic_final_decision"),
+                    "changed_mask": result.get("critic_changed_mask"),
+                    "applied_rotation_deg": result.get("critic_applied_rotation_deg"),
+                    "suspected_wrong_location": result.get(
+                        "critic_suspected_wrong_location"),
+                    "worker_reentered": result.get("critic_worker_reentered"),
+                    "tokens": result.get("critic_tokens"),
+                }, indent=2, default=str))
+            critic_panel = result.get("critic_panel_img")
+            if critic_panel is not None:
+                cv2.imwrite(str(case_dir / "critic_panel.png"), critic_panel)
+
+            # Geocoding transparency log
+            centers_tried = result.get("centers_tried") or []
+            if centers_tried:
+                (case_dir / "centers_tried.json").write_text(
+                    json.dumps(centers_tried, indent=2, default=str))
+
+            # Visualization (with timeout). The agent cleans up map_img
+            # before returning, so only comparison viz runs here.
+            old_handler = signal.signal(signal.SIGALRM,
+                lambda s, f: (_ for _ in ()).throw(TimeoutError))
+            signal.alarm(60)
+            try:
+                save_visualizations(
+                    case_dir, None, None, geojson, gt_geojson
+                )
+            except TimeoutError:
+                print("  Viz timed out")
+            finally:
+                signal.alarm(0)
+                signal.signal(signal.SIGALRM, old_handler)
+
+            all_results.append({
+                "folder": folder_name, "sl_no": sl_no,
+                "processing_time": dt, **metrics,
+            })
+
+        except Exception as e:
+            traceback.print_exc()
+            all_results.append({
+                "folder": folder_name, "sl_no": sl_no, "error": str(e)
+            })
+
+    # ── Summary ─────────────────────────────────────────────────────────────
+    print(f"\n{'=' * 70}")
+    print(f"RESULTS — {model_name}")
+    print(f"{'=' * 70}")
+
+    summary = _compute_summary(all_results)
+    summary_path = output_path / "summary.json"
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text(json.dumps(summary, indent=2, default=str))
+
+    s = summary
+    print(f"\n  {s['successful']}/{s['total']} success")
+    if s["successful"] > 0:
+        m = s["metrics"]
+        print(f"  IoU:  mean={m['iou']['mean']:.3f}  "
+              f"median={m['iou']['median']:.3f}")
+
+
+def _compute_summary(results):
+    """Compute aggregate stats."""
+    successful = [r for r in results
+                  if "error" not in r and r.get("iou") is not None]
+    failed = [r for r in results if "error" in r or r.get("iou") is None]
+
+    summary = {
+        "total": len(results),
+        "successful": len(successful),
+        "failed": len(failed),
+        "timestamp": datetime.now().isoformat(),
+    }
+
+    if successful:
+        def _stats(values):
+            arr = np.array(values)
+            return {
+                "mean": float(arr.mean()),
+                "median": float(np.median(arr)),
+                "std": float(arr.std()),
+                "min": float(arr.min()),
+                "max": float(arr.max()),
             }
-        else:
-            summary = {
-                "model": model_name,
-                "method": method,
-                "iterative_refinement": iterative_refinement if method == "linear_transform" else None,
-                "total_examples": len(results),
-                "successful": 0,
-                "failed": len(results),
-                "success_rate": 0.0,
-                "timestamp": datetime.now().isoformat(),
-            }
 
-        with open(summary_path, "w") as f:
-            json.dump(summary, f, indent=2)
+        summary["metrics"] = {
+            "iou": _stats([r["iou"] for r in successful]),
+            "f1_score": _stats([r["f1_score"] for r in successful]),
+            "precision": _stats([r["precision"] for r in successful]),
+            "recall": _stats([r["recall"] for r in successful]),
+        }
 
-        print(f"\nSaved summary to {summary_path}")
+        pos_errs = [r["positioning_error_m"] for r in successful
+                     if r.get("positioning_error_m") is not None]
+        if pos_errs:
+            summary["metrics"]["positioning_error_m"] = _stats(pos_errs)
+
+    summary["per_case"] = results
+    return summary
 
 
-# Example usage
+# ── CLI ──────────────────────────────────────────────────────────────────────
+
 if __name__ == "__main__":
-    runner = BenchmarkRunner()
-    print(runner.dataset_filtered.head())
+    import argparse
 
-    models_to_test = [
-        "claude-opus",
-        # "gpt-5.2",
-        # "gemini-pro",
-    ]
-
-    # Available methods: "baseline", "linear_transform", "agentic"
-    # For linear_transform, set iterative_refinement=True/False
-    runner.run_benchmark(
-        model_names=models_to_test,
-        method="linear_transform",
-        iterative_refinement=True,  # Set to False for linear_transform_non_iterative
-        max_examples=10,
-        start_from=90,
+    parser = argparse.ArgumentParser(
+        description="Benchmark planning document GeoJSON extraction"
     )
+    parser.add_argument("--model", default="gemini-pro",
+                        help="OpenRouter model identifier")
+    parser.add_argument("--max-cases", type=int, default=None)
+    parser.add_argument("--start-from", type=int, default=0)
+    parser.add_argument("--dpi", type=int, default=200)
+    parser.add_argument("--max-iterations", type=int, default=6,
+                        help="Max agent turns per case")
+    parser.add_argument("--output-dir", default="results/benchmark")
+    parser.add_argument("--cases", nargs="+", default=None,
+                        help="Only run these specific case folder names")
+    parser.add_argument("--force", action="store_true",
+                        help="Re-run even if cached results exist")
+    parser.add_argument("--hard-first", action="store_true",
+                        help="Run previously failing cases (IoU<0.5) first, "
+                             "then unseen, then successful cases last")
+    parser.add_argument("--prev-results", default=None,
+                        help="Path to previous results dir for --hard-first "
+                             "ordering (default: same as output-dir/model)")
+    parser.add_argument("--no-critic", action="store_true",
+                        help="Disable Phase 3 Commenter critic loop (A/B testing)")
+    args = parser.parse_args()
 
-    print("\n" + "=" * 80)
-    print("Benchmark run completed!")
-    print(f"Results saved to: {runner.results_dir}")
-    print("=" * 80)
+    run_benchmark(
+        model_name=args.model,
+        output_dir=args.output_dir,
+        max_cases=args.max_cases,
+        start_from=args.start_from,
+        dpi=args.dpi,
+        max_iterations=args.max_iterations,
+        only_cases=args.cases,
+        force=args.force,
+        hard_first=args.hard_first,
+        prev_results_dir=args.prev_results,
+        enable_critic=not args.no_critic,
+    )

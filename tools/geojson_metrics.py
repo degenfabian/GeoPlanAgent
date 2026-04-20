@@ -121,6 +121,24 @@ def calculate_iou(
         return 0.0
 
 
+def calculate_positioning_error_m(pred_geojson, gt_geojson):
+    """Haversine distance (meters) between centroids of predicted and GT polygons."""
+    import math
+    try:
+        pred_shape = geojson_to_shape(pred_geojson)
+        gt_shape = geojson_to_shape(gt_geojson)
+    except (ValueError, Exception):
+        return None
+    if pred_shape is None or gt_shape is None:
+        return None
+    pc, gc = pred_shape.centroid, gt_shape.centroid
+    lat1, lon1 = math.radians(gc.y), math.radians(gc.x)
+    lat2, lon2 = math.radians(pc.y), math.radians(pc.x)
+    dlat, dlon = lat2 - lat1, lon2 - lon1
+    a = math.sin(dlat/2)**2 + math.cos(lat1)*math.cos(lat2)*math.sin(dlon/2)**2
+    return 6371000 * 2 * math.asin(math.sqrt(a))
+
+
 def calculate_spatial_metrics(
     ground_truth_geojson: Dict[str, Any], predicted_geojson: Dict[str, Any]
 ) -> Dict[str, Any]:
@@ -200,6 +218,9 @@ def calculate_spatial_metrics(
                 "precision": float(precision),
                 "recall": float(recall),
                 "f1_score": float(f1),
+                "positioning_error_m": calculate_positioning_error_m(
+                    predicted_geojson, ground_truth_geojson
+                ),
             }
         )
 
@@ -209,10 +230,32 @@ def calculate_spatial_metrics(
     return metrics
 
 
-if __name__ == "__main__":
-    ground_truth_geojson = load_geojson(
-        "evaluation_data/A4_094:LL:013/7010006945.geojson"
-    )
-    predicted_geojson = load_geojson("output.geojson")
-    metrics = calculate_spatial_metrics(ground_truth_geojson, predicted_geojson)
-    print(metrics)
+def gt_centroid(gt_path):
+    """Compute centroid of ground truth GeoJSON file.
+
+    Returns (lat, lon) tuple, or (None, None) if extraction fails.
+    """
+    import numpy as np
+
+    with open(gt_path) as f:
+        gj = json.load(f)
+    coords = []
+
+    def extract(obj):
+        if isinstance(obj, list):
+            if len(obj) >= 2 and isinstance(obj[0], (int, float)):
+                coords.append((obj[1], obj[0]))  # lat, lon
+            else:
+                for item in obj:
+                    extract(item)
+        elif isinstance(obj, dict):
+            if "coordinates" in obj:
+                extract(obj["coordinates"])
+            for v in obj.values():
+                if isinstance(v, (list, dict)):
+                    extract(v)
+
+    extract(gj)
+    if not coords:
+        return None, None
+    return float(np.mean([c[0] for c in coords])), float(np.mean([c[1] for c in coords]))
