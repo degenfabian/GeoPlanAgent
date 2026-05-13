@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Boundary annotation</title>
+<style>
+  html, body { margin: 0; height: 100%; font-family: -apple-system, system-ui, sans-serif; background: #1c1c1e; color: #eee; }
+  #app { display: grid; grid-template-columns: 240px 1fr; height: 100vh; }
+  #sidebar { background: #2a2a2c; overflow-y: auto; border-right: 1px solid #333; }
+  #sidebar h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #888; padding: 10px 12px 6px; margin: 0; }
+  .case-item { padding: 6px 12px; font-size: 12px; cursor: pointer; border-bottom: 1px solid #333; display: flex; justify-content: space-between; }
+  .case-item:hover { background: #3a3a3c; }
+  .case-item.active { background: #007aff; color: white; }
+  .case-item .tag { font-size: 10px; color: #888; }
+  .case-item.edited .tag { color: #34c759; }
+  #main { display: flex; flex-direction: column; }
+  #toolbar { padding: 8px 12px; background: #2a2a2c; border-bottom: 1px solid #333; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  #toolbar button { padding: 6px 12px; font-size: 12px; background: #3a3a3c; color: #eee; border: 1px solid #555; border-radius: 4px; cursor: pointer; }
+  #toolbar button.active { background: #007aff; border-color: #007aff; }
+  #toolbar button:hover { background: #4a4a4c; }
+  #toolbar .sep { width: 1px; height: 22px; background: #555; }
+  #toolbar .info { font-size: 11px; color: #999; margin-left: auto; }
+  #canvas-wrap { flex: 1; overflow: hidden; position: relative; background: #000; }
+  #stage-container { width: 100%; height: 100%; }
+  .help { font-size: 11px; color: #888; padding: 4px 12px; background: #2a2a2c; border-top: 1px solid #333; }
+  kbd { background: #3a3a3c; padding: 1px 5px; border-radius: 3px; font-size: 10px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/konva@9/konva.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar">
+    <h2>Cases</h2>
+    <div id="case-list"></div>
+  </div>
+  <div id="main">
+    <div id="toolbar">
+      <button id="mode-transform" class="active">Transform [t]</button>
+      <button id="mode-vertex">Vertex [v]</button>
+      <span class="sep"></span>
+      <button id="reset">Reset GT</button>
+      <button id="save">Save</button>
+      <span class="sep"></span>
+      <button id="prev">Prev [&larr;]</button>
+      <button id="next">Next [&rarr;]</button>
+      <span class="info" id="status">Loading…</span>
+    </div>
+    <div id="canvas-wrap"><div id="stage-container"></div></div>
+    <div class="help">
+      <b>Transform</b>: drag inside polygon to move; corner handles = scale; rotate handle on top.
+      <b>Vertex</b>: drag dots to move single points; click edge to insert new vertex; right-click dot to delete vertex.
+      <b>Delete a whole polygon</b>: right-click on the polygon body (not on a dot) → confirm.
+      <kbd>t</kbd>/<kbd>v</kbd> mode, <kbd>←</kbd>/<kbd>→</kbd> prev/next, <kbd>s</kbd> save, <kbd>r</kbd> reset.
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- state ----------
+let CASES = [];
+let curIdx = -1;
+let curCase = null;
+let stage, layer, bgImg, ringNodes = [];  // each ring is { poly: Konva.Line, vertices: [Konva.Circle], transformer: Konva.Transformer? }
+let mode = "transform";   // or "vertex"
+let initialRings = null;  // saved original polygon coords for "reset"
+
+const stageContainer = document.getElementById("stage-container");
+const caseListEl = document.getElementById("case-list");
+const statusEl = document.getElementById("status");
+
+// ---------- bootstrap ----------
+async function init() {
+  await loadCases();
+  initStage();
+  document.getElementById("mode-transform").onclick = () => setMode("transform");
+  document.getElementById("mode-vertex").onclick    = () => setMode("vertex");
+  document.getElementById("reset").onclick = resetGT;
+  document.getElementById("save").onclick = saveEdit;
+  document.getElementById("prev").onclick = () => loadIdx(curIdx - 1);
+  document.getElementById("next").onclick = () => loadIdx(curIdx + 1);
+  document.addEventListener("keydown", onKey);
+  window.addEventListener("resize", resizeStage);
+}
+
+function onKey(e) {
+  if (e.target.tagName === "INPUT") return;
+  if (e.key === "t") setMode("transform");
+  else if (e.key === "v") setMode("vertex");
+  else if (e.key === "r") resetGT();
+  else if (e.key === "s") { e.preventDefault(); saveEdit(); }
+  else if (e.key === "ArrowLeft")  loadIdx(curIdx - 1);
+  else if (e.key === "ArrowRight") loadIdx(curIdx + 1);
+}
+
+async function loadCases() {
+  const r = await fetch("/api/cases");
+  CASES = await r.json();
+  caseListEl.innerHTML = "";
+  CASES.forEach((c, i) => {
+    const div = document.createElement("div");
+    div.className = "case-item" + (c.has_edit ? " edited" : "");
+    div.dataset.idx = i;
+    div.innerHTML = `<span>${c.case_id}</span><span class="tag">${c.has_edit ? "edited" : ""}</span>`;
+    div.onclick = () => loadIdx(i);
+    caseListEl.appendChild(div);
+  });
+  if (CASES.length) loadIdx(0);
+}
+
+function initStage() {
+  stage = new Konva.Stage({ container: stageContainer,
+    width: stageContainer.clientWidth, height: stageContainer.clientHeight });
+  layer = new Konva.Layer();
+  stage.add(layer);
+  // mouse-wheel zoom on stage
+  stage.on("wheel", onWheel);
+}
+
+function resizeStage() {
+  if (!stage) return;
+  stage.width(stageContainer.clientWidth);
+  stage.height(stageContainer.clientHeight);
+  fitImageToStage();
+}
+
+function onWheel(e) {
+  e.evt.preventDefault();
+  const oldScale = stage.scaleX();
+  const pointer = stage.getPointerPosition();
+  const mp = { x: (pointer.x - stage.x()) / oldScale, y: (pointer.y - stage.y()) / oldScale };
+  const direction = e.evt.deltaY > 0 ? -1 : 1;
+  const factor = 1.15;
+  const newScale = direction > 0 ? oldScale * factor : oldScale / factor;
+  stage.scale({ x: newScale, y: newScale });
+  stage.position({ x: pointer.x - mp.x * newScale, y: pointer.y - mp.y * newScale });
+  stage.batchDraw();
+}
+
+// ---------- per-case load ----------
+async function loadIdx(idx) {
+  if (idx < 0 || idx >= CASES.length) return;
+  curIdx = idx;
+  curCase = CASES[idx];
+  // highlight in sidebar
+  document.querySelectorAll(".case-item").forEach((e, i) =>
+    e.classList.toggle("active", i === idx));
+  statusEl.textContent = `Loading ${curCase.case_id}…`;
+  layer.destroyChildren();
+
+  // 1) Load map image
+  const img = new window.Image();
+  img.src = `/api/case/${encodeURIComponent(curCase.case_id)}/map.png?t=${Date.now()}`;
+  await new Promise(res => { img.onload = res; img.onerror = res; });
+  bgImg = new Konva.Image({ image: img, x: 0, y: 0, listening: false });
+  layer.add(bgImg);
+  layer.imageWidth = img.naturalWidth;
+  layer.imageHeight = img.naturalHeight;
+
+  // 2) Load existing edit or initial polygon
+  let polyData;
+  try {
+    const editResp = await fetch(`/api/case/${encodeURIComponent(curCase.case_id)}/edited`);
+    const editJson = await editResp.json();
+    if (editJson && Array.isArray(editJson.rings)) polyData = editJson;
+  } catch (_) {}
+  if (!polyData || !polyData.rings || !polyData.rings.length) {
+    const r = await fetch(`/api/case/${encodeURIComponent(curCase.case_id)}/initial`);
+    polyData = await r.json();
+  }
+  initialRings = JSON.parse(JSON.stringify(polyData.rings || []));
+  buildRings(initialRings);
+
+  fitImageToStage();
+  setMode(mode);
+  statusEl.textContent = `${curCase.case_id} — ${initialRings.length} ring(s) — ${polyData.affine_source || "?"}`;
+}
+
+function fitImageToStage() {
+  if (!layer.imageWidth) return;
+  const sw = stage.width(), sh = stage.height();
+  const sx = sw / layer.imageWidth, sy = sh / layer.imageHeight;
+  const s = Math.min(sx, sy) * 0.95;
+  stage.scale({ x: s, y: s });
+  stage.position({ x: (sw - layer.imageWidth * s) / 2, y: (sh - layer.imageHeight * s) / 2 });
+  stage.batchDraw();
+}
+
+// ---------- polygon objects ----------
+function buildRings(rings) {
+  ringNodes = [];
+  rings.forEach((coords, ri) => {
+    const flat = coords.flat();
+    const poly = new Konva.Line({
+      points: flat,
+      closed: true, fill: "rgba(255,80,80,0.18)",
+      stroke: "rgba(255,80,80,0.95)", strokeWidth: 2,
+      hitStrokeWidth: 12, draggable: true,
+    });
+    layer.add(poly);
+    // Insert vertex on click of edge (vertex mode)
+    poly.on("click tap", (e) => {
+      if (mode !== "vertex") return;
+      if (e.evt.shiftKey || e.evt.altKey) return;
+      const stagePt = stage.getPointerPosition();
+      const localX = (stagePt.x - stage.x()) / stage.scaleX();
+      const localY = (stagePt.y - stage.y()) / stage.scaleY();
+      insertVertexOnEdge(ri, localX, localY);
+    });
+
+    // Right-click on the polygon body (NOT a vertex) → delete the whole ring
+    poly.on("contextmenu", (e) => {
+      e.evt.preventDefault();
+      const obj = ringNodes.find(r => r.poly === poly);
+      if (obj) deleteRing(obj);
+    });
+
+    // Vertex nodes (created on demand)
+    const verts = coords.map(([x, y], vi) => buildVertex(ri, vi, x, y));
+    ringNodes.push({ poly, vertices: verts, transformer: null });
+  });
+  layer.draw();
+}
+
+function deleteRing(ringObj) {
+  if (ringNodes.length <= 1) {
+    alert("This is the only polygon — can't delete it. Reset (r) to start over instead.");
+    return;
+  }
+  if (!confirm(`Delete this polygon (${ringObj.vertices.length} vertices)?\n\nThe other polygon(s) will stay.`)) return;
+  ringObj.poly.destroy();
+  ringObj.vertices.forEach(v => v.destroy());
+  if (ringObj.transformer) ringObj.transformer.destroy();
+  const idx = ringNodes.indexOf(ringObj);
+  if (idx >= 0) ringNodes.splice(idx, 1);
+  // Rebind all vertex callbacks with updated ring indices
+  ringNodes.forEach((r, ri) => {
+    r.vertices.forEach((v, vi) => {
+      v.off("dragmove.bind contextmenu.bind");
+      v.on("dragmove.bind", () => {
+        const pts = r.poly.points();
+        pts[vi * 2] = v.x();
+        pts[vi * 2 + 1] = v.y();
+        r.poly.points(pts);
+      });
+      v.on("contextmenu.bind", (e) => {
+        e.evt.preventDefault();
+        if (mode !== "vertex") return;
+        deleteVertex(ringNodes.indexOf(r), vi);
+      });
+    });
+  });
+  layer.batchDraw();
+}
+
+function buildVertex(ringIdx, vIdx, x, y) {
+  const c = new Konva.Circle({
+    x, y, radius: 5, fill: "white", stroke: "red", strokeWidth: 1.5,
+    draggable: true, visible: false,
+  });
+  c.on("dragmove", () => {
+    const r = ringNodes[ringIdx];
+    const pts = r.poly.points();
+    pts[vIdx * 2]     = c.x();
+    pts[vIdx * 2 + 1] = c.y();
+    r.poly.points(pts);
+  });
+  c.on("contextmenu", (e) => {
+    e.evt.preventDefault();
+    if (mode !== "vertex") return;
+    deleteVertex(ringIdx, vIdx);
+  });
+  layer.add(c);
+  return c;
+}
+
+function deleteVertex(ringIdx, vIdx) {
+  const r = ringNodes[ringIdx];
+  if (r.vertices.length <= 3) return;  // keep at least a triangle
+  r.vertices[vIdx].destroy();
+  r.vertices.splice(vIdx, 1);
+  // Rebuild poly points + re-index vertex callbacks
+  const pts = [];
+  r.vertices.forEach((v, ni) => {
+    pts.push(v.x(), v.y());
+    v.off("dragmove");
+    v.on("dragmove", () => {
+      const pts2 = r.poly.points();
+      pts2[ni * 2]     = v.x();
+      pts2[ni * 2 + 1] = v.y();
+      r.poly.points(pts2);
+    });
+    v.off("contextmenu");
+    v.on("contextmenu", (e) => { e.evt.preventDefault(); deleteVertex(ringIdx, ni); });
+  });
+  r.poly.points(pts);
+  layer.draw();
+}
+
+function insertVertexOnEdge(ringIdx, x, y) {
+  const r = ringNodes[ringIdx];
+  // find closest segment
+  const pts = r.poly.points();
+  const n = r.vertices.length;
+  let best = { i: 0, dist: Infinity, px: x, py: y };
+  for (let i = 0; i < n; i++) {
+    const ax = pts[i * 2], ay = pts[i * 2 + 1];
+    const bx = pts[((i + 1) % n) * 2], by = pts[((i + 1) % n) * 2 + 1];
+    const dx = bx - ax, dy = by - ay;
+    const len2 = dx * dx + dy * dy || 1;
+    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / len2));
+    const projx = ax + t * dx, projy = ay + t * dy;
+    const d = Math.hypot(projx - x, projy - y);
+    if (d < best.dist) best = { i, dist: d, px: projx, py: projy };
+  }
+  // Insert AFTER index best.i
+  const v = buildVertex(ringIdx, best.i + 1, best.px, best.py);
+  r.vertices.splice(best.i + 1, 0, v);
+  // re-bind all vertex dragmoves with new indices
+  r.vertices.forEach((vv, ni) => {
+    vv.off("dragmove");
+    vv.on("dragmove", () => {
+      const pts2 = r.poly.points();
+      pts2[ni * 2]     = vv.x();
+      pts2[ni * 2 + 1] = vv.y();
+      r.poly.points(pts2);
+    });
+    vv.off("contextmenu");
+    vv.on("contextmenu", (e) => { e.evt.preventDefault(); deleteVertex(ringIdx, ni); });
+  });
+  // refresh poly points to include the new vertex
+  const newPts = [];
+  r.vertices.forEach(vv => newPts.push(vv.x(), vv.y()));
+  r.poly.points(newPts);
+  setMode(mode);  // re-show vertices
+  layer.draw();
+}
+
+// ---------- modes ----------
+function setMode(m) {
+  mode = m;
+  document.getElementById("mode-transform").classList.toggle("active", m === "transform");
+  document.getElementById("mode-vertex").classList.toggle("active",    m === "vertex");
+  // Remove any existing transformers
+  ringNodes.forEach(r => {
+    if (r.transformer) { r.transformer.destroy(); r.transformer = null; }
+  });
+  if (m === "transform") {
+    ringNodes.forEach(r => {
+      r.poly.draggable(true);
+      r.poly.listening(true);
+      // Attach a Transformer for visible scale/rotate handles
+      const tr = new Konva.Transformer({
+        nodes: [r.poly], rotateEnabled: true, keepRatio: false,
+        anchorSize: 8, borderStroke: "white", anchorStroke: "white",
+        anchorFill: "#007aff",
+      });
+      // Bake the local transform into the points after any drag/scale/rotate.
+      // Use transformend + dragend so we only do the math once per gesture
+      // (during the gesture Konva re-renders the poly's transform smoothly).
+      r.poly.off("dragend.poly transformend.poly");
+      r.poly.on("dragend.poly transformend.poly", () => bakeTransformIntoPoints(r));
+      tr.off("transformend.poly");
+      tr.on("transformend.poly", () => bakeTransformIntoPoints(r));
+      layer.add(tr);
+      r.transformer = tr;
+      r.vertices.forEach(v => v.visible(false));
+    });
+  } else {
+    // vertex mode
+    ringNodes.forEach(r => {
+      r.poly.draggable(false);
+      r.vertices.forEach(v => v.visible(true));
+      r.vertices.forEach(v => v.moveToTop());
+    });
+  }
+  layer.draw();
+}
+
+function bakeTransformIntoPoints(ringObj) {
+  // Bake the poly's local transform (position + scale + rotation) into its
+  // points so the layer coord system stays clean. node.getTransform() is the
+  // node's LOCAL → PARENT transform — that's exactly what we want here.
+  const node = ringObj.poly;
+  const t = node.getTransform();   // local → layer (NOT absolute → world)
+  const pts = node.points();
+  const newPts = [];
+  for (let i = 0; i < pts.length; i += 2) {
+    const p = t.point({ x: pts[i], y: pts[i + 1] });
+    newPts.push(p.x, p.y);
+  }
+  node.points(newPts);
+  // Zero the local transform — the points now hold everything.
+  node.position({ x: 0, y: 0 });
+  node.scale({ x: 1, y: 1 });
+  node.rotation(0);
+  node.skew({ x: 0, y: 0 });
+  // Sync vertex nodes
+  ringObj.vertices.forEach((v, vi) => {
+    v.position({ x: newPts[vi * 2], y: newPts[vi * 2 + 1] });
+  });
+  layer.batchDraw();
+}
+
+// ---------- save / reset ----------
+function currentRingsAsCoords() {
+  return ringNodes.map(r => {
+    // Make sure the current visual transform is baked into points before reading.
+    bakeTransformIntoPoints(r);
+    const pts = r.poly.points();
+    const ring = [];
+    for (let i = 0; i < pts.length; i += 2) ring.push([pts[i], pts[i + 1]]);
+    return ring;
+  });
+}
+
+async function saveEdit() {
+  if (!curCase) return;
+  const rings = currentRingsAsCoords();
+  statusEl.textContent = "Saving…";
+  const r = await fetch(`/api/case/${encodeURIComponent(curCase.case_id)}/save`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ rings }),
+  });
+  if (!r.ok) { statusEl.textContent = "Save failed"; return; }
+  // Update list state
+  CASES[curIdx].has_edit = true;
+  const el = document.querySelector(`.case-item[data-idx="${curIdx}"]`);
+  if (el) { el.classList.add("edited"); el.querySelector(".tag").textContent = "edited"; }
+  statusEl.textContent = `Saved ${curCase.case_id} (${rings.length} rings)`;
+}
+
+function resetGT() {
+  if (!initialRings) return;
+  layer.destroyChildren();
+  layer.add(bgImg);
+  buildRings(JSON.parse(JSON.stringify(initialRings)));
+  setMode(mode);
+}
+
+// ---------- go ----------
+init();
+</script>
+</body>
+</html>

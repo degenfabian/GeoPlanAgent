@@ -34,7 +34,7 @@ EXCLUDE_SL_NOS = {1, 3, 5, 6, 11, 13, 15, 21, 22, 23, 33, 34, 49, 54, 59,
 def load_models():
     """Load SAM3 fine-tuned model and MINIMA matcher."""
     from tools.sam3_boundary import load_sam3_ft
-    from tools.positioning import load_minima
+    from tools.matching import load_minima
 
     state = {}
     state["sam3_ft"] = load_sam3_ft()
@@ -59,15 +59,136 @@ def save_visualizations(result_dir, map_img, boundary_mask, predicted_geojson,
         cv2.imwrite(str(result_dir / "viz_boundary.png"), blended)
 
     if predicted_geojson is not None:
+        viz_path = result_dir / "viz_comparison.png"
         try:
             from tools.visualization_tools import visualize_comparison
             visualize_comparison(
                 predicted_geojson=predicted_geojson,
                 ground_truth_geojson=gt_geojson,
-                output_path=str(result_dir / "viz_comparison.png"),
+                output_path=str(viz_path),
             )
         except Exception as e:
+            # Write a stub image so silent absence becomes a visible failure
+            # at review time. v10 case DE5A30DA had viz silently missing.
             print(f"  Viz failed: {e}")
+            try:
+                stub = np.full((400, 800, 3), 240, dtype=np.uint8)
+                msg = f"viz_comparison failed: {type(e).__name__}: {str(e)[:120]}"
+                cv2.putText(stub, msg, (20, 200),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 200), 1,
+                            cv2.LINE_AA)
+                cv2.imwrite(str(viz_path), stub)
+            except Exception:
+                pass
+
+
+# ── Critic-trace writer (rigorous post-mortem analysis) ─────────────────────
+
+def _iou_vs_gt(gt_geojson, pred_geojson):
+    """Compute IoU against ground truth. Returns None if either side missing."""
+    if gt_geojson is None or pred_geojson is None:
+        return None
+    try:
+        from tools.geojson_metrics import calculate_spatial_metrics
+        m = calculate_spatial_metrics(gt_geojson, pred_geojson)
+        return float(m.get("iou", 0) or 0)
+    except Exception:
+        return None
+
+
+def _save_critic_debug(case_dir, result, gt_geojson):
+    """Persist every artefact the critic produced this run for post-hoc analysis.
+
+    Layout:
+      case_dir/critic_debug/
+        pre_critic_mask.png
+        pre_critic.geojson
+        final_mask.png
+        final.geojson
+        iter_<k>_panel.png              # what the critic actually saw
+        iter_<k>_pre_fix_mask.png       # mask at critic-call time
+        iter_<k>_pre_fix.geojson
+        iter_<k>_post_fix_mask.png      # after code-fix if one ran
+        iter_<k>_post_fix.geojson
+        iter_<k>_post_fix_affine.npy    # only for retry_rotation
+        trace.json                      # iteration-by-iteration summary with
+                                        # ground-truth IoU trajectory
+    """
+    pre = result.get("critic_pre_snapshot")
+    final_snap = result.get("critic_final_snapshot")
+    panels = result.get("critic_iteration_panels") or []
+    snapshots = result.get("critic_iteration_snapshots") or []
+    crit_iters = result.get("critic_iterations") or []
+    if not (pre or final_snap or panels or snapshots):
+        return
+
+    debug_dir = Path(case_dir) / "critic_debug"
+    debug_dir.mkdir(parents=True, exist_ok=True)
+
+    def _write_mask(path, mask):
+        if mask is not None:
+            cv2.imwrite(str(path), mask)
+
+    def _write_geojson(path, gj):
+        if gj is not None:
+            Path(path).write_text(json.dumps(gj, indent=2, default=str))
+
+    # Pre/final snapshots
+    if pre is not None:
+        _write_mask(debug_dir / "pre_critic_mask.png", pre.get("mask"))
+        _write_geojson(debug_dir / "pre_critic.geojson", pre.get("geojson"))
+        if pre.get("affine_H") is not None:
+            np.save(str(debug_dir / "pre_critic_affine.npy"), pre["affine_H"])
+    if final_snap is not None:
+        _write_mask(debug_dir / "final_mask.png", final_snap.get("mask"))
+        _write_geojson(debug_dir / "final.geojson", final_snap.get("geojson"))
+        if final_snap.get("affine_H") is not None:
+            np.save(str(debug_dir / "final_affine.npy"), final_snap["affine_H"])
+
+    # Per-iteration artefacts
+    trace = []
+    for i, snap in enumerate(snapshots):
+        iter_entry = dict(crit_iters[i]) if i < len(crit_iters) else {"iter_idx": i}
+
+        # Panel
+        if i < len(panels) and panels[i] is not None:
+            p = debug_dir / f"iter_{i}_panel.png"
+            cv2.imwrite(str(p), panels[i])
+            iter_entry["panel_png"] = p.name
+
+        # Mask/geojson pre-fix and post-fix
+        pre_mask = snap.get("pre_fix_mask")
+        if pre_mask is not None:
+            _write_mask(debug_dir / f"iter_{i}_pre_fix_mask.png", pre_mask)
+        pre_gj = snap.get("pre_fix_geojson")
+        if pre_gj is not None:
+            _write_geojson(debug_dir / f"iter_{i}_pre_fix.geojson", pre_gj)
+            iter_entry["pre_fix_iou_vs_gt"] = _iou_vs_gt(gt_geojson, pre_gj)
+
+        post_mask = snap.get("post_fix_mask")
+        if post_mask is not None:
+            _write_mask(debug_dir / f"iter_{i}_post_fix_mask.png", post_mask)
+        post_gj = snap.get("post_fix_geojson")
+        if post_gj is not None:
+            _write_geojson(debug_dir / f"iter_{i}_post_fix.geojson", post_gj)
+            iter_entry["post_fix_iou_vs_gt"] = _iou_vs_gt(gt_geojson, post_gj)
+        post_aff = snap.get("post_fix_affine_H")
+        if post_aff is not None:
+            np.save(str(debug_dir / f"iter_{i}_post_fix_affine.npy"), post_aff)
+
+        trace.append(iter_entry)
+
+    # Trace summary: ground-truth IoU at pre-critic, per iteration, and final
+    pre_iou = _iou_vs_gt(gt_geojson, pre.get("geojson")) if pre else None
+    final_iou = _iou_vs_gt(gt_geojson, final_snap.get("geojson")) if final_snap else None
+    (debug_dir / "trace.json").write_text(json.dumps({
+        "pre_critic_iou_vs_gt": pre_iou,
+        "final_iou_vs_gt": final_iou,
+        "iou_delta_from_critic": (
+            (final_iou - pre_iou) if (pre_iou is not None and final_iou is not None)
+            else None),
+        "iterations": trace,
+    }, indent=2, default=str))
 
 
 # ── Main Runner ──────────────────────────────────────────────────────────────
@@ -78,7 +199,8 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                   eval_dir="evaluation_data",
                   only_cases=None, force=False,
                   hard_first=False, prev_results_dir=None,
-                  enable_critic=True):
+                  enable_critic=True,
+                  include_training_cases=False):
     """Run benchmark using the unified tool-calling agent.
 
     Args:
@@ -102,11 +224,45 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
         lambda f: (eval_path / str(f)).exists())]
     n_exists = len(dataset)
 
-    # Exclude training data (SAM3/MapSAM contamination)
-    dataset = dataset[~dataset["Sl no"].isin(EXCLUDE_SL_NOS)]
-    print(f"Dataset: {len(dataset)} cases "
-          f"({n_total} in Excel, {n_total - n_exists} missing from disk, "
-          f"{len(EXCLUDE_SL_NOS)} training excluded)")
+    # Inject *_merged folders that exist on disk but aren't in the Excel.
+    # Each merged folder is its own complete case (own PDF + GT geojson).
+    excel_folders = set(dataset["Unique ID (Folder_Name)"].astype(str))
+    merged_extras = []
+    for sub in sorted(eval_path.iterdir()):
+        if not sub.is_dir() or not sub.name.endswith("_merged"): continue
+        if sub.name in excel_folders: continue
+        gj = sub / f"{sub.name}.geojson"
+        if not gj.exists(): continue
+        merged_extras.append({
+            "Sl no": 9000 + len(merged_extras) + 1,
+            "Unique ID (Folder_Name)": sub.name,
+            "geojson ID (for sanity check)": gj.name,
+        })
+    if merged_extras:
+        dataset = pd.concat([dataset, pd.DataFrame(merged_extras)],
+                              ignore_index=True)
+        print(f"Injected {len(merged_extras)} *_merged cases not in Excel: "
+              f"{[e['Unique ID (Folder_Name)'] for e in merged_extras]}")
+
+    # Exclude legacy training data unless the caller opts in. Under the
+    # k-fold CV setup this is unnecessary — every case is held out from
+    # exactly one fold and tools.sam3_boundary.set_fold_for_case routes
+    # inference to that held-out fold. So benchmarking on the formerly-
+    # excluded 27 hand-annotated cases is safe with --include-training-cases.
+    if include_training_cases:
+        n_excluded = 0
+        print(f"Dataset: {len(dataset)} cases "
+              f"({n_total} in Excel, {n_total - n_exists} missing from disk, "
+              f"INCLUDE_TRAINING_CASES=True — no SL-no exclusion). "
+              f"This requires k-fold SAM3 (set_fold_for_case routes per "
+              f"case to its held-out fold). DO NOT use this flag with the "
+              f"legacy single-adapter setup or it WILL leak.")
+    else:
+        dataset = dataset[~dataset["Sl no"].isin(EXCLUDE_SL_NOS)]
+        n_excluded = len(EXCLUDE_SL_NOS)
+        print(f"Dataset: {len(dataset)} cases "
+              f"({n_total} in Excel, {n_total - n_exists} missing from disk, "
+              f"{n_excluded} training excluded)")
 
     # Filter to specific cases if requested
     if only_cases:
@@ -210,6 +366,8 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                 dpi=dpi,
                 verbose=True,
                 enable_critic=enable_critic,
+                case_name=folder_name,
+                case_dir=case_dir,
             )
             dt = time.time() - t0
 
@@ -348,6 +506,9 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
             if critic_panel is not None:
                 cv2.imwrite(str(case_dir / "critic_panel.png"), critic_panel)
 
+            # Rigorous-analysis: full critic trace under critic_debug/
+            _save_critic_debug(case_dir, result, gt_geojson)
+
             # Geocoding transparency log
             centers_tried = result.get("centers_tried") or []
             if centers_tried:
@@ -391,27 +552,49 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
     summary_path.write_text(json.dumps(summary, indent=2, default=str))
 
     s = summary
-    print(f"\n  {s['successful']}/{s['total']} success")
-    if s["successful"] > 0:
-        m = s["metrics"]
-        print(f"  IoU:  mean={m['iou']['mean']:.3f}  "
-              f"median={m['iou']['median']:.3f}")
+    print(f"\n  {s['polygons_produced']} polygons / {s['rejected_by_agent']} rejected / "
+          f"{s['crashed']} crashed   (total {s['total']})")
+    if s.get("metrics") and s["metrics"].get("iou"):
+        m = s["metrics"]["iou"]
+        print(f"  IoU (rejections=0):  mean={m['mean']:.3f}  "
+              f"median={m['median']:.3f}")
+    if s.get("metrics_successful_only") and s["metrics_successful_only"].get("iou"):
+        m2 = s["metrics_successful_only"]["iou"]
+        print(f"  IoU (polygon-only):  mean={m2['mean']:.3f}  "
+              f"median={m2['median']:.3f}")
 
 
 def _compute_summary(results):
-    """Compute aggregate stats."""
-    successful = [r for r in results
-                  if "error" not in r and r.get("iou") is not None]
-    failed = [r for r in results if "error" in r or r.get("iou") is None]
+    """Compute aggregate stats.
+
+    Headline metrics count agent rejections (no GeoJSON produced) as IoU=0
+    — this is the production-honest number, since a rejection ships no
+    polygon and the operator ends up with nothing for that case.
+
+    Pipeline crashes (entries with 'error' set) are excluded entirely;
+    they are not "the agent's fault" the same way a rejection is.
+
+    The 'successful_only' block is the old behaviour (mean over cases that
+    produced a polygon). Useful for separating "did the produced polygons
+    score well" from "how often did we produce one at all".
+    """
+    crashes = [r for r in results if "error" in r]
+    non_crashed = [r for r in results if "error" not in r]
+    # Production-honest: produced polygon → real IoU; rejection → 0.
+    honest = [(r["iou"] if r.get("iou") is not None else 0.0)
+              for r in non_crashed]
+    rejected = [r for r in non_crashed if r.get("iou") is None]
+    polygons = [r for r in non_crashed if r.get("iou") is not None]
 
     summary = {
         "total": len(results),
-        "successful": len(successful),
-        "failed": len(failed),
+        "polygons_produced": len(polygons),
+        "rejected_by_agent": len(rejected),
+        "crashed": len(crashes),
         "timestamp": datetime.now().isoformat(),
     }
 
-    if successful:
+    if non_crashed:
         def _stats(values):
             arr = np.array(values)
             return {
@@ -422,17 +605,20 @@ def _compute_summary(results):
                 "max": float(arr.max()),
             }
 
-        summary["metrics"] = {
-            "iou": _stats([r["iou"] for r in successful]),
-            "f1_score": _stats([r["f1_score"] for r in successful]),
-            "precision": _stats([r["precision"] for r in successful]),
-            "recall": _stats([r["recall"] for r in successful]),
-        }
+        # Production-honest IoU (rejections counted as 0).
+        summary["metrics"] = {"iou": _stats(honest)}
 
-        pos_errs = [r["positioning_error_m"] for r in successful
-                     if r.get("positioning_error_m") is not None]
-        if pos_errs:
-            summary["metrics"]["positioning_error_m"] = _stats(pos_errs)
+        if polygons:
+            summary["metrics_successful_only"] = {
+                "iou": _stats([r["iou"] for r in polygons]),
+                "f1_score": _stats([r["f1_score"] for r in polygons]),
+                "precision": _stats([r["precision"] for r in polygons]),
+                "recall": _stats([r["recall"] for r in polygons]),
+            }
+            pos_errs = [r["positioning_error_m"] for r in polygons
+                         if r.get("positioning_error_m") is not None]
+            if pos_errs:
+                summary["metrics_successful_only"]["positioning_error_m"] = _stats(pos_errs)
 
     summary["per_case"] = results
     return summary
@@ -466,6 +652,12 @@ if __name__ == "__main__":
                              "ordering (default: same as output-dir/model)")
     parser.add_argument("--no-critic", action="store_true",
                         help="Disable Phase 3 Commenter critic loop (A/B testing)")
+    parser.add_argument("--include-training-cases", action="store_true",
+                        help="Include the 27 cases that were SAM3's legacy "
+                             "training data (sl_no in EXCLUDE_SL_NOS). Safe "
+                             "ONLY with k-fold SAM3 (set_fold_for_case routes "
+                             "each case to the fold that excluded it). DO NOT "
+                             "use with the legacy single-adapter setup.")
     args = parser.parse_args()
 
     run_benchmark(
@@ -480,4 +672,5 @@ if __name__ == "__main__":
         hard_first=args.hard_first,
         prev_results_dir=args.prev_results,
         enable_critic=not args.no_critic,
+        include_training_cases=args.include_training_cases,
     )

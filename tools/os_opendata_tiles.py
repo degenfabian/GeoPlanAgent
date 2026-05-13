@@ -31,12 +31,13 @@ TILE_CACHE_DIR = BASE / "cache" / "os_opendata_tiles"
 # ── Coordinate transforms ────────────────────────────────────────────────────
 
 def _lat_lon_to_tile(lat, lon, zoom):
-    """Convert lat/lon to tile coordinates (Web Mercator)."""
-    n = 2 ** zoom
-    x = int((lon + 180) / 360 * n)
-    lat_rad = math.radians(lat)
-    y = int((1 - math.log(math.tan(lat_rad) + 1 / math.cos(lat_rad)) / math.pi) / 2 * n)
-    return x, y
+    """Convert lat/lon to integer tile (x, y) indices (Web Mercator).
+
+    Thin wrapper over `tools.geo.coords.latlon_to_tile_xy` for backwards-
+    compatibility with internal callers in this module.
+    """
+    from tools.geo.coords import latlon_to_tile_xy
+    return latlon_to_tile_xy(lat, lon, zoom)
 
 
 def _tile_to_bounds_3857(zoom, tx, ty, tile_size=256):
@@ -618,6 +619,143 @@ def fetch_historical_grid(lat, lon, zoom, n_tiles_x, n_tiles_y, layer="newpopula
         "tx_min": tx_min, "ty_min": ty_min,
         "nx": n_tiles_x, "ny": n_tiles_y, "tile_size": tile_size,
     }
+
+
+def _render_roads_only_canvas(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y,
+                                gpkg_path=None):
+    """Render a tile grid with ONLY road layers on a white background.
+
+    Used by the Phase 3 critic for a cleaner visual comparison — planning
+    maps and OS tiles agree reliably on road topology but diverge on
+    styling (building colours, text labels, greenspace shading). Dropping
+    everything except roads gives the LLM a crisp apples-to-apples signal.
+    """
+    import pandas as pd
+
+    if gpkg_path is None:
+        gpkg_path = str(GPKG_PATH)
+    if not os.path.exists(gpkg_path):
+        raise FileNotFoundError(f"GeoPackage not found at {gpkg_path}")
+
+    tile_size = 256
+    canvas_w = n_tiles_x * tile_size
+    canvas_h = n_tiles_y * tile_size
+
+    bounds_3857 = (
+        _tile_to_bounds_3857(zoom, tx_min, ty_min, tile_size)[0],
+        _tile_to_bounds_3857(zoom, tx_min, ty_min + n_tiles_y - 1, tile_size)[1],
+        _tile_to_bounds_3857(zoom, tx_min + n_tiles_x - 1, ty_min, tile_size)[2],
+        _tile_to_bounds_3857(zoom, tx_min, ty_min, tile_size)[3],
+    )
+    bounds_27700 = _transform_3857_to_27700(*bounds_3857)
+
+    scale = 2 ** (zoom - 17)
+    canvas = np.full((canvas_h, canvas_w, 3), 255, dtype=np.uint8)  # pure white
+
+    x_min_3857, y_min_3857, x_max_3857, y_max_3857 = bounds_3857
+    x_extent = x_max_3857 - x_min_3857
+    y_extent = y_max_3857 - y_min_3857
+
+    import pyproj
+    from shapely.ops import transform as shapely_transform
+    transformer = pyproj.Transformer.from_crs(
+        "EPSG:27700", "EPSG:3857", always_xy=True)
+
+    def _geom_to_pixels(geom):
+        def _to_px(x, y):
+            mx, my = transformer.transform(x, y)
+            px = (mx - x_min_3857) / x_extent * canvas_w
+            py = (1 - (my - y_min_3857) / y_extent) * canvas_h
+            return px, py
+        return shapely_transform(_to_px, geom)
+
+    road_gdfs = []
+    for layer_name, default_type in [
+        ("roads_local", "Local Street"),
+        ("roads_regional", "B Road"),
+        ("roads_national", "A Road"),
+    ]:
+        gdf = _read_layer(layer_name, bounds_27700, gpkg_path)
+        if gdf is not None:
+            if "type" not in gdf.columns:
+                gdf["type"] = default_type
+            road_gdfs.append(gdf)
+
+    if road_gdfs:
+        all_roads = pd.concat(road_gdfs, ignore_index=True)
+        road_order = {"Motorway": 0, "A Road": 1, "B Road": 2,
+                      "Minor Road": 3, "Local Street": 4,
+                      "Alley": 5, "Pedestrianised Street": 5}
+        all_roads["_order"] = all_roads["type"].map(
+            lambda t: road_order.get(t, 4))
+        all_roads = all_roads.sort_values("_order", ascending=False)
+
+        # Single pass: solid dark line per road — simpler than the styled
+        # casing+fill render, and higher contrast against the white canvas.
+        for _, row in all_roads.iterrows():
+            road_type = row.get("type", "Local Street")
+            widths = ROAD_WIDTHS_Z17.get(road_type, (1.5, 2.5))
+            line_w = max(1, int(widths[1] * scale))
+            _draw_line(canvas, _geom_to_pixels(row.geometry), (40, 40, 40),
+                       line_w)
+
+    return canvas
+
+
+def _fetch_roads_at_grid(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y,
+                           gpkg_path=None):
+    """Roads-only canvas at an already-known tile grid position."""
+    tile_size = 256
+    cache_path = (TILE_CACHE_DIR / "grids_roads"
+                  / f"z{zoom}_{tx_min}_{ty_min}_{n_tiles_x}x{n_tiles_y}.png")
+    if cache_path.exists():
+        img = cv2.imread(str(cache_path))
+        if img is not None:
+            canvas = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            return {"image": canvas, "zoom": zoom,
+                    "tx_min": tx_min, "ty_min": ty_min,
+                    "nx": n_tiles_x, "ny": n_tiles_y, "tile_size": tile_size}
+
+    import time
+    t0 = time.time()
+    canvas = _render_roads_only_canvas(zoom, tx_min, ty_min,
+                                         n_tiles_x, n_tiles_y, gpkg_path)
+    print(f"  OS OpenData: roads-only rendered z{zoom} "
+          f"({n_tiles_x}x{n_tiles_y}) in {time.time()-t0:.1f}s")
+
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cv2.imwrite(str(cache_path), cv2.cvtColor(canvas, cv2.COLOR_RGB2BGR))
+    return {"image": canvas, "zoom": zoom,
+            "tx_min": tx_min, "ty_min": ty_min,
+            "nx": n_tiles_x, "ny": n_tiles_y, "tile_size": tile_size}
+
+
+def fetch_os_opendata_roads_grid(lat, lon, zoom, n_tiles_x, n_tiles_y,
+                                   gpkg_path=None):
+    """Same interface as fetch_os_opendata_grid but renders roads only.
+
+    Separate cache from the styled tiles (suffix '_roads') so both can coexist.
+    """
+    cx, cy = _lat_lon_to_tile(lat, lon, zoom)
+    half_x = n_tiles_x // 2
+    half_y = n_tiles_y // 2
+    tx_min = cx - half_x
+    ty_min = cy - half_y
+    return _fetch_roads_at_grid(zoom, tx_min, ty_min,
+                                  n_tiles_x, n_tiles_y, gpkg_path)
+
+
+def fetch_os_opendata_roads_for_tile_info(tile_info: dict, gpkg_path=None):
+    """Produce a roads-only canvas matching an existing styled-tile_info.
+
+    The returned canvas shares tx_min/ty_min/nx/ny/zoom with `tile_info`, so
+    the same affine_H overlays correctly on both. Used by the Phase 3 critic
+    to swap its middle panel background without touching any other geometry.
+    """
+    return _fetch_roads_at_grid(
+        int(tile_info["zoom"]), int(tile_info["tx_min"]),
+        int(tile_info["ty_min"]), int(tile_info["nx"]),
+        int(tile_info["ny"]), gpkg_path)
 
 
 def fetch_os_opendata_grid(lat, lon, zoom, n_tiles_x, n_tiles_y, gpkg_path=None):

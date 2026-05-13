@@ -6,6 +6,9 @@
 __pycache__/
 *.DS_Store
 
+# Reference clones, kept locally only
+claw-code/
+
 # Results and caches
 results/
 cache/
@@ -33,10 +36,29 @@ training/outputs/
 training/synthetic_data/
 training/controlnet_data/
 training/data/
+training/dataset_v5/
 
 # Annotation datasets (training data)
 boundary_annotation_dataset/
+boundary_annotation_curated/
+boundary_annotation_v2_auto/
+
+# boundary_annotation_v3/: the annotation tool's working dir. Keep the
+# user's saved edits (edited.json / edited_mask.png) tracked; ignore the
+# regeneratable bulk (map.png ~10-32 MB each, initial.json ~100 KB each).
+boundary_annotation_v3/*/map.png
+boundary_annotation_v3/*/initial.json
 road_annotation_dataset/
+
+# Claude Code internal state
+.claude/
+
+# External clones (kept locally, large)
+third_party_samrefiner/
+
+# overnight/ is local scratch — experiments, research notes, debug dumps.
+# Nothing in here needs to be in the public repo.
+overnight/
 
 # Evaluation data
 evaluation_data/*
@@ -44,3 +66,4 @@ evaluation_data/*
 # IoU-split case folders (derived from benchmark results, not source)
 cases_iou_below_*/
 cases_iou_at_or_above_*/
+verifier_dataset/
