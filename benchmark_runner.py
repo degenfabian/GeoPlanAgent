@@ -22,18 +22,30 @@ import cv2
 from pathlib import Path
 from datetime import datetime
 
-from tools.geojson_metrics import load_geojson, calculate_spatial_metrics
+from tools.metrics.geojson import load_geojson, calculate_spatial_metrics
 
-# ── Training data exclusion (SAM3 + MapSAM contamination) ────────────────────
+# ── Legacy training-data list (historical, no longer enforced) ───────────────
+# Pre-v8 (single-adapter SAM3) these 27 cases were the LoRA's training set
+# and had to be excluded from evaluation to avoid leakage. v8 is k-fold, so
+# each case is held out from the fold that does its inference — no leakage
+# even when this set is included. As of 2026-05-14 the --include-training-cases
+# flag was retired and these cases are ALWAYS included. The constant is
+# retained for paper-reproducibility (documenting which cases used to be
+# the training-only subset for single-adapter ablations).
 EXCLUDE_SL_NOS = {1, 3, 5, 6, 11, 13, 15, 21, 22, 23, 33, 34, 49, 54, 59,
                   79, 84, 86, 88, 89, 125, 139, 230, 236, 246, 255, 256}
+
+# ── Removed cases (duplicates of other cases in the dataset) ─────────────────
+# Always filtered. Cases were physically removed from disk on 2026-05-13;
+# kept here as a manifest for paper-reproducibility.
+DUPLICATE_SL_NOS = {9, 68, 83, 232, 253}
 
 
 # ── Model Loading ────────────────────────────────────────────────────────────
 
 def load_models():
     """Load SAM3 fine-tuned model and MINIMA matcher."""
-    from tools.sam3_boundary import load_sam3_ft
+    from tools.extraction.sam3 import load_sam3_ft
     from tools.matching import load_minima
 
     state = {}
@@ -61,7 +73,7 @@ def save_visualizations(result_dir, map_img, boundary_mask, predicted_geojson,
     if predicted_geojson is not None:
         viz_path = result_dir / "viz_comparison.png"
         try:
-            from tools.visualization_tools import visualize_comparison
+            from tools.metrics.visualization import visualize_comparison
             visualize_comparison(
                 predicted_geojson=predicted_geojson,
                 ground_truth_geojson=gt_geojson,
@@ -89,7 +101,7 @@ def _iou_vs_gt(gt_geojson, pred_geojson):
     if gt_geojson is None or pred_geojson is None:
         return None
     try:
-        from tools.geojson_metrics import calculate_spatial_metrics
+        from tools.metrics.geojson import calculate_spatial_metrics
         m = calculate_spatial_metrics(gt_geojson, pred_geojson)
         return float(m.get("iou", 0) or 0)
     except Exception:
@@ -199,8 +211,7 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                   eval_dir="evaluation_data",
                   only_cases=None, force=False,
                   hard_first=False, prev_results_dir=None,
-                  enable_critic=True,
-                  include_training_cases=False):
+                  enable_critic=False):
     """Run benchmark using the unified tool-calling agent.
 
     Args:
@@ -211,7 +222,9 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
         dpi: PDF rendering DPI.
         max_iterations: Max agent turns per case.
         only_cases: If set, only run these specific folder names.
-        enable_critic: Run Phase 3 Commenter VLM critic after worker finishes.
+        enable_critic: Run Phase 3 Commenter VLM critic. Default OFF — the
+            critic is now an opt-in ablation knob, not part of the default
+            production pipeline.
     """
     from tools.agent import run_agent
 
@@ -244,25 +257,15 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
         print(f"Injected {len(merged_extras)} *_merged cases not in Excel: "
               f"{[e['Unique ID (Folder_Name)'] for e in merged_extras]}")
 
-    # Exclude legacy training data unless the caller opts in. Under the
-    # k-fold CV setup this is unnecessary — every case is held out from
-    # exactly one fold and tools.sam3_boundary.set_fold_for_case routes
-    # inference to that held-out fold. So benchmarking on the formerly-
-    # excluded 27 hand-annotated cases is safe with --include-training-cases.
-    if include_training_cases:
-        n_excluded = 0
-        print(f"Dataset: {len(dataset)} cases "
-              f"({n_total} in Excel, {n_total - n_exists} missing from disk, "
-              f"INCLUDE_TRAINING_CASES=True — no SL-no exclusion). "
-              f"This requires k-fold SAM3 (set_fold_for_case routes per "
-              f"case to its held-out fold). DO NOT use this flag with the "
-              f"legacy single-adapter setup or it WILL leak.")
-    else:
-        dataset = dataset[~dataset["Sl no"].isin(EXCLUDE_SL_NOS)]
-        n_excluded = len(EXCLUDE_SL_NOS)
-        print(f"Dataset: {len(dataset)} cases "
-              f"({n_total} in Excel, {n_total - n_exists} missing from disk, "
-              f"{n_excluded} training excluded)")
+    # Drop physically-removed duplicates. The legacy training-case
+    # exclusion (EXCLUDE_SL_NOS) was retired 2026-05-14 — k-fold SAM3 routes
+    # each case to its held-out fold's adapter at inference, so no leakage
+    # even when the former training-only set is included. The constant
+    # itself is kept for paper-reproducibility.
+    dataset = dataset[~dataset["Sl no"].isin(DUPLICATE_SL_NOS)]
+    print(f"Dataset: {len(dataset)} cases "
+          f"({n_total} in Excel, {n_total - n_exists} missing from disk, "
+          f"{len(DUPLICATE_SL_NOS)} duplicates dropped)")
 
     # Filter to specific cases if requested
     if only_cases:
@@ -552,11 +555,11 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
     summary_path.write_text(json.dumps(summary, indent=2, default=str))
 
     s = summary
-    print(f"\n  {s['polygons_produced']} polygons / {s['rejected_by_agent']} rejected / "
+    print(f"\n  {s['polygons_produced']} polygons / {s['no_polygon']} no-polygon / "
           f"{s['crashed']} crashed   (total {s['total']})")
     if s.get("metrics") and s["metrics"].get("iou"):
         m = s["metrics"]["iou"]
-        print(f"  IoU (rejections=0):  mean={m['mean']:.3f}  "
+        print(f"  IoU (failures=0):    mean={m['mean']:.3f}  "
               f"median={m['median']:.3f}")
     if s.get("metrics_successful_only") and s["metrics_successful_only"].get("iou"):
         m2 = s["metrics_successful_only"]["iou"]
@@ -567,12 +570,14 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
 def _compute_summary(results):
     """Compute aggregate stats.
 
-    Headline metrics count agent rejections (no GeoJSON produced) as IoU=0
-    — this is the production-honest number, since a rejection ships no
-    polygon and the operator ends up with nothing for that case.
+    Headline metrics count "no polygon produced" cases as IoU=0 — this is
+    the production-honest number since the operator ends up with no result
+    for that case. Pre-2026-05-14 this counter was 'rejected_by_agent';
+    rejection has since been removed from the schema, so a no-polygon case
+    now reflects an upstream failure (empty SAM mask, projection failure,
+    validator exhaustion), not the agent giving up.
 
-    Pipeline crashes (entries with 'error' set) are excluded entirely;
-    they are not "the agent's fault" the same way a rejection is.
+    Pipeline crashes (entries with 'error' set) are excluded entirely.
 
     The 'successful_only' block is the old behaviour (mean over cases that
     produced a polygon). Useful for separating "did the produced polygons
@@ -580,16 +585,16 @@ def _compute_summary(results):
     """
     crashes = [r for r in results if "error" in r]
     non_crashed = [r for r in results if "error" not in r]
-    # Production-honest: produced polygon → real IoU; rejection → 0.
+    # Production-honest: produced polygon → real IoU; no-polygon → 0.
     honest = [(r["iou"] if r.get("iou") is not None else 0.0)
               for r in non_crashed]
-    rejected = [r for r in non_crashed if r.get("iou") is None]
+    no_polygon = [r for r in non_crashed if r.get("iou") is None]
     polygons = [r for r in non_crashed if r.get("iou") is not None]
 
     summary = {
         "total": len(results),
         "polygons_produced": len(polygons),
-        "rejected_by_agent": len(rejected),
+        "no_polygon": len(no_polygon),
         "crashed": len(crashes),
         "timestamp": datetime.now().isoformat(),
     }
@@ -650,14 +655,12 @@ if __name__ == "__main__":
     parser.add_argument("--prev-results", default=None,
                         help="Path to previous results dir for --hard-first "
                              "ordering (default: same as output-dir/model)")
-    parser.add_argument("--no-critic", action="store_true",
-                        help="Disable Phase 3 Commenter critic loop (A/B testing)")
-    parser.add_argument("--include-training-cases", action="store_true",
-                        help="Include the 27 cases that were SAM3's legacy "
-                             "training data (sl_no in EXCLUDE_SL_NOS). Safe "
-                             "ONLY with k-fold SAM3 (set_fold_for_case routes "
-                             "each case to the fold that excluded it). DO NOT "
-                             "use with the legacy single-adapter setup.")
+    parser.add_argument("--with-critic", action="store_true",
+                        help="Enable Phase 3 Commenter critic loop. Default is "
+                             "OFF — the critic was disabled as the production "
+                             "default 2026-05-14 after measuring minimal IoU "
+                             "lift. Use this flag for ablation runs that test "
+                             "what the critic adds.")
     args = parser.parse_args()
 
     run_benchmark(
@@ -671,6 +674,5 @@ if __name__ == "__main__":
         force=args.force,
         hard_first=args.hard_first,
         prev_results_dir=args.prev_results,
-        enable_critic=not args.no_critic,
-        include_training_cases=args.include_training_cases,
+        enable_critic=args.with_critic,
     )

@@ -1,18 +1,18 @@
 # tools/
 
-Core modules for the boundary extraction pipeline. `agent.py` orchestrates the
-LLM tool calls; `critic.py` runs afterwards to verify and correct.
+Core modules for the boundary extraction pipeline. `tools.agent` orchestrates
+the LLM tool calls; `tools.agent.critic` runs afterwards to verify and correct.
 
 ## Entry points
 
 - `tools.agent.run_agent(pdf_path, models_state, model_name, enable_critic=True)`
   — full pipeline for a single case.
-- `tools.critic.run_critic_loop(...)` — Phase 3 standalone, invoked by
+- `tools.agent.critic.run_critic_loop(...)` — Phase 3 standalone, invoked by
   `run_agent` after the worker submits.
 
-## Module map
+## Package map
 
-### `agent.py` — Reader + Worker agents
+### `tools/agent/` — Reader + Worker agents
 
 PydanticAI agent with two phases:
 
@@ -21,21 +21,21 @@ PydanticAI agent with two phases:
   pages, district-wide flag).
 - **Worker** — tool-calling agent producing a validated `BoundaryOutcome`.
 
-Worker tools (one tool per `agent_tools_*.py` module):
+Worker tools (one module per logical step under `tools/agent/tools/`):
 
 | Tool | Module | Purpose |
 |---|---|---|
-| `render_page` | `agent_tools_render.py` | Render a PDF page as a BGR image |
-| `propose_centers` | `agent_tools_locate.py` | locate_v2 cascade of candidate centres |
-| `match_at` | `agent_tools_match.py` | MINIMA sliding-window match at one centre |
-| `commit_match` | `agent_tools_match.py` | Smart commit gate over all `match_at` attempts |
-| `extract_boundary` | `agent_tools_extract.py` | SAM3 mask → GeoJSON polygon (+ INSPIRE snap) |
+| `render_page` | `agent/tools/render.py` | Render a PDF page as a BGR image |
+| `propose_centers` | `agent/tools/locate.py` | locate_v2 cascade of candidate centres |
+| `match_at` | `agent/tools/match.py` | MINIMA sliding-window match at one centre |
+| `commit_match` | `agent/tools/match.py` | Smart commit gate over all `match_at` attempts |
+| `extract_boundary` | `agent/tools/extract.py` | SAM3 mask → GeoJSON polygon (+ INSPIRE snap) |
 
-Shared state lives on `AgentState`. The `output_validator` enforces
-preconditions (borderline matches need visual checks, etc.) and re-prompts on
-violations.
+Shared state lives on `AgentState` (`tools/agent/state.py`). The
+`output_validator` enforces preconditions (borderline matches need visual
+checks, etc.) and re-prompts on violations.
 
-### `critic.py` — Phase 3 Commenter
+### `tools/agent/critic.py` — Phase 3 Commenter
 
 Independent VLM agent that reviews the worker's output. Decisions:
 
@@ -64,7 +64,7 @@ through `affine_H` on the right. Both panels depict the same region at the
 same scale and orientation. `build_context_text` appends worker reasoning,
 tool-call counts, `centers_tried`, and prior iteration decisions.
 
-### `matching.py` — Map georeferencing
+### `tools/matching/` — Map georeferencing
 
 - `sliding_window_position(matcher, map_img, sam3_mask, centers, scale_ratio, ...)`
   — production entry. Searches centres × zooms × rotations × window positions.
@@ -77,65 +77,73 @@ tool-call counts, `centers_tried`, and prior iteration decisions.
   4-DOF with a 6-DOF fallback gated on inlier improvement + shear sanity).
 - `mask_to_geojson_affine(mask, affine_H, tile_info)` — project a binary mask
   to GeoJSON.
-- `_expand_thin_mask` — dilates outline-only masks (used by `retry_projection`).
+- `_expand_thin_mask` — re-exported alias of `tools.extraction.mask_ops.expand_thin_mask`
+  (used by `retry_projection`).
 - `compute_map_mpp`, `best_zoom_for_scale`, `sigma_from_scale`,
   `candidate_passes_la_filter` — scale / zoom / search-radius / LA-filter
   helpers.
 
-### `candidates.py` — `propose_centers` cascade
+### `tools/locate/` — `propose_centers` cascade
 
 `propose_centers_v2(pdf_info, …)` builds the candidate list pulled by
-`agent_tools_locate.propose_centers`. Sources: postcode (Code-Point Open +
+`agent.tools.locate.propose_centers`. Sources: postcode (Code-Point Open +
 postcodes.io), OS grid_ref, parish / landmark / road inside the LA polygon
 (OS Open Names with Nominatim address-level fallback), feature_cluster,
 `la_centroid`, `multi_road_consensus`, `road_intersection`, and
 district-lookup. `rank_candidates` scores them via feature-cluster overlap.
 
-### `sam3_boundary.py` — Boundary segmentation
+### `tools/extraction/` — Boundary segmentation
 
-- `load_sam3_ft()` — base SAM3 + LoRA adapter.
-- `extract_boundary_sam3_semantic(image_path, processor, model, device, query)`
+- `sam3.load_sam3_ft()` — base SAM3 + LoRA adapter.
+- `sam3.extract_boundary_sam3_semantic(image_path, processor, model, device, query)`
   — single best mask via semantic segmentation.
-- `extract_candidates(image_path, …, top_k=5)` — multi-candidate extraction
-  ranked by confidence.
-- `select_best_candidate(candidates)` — compactness + area picker.
-- `try_fill_boundary_outline(mask)` — morphological close + flood fill for
-  thin-outline masks.
+- `sam3.extract_candidates(image_path, …, top_k=5)` — multi-candidate
+  extraction ranked by confidence.
+- `sam3.select_best_candidate(candidates)` — compactness + area picker.
+- `sam3.try_fill_boundary_outline(mask)` — morphological close + flood fill
+  for thin-outline masks.
+- `boundary_color` — HSV detection of red / coloured site outlines.
+- `mask_ops` — re-usable mask-cleanup primitives (`expand_thin_mask`,
+  `fill_mask_holes`, `keep_dominant_components`, `cleanup_mask_pipeline`).
 
-### `geocoders.py` — Geocoding sources
+### `tools/geocoding/` — Geocoding sources
 
-- `gpkg_place_search` — OS Open Zoomstack gazetteer (offline, OGL v3).
-- `wikidata_place_search` — conservation areas / historic buildings missing
-  from OS data.
-- `nominatim_structured` — OSM ODbL house-number / street lookups.
-- `query_photon` — free-text OSM search (Apache 2.0).
-- `cross_validate_centers`, `_is_valid_uk_coord`, `_distance_m` — shared
-  utilities. `postcodes.io` is dispatched through `tools.code_point`.
+- `dispatchers.gpkg_place_search` — OS Open Zoomstack gazetteer (offline,
+  OGL v3).
+- `dispatchers.wikidata_place_search` — conservation areas / historic
+  buildings missing from OS data.
+- `dispatchers.nominatim_structured` — OSM ODbL house-number / street
+  lookups.
+- `dispatchers.query_photon` — free-text OSM search (Apache 2.0).
+- `dispatchers.cross_validate_centers`, `_is_valid_uk_coord`, `_distance_m`
+  — shared utilities. `postcodes.io` is dispatched through
+  `tools.geocoding.code_point`.
+- `code_point` — Code-Point Open sub-metre postcode lookup.
+- `os_names` — OS Open Names search.
+- `positioning_sources` — anchor cascade primitives.
 
-### `os_opendata_tiles.py` — Offline OS tile rendering
+### `tools/io/` — PDF, tile, page-frame I/O
 
-Renders styled OS-planning-style tiles from the Zoomstack GeoPackage. No API
-key required; OGL v3 licensed.
+- `io.pdf` — PyMuPDF rendering with pdf2image fallback.
+- `io.text_extraction` — structured PDFInfo extraction from rendered pages.
+- `io.os_tiles.fetch_os_opendata_grid(lat, lon, zoom, nx, ny)` — NxN tile
+  canvas + tile metadata (`zoom`, `tx_min`, `ty_min`, `tile_size`). Styled
+  OS-planning-style raster from the Zoomstack GeoPackage. No API key
+  required; OGL v3 licensed.
+- `io.os_tiles.render_tile(zoom, tx, ty)` — single 256×256 tile.
+- `io.rotation_classifier.auto_rotate` — VLM-judged 0/90/180/270° page
+  rotation.
+- `io.map_crop.detect_title_block_crop` — crop title block / legend so the
+  matcher sees only the map.
 
-- `fetch_os_opendata_grid(lat, lon, zoom, nx, ny)` — NxN tile canvas + tile
-  metadata (`zoom`, `tx_min`, `ty_min`, `tile_size`).
-- `render_tile(zoom, tx, ty)` — single 256×256 tile.
+### `tools/metrics/` — Evaluation metrics & visualisation
 
-### `geojson_metrics.py` — Evaluation metrics
-
-- `calculate_spatial_metrics(gt_geojson, predicted_geojson)` — IoU, precision,
-  recall, F1, centroid positioning error.
-- `load_geojson(path)` — validated GeoJSON loader.
-
-### `pdf_tools.py`, `text_extraction.py`
-
-PyMuPDF rendering with pdf2image fallback; structured PDFInfo extraction from
-the rendered pages.
-
-### `visualization_tools.py`
-
-GeoPandas + contextily helpers for predicted-vs-GT overlays
-(`viz_comparison.png`).
+- `geojson.calculate_spatial_metrics(gt_geojson, predicted_geojson)` — IoU,
+  precision, recall, F1, centroid positioning error.
+- `geojson.load_geojson(path)` — validated GeoJSON loader.
+- `visualization.visualize_comparison` — GeoPandas + contextily helpers for
+  predicted-vs-GT overlays (`viz_comparison.png`).
+- `reward` — MINIMA-axis reward shaping used by `agent.tools.match`.
 
 ### Other modules
 
@@ -143,8 +151,5 @@ GeoPandas + contextily helpers for predicted-vs-GT overlays
 - `delaunay_filter.py` — optional Delaunay-consistency RANSAC filter.
 - `verification_checks.py` — cross-checks (LA polygon, scale, area) for the
   critic context.
-- `code_point.py`, `os_names.py`, `positioning_sources.py` — locate-cascade
-  primitives.
-- `logging_utils.py`, `map_crop.py`, `mask_ops.py`, `scale_bar_ocr.py`,
-  `rotation_classifier.py`, `boundary_color.py`, `locate_eval.py`,
-  `reward.py` — supporting utilities.
+- `scoring.py` — `composite_window_score`, `commit_attempt_score`.
+- `candidates.py` — backwards-compat shim re-exporting `tools.locate`.

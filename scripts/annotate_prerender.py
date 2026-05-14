@@ -29,12 +29,12 @@ import numpy as np
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
-from tools.pdf_tools import render_pdf_page
+from tools.io.pdf import render_pdf_page
 # auto_rotate intentionally NOT imported (user preference: annotate raw frame)
-from tools.map_crop import detect_title_block_crop
+from tools.io.map_crop import detect_title_block_crop
 
 
-OUT_ROOT = REPO / "boundary_annotation_v3"
+OUT_ROOT = REPO / "boundary_annotations"
 EVAL_ROOT = REPO / "evaluation_data"
 OVERRIDES_PATH = REPO / "scripts" / "annotate_page_overrides.json"
 NO_CROP_PATH = REPO / "scripts" / "annotate_no_crop.json"
@@ -86,11 +86,28 @@ def _gt_geojson(case_id: str) -> Optional[Dict[str, Any]]:
 
 
 def _pdf_path(case_id: str) -> Optional[Path]:
+    """Pick the PDF most likely to contain the planning map.
+
+    Prefer (in order): filename contains 'map' → 'plan' → 'direction' →
+    'boundary'; falls back to the largest PDF (text-only notices are
+    typically a small fraction of a Plan document's size). A4Da2 was
+    the motivating case: a 17 KB confirmation notice was being picked
+    over a 420 KB "Article_4_Direction_Plan.pdf" sitting in the same
+    folder.
+    """
     base = EVAL_ROOT / case_id
-    for fn in os.listdir(base):
-        if fn.endswith(".pdf"):
-            return base / fn
-    return None
+    if not base.exists():
+        return None
+    pdfs = [base / fn for fn in os.listdir(base) if fn.lower().endswith(".pdf")]
+    if not pdfs:
+        return None
+    if len(pdfs) == 1:
+        return pdfs[0]
+    for kw in ("map", "plan", "direction", "boundary"):
+        hits = [p for p in pdfs if kw in p.name.lower()]
+        if hits:
+            return max(hits, key=lambda p: p.stat().st_size)
+    return max(pdfs, key=lambda p: p.stat().st_size)
 
 
 def _pdf_info(case_id: str) -> Optional[Dict[str, Any]]:
@@ -266,12 +283,9 @@ def render_one(case_id: str, force: bool = False) -> Dict[str, Any]:
     try:
         # 200 DPI matches production benchmark_runner default.
         img = render_pdf_page(str(pdf), page_index=page_idx, dpi=200)
-        # auto_rotate intentionally skipped — annotate the raw PDF frame.
-        if case_id not in _no_crop_cases():
-            try:
-                cr, _, _, info = detect_title_block_crop(img)
-                if info.get("cropped"): img = cr
-            except Exception: pass
+        # auto_rotate and title-block crop are intentionally OFF — annotate
+        # the raw PDF frame. The crop heuristic ate too many real map regions
+        # historically; user wants every case to render uncropped.
     except Exception as e:
         return {"case_id": case_id, "status": f"render_failed: {e!s:.80}"}
 

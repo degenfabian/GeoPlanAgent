@@ -54,7 +54,6 @@ road_annotation_dataset/
 .claude/
 
 # External clones (kept locally, large)
-third_party_samrefiner/
 
 # overnight/ is local scratch — experiments, research notes, debug dumps.
 # Nothing in here needs to be in the public repo.
@@ -67,3 +66,27 @@ evaluation_data/*
 cases_iou_below_*/
 cases_iou_at_or_above_*/
 verifier_dataset/
+
+# loftr_probe experiment — generated data + weights, easy to nuke
+experiments/loftr_probe/pairs/
+experiments/loftr_probe/outputs/
+
+# sam3_v8_replay experiment outputs (easy to nuke)
+experiments/sam3_v8_replay/results.*
+
+
+# Renamed dirs (post 2026-05-14 reorg)
+# boundary_annotations/ replaces the v3 path; same selective-tracking pattern
+# (keep edited.json + edited_mask.png; ignore map.png + initial.json).
+boundary_annotations/*/map.png
+boundary_annotations/*/initial.json
+boundary_annotations/*/initial.json.bak
+
+# training/dataset/ replaces dataset_v6/. Heavy PNGs; only keep manifests.
+training/dataset/maps/
+training/dataset/boundary_masks/
+
+# More experiment-output gitignores
+experiments/sam3_v8_replay/regression_renders/
+experiments/sam3_v8_replay/augmentation_samples/
+experiments/inspire_snap_results.json

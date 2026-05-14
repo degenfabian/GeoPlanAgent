@@ -20,5 +20,4 @@ uv run benchmark_runner.py \
   --model gemini-flash \
   --max-iterations 12 \
   --output-dir "$OUT_DIR" \
-  --force \
-  --include-training-cases
+  --force

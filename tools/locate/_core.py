@@ -31,14 +31,14 @@ import numpy as np
 from pydantic import BaseModel, Field
 
 from tools.geo.grid_ref import os_grid_ref_to_latlon, os_grid_ref_to_latlon_coarse
-from tools.geocoders import (
+from tools.geocoding.dispatchers import (
     _distance_m,
     _is_valid_uk_coord,
     gpkg_place_search,
     nominatim_structured,
     wikidata_place_search,
 )
-from tools.pdf_tools import render_pdf_page
+from tools.io.pdf import render_pdf_page
 
 
 # ─── Constants ─────────────────────────────────────────────────────────────
@@ -1044,7 +1044,7 @@ def _geocode_reference(
       5. Wikidata place search
       6. Photon free-text (last-ditch OSM search, no auth)
     """
-    from tools.geocoders import query_photon
+    from tools.geocoding.dispatchers import query_photon
     if not reference:
         return None
     # 1. Road via Nominatim with city (skip if city_ctx is itself a road)
@@ -1498,7 +1498,7 @@ def _pdf_text_candidates(pdf_info: Dict[str, Any]) -> List[LocateCandidate]:
         # Area" isn't indexed anywhere by exact name). Photon's prefix
         # search resolves these via OSM tags. Filtered by parent_anchor
         # to suppress wrong-UK-region homonyms.
-        from tools.geocoders import query_photon
+        from tools.geocoding.dispatchers import query_photon
         try:
             ph = query_photon(f"{pl}, UK", limit=1)
         except Exception:
@@ -2103,7 +2103,7 @@ def town_centroid(pi: Dict[str, Any]) -> Optional[Tuple[float, float]]:
     the LA polygon. Falls back to LA centroid if no hits inside.
     """
     try:
-        from tools.os_names import search
+        from tools.geocoding.os_names import search
     except Exception:
         return None
 
@@ -2247,8 +2247,8 @@ def propose_centers_v2(pi: Dict[str, Any],
             and road_intersection candidates.
     """
     try:
-        from tools.code_point import lookup_postcode
-        from tools.os_names import search as os_search
+        from tools.geocoding.code_point import lookup_postcode
+        from tools.geocoding.os_names import search as os_search
     except Exception as e:
         return []
 
@@ -2416,7 +2416,7 @@ def propose_centers_v2(pi: Dict[str, Any],
     # ── 5a. GPKG SAFETY NET (OS Zoomstack `names` table) ────────────────
     GPKG_GOOD_TYPES = {"Settlement", "Small Settlements", "Hamlet", "Village",
                         "Sites", "Town"}
-    from tools.geocoders import gpkg_place_search
+    from tools.geocoding.dispatchers import gpkg_place_search
     from shapely.geometry import Point
     gpkg_parent = (la_poly.centroid.y, la_poly.centroid.x) if la_poly is not None \
                    else (town if town is not None else (None, None))
@@ -2485,7 +2485,7 @@ def propose_centers_v2(pi: Dict[str, Any],
     is_district_wide_n = bool(pi.get("is_district_wide"))
     if road_names_n and (likely_town_n or admin_region_n) and not is_district_wide_n:
         try:
-            from tools.geocoders import nominatim_structured  # cached on disk
+            from tools.geocoding.dispatchers import nominatim_structured  # cached on disk
             parish_n = list(pi.get("parish_names") or [])
             place_n = list(pi.get("place_names") or [])[:2]
             fallback_cities = []

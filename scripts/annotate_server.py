@@ -28,7 +28,7 @@ from flask import Flask, jsonify, request, send_file, abort, send_from_directory
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
-WORK = REPO / "boundary_annotation_v3"
+WORK = REPO / "boundary_annotations"
 UI_HTML = REPO / "scripts" / "annotate_ui.html"
 
 app = Flask(__name__)

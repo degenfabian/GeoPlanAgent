@@ -1,4 +1,5 @@
-"""Delaunay-consistency RANSAC filter (Pierdicca et al. 2025).
+"""Delaunay-consistency RANSAC filter (Vaienti, di Lenardo & Kaplan, 2025;
+DOI 10.1080/15230406.2025.2566789).
 
 Post-RANSAC outlier filter for keypoint matches. Builds Delaunay triangulation
 on inlier keypoints in the source (plan) image; for each triangle compares its

@@ -2,7 +2,7 @@
 
 Two backends:
 
-* Code-Point Open (offline, sub-metre, used by :func:`tools.code_point.lookup_postcode`)
+* Code-Point Open (offline, sub-metre, used by :func:`tools.geocoding.code_point.lookup_postcode`)
   is the preferred path and is called directly from the v2 cascade.
 * :func:`_lookup_postcode` here goes through postcodes.io with disk-cache +
   retry. It's the legacy v13 fallback, still used by ``locate_map`` and a
@@ -43,7 +43,7 @@ def _postcode_area(pc: str) -> Optional[str]:
 
 # ─── postcodes.io lookup with disk cache + retry ───────────────────────────
 
-# Shares cache/postcodes_io.json with tools.geocoders.query_postcodes_io_bulk
+# Shares cache/postcodes_io.json with tools.geocoding.dispatchers.query_postcodes_io_bulk
 # so successful lookups from either path persist for both. Confirmed-misses
 # (404) are also cached so we don't re-query non-existent postcodes. Network
 # errors are NOT cached so transient failures get retried on the next run.
@@ -148,7 +148,7 @@ def _area_centroid(area: str) -> Optional[Tuple[float, float]]:
     if area in _AREA_CENTROID_CACHE:
         return _AREA_CENTROID_CACHE[area]
     try:
-        from tools.code_point import _load_area
+        from tools.geocoding.code_point import _load_area
         d = _load_area(area.lower())
         if not d:
             _AREA_CENTROID_CACHE[area] = None

@@ -163,7 +163,7 @@ def estimate_affine(mkpts0, mkpts1, mconf=None, reproj_thresh=10.0):
     if H is None:
         return None, 0, 0.0, None
 
-    # Delaunay-consistency filter (Pierdicca 2025): drops inliers that fall
+    # Delaunay-consistency filter (Vaienti et al. 2025): drops inliers that fall
     # in geometrically inconsistent triangles. Additive — if the filter
     # eliminates too many points or fails, keep the original fit.
     if inlier_mask is not None:
@@ -214,7 +214,7 @@ _latlon_to_global_tile_pixel = latlon_to_global_tile_pixel
 # (2026-05-11) to slim this file. Re-exported here so existing imports such
 # as `from tools.matching import sigma_from_source, _SOURCE_SIGMA_M,
 # _FILTERABLE_SOURCES` keep working unmodified.
-from tools.positioning_sources import (
+from tools.geocoding.positioning_sources import (
     _FILTERABLE_SOURCES,
     _SOURCE_PRIORITY,
     _SOURCE_SIGMA_M,
@@ -331,11 +331,12 @@ def affine_center_to_latlon(affine_H, map_h, map_w, tile_info):
     )
 
 
-# Mask cleanup primitives moved to `tools/mask_ops.py` (2026-05-11). The
-# legacy underscore-prefixed names are kept as module-level aliases so
-# existing imports like `from tools.matching import _expand_thin_mask`
-# (used by tools/critic.py) keep working.
-from tools.mask_ops import (
+# Mask cleanup primitives moved to `tools/extraction/mask_ops.py`
+# (originally extracted from this file on 2026-05-11). The legacy
+# underscore-prefixed names are kept as module-level aliases so existing
+# imports like `from tools.matching import _expand_thin_mask` (used by
+# tools/agent/critic.py) keep working.
+from tools.extraction.mask_ops import (
     cleanup_mask_pipeline,
     expand_thin_mask as _expand_thin_mask,
     fill_mask_holes as _fill_mask_holes,
@@ -421,7 +422,7 @@ def filter_centers(centers, max_centers=5, max_dist_km=50):
     if len(centers) <= 1:
         return centers
 
-    from tools.geocoders import _distance_m
+    from tools.geocoding.dispatchers import _distance_m
 
     trusted = []
     untrusted = []
@@ -506,7 +507,7 @@ def _deduplicate_centers(centers, min_dist_m=500):
     500m collapsing to a single point and starving MINIMA of signal) is
     exactly the reason for this carve-out.
     """
-    from tools.geocoders import _distance_m
+    from tools.geocoding.dispatchers import _distance_m
     deduped = []
     for c in centers:
         if _center_specificity(c[0]) <= 1:
@@ -521,7 +522,7 @@ def _deduplicate_centers(centers, min_dist_m=500):
 # Specificity tables and `_center_specificity` / `filter_centers_by_specificity`
 # moved to `tools/positioning_sources.py` (2026-05-11). Re-exported below so
 # existing imports keep working.
-from tools.positioning_sources import (
+from tools.geocoding.positioning_sources import (
     SOURCE_SPECIFICITY,
     _BROAD_ZOOMSTACK,
     _HIGH_SPECIFICITY_ZOOMSTACK,
@@ -591,7 +592,7 @@ def sliding_window_position(
             n_windows: total windows evaluated
     """
     if tile_fetcher is None:
-        from tools.os_opendata_tiles import fetch_os_opendata_grid
+        from tools.io.os_tiles import fetch_os_opendata_grid
         tile_fetcher = fetch_os_opendata_grid
 
     # UK bounding box filter
@@ -607,7 +608,7 @@ def sliding_window_position(
     # matching, anything >5km from the cluster of other centers is almost
     # certainly wrong. The adaptive IQR path still kicks in when ≥5 centers
     # cluster tightly.
-    from tools.geocoders import cross_validate_centers
+    from tools.geocoding.dispatchers import cross_validate_centers
     uk_centers = cross_validate_centers(uk_centers, max_outlier_km=5)
 
     # GEOMAP_USE_LA_FILTER and GEOMAP_USE_SOURCE_PRIORITY env-gated branches
@@ -666,7 +667,7 @@ def sliding_window_position(
         lats = [c[1] for c in centers]
         lons = [c[2] for c in centers]
         # Pairwise max distance (rough — use bounding-box diagonal)
-        from tools.geocoders import _distance_m as _dist_m
+        from tools.geocoding.dispatchers import _distance_m as _dist_m
         _max_pair = 0.0
         for i in range(len(centers)):
             for j in range(i + 1, len(centers)):

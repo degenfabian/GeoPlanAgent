@@ -1,45 +1,29 @@
-"""
-Planning Document Boundary Extraction Tools
+"""Planning-document boundary extraction toolkit.
 
-Pipeline entry point:
+Top-level packages (each has its own ``__init__.py`` and re-exports):
 
-  agent.py              — PydanticAI agent (5 tools) and main control loop
-  agent_core.py         — Shared agent state + utilities
-  agent_prompts.py      — Reader / locator / matcher / critic system prompts
-  agent_schemas.py      — Pydantic models for tool inputs/outputs
+  agent/      — PydanticAI orchestrator + tool implementations
+                (__init__: run_agent; tools/render, locate, match, extract,
+                verify; state, schemas, prompts, critic)
+  locate/     — propose_centers_v2 cascade + ranker (was candidates.py)
+  matching/   — MINIMA sliding-window matcher + road-name verifier
+  scoring.py  — composite_window_score, commit_attempt_score
+  extraction/ — SAM3 boundary segmentation + colour primitives + mask ops
+                (sam3, boundary_color, mask_ops)
+  geocoding/  — Code-Point Open, OS Open Names, postcodes.io dispatch,
+                positioning-source primitives
+  io/         — PDF render, OS tile render, page rotation, title-block crop,
+                text extraction (pdf, os_tiles, rotation_classifier,
+                map_crop, text_extraction)
+  metrics/    — IoU/F1/positioning metrics, viz overlays, MINIMA reward
+                (geojson, visualization, reward)
+  snap/       — INSPIRE freehold-parcel boundary snap post-processor
+  geo/, os_opendata/ — Read-only geospatial data adapters
 
-Agent-tool modules (one per logical step):
+Top-level helpers:
 
-  agent_tools_render.py  — render_page (PDF -> map crop)
-  agent_tools_locate.py  — propose_centers (locate_v2 cascade)
-  agent_tools_match.py   — match_at + commit_match (MINIMA sliding window)
-  agent_tools_extract.py — extract_boundary (SAM3 -> mask -> GeoJSON)
-  agent_tools_verify.py  — critic loop helpers
-
-Core pipeline modules:
-
-  matching.py            — MINIMA sliding-window position search + scoring
-  candidates.py          — locate_v2 candidate generation + ranking
-  sam3_boundary.py       — SAM3 boundary segmentation (semantic + instance)
-  critic.py              — VLM critic loop
-  pdf_tools.py           — PDF page rendering
-  text_extraction.py     — PDF OCR + structured info extraction
-  os_opendata_tiles.py   — OS OpenData tile rendering (offline)
-  geocoders.py           — Multi-source geocoding (OS Names, postcodes.io, Nominatim, gpkg)
-  code_point.py          — Code-Point Open postcode lookup
-  os_names.py            — OS Open Names search
-  positioning_sources.py — Anchor cascade primitives
-  geojson_metrics.py     — IoU, precision/recall/F1
-  visualization_tools.py — Map-overlay rendering for the benchmark report
-
-Snap / verification post-processors:
-
-  snap/inspire.py        — INSPIRE freehold-parcel boundary snap
-  delaunay_filter.py     — Delaunay-consistency RANSAC filter (optional)
-  verification_checks.py — Cross-checks (LA polygon, scale, area) for critic
-
-Utilities:
-
-  logging_utils.py, map_crop.py, mask_ops.py, scale_bar_ocr.py,
-  rotation_classifier.py, boundary_color.py, locate_eval.py, reward.py
+  candidates.py          — backwards-compat shim re-exporting tools.locate
+  delaunay_filter.py     — optional Delaunay-consistency RANSAC filter
+  verification_checks.py — cross-checks (LA polygon, scale, area) fed to the
+                           critic context
 """

@@ -72,8 +72,8 @@ from transformers import Sam3Model, Sam3Processor
 
 # ── Config ─────────────────────────────────────────────────────────────────
 MODEL_ID = "facebook/sam3"
-DATASET_DIR = REPO / "training" / "dataset_v5"
-OUTPUT_BASE = REPO / "models" / "sam3_lora_v7_both"
+DATASET_DIR = REPO / "training" / "dataset"
+OUTPUT_BASE = REPO / "models" / "sam3_lora"
 
 # Broad LoRA scope across ALL transformer subsystems (vision_encoder,
 # text_encoder, geometry_encoder, detr_encoder, detr_decoder, mask_decoder).
@@ -615,14 +615,14 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
         avg_train = {k: (sum(v) / len(v) if v else 0.0)
                      for k, v in ep_losses.items()}
 
-        # Validation: always measure the INSTANCE head's top-cls slot (the
-        # path the agent's extract_candidates → topk(pred_logits) actually
-        # uses at inference). Also measure the SEMANTIC head when it's
-        # being trained — useful to track but NOT used for early-stop.
-        # Early-stop / best-checkpoint gate on instance IoU since
-        # production pipeline is instance-mode only.
+        # Validation: measure both heads. Combined-head runs gate on the
+        # SEMANTIC head (the user-facing metric for the paper); instance-only
+        # runs fall back to the instance head. Per-case precision/recall/F1
+        # of the semantic head are also tracked so the cross-fold summary
+        # has paper-grade numbers, not just IoU.
         model.eval()
         inst_ious, sem_ious = [], []
+        sem_precisions, sem_recalls, sem_f1s, sem_dices = [], [], [], []
         inst_losses = []
         with torch.no_grad():
             for inputs, gts, dms in val_loader:
@@ -660,7 +660,8 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
                         union = (p_bin + g_bin).clamp(max=1).sum().item()
                         inst_ious.append(inter / union if union > 0 else 0.0)
 
-                # Semantic head IoU (only when semantic is being trained)
+                # Semantic head IoU + paper metrics (precision / recall /
+                # F1 / Dice). Only when semantic is being trained.
                 if not args.instance_only:
                     sem_pred = outputs.semantic_seg.squeeze(1).float()
                     for b in range(sem_pred.shape[0]):
@@ -669,15 +670,33 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
                         p_bin = (torch.sigmoid(pred) > 0.5).float()
                         g_bin = (g > 0.5).float()
                         inter = (p_bin * g_bin).sum().item()
-                        union = (p_bin + g_bin).clamp(max=1).sum().item()
+                        p_sum = p_bin.sum().item()
+                        g_sum = g_bin.sum().item()
+                        union = p_sum + g_sum - inter
                         sem_ious.append(inter / union if union > 0 else 0.0)
+                        # Precision = TP / (TP + FP), Recall = TP / (TP + FN)
+                        prec = inter / p_sum if p_sum > 0 else 0.0
+                        rec = inter / g_sum if g_sum > 0 else 0.0
+                        sem_precisions.append(prec)
+                        sem_recalls.append(rec)
+                        sem_f1s.append(2 * prec * rec / (prec + rec)
+                                       if (prec + rec) > 0 else 0.0)
+                        sem_dices.append(2 * inter / (p_sum + g_sum)
+                                         if (p_sum + g_sum) > 0 else 0.0)
 
-        avg_inst_iou = sum(inst_ious) / len(inst_ious) if inst_ious else 0.0
-        avg_sem_iou = sum(sem_ious) / len(sem_ious) if sem_ious else 0.0
-        avg_inst_loss = sum(inst_losses) / len(inst_losses) if inst_losses else 0.0
-        # Early-stop / best-checkpoint key: instance IoU, since production
-        # uses instance mode. Semantic IoU is logged for diagnostics only.
-        avg_iou = avg_inst_iou
+        def _mean(xs): return sum(xs) / len(xs) if xs else 0.0
+        avg_inst_iou = _mean(inst_ious)
+        avg_sem_iou = _mean(sem_ious)
+        avg_sem_prec = _mean(sem_precisions)
+        avg_sem_rec = _mean(sem_recalls)
+        avg_sem_f1 = _mean(sem_f1s)
+        avg_sem_dice = _mean(sem_dices)
+        avg_inst_loss = _mean(inst_losses)
+        # Early-stop / best-checkpoint key: SEMANTIC IoU when both heads
+        # are trained (the paper-grade head); instance IoU when running
+        # --instance-only (semantic head isn't trained then).
+        avg_iou = (avg_sem_iou if (not args.instance_only and sem_ious)
+                   else avg_inst_iou)
         avg_val = avg_inst_loss
 
         elapsed = time.time() - t0
@@ -687,8 +706,12 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
                           "val_loss": round(avg_val, 4),
                           "val_iou": round(avg_iou, 4),
                           "val_inst_iou": round(avg_inst_iou, 4),
-                          "val_sem_iou": round(avg_sem_iou, 4)})
-        sem_str = (f"  sem_iou={avg_sem_iou:.3f}"
+                          "val_sem_iou": round(avg_sem_iou, 4),
+                          "val_sem_precision": round(avg_sem_prec, 4),
+                          "val_sem_recall": round(avg_sem_rec, 4),
+                          "val_sem_f1": round(avg_sem_f1, 4),
+                          "val_sem_dice": round(avg_sem_dice, 4)})
+        sem_str = (f"  sem_iou={avg_sem_iou:.3f}  sem_f1={avg_sem_f1:.3f}"
                    if not args.instance_only else "")
         print(f"  ep{epoch+1}: train={avg_train['total']:.3f} "
               f"(sem={avg_train['sem']:.3f} inst={avg_train['inst']:.3f})  "
@@ -743,10 +766,26 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
                   f"{args.patience} epochs (best={best_val_iou:.3f})")
             break
 
-    # Final summary
+    # Final summary — pull the best epoch's row from history (the row whose
+    # val_iou matches best_val_iou, taking the earliest match if there are
+    # ties to be deterministic). Paper metrics come from that row.
+    best_row = next((r for r in history if r.get("val_iou") == best_val_iou),
+                    history[-1] if history else {})
     print(f"\n=== fold {fold} done. best val_iou={best_val_iou:.3f}. "
           f"checkpoints in {out_dir}")
-    return {"fold": fold, "best_val_iou": best_val_iou, "history": history}
+    return {
+        "fold": fold,
+        "best_val_iou": best_val_iou,
+        "best_epoch": best_row.get("epoch"),
+        "n_val": len(val_loader.dataset) if val_loader is not None else None,
+        "val_inst_iou": best_row.get("val_inst_iou"),
+        "val_sem_iou": best_row.get("val_sem_iou"),
+        "val_sem_precision": best_row.get("val_sem_precision"),
+        "val_sem_recall": best_row.get("val_sem_recall"),
+        "val_sem_f1": best_row.get("val_sem_f1"),
+        "val_sem_dice": best_row.get("val_sem_dice"),
+        "history": history,
+    }
 
 
 def main() -> int:
@@ -833,18 +872,73 @@ def main() -> int:
         r = train_fold(fold, args, manifest, processor, device)
         summary.append(r)
 
-    # Cross-fold summary
+    # Cross-fold summary — paper-grade. Writes cv_summary.{json,csv} so the
+    # numbers below can be cited verbatim without re-deriving them.
     if summary:
-        ious = [s["best_val_iou"] for s in summary]
-        mean = sum(ious) / len(ious)
-        std = (sum((v - mean) ** 2 for v in ious) / len(ious)) ** 0.5
-        print(f"\n=== 5-fold summary ===")
+        import csv as _csv
+
+        def _agg(key):
+            vals = [s.get(key) for s in summary if s.get(key) is not None]
+            if not vals: return None, None
+            m = sum(vals) / len(vals)
+            sd = (sum((v - m) ** 2 for v in vals) / len(vals)) ** 0.5
+            return m, sd
+
+        metric_keys = ["val_sem_iou", "val_sem_precision", "val_sem_recall",
+                        "val_sem_f1", "val_sem_dice", "val_inst_iou"]
+        means = {k: _agg(k)[0] for k in metric_keys}
+        stds = {k: _agg(k)[1] for k in metric_keys}
+        n_total_val = sum((s.get("n_val") or 0) for s in summary)
+
+        cv = {
+            "folds": [
+                {k: s.get(k) for k in
+                 ["fold", "best_epoch", "n_val",
+                  "val_sem_iou", "val_sem_precision", "val_sem_recall",
+                  "val_sem_f1", "val_sem_dice", "val_inst_iou"]}
+                for s in summary
+            ],
+            "mean": means,
+            "std": stds,
+            "n_total_val": n_total_val,
+            "gate_metric": ("val_sem_iou" if not args.instance_only
+                            else "val_inst_iou"),
+            "dataset_dir": str(DATASET_DIR_),
+            "model_dir": str(OUTPUT_BASE),
+            "config": {"rank": args.rank, "lr": args.lr,
+                       "epochs": args.epochs, "batch_size": args.batch_size,
+                       "grad_accum": args.grad_accum,
+                       "oversample": args.oversample,
+                       "seed": args.seed, "bf16": bool(args.bf16),
+                       "patience": args.patience,
+                       "instance_only": bool(args.instance_only)},
+        }
+        (OUTPUT_BASE / "cv_summary.json").write_text(json.dumps(cv, indent=2))
+        with open(OUTPUT_BASE / "cv_summary.csv", "w", newline="") as fh:
+            w = _csv.DictWriter(fh, fieldnames=[
+                "fold", "best_epoch", "n_val",
+                "val_sem_iou", "val_sem_precision", "val_sem_recall",
+                "val_sem_f1", "val_sem_dice", "val_inst_iou"])
+            w.writeheader()
+            for row in cv["folds"]: w.writerow(row)
+
+        print(f"\n=== 5-fold summary ({'sem-gated' if not args.instance_only else 'inst-only'}) ===")
         for s in summary:
-            print(f"  fold {s['fold']}: best val_iou = {s['best_val_iou']:.3f}")
-        print(f"  mean ± std:  {mean:.3f} ± {std:.3f}")
-        print()
-        print(f"  High std (>0.05) → folds disagree, more data would help.")
-        print(f"  Low std (<0.02)  → model is converged, more data unlikely to.")
+            print(f"  fold {s['fold']:>1d} (n_val={s.get('n_val','?'):>3}, "
+                  f"best_ep={s.get('best_epoch')}): "
+                  f"sem_iou={s.get('val_sem_iou', 0) or 0:.3f}  "
+                  f"prec={s.get('val_sem_precision', 0) or 0:.3f}  "
+                  f"rec={s.get('val_sem_recall', 0) or 0:.3f}  "
+                  f"f1={s.get('val_sem_f1', 0) or 0:.3f}  "
+                  f"dice={s.get('val_sem_dice', 0) or 0:.3f}  "
+                  f"inst_iou={s.get('val_inst_iou', 0) or 0:.3f}")
+        print(f"\n  Paper-grade aggregates (n_total_val={n_total_val}):")
+        for k in metric_keys:
+            label = k.replace("val_", "").replace("_", " ")
+            if means[k] is None: continue
+            print(f"    {label:22s}  {means[k]:.4f} ± {stds[k]:.4f}")
+        print(f"\n  Wrote {OUTPUT_BASE/'cv_summary.json'}")
+        print(f"  Wrote {OUTPUT_BASE/'cv_summary.csv'}")
     return 0
 
 

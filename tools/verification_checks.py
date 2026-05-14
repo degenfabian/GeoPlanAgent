@@ -194,7 +194,7 @@ def check_postcode_in_polygon(pdf_info: Dict[str, Any], predicted_geom) -> Check
     if not pcs or predicted_geom is None or predicted_geom.is_empty:
         return (0.5, "")
     try:
-        from tools.code_point import lookup_postcode
+        from tools.geocoding.code_point import lookup_postcode
     except Exception:
         return (0.5, "")
     hit = None
@@ -439,24 +439,21 @@ def check_scale_factor(match_info: Dict[str, Any]) -> CheckResult:
 # ────────────────────────────────────────────────────────────────────────────
 
 def check_building_overlap(predicted_geom) -> CheckResult:
-    """Predicted polygon should contain or border at least one OS building
-    when the surrounding area is urban (>10 buildings within 500m of polygon
-    centroid). Rural sites without buildings nearby are not penalized.
+    """Disabled 2026-05-14 along with the rest of tools/snap/. Previously
+    depended on tools.snap.parcel.building_polygons_in_bbox which read OS
+    OpenMap Local buildings; that whole snap subpackage was removed after
+    the INSPIRE-snap ablation showed all parcel-style post-processing
+    contributed 0.0 mean IoU on the dataset.
 
-    This catches catastrophic positioning where the polygon lands in empty
-    space far from any OS building footprint despite being in an urban
-    setting (e.g. wrong-town homonym matches).
-
-    Returns confidence:
-      1.0 — rural (no buildings within 500m, gate not applicable)
-      1.0 — urban AND ≥1 OS building within 30m of polygon (overlap or border)
-      0.5 — urban AND nearest OS building 30-100m away
-      0.0 — urban AND no OS building within 100m of polygon
+    Returns neutral (0.5, "") so the aggregator's "skip neutral" gate fires
+    and this check contributes 0 weight to verification_score.
     """
+    return (0.5, "")
+    # Legacy implementation kept as comment for historical reference:
     if predicted_geom is None or predicted_geom.is_empty:
         return (0.5, "")
     try:
-        from tools.snap.parcel import building_polygons_in_bbox
+        from tools.snap.parcel import building_polygons_in_bbox  # type: ignore
     except Exception:
         return (0.5, "parcel_snap not available")
     try:

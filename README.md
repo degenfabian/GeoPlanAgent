@@ -34,27 +34,25 @@ GeoMapAgent_autonomous/
 ├── uv.lock
 │
 ├── tools/                     # Core pipeline modules (see tools/__init__.py)
-│   ├── agent.py               # Reader + Worker agents
-│   ├── agent_core.py          # Shared agent state
-│   ├── agent_prompts.py       # System prompts
-│   ├── agent_schemas.py       # Pydantic models for tool I/O
-│   ├── agent_tools_render.py  # render_page
-│   ├── agent_tools_locate.py  # propose_centers
-│   ├── agent_tools_match.py   # match_at + commit_match
-│   ├── agent_tools_extract.py # extract_boundary
-│   ├── agent_tools_verify.py  # critic-loop helpers
-│   ├── critic.py              # Phase 3 critic loop
-│   ├── matching.py            # MINIMA sliding-window match + scoring
-│   ├── candidates.py          # locate_v2 candidate generation + ranking
-│   ├── sam3_boundary.py       # SAM3 boundary segmentation
-│   ├── geocoders.py           # OS Names, postcodes.io, Nominatim, gpkg
-│   ├── code_point.py          # Code-Point Open postcode lookup
-│   ├── os_names.py            # OS Open Names search
-│   ├── os_opendata_tiles.py   # Offline OS tile rendering
-│   ├── pdf_tools.py           # PDF rendering
-│   ├── text_extraction.py     # PDF OCR + structured info
-│   ├── geojson_metrics.py     # IoU / precision / recall / F1
-│   └── visualization_tools.py # Boundary visualisation
+│   ├── agent/                 # PydanticAI orchestrator + tool impls
+│   │   ├── __init__.py        #   run_agent() entry point
+│   │   ├── state.py           #   shared AgentState
+│   │   ├── schemas.py         #   Pydantic models for tool I/O
+│   │   ├── prompts.py         #   reader / worker / critic prompts
+│   │   ├── critic.py          #   Phase 3 critic loop
+│   │   └── tools/             #   render / locate / match / extract / verify
+│   ├── locate/                # propose_centers_v2 cascade + ranker
+│   ├── matching/              # MINIMA sliding-window + road-name verifier
+│   ├── extraction/            # sam3, boundary_color, mask_ops
+│   ├── geocoding/             # code_point, os_names, dispatchers, positioning
+│   ├── io/                    # pdf, os_tiles, rotation_classifier, map_crop,
+│   │                          #   text_extraction
+│   ├── metrics/               # geojson (IoU/F1), visualization, reward
+│   ├── snap/                  # INSPIRE freehold-parcel snap
+│   ├── scoring.py             # composite_window_score, commit_attempt_score
+│   ├── candidates.py          # backwards-compat shim → tools.locate
+│   ├── delaunay_filter.py     # optional Delaunay-consistency RANSAC filter
+│   └── verification_checks.py # critic cross-checks (LA poly, scale, area)
 │
 ├── scripts/run_benchmark.sh   # One-shot full-benchmark wrapper
 ├── MINIMA/                    # LoFTR matcher (external, gitignored)
@@ -93,8 +91,7 @@ scripts/run_benchmark.sh results/my_run        # custom output dir
 ```
 
 Equivalent to: `uv run benchmark_runner.py --model gemini-flash
---max-iterations 12 --output-dir results/benchmark --force
---include-training-cases`.
+--max-iterations 12 --output-dir results/benchmark --force`.
 
 ### Subsetting
 
@@ -122,7 +119,7 @@ Any OpenRouter model ID is also accepted directly.
 
 ```python
 from tools.agent import run_agent
-from tools.sam3_boundary import load_sam3_ft
+from tools.extraction.sam3 import load_sam3_ft
 from tools.matching import load_minima
 
 models = {"sam3_ft": load_sam3_ft(), "minima": load_minima()}

@@ -49,7 +49,7 @@ def feature_cluster_locate(
     around which the most OTHER LABELS have a hit within ``cluster_radius_km``.
     """
     try:
-        from tools.os_names import search as os_search
+        from tools.geocoding.os_names import search as os_search
     except Exception:
         return None
     targets = []
@@ -112,7 +112,7 @@ def feature_match_score(
     Returns ``{"score": fraction_matched, "n_targets": N, "n_hits": k}``.
     """
     try:
-        from tools.os_names import search as os_search
+        from tools.geocoding.os_names import search as os_search
     except Exception:
         return {"score": 0.0, "n_targets": 0, "n_hits": 0}
 

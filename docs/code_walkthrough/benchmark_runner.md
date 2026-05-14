@@ -26,8 +26,7 @@ uv run benchmark_runner.py \
 | `--force` | Overwrite existing case results |
 | `--hard-first` | Sort cases by prior-run worst-IoU first |
 | `--prev-results DIR` | Source for `--hard-first` IoUs |
-| `--no-critic` | Skip Phase-3 VLM critic |
-| `--include-training-cases` | Include all 27 training-set cases (use with k-fold inference) |
+| `--with-critic` | Enable Phase-3 VLM critic (default OFF) |
 
 ## High-level flow
 
@@ -37,7 +36,7 @@ uv run benchmark_runner.py \
 3. Filter:
    - cases that exist in eval_dir
    - inject *_merged folders (added during cleanup)
-   - (unless --include-training-cases) drop training set
+   - drop the DUPLICATE_SL_NOS set (5 cases physically removed 2026-05-13)
    - (if --cases) keep only specified
    - (if --hard-first) reorder by prior IoU
 4. Build models once (SAM3+LoRA, MINIMA, verifier)
@@ -55,19 +54,25 @@ uv run benchmark_runner.py \
 ### `_parse_args()` (~line 30)
 
 Standard argparse. Notable flags:
-- `--include-training-cases` — only safe with k-fold SAM3, otherwise the
-  fine-tune leaks. The flag's help string is a long warning about this.
+- `--with-critic` — enable the Phase-3 VLM critic loop. Default OFF.
 - `--hard-first` + `--prev-results` — ordering hack: when iterating on
   the worst cases during a debug session, you don't want to wait through
   150 trivial cases first.
 
 ### `EXCLUDE_SL_NOS` (line 28)
 
-Set of 27 serial numbers from the Excel manifest that correspond to
-hand-annotated training cases. Excluded by default to prevent training
-contamination.
+Set of 27 serial numbers from the Excel manifest that were the legacy
+single-adapter SAM3's training set. **No longer enforced** as of
+2026-05-14 — k-fold SAM3 holds each case out from its own inference
+adapter, so including these cases is leakage-free. The constant is kept
+for paper-reproducibility and documenting the historical split.
 
-### `run_benchmark(model_name, output_dir, max_cases, start_from, dpi, max_iterations, only_cases, force, hard_first, prev_results_dir, enable_critic, include_training_cases)` (line ~196)
+### `DUPLICATE_SL_NOS` (line ~34)
+
+The 5 cases physically removed from disk on 2026-05-13 because they were
+duplicates of other cases. Always filtered, regardless of any other flag.
+
+### `run_benchmark(model_name, output_dir, max_cases, start_from, dpi, max_iterations, only_cases, force, hard_first, prev_results_dir, enable_critic)` (line ~196)
 
 The core function:
 
@@ -80,8 +85,8 @@ The core function:
 3. **Inject `*_merged` folders** that exist on disk but aren't in the
    Excel (added during cleanup — these are post-hoc consolidated cases
    whose own PDF + GT geojson live in their `_merged` folder). Synthetic
-   `Sl no` 9001+ keeps them out of the training-exclude filter.
-4. Apply `EXCLUDE_SL_NOS` filter unless `--include-training-cases`.
+   `Sl no` 9001+ keeps them out of the duplicate filter.
+4. Drop `DUPLICATE_SL_NOS` (5 deleted cases).
 
 #### Filtering modes (lines 247-310)
 
@@ -186,9 +191,12 @@ case from disk without re-running the agent.
 
 ## `EXCLUDE_SL_NOS` (line 28)
 
-Hardcoded list of 27 Sl numbers corresponding to training cases. Pulled
-from the spreadsheet during initial setup; preserved here so re-runs
-without `--include-training-cases` give honest test-set evaluation.
+Hardcoded list of 27 Sl numbers that were the legacy single-adapter
+SAM3's training set. Retired 2026-05-14 — k-fold SAM3 holds each case
+out from its own inference adapter, so all cases are now included
+regardless of whether they were once in the training pool. The constant
+is kept for paper-reproducibility (documenting which cases used to be
+the training-only subset for single-adapter ablations).
 
 ## Why this design
 
