@@ -34,6 +34,14 @@ additional rules):
   the document; in v10 failures (e.g. case 1D1A9561) the reader returned
   pages in PDF order [6, 7] when [7, 6] was correct.
 
+- map_page_details: PARALLEL to map_pages — one MapPageMeta per entry, in
+  the same order. Set role to 'detail' for the page showing the drawn
+  boundary at a useful scale; 'context' for wider regional/town overviews
+  with no boundary drawn; 'location' for small locator insets (pin/arrow
+  marker); 'key' for legend/key pages; 'other' for floor plans, photos,
+  diagrams. Typically only one page is 'detail'. Add a short (≤120 char)
+  caption to each so the worker can pick wisely without re-rendering.
+
 - postcodes: extract ALL UK postcodes. Look in site address, map title blocks,
   form fields, tables, and application metadata. Postcodes are the strongest
   geocoding signal — be thorough.
@@ -219,11 +227,15 @@ WORKFLOW
    verify_position_called and rotation_checked are auto-overwritten from
    state — leave at defaults.
 
-MULTI-PAGE: map_pages[0] is the reader's best guess and is pre-rendered.
-If round-1 match_at scores all sit below 0.40 AND more entries remain,
-call render_page(N) for the next entry and rerun propose_centers +
-match_at from scratch. Pick a single best page; the pipeline does not
-accumulate multiple pages.
+MULTI-PAGE: map_pages[0] is the reader's best guess at the detail map and
+is pre-rendered as your active image. The other map_pages have been
+pre-rendered too (free state-pointer flip via render_page(N)) — see
+"Map-page roles" in your initial prompt for what each page contains.
+Pages with role='detail' are candidate site maps; 'context'/'location'
+are wider overviews; 'key'/'other' aren't useful for positioning.
+If round-1 match_at scores all sit below 0.40 AND another 'detail' page
+exists, switch via render_page(N) and rerun propose_centers + match_at.
+Pick a single best page; the pipeline does not accumulate multiple pages.
 
 BUDGET: max 5 match_at calls per case. Focus on top-specificity candidates
 first. If all 5 score below 0.40, commit the highest-scoring one anyway

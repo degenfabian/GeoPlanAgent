@@ -20,6 +20,31 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 # ── Structured Outputs (Pydantic models enforced via pydantic-ai) ─────────
 
+class MapPageMeta(BaseModel):
+    """One entry per map page found in the PDF. Parallel to PDFInfo.map_pages."""
+    page: int = Field(description="1-based page number in the PDF.")
+    role: Literal["detail", "context", "location", "key", "other"] = Field(
+        description="What this map page shows. "
+                    "'detail' = the site map with the drawn planning boundary "
+                    "at a useful scale (this is what the worker should position); "
+                    "'context' = a wider regional/town overview, no boundary drawn; "
+                    "'location' = a small locator inset (e.g. '<site> within "
+                    "Borough X', usually a pin or arrow); "
+                    "'key' = legend / key / symbol table; "
+                    "'other' = anything else (e.g. floor plan, photo, diagram). "
+                    "Only one page should typically be 'detail'."
+    )
+    caption: str = Field(
+        default="",
+        description="One-line description of what's on the page so the worker "
+                    "can pick wisely without re-rendering. Examples: "
+                    "'Detail map at 1:1250 showing red boundary around 4 houses'; "
+                    "'Regional context map of South Norfolk with site marked'; "
+                    "'Site plan key — legend for hatching styles'. "
+                    "Keep under ~120 chars."
+    )
+
+
 class PDFInfo(BaseModel):
     """Structured output for the reader agent. pydantic-ai enforces the schema;
     the model physically cannot return a string — it must fill these fields."""
@@ -56,6 +81,14 @@ class PDFInfo(BaseModel):
                     "appears alongside a detailed site map, the DETAILED page "
                     "comes first. Include ALL map pages even if some are "
                     "context-only — the worker can fall back to them."
+    )
+    map_page_details: List[MapPageMeta] = Field(
+        default_factory=list,
+        description="Parallel to map_pages, in the same order: one MapPageMeta "
+                    "per page describing what's on it (role + short caption). "
+                    "Lets the worker pick the right page without re-rendering. "
+                    "If you populate map_pages with N entries, populate "
+                    "map_page_details with N entries in the same order."
     )
     n_pages: int = 0
     road_names: List[str] = Field(default_factory=list)

@@ -284,43 +284,54 @@ def run_agent(
     # multi-page counting and district-wide checks).
     state.pdf_info = {k: v for k, v in pdf_info.items() if not k.startswith("_")}
 
-    # Render the first map page so the worker agent has an image immediately
-    map_pages = pdf_info.get("map_pages", [])
-    map_page_imgs = []
+    # Pre-render EVERY map page from the reader (auto-rotate + map_crop applied).
+    # Each is cached on state.rendered_pages so render_page(N) becomes a free
+    # state-pointer flip rather than re-rendering. The first page is the
+    # active one when the worker starts.
+    map_pages = pdf_info.get("map_pages", []) or []
+    map_page_details = pdf_info.get("map_page_details", []) or []
     if map_pages:
-        first_map_page = map_pages[0]
-        page_idx = max(0, first_map_page - 1)
         from tools.io.pdf import render_pdf_page
         try:
-            map_img = render_pdf_page(str(pdf_path), page_idx, dpi=dpi)
-        except IndexError:
-            map_img = None
-        if map_img is not None:
-
-            # Auto-rotate via the trained classifier (ResNet50 + TTA +
-            # confidence threshold). Replaces the agent's old rotate_map
-            # tool which was a footgun (rotated cases that didn't need
-            # rotating, destroyed v9 cases vs v7 baseline). DocTR page-
-            # orientation detector before that was confidently wrong on
-            # planning-map content. The trained classifier has 95%+
-            # accuracy on its kept predictions and abstains (returns 0)
-            # when uncertain, so failure mode is "no rotation" not
-            # "wrong rotation".
+            from tools.io.rotation_classifier import auto_rotate
+        except Exception:
+            auto_rotate = None
+        try:
+            from tools.io.map_crop import detect_title_block_crop
+        except Exception:
+            detect_title_block_crop = None
+        for page_1based in map_pages:
+            page_idx = max(0, int(page_1based) - 1)
             try:
-                from tools.io.rotation_classifier import auto_rotate
-                map_img, rot_info = auto_rotate(map_img, verbose=verbose)
-                if rot_info["applied"]:
-                    state.rotation_checked = True
-            except Exception as e:
-                if verbose:
-                    print(f"  rotation_classifier unavailable "
-                          f"({e!s:.80}); proceeding with raw render")
-            state.map_img = map_img
-            # Save to temp file for SAM3
+                page_img = render_pdf_page(str(pdf_path), page_idx, dpi=dpi)
+            except IndexError:
+                page_img = None
+            if page_img is None:
+                continue
+            if auto_rotate is not None:
+                try:
+                    page_img, rot_info = auto_rotate(page_img, verbose=verbose)
+                    if rot_info.get("applied") and page_1based == map_pages[0]:
+                        state.rotation_checked = True
+                except Exception as e:
+                    if verbose:
+                        print(f"  rotation_classifier failed for page "
+                              f"{page_1based} ({e!s:.80}); proceeding raw")
+            if detect_title_block_crop is not None:
+                try:
+                    cropped, _xo, _yo, _info = detect_title_block_crop(page_img)
+                    if _info.get("cropped"):
+                        page_img = cropped
+                except Exception:
+                    pass
             with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
-                state.map_crop_path = tmp.name
-                cv2.imwrite(tmp.name, map_img)
-            map_page_imgs.append((first_map_page, map_img))
+                tmp_path = tmp.name
+            cv2.imwrite(tmp_path, page_img)
+            state.rendered_pages[int(page_1based)] = page_img
+            state.rendered_page_paths[int(page_1based)] = tmp_path
+            if page_1based == map_pages[0]:
+                state.map_img = page_img
+                state.map_crop_path = tmp_path
 
     # No fast-path on is_district_wide. The reader over-flags this on
     # conservation areas, named neighbourhoods, and small sites in
@@ -329,22 +340,31 @@ def run_agent(
     # lookup_district as a tool and falls back to it when match_at
     # attempts all score below the system-prompt threshold.
 
-    # Build the worker's user prompt: JSON summary + pre-rendered map image
-    # (no PDF binary — that's the whole point)
+    # Build the worker's user prompt: JSON summary + active map page image.
+    # Pages with role != "detail" are described in the summary but not sent
+    # as images to keep token usage flat; the worker can render_page(N) to
+    # switch (free, since we pre-rendered).
     summary_text = json.dumps({k: v for k, v in pdf_info.items()
                                 if not k.startswith("_")}, indent=2)
+    roles_line = ""
+    if map_page_details:
+        roles = ", ".join(
+            f"page {d.get('page', '?')}=[{d.get('role', '?')}] "
+            f"{(d.get('caption') or '')[:60]!r}"
+            for d in map_page_details
+        )
+        roles_line = f"\nMap-page roles (cached, switch via render_page(N)): {roles}\n"
     user_parts: list = [
-        f"PDF EXTRACTION SUMMARY:\n{summary_text}\n\n"
+        f"PDF EXTRACTION SUMMARY:\n{summary_text}\n{roles_line}\n"
         f"Use this information to geolocate and extract the planning boundary. "
-        f"The first map page (page {map_pages[0] if map_pages else '?'}) has been "
-        f"pre-rendered as your working map."
+        f"Page {map_pages[0] if map_pages else '?'} (role='detail', the "
+        f"top-ranked map) is pre-rendered as your working map."
     ]
 
-    # Attach the pre-rendered map image
-    if map_page_imgs:
-        page_num, img = map_page_imgs[0]
-        user_parts.append(f"Map page {page_num}:")
-        user_parts.append(_img_to_binary(img))
+    # Attach the active map image
+    if state.map_img is not None:
+        user_parts.append(f"Map page {map_pages[0]}:")
+        user_parts.append(_img_to_binary(state.map_img))
 
     if verbose:
         print(f"  Running agent ({model_name}, max {max_iterations} turns)")
@@ -509,20 +529,24 @@ def run_agent(
     # with a REJECTED:... prefix.
     agent_rejected = (state.accept_reason or "").upper().lstrip().startswith("REJECTED")
 
-    # Clean up temp files
-    if state.map_crop_path:
+    # Clean up temp files: every pre-rendered page + any rotated variants.
+    seen_paths = set()
+    for p in list(state.rendered_page_paths.values()) + [state.map_crop_path]:
+        if not p or p in seen_paths:
+            continue
+        seen_paths.add(p)
         try:
-            os.unlink(state.map_crop_path)
+            os.unlink(p)
         except OSError:
             pass
-        # Clean up rotated variants
-        for rot_path in Path(state.map_crop_path).parent.glob(
-            Path(state.map_crop_path).stem + "_rot*.png"
-        ):
-            try:
-                rot_path.unlink()
-            except OSError:
-                pass
+        try:
+            for rot_path in Path(p).parent.glob(Path(p).stem + "_rot*.png"):
+                try:
+                    rot_path.unlink()
+                except OSError:
+                    pass
+        except OSError:
+            pass
 
     if verbose:
         mi = state.current_result.get("match_info", {})

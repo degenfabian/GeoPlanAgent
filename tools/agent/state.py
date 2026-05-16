@@ -144,9 +144,15 @@ class AgentState:
             except Exception:
                 pass
 
-        # Set by render_page
+        # Set by render_page (active page)
         self.map_img: Optional[np.ndarray] = None
         self.map_crop_path: Optional[str] = None
+
+        # Pre-rendered cache of every map_page from the reader.
+        # Populated by _read_pdf_phase; render_page(N) does a state-pointer
+        # flip into these rather than re-rendering. Keyed by 1-based page.
+        self.rendered_pages: Dict[int, np.ndarray] = {}
+        self.rendered_page_paths: Dict[int, str] = {}
 
         # Set by extract_boundary
         self.current_mask: Optional[np.ndarray] = None
