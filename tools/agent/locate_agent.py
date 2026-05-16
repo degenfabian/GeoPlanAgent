@@ -139,8 +139,8 @@ _locate_agent = Agent(
     "test",  # placeholder, overridden at runtime
     deps_type=LocateState,
     output_type=LocatePick,
-    retries=2,
-    output_retries=2,
+    retries=5,
+    output_retries=5,
     model_settings={"temperature": 0},
     instructions=LOCATE_SYSTEM_PROMPT,
 )
@@ -258,14 +258,11 @@ def road(query: str, la: Optional[str] = None, limit: int = 5) -> dict:
         idx = json.loads(idx_p.read_text())
         q_key = query.lower().strip()
         instances = idx.get(q_key, []) + idx.get(q_key + " road", [])
-        try:
-            from tools.locate._core import _la_polygon_for
-        except Exception:
-            _la_polygon_for = None
+        from tools.verification_checks import _resolve_la
         la_poly = None
-        if la and _la_polygon_for:
+        if la:
             try:
-                la_poly = _la_polygon_for({"admin_region": la})
+                la_poly = _resolve_la(la)
             except Exception:
                 la_poly = None
         rev = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True)
@@ -309,10 +306,7 @@ def intersect(road_a: str, road_b: str, la: Optional[str] = None,
         from pathlib import Path as _Path
         from pyproj import Transformer
         from shapely.geometry import LineString, Point
-        try:
-            from tools.locate._core import _la_polygon_for
-        except Exception:
-            _la_polygon_for = None
+        from tools.verification_checks import _resolve_la
         geom_p = REPO / "tools" / "oml_road_geom_subset.json"
         if not geom_p.exists():
             return {"success": False, "error": "OML road geom missing"}
@@ -320,9 +314,9 @@ def intersect(road_a: str, road_b: str, la: Optional[str] = None,
         fwd = Transformer.from_crs("EPSG:4326", "EPSG:27700", always_xy=True)
         rev = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True)
         la_bbox_bng = None
-        if la and _la_polygon_for:
+        if la:
             try:
-                la_poly = _la_polygon_for({"admin_region": la})
+                la_poly = _resolve_la(la)
                 if la_poly is not None:
                     mn_lon, mn_lat, mx_lon, mx_lat = la_poly.bounds
                     x1, y1 = fwd.transform(mn_lon, mn_lat)
@@ -405,9 +399,9 @@ def la_check(lat: float, lon: float, la: str) -> dict:
         "la_centroid_lat": float, "la_centroid_lon": float}
     """
     try:
-        from tools.locate._core import _la_polygon_for
+        from tools.verification_checks import _resolve_la
         from shapely.geometry import Point
-        poly = _la_polygon_for({"admin_region": la})
+        poly = _resolve_la(la)
         if poly is None:
             return {"success": False,
                     "error": f"No polygon for LA '{la}'"}
@@ -429,9 +423,50 @@ def la_check(lat: float, lon: float, la: str) -> dict:
 
 # ── Entry point ───────────────────────────────────────────────────────────
 
+def _emergency_la_centroid_pick(pdf_info: dict, reason: str) -> LocatePick:
+    """Emergency fallback: build a LocatePick at the LA centroid.
+
+    Used when the agent loop fails entirely (validation retries exhausted,
+    HTTP error, etc.). Guarantees run_locate never returns None — the
+    pipeline always has at least one candidate to feed to MINIMA.
+    """
+    admin = (pdf_info.get("admin_region")
+             or pdf_info.get("likely_town_or_city")
+             or pdf_info.get("district_name") or "").strip()
+    try:
+        from tools.verification_checks import _resolve_la
+        poly = _resolve_la(admin) if admin else None
+    except Exception:
+        poly = None
+    if poly is not None:
+        c = poly.centroid
+        minx, miny, maxx, maxy = poly.bounds
+        radius_m = int(max(maxx - minx, maxy - miny) * 111_000 / 2)
+        sigma = max(2000, min(radius_m, 50_000))
+        return LocatePick(
+            top_lat=float(c.y), top_lon=float(c.x),
+            sigma_m=sigma, confidence="low",
+            picked_source=f"emergency_la_centroid:{admin[:30]}",
+            evidence=f"LA centroid fallback ({reason[:80]})",
+            la_check_passed=True,
+        )
+    return LocatePick(
+        top_lat=54.0, top_lon=-2.0,
+        sigma_m=50_000, confidence="low",
+        picked_source="emergency_uk_centroid",
+        evidence=f"UK centroid fallback (no admin_region; {reason[:60]})",
+        la_check_passed=False,
+    )
+
+
 def run_locate(pdf_info: dict, map_img_bytes: Optional[bytes],
-                model_name: str) -> Optional[LocatePick]:
+                model_name: str) -> LocatePick:
     """Run the live LLM-locate agent for one case.
+
+    Pydantic-ai enforces the LocatePick schema; if the agent loop fails
+    entirely (validation retries exhausted, HTTP error, budget exceeded),
+    we emit an emergency LA-centroid LocatePick rather than returning None.
+    The pipeline ALWAYS gets a valid pick.
 
     Args:
         pdf_info: live reader output (pdf_info dict).
@@ -439,7 +474,7 @@ def run_locate(pdf_info: dict, map_img_bytes: Optional[bytes],
         model_name: OpenRouter model identifier (e.g. "google/gemini-3-flash-preview").
 
     Returns:
-        LocatePick instance, or None on failure.
+        LocatePick instance — guaranteed non-None.
     """
     model = OpenRouterModel(model_name)
     deps = LocateState(pdf_info=pdf_info)
@@ -480,6 +515,5 @@ def run_locate(pdf_info: dict, map_img_bytes: Optional[bytes],
         )
         return result.output
     except Exception as e:
-        # Don't crash the worker — return None so propose_centers can fall back
         print(f"  [locate_agent] failed: {e!s:.200}")
-        return None
+        return _emergency_la_centroid_pick(pdf_info, reason=f"agent failed: {e!s:.60}")

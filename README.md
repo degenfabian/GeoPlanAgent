@@ -38,19 +38,17 @@ GeoMapAgent_autonomous/
 │   │   ├── __init__.py        #   run_agent() entry point
 │   │   ├── state.py           #   shared AgentState
 │   │   ├── schemas.py         #   Pydantic models for tool I/O
-│   │   ├── prompts.py         #   reader / worker / critic prompts
+│   │   ├── prompts.py         #   reader / worker prompts
 │   │   ├── critic.py          #   Phase 3 critic loop
+│   │   ├── locate_agent.py    #   live LLM-locate sub-agent (6 geocoders)
 │   │   └── tools/             #   render / locate / match / extract / verify
-│   ├── locate/                # propose_centers_v2 cascade + ranker
 │   ├── matching/              # MINIMA sliding-window + road-name verifier
 │   ├── extraction/            # sam3, boundary_color, mask_ops
 │   ├── geocoding/             # code_point, os_names, dispatchers, positioning
 │   ├── io/                    # pdf, os_tiles, rotation_classifier, map_crop,
 │   │                          #   text_extraction
 │   ├── metrics/               # geojson (IoU/F1), visualization, reward
-│   ├── snap/                  # INSPIRE freehold-parcel snap
 │   ├── scoring.py             # composite_window_score, commit_attempt_score
-│   ├── candidates.py          # backwards-compat shim → tools.locate
 │   ├── delaunay_filter.py     # optional Delaunay-consistency RANSAC filter
 │   └── verification_checks.py # critic cross-checks (LA poly, scale, area)
 │

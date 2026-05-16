@@ -1,29 +1,20 @@
-"""Single source of truth for candidate scoring across the pipeline.
+"""Single source of truth for match-stage candidate scoring.
 
-The pipeline has three independent scoring stages, each with a named
-function here:
+Two stages, each with a named function:
 
 1. :func:`composite_window_score` — applied to each MINIMA sliding-window
    match. Decides which window to keep within a candidate centre.
 2. :func:`commit_attempt_score` — applied across the agent's accumulated
    ``match_at`` attempts. Decides which one ``commit_match`` will keep.
-3. :func:`feature_match_score` (re-exported from
-   :mod:`tools.locate.ranker`) — applied to locate-stage candidates.
-   Decides the order ``propose_centers`` returns them in.
 
-Keeping these in one file makes the trade-offs auditable in a single
-place rather than buried across :mod:`tools.matching`,
-:mod:`tools.agent_tools_match`, and :mod:`tools.locate.ranker`.
+Locate-stage scoring lives inside :mod:`tools.agent.locate_agent` (the
+live LLM-locate sub-agent picks one center directly).
 """
 
 from __future__ import annotations
 
 import math
 from typing import Optional, Tuple
-
-# Re-export the locate-stage feature_match scorer here so callers have
-# `from tools.scoring import …` as a single entry point.
-from tools.locate.ranker import feature_match_score, rank_candidates  # noqa: F401
 
 
 # ─── Stage 1: sliding-window match score ───────────────────────────────────

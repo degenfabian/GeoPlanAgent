@@ -26,7 +26,7 @@ Worker tools (one module per logical step under `tools/agent/tools/`):
 | Tool | Module | Purpose |
 |---|---|---|
 | `render_page` | `agent/tools/render.py` | Render a PDF page as a BGR image |
-| `propose_centers` | `agent/tools/locate.py` | locate_v2 cascade of candidate centres |
+| `propose_centers` | `agent/tools/locate.py` | Delegates to the live LLM-locate sub-agent in `agent/locate_agent.py` |
 | `match_at` | `agent/tools/match.py` | MINIMA sliding-window match at one centre |
 | `commit_match` | `agent/tools/match.py` | Smart commit gate over all `match_at` attempts |
 | `extract_boundary` | `agent/tools/extract.py` | SAM3 mask → GeoJSON polygon (+ INSPIRE snap) |
@@ -83,14 +83,24 @@ tool-call counts, `centers_tried`, and prior iteration decisions.
   `candidate_passes_la_filter` — scale / zoom / search-radius / LA-filter
   helpers.
 
-### `tools/locate/` — `propose_centers` cascade
+### Locate sub-agent (`tools/agent/locate_agent.py`)
 
-`propose_centers_v2(pdf_info, …)` builds the candidate list pulled by
-`agent.tools.locate.propose_centers`. Sources: postcode (Code-Point Open +
-postcodes.io), OS grid_ref, parish / landmark / road inside the LA polygon
-(OS Open Names with Nominatim address-level fallback), feature_cluster,
-`la_centroid`, `multi_road_consensus`, `road_intersection`, and
-district-lookup. `rank_candidates` scores them via feature-cluster overlap.
+`propose_centers` in the worker calls `run_locate(pdf_info, map_img_bytes,
+model_name)`, which spawns a live LLM-locate pydantic-ai agent with 6
+offline geocoder tools:
+
+- `postcode(pc)` — Code-Point Open lookup
+- `grid_ref(gr)` — OS BNG parse
+- `place(query, la?)` — OS Open Names settlements / landmarks
+- `road(query, la?)` — OS OpenMap Local road centroid (LA-bbox filtered)
+- `intersect(road_a, road_b, la?, road_c?)` — geometric junction (≤100 m)
+- `la_check(lat, lon, la)` — LA polygon containment + distance
+
+The agent views the rendered map image, runs ≤8 geocoder calls, then
+returns ONE `LocatePick` (top_lat, top_lon, sigma_m, confidence, source,
+evidence, la_check_passed). Pydantic-ai enforces the schema; on agent-loop
+failure `run_locate` emits an emergency LA-centroid LocatePick — never
+returns None.
 
 ### `tools/extraction/` — Boundary segmentation
 
@@ -147,9 +157,8 @@ district-lookup. `rank_candidates` scores them via feature-cluster overlap.
 
 ### Other modules
 
-- `snap/inspire.py` — INSPIRE freehold-parcel boundary snap post-processor.
 - `delaunay_filter.py` — optional Delaunay-consistency RANSAC filter.
 - `verification_checks.py` — cross-checks (LA polygon, scale, area) for the
   critic context.
 - `scoring.py` — `composite_window_score`, `commit_attempt_score`.
-- `candidates.py` — backwards-compat shim re-exporting `tools.locate`.
+- `build_oml_road_index.py` — regenerate the OML road index/geometry caches.
