@@ -145,12 +145,14 @@ def propose_centers(
         pdf_info["place_names"] = merged_places
         pdf_info["visible_map_labels"] = merged_labels
 
-    pick = run_locate(
+    pick, new_history = run_locate(
         pdf_info=pdf_info,
         map_img_bytes=map_bytes,
         model_name=model_name,
         match_context=match_context,
+        prior_messages=state.locate_message_history or None,
     )
+    state.locate_message_history = new_history
 
     conf = pick.confidence
     specificity = (5 if conf == "high" else 3 if conf == "med" else 1)

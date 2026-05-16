@@ -94,6 +94,11 @@ class AgentState:
 
         # Locate sub-agent's picked candidates (one entry usually).
         self.proposed_centers: List[Dict[str, Any]] = []
+        # Full message history from the most recent run_locate call.
+        # When the worker re-invokes propose_centers, this is passed back
+        # to run_locate as `prior_messages` so the locate sub-agent sees
+        # its previous reasoning + tool calls + pick.
+        self.locate_message_history: List[Any] = []
         # match_at stores each match attempt by integer candidate_id so
         # commit_match can refer to it later.
         self.match_attempts: Dict[int, Dict[str, Any]] = {}

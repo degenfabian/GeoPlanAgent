@@ -461,9 +461,13 @@ def _emergency_la_centroid_pick(pdf_info: dict, reason: str) -> LocatePick:
     )
 
 
-def run_locate(pdf_info: dict, map_img_bytes: Optional[bytes],
-                model_name: str,
-                match_context: Optional[str] = None) -> LocatePick:
+def run_locate(
+    pdf_info: dict,
+    map_img_bytes: Optional[bytes],
+    model_name: str,
+    match_context: Optional[str] = None,
+    prior_messages: Optional[list] = None,
+) -> tuple:
     """Run the live LLM-locate agent for one case.
 
     Pydantic-ai enforces the LocatePick schema; if the agent loop fails
@@ -471,64 +475,96 @@ def run_locate(pdf_info: dict, map_img_bytes: Optional[bytes],
     we emit an emergency LA-centroid LocatePick rather than returning None.
     The pipeline ALWAYS gets a valid pick.
 
+    When called a second time on the same case (after a poor match_at),
+    pass the prior call's message history via `prior_messages` so the
+    locate agent SEES its previous reasoning + tool calls + pick, and
+    `match_context` so it knows what went wrong. The agent then refines
+    rather than re-deriving from scratch.
+
     Args:
         pdf_info: live reader output (pdf_info dict).
-        map_img_bytes: PNG bytes of the rendered planning map page, or None.
-        model_name: OpenRouter model identifier (e.g. "google/gemini-3-flash-preview").
-        match_context: Optional feedback from a prior failed match_at — the
-            worker passes this in when re-calling propose_centers so the
-            locate agent can rethink with concrete signal (e.g. "matched
-            at lat=51.51, lon=-2.63 with 12 inliers; OS tile showed
-            farmland but planning map shows dense urban streets").
+        map_img_bytes: PNG bytes of the rendered planning map page.
+        model_name: OpenRouter model identifier (or alias).
+        match_context: feedback from a prior pick. The worker passes
+            this in when re-calling propose_centers.
+        prior_messages: result.all_messages() from the previous run_locate
+            call on the same case. When set, only the new user message
+            (with match_context) is appended.
 
     Returns:
-        LocatePick instance — guaranteed non-None.
+        (LocatePick, list_of_all_messages). The caller saves
+        list_of_all_messages on AgentState so a subsequent re-call can
+        pass it back as `prior_messages`.
     """
     model = resolve_model(model_name)
     deps = LocateState(pdf_info=pdf_info)
 
-    # Construct the user message: pdf_info as JSON + optional map image
-    pi_summary = {
-        "site_address": pdf_info.get("site_address"),
-        "postcodes": pdf_info.get("postcodes") or [],
-        "grid_refs": pdf_info.get("grid_refs") or [],
-        "road_names": pdf_info.get("road_names") or [],
-        "place_names": (pdf_info.get("place_names") or [])[:8],
-        "admin_region": pdf_info.get("admin_region"),
-        "likely_town": (pdf_info.get("likely_town")
-                         or pdf_info.get("likely_town_or_city")),
-        "parish_names": (pdf_info.get("parish_names") or [])[:5],
-        "adjacency_hints": (pdf_info.get("adjacency_hints") or [])[:5],
-        "house_number_road_pairs": (
-            pdf_info.get("house_number_road_pairs") or [])[:3],
-        "visible_map_labels": (pdf_info.get("visible_map_labels") or [])[:15],
-        "is_district_wide": pdf_info.get("is_district_wide", False),
-    }
-    ctx_block = ""
-    if match_context and match_context.strip():
-        ctx_block = (
-            "\n\nPRIOR MATCH FEEDBACK (the worker tried a previous pick and "
-            "reported back — use this to choose a DIFFERENT pick):\n"
-            f"{match_context.strip()[:1200]}\n"
-            "Avoid sources that produced the prior pick; prefer a different "
-            "signal type (e.g. switch from postcode to road/intersection, "
-            "or from likely_town to a parish/landmark)."
-        )
-    user_parts: List[object] = [
-        f"PDF_INFO:\n{json.dumps(pi_summary, indent=2)}{ctx_block}\n\n"
-        "Apply the protocol: view the map, scan pdf_info, letterhead-check "
-        "postcodes, build pool via tool calls, cluster & pick, validate with "
-        "la_check, then call submit_pick. Budget: 8 geocode calls max.",
-    ]
-    if map_img_bytes:
-        user_parts.insert(
-            0, BinaryContent(data=map_img_bytes, media_type="image/png"))
+    if prior_messages:
+        # Continuation: the agent already has pdf_info + map image in its
+        # history. Just send a new user message with the feedback.
+        ctx = (match_context or "").strip()
+        if ctx:
+            user_parts: List[object] = [
+                "Re-pick based on prior-match feedback (you already have "
+                "pdf_info + map image in this conversation):\n\n"
+                f"PRIOR MATCH FEEDBACK:\n{ctx[:1200]}\n\n"
+                "Avoid sources that produced your prior pick; prefer a "
+                "different signal type (e.g. switch from postcode to "
+                "road/intersection, or from likely_town to a parish/"
+                "landmark). Apply the protocol again and call submit_pick."
+            ]
+        else:
+            user_parts = [
+                "Re-pick: the worker re-invoked you. Apply the protocol "
+                "again, preferring a DIFFERENT signal type than your last "
+                "pick, and call submit_pick."
+            ]
+    else:
+        # First call: full pdf_info JSON + (optional) match_context.
+        pi_summary = {
+            "site_address": pdf_info.get("site_address"),
+            "postcodes": pdf_info.get("postcodes") or [],
+            "grid_refs": pdf_info.get("grid_refs") or [],
+            "road_names": pdf_info.get("road_names") or [],
+            "place_names": (pdf_info.get("place_names") or [])[:8],
+            "admin_region": pdf_info.get("admin_region"),
+            "likely_town": (pdf_info.get("likely_town")
+                             or pdf_info.get("likely_town_or_city")),
+            "parish_names": (pdf_info.get("parish_names") or [])[:5],
+            "adjacency_hints": (pdf_info.get("adjacency_hints") or [])[:5],
+            "house_number_road_pairs": (
+                pdf_info.get("house_number_road_pairs") or [])[:3],
+            "visible_map_labels": (pdf_info.get("visible_map_labels") or [])[:15],
+            "is_district_wide": pdf_info.get("is_district_wide", False),
+        }
+        ctx_block = ""
+        if match_context and match_context.strip():
+            ctx_block = (
+                "\n\nPRIOR MATCH FEEDBACK (the worker tried a previous pick "
+                "and reported back — use this to choose a DIFFERENT pick):\n"
+                f"{match_context.strip()[:1200]}\n"
+                "Avoid sources that produced the prior pick; prefer a "
+                "different signal type."
+            )
+        user_parts = [
+            f"PDF_INFO:\n{json.dumps(pi_summary, indent=2)}{ctx_block}\n\n"
+            "Apply the protocol: view the map, scan pdf_info, "
+            "letterhead-check postcodes, build pool via tool calls, "
+            "cluster & pick, validate with la_check, then call submit_pick. "
+            "Budget: 8 geocode calls max.",
+        ]
+        if map_img_bytes:
+            user_parts.insert(
+                0, BinaryContent(data=map_img_bytes, media_type="image/png"))
 
     admin = pdf_info.get("admin_region") or "?"
     pcs = pdf_info.get("postcodes") or []
     grs = pdf_info.get("grid_refs") or []
+    history_tag = (f"prior_msgs={len(prior_messages)}" if prior_messages
+                   else "first_call")
     print(f"  [locate] start: admin_region={admin!r}, postcodes={pcs[:2]}, "
-          f"grid_refs={grs[:2]}, match_context={'yes' if match_context else 'no'}")
+          f"grid_refs={grs[:2]}, match_context={'yes' if match_context else 'no'}, "
+          f"{history_tag}")
 
     try:
         result = _locate_agent.run_sync(
@@ -536,10 +572,13 @@ def run_locate(pdf_info: dict, map_img_bytes: Optional[bytes],
             deps=deps,
             model=model,
             usage_limits=UsageLimits(request_limit=15),
+            message_history=prior_messages,
         )
     except Exception as e:
         print(f"  [locate] FAILED: {e!s:.200}")
-        return _emergency_la_centroid_pick(pdf_info, reason=f"agent failed: {e!s:.60}")
+        pick = _emergency_la_centroid_pick(
+            pdf_info, reason=f"agent failed: {e!s:.60}")
+        return pick, (prior_messages or [])
 
     _print_locate_trajectory(result)
     pick = result.output
@@ -547,7 +586,12 @@ def run_locate(pdf_info: dict, map_img_bytes: Optional[bytes],
           f"({pick.top_lat:.5f}, {pick.top_lon:.5f}) σ={pick.sigma_m}m "
           f"conf={pick.confidence} la_ok={pick.la_check_passed}")
     print(f"  [locate] evidence: {pick.evidence[:200]}")
-    return pick
+
+    try:
+        all_msgs = list(result.all_messages())
+    except Exception:
+        all_msgs = prior_messages or []
+    return pick, all_msgs
 
 
 def _print_locate_trajectory(result) -> None:
