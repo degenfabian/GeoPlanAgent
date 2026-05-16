@@ -98,21 +98,10 @@ LOCATE-STAGE FIELDS (critical — downstream geocoding relies on these):
   printed (many modern planning maps have no graticule). "TG 210 080",
   "TR 34 SE" style. Leave empty if no graticule labels visible.
 
-- boundary_description + boundary_constraints (Idea-A data capture, v18):
-  Many planning docs describe the boundary in prose, e.g. "From the
-  southwest corner along Mill Road eastward to the bridge over the River
-  Stour, then northeast along the river to OS plot 4521, bounded on the
-  south by the railway line." When you see such prose:
-    (1) Copy the verbatim sentence(s) into boundary_description.
-    (2) Decompose into boundary_constraints — one entry per spatial relation
-        you can identify. The schema description shows the constraint types
-        and examples. Prefer specific types ('follows_road', 'touches_river',
-        'bounded_by') over 'other'; use 'other' as a fallback when you can
-        identify a constraint but its type doesn't fit a listed bucket.
-  These fields are EXTRACTED ONLY in v18 — downstream code does not yet
-  consume them. Don't worry about whether the constraint is satisfiable;
-  just describe what the document says. If the document has no boundary
-  prose (most modern planning docs are map-only), leave both fields empty.
+- boundary_description: Verbatim quote of any prose describing the boundary
+  path (e.g. "From the southwest corner along Mill Road eastward to the
+  bridge over the River Stour..."). Used downstream for area extraction
+  in verification checks. Leave empty if the doc is map-only.
 """
 
 
@@ -196,59 +185,23 @@ WORKFLOW
    candidate the tool will redirect you. You may call commit_match again
    to change your mind.
 
-5. extract_boundary() — runs SAM3 segmentation. Skip if you already called
-   it in step 2 (analytical short-circuit). Text query is locked to
-   "planning boundary"; don't override.
+5. extract_boundary() — runs SAM3 semantic segmentation. Skip if you
+   already called it in step 2 (analytical short-circuit). Text query
+   is locked to "planning boundary"; don't override.
 
-   The tool has two modes:
+   SAM3 returns a single merged mask for the planning-boundary semantic
+   class. The LoRA is fine-tuned for this; trust the mask the tool
+   returns. Mask area is NOT a quality signal — valid masks range from
+   0.05% (single building) to ~30% (large site) of the image. Do NOT
+   retry just because the mask "looks small" or "looks large".
 
-     a) mode='semantic' (DEFAULT): SAM3 returns a single merged mask
-        for the planning-boundary semantic class. Fast. The LoRA is
-        fine-tuned for this; for the common case, trust the mask the
-        tool returns. Mask area is NOT a quality signal — valid masks
-        range from 0.05% (single building) to ~30% (large site) of the
-        image. Do NOT retry just because the mask "looks small" or
-        "looks large".
-
-     b) mode='instance': SAM3 returns up to 5 candidate masks. You
-        inspect them via state.candidate_overlays and call
-        extract_boundary(mode='instance', select_indices=[...]) with
-        ONE OR MORE indices. BOTH ARE VALID — you can select a single
-        candidate, OR you can select multiple candidates which the
-        tool will union into one mask. Choose whichever matches what
-        the planning map shows as the application site:
-          - select_indices=[2]            single candidate
-                                           (e.g. the actual site polygon
-                                           over a "THE SITE" callout box,
-                                           or one of several hatched
-                                           regions where only one is the
-                                           application)
-          - select_indices=[0, 3]         combine multiple candidates
-                                           (e.g. an application that
-                                           covers two non-contiguous
-                                           parcels, or whose boundary
-                                           SAM3 split into separate
-                                           hatched regions that together
-                                           form the site)
-        Use instance mode when the planning map has MULTIPLE plausible
-        polygons and the semantic merged mask got it wrong, OR when the
-        application site is visibly composed of multiple parts that
-        belong together. Instance mode is more expensive — only
-        escalate when semantic has produced something that visually
-        doesn't match the application site on the map.
-
-   Retry options if the semantic mask is wrong:
-     - extract_boundary(bbox=[x1,y1,x2,y2])  — re-run semantic on a
-       tighter region (use when the mask is in roughly the right area
-       but bleeding into nearby content).
-     - extract_boundary(mode='instance')  — get 5 candidates to pick
-       from (use when there's genuine ambiguity about which polygon on
-       the map is the application site).
+   Retry option if the mask is in roughly the right area but bleeding
+   into nearby content: extract_boundary(bbox=[x1,y1,x2,y2]) — re-run
+   on a tighter region.
 
    Judge the mask against the planning map: does it cover the polygon
    that the map's labels / shading / callouts identify as the
-   application site? If yes, accept. If no, choose the appropriate
-   retry. Mask size alone is never a reason to retry.
+   application site? If yes, accept. If not, tighten the bbox.
 
 6. project_boundary() — converts the mask to GeoJSON.
 
@@ -299,8 +252,7 @@ CRITIC DIRECTIVES:
 If a user message arrives that starts with "CRITIC DIRECTIVE — you MUST
 comply.", treat the rest of that message as an order. You are required to:
   1. Execute the specified action via your tools (extract_boundary with
-     the given bbox / match_at at the given centre / extract_boundary in
-     instance mode then select_indices, as instructed).
+     the given bbox / match_at at the given centre, as instructed).
   2. Re-call project_boundary if the geojson needs updating.
   3. Submit a NEW BoundaryOutcome (status='accepted') reflecting the
      post-directive state.

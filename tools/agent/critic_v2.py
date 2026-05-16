@@ -5,8 +5,8 @@
 - **Always invoked** (no deterministic gate). Saves pre-critic snapshot per case
   → clean with/without-critic ablation from a single run.
 - **Critic emits a structured directive only.** No tools, no state mutation.
-  The directive is JSON-shaped (approve / retry_extract_bbox / retry_match_at /
-  retry_extract_instance) with the args the worker needs.
+  The directive is JSON-shaped (approve / retry_extract_bbox / retry_match_at)
+  with the args the worker needs.
 - **Rehand to worker.** When the directive is a retry-*, `run_agent` re-invokes
   the worker agent with the directive as a user message, prepending the
   original message_history. The worker has a prompt section that tells it
@@ -57,12 +57,12 @@ class CriticDirective(BaseModel):
                     "Refer to concrete visual features, not vibes."
     )
     action: str = Field(
-        description="One of: approve | retry_extract_bbox | retry_match_at | "
-                    "retry_extract_instance. Choose 'approve' when the panel "
-                    "shows clear road/feature correspondence between map and "
-                    "OS render AND the polygon outline sits where the "
-                    "boundary appears on the map. Otherwise pick the retry "
-                    "that addresses the specific failure mode."
+        description="One of: approve | retry_extract_bbox | retry_match_at. "
+                    "Choose 'approve' when the panel shows clear road/feature "
+                    "correspondence between map and OS render AND the polygon "
+                    "outline sits where the boundary appears on the map. "
+                    "Otherwise pick the retry that addresses the specific "
+                    "failure mode."
     )
     bbox: Optional[List[int]] = Field(
         default=None,
@@ -194,7 +194,6 @@ def format_metrics_text(state, det_score: Dict[str, Any]) -> str:
         f"aspect={mi.get('aspect', 0)}  scale_factor={mi.get('scale_factor', 0)}  "
         f"zoom={mi.get('zoom', '?')}  rotation={mi.get('rotation', 0)}°")
     lines.append(f"  mask coverage: {mask_pct:.2f}% of planning-map image")
-    lines.append(f"  extraction mode: {'instance' if state.instance_masks else 'semantic'}")
 
     lines.append("\n=== DETERMINISTIC VERIFICATION ===")
     lines.append(
@@ -301,18 +300,6 @@ ACTIONS (pick exactly one)
     will re-run matching at a different centre.
     Required: `center_idx` = 0-based index of one of the UNTRIED centres
     from the CENTRES list.
-
-- retry_extract_instance
-    Use when the planning map has MULTIPLE plausible polygons and the
-    current single mask is wrong — either picking the wrong one (e.g. a
-    "THE SITE" callout box vs the actual site polygon) or failing to
-    combine parts that together form the site (e.g. two non-contiguous
-    parcels). The worker will re-run SAM3 in instance mode and call
-    extract_boundary(mode='instance', select_indices=[...]) with ONE OR
-    MORE indices; multiple indices are unioned. Do NOT use this when
-    the issue is location (use retry_match_at) or when the mask is in
-    the right region but bleeding into nearby content (use
-    retry_extract_bbox). No additional args.
 
 OUTPUT
 A single structured response with: diagnosis, action, optional bbox /
@@ -440,17 +427,6 @@ def _rehand_to_worker(state, worker_result, directive: CriticDirective,
             f"the current committed match, commit_match the new candidate "
             f"and re-run extract_boundary + project_boundary. Submit a new "
             f"BoundaryOutcome.\n"
-            f"Reason: {directive.reason}"
-        )
-    elif action == "retry_extract_instance":
-        instruction = (
-            f"CRITIC DIRECTIVE — you MUST comply.\n"
-            f"Diagnosis: {directive.diagnosis}\n"
-            f"Action: re-run extract_boundary(mode='instance'). Inspect the "
-            f"5 candidate masks, pick the index(es) that best match the "
-            f"planning-map boundary, then call extract_boundary("
-            f"mode='instance', select_indices=[...]) to combine, then "
-            f"project_boundary, then submit a new BoundaryOutcome.\n"
             f"Reason: {directive.reason}"
         )
     else:

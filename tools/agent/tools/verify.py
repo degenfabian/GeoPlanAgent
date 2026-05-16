@@ -177,20 +177,7 @@ def visualize(ctx: RunContext[AgentState]) -> ToolReturn:
         content_parts.append(_img_to_binary(overlay))
         images_available.append("boundary_overlay")
 
-    # 2. Instance masks
-    if state.instance_masks and state.map_img is not None:
-        inst_viz = state.map_img.copy()
-        colors = [(0, 0, 255), (0, 255, 0), (255, 0, 0),
-                  (255, 255, 0), (0, 255, 255)]
-        for i, inst in enumerate(state.instance_masks[:5]):
-            color = colors[i % len(colors)]
-            inst_viz[inst > 0] = color
-        inst_overlay = cv2.addWeighted(state.map_img, 0.5, inst_viz, 0.5, 0)
-        content_parts.append("Instance masks (red=0, green=1, blue=2, yellow=3, cyan=4):")
-        content_parts.append(_img_to_binary(inst_overlay))
-        images_available.append("instance_overlay")
-
-    # 3. Positioned GeoJSON on OS tiles
+    # 2. Positioned GeoJSON on OS tiles
     geojson = state.current_result.get("geojson")
     tile_info = state.current_result.get("tile_info")
     if geojson and tile_info and tile_info.get("image") is not None:

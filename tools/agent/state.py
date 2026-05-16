@@ -39,9 +39,7 @@ from pydantic_ai import Agent, BinaryContent, ModelRetry, RunContext
 # Structured I/O schemas and prompt text live in their own modules
 # (extracted in stage 1 of the agent split, 2026-05-11).
 from tools.agent.schemas import (
-    BoundaryConstraint,
     PDFInfo,
-    CenterInput,
     BoundaryOutcome,
 )
 from tools.agent.prompts import READER_SYSTEM_PROMPT, WORKER_SYSTEM_PROMPT
@@ -152,15 +150,9 @@ class AgentState:
 
         # Set by extract_boundary
         self.current_mask: Optional[np.ndarray] = None
-        self.instance_masks: List[np.ndarray] = []
 
         # Set by match_at + commit_match
         self.current_result: dict = {}
-        # NOTE: state.centers and state.scale_ratio were removed in v18.
-        # They were populated only by `_position_boundary_disabled` (now
-        # deleted) and read by `_fallback_geojson_at_anchor` (now deleted).
-        # If you need the committed center, read it from
-        # `state.current_result["match_info"]["chosen_center_latlon"]`.
 
         # Cache for offline analysis: candidate overlays + final selection
         self.candidate_overlays: List[np.ndarray] = []  # per-candidate viz images
@@ -220,8 +212,8 @@ _reader_agent = Agent(
 def _strip_old_images(messages):
     """Replace BinaryContent in messages older than KEEP_RECENT with a placeholder.
 
-    Without this, each extract_boundary(mode='instance') call attaches 5 candidate
-    images that get replayed every subsequent turn — token cost grows quadratically.
+    Without this, multi-image tool returns (e.g. match_at panels) get
+    replayed every subsequent turn — token cost grows quadratically.
     """
     KEEP_RECENT = 4
     if len(messages) <= KEEP_RECENT:

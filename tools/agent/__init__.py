@@ -56,9 +56,7 @@ from pydantic_ai.usage import UsageLimits
 # Re-exported from this module for backwards-compatibility — existing
 # imports of `from tools.agent import PDFInfo` etc. continue to work.
 from tools.agent.schemas import (
-    BoundaryConstraint,
     PDFInfo,
-    CenterInput,
     BoundaryOutcome,
 )
 # Large system prompts live in their own module (extracted 2026-05-11).
@@ -99,15 +97,6 @@ from tools.agent.tools import (    # noqa: F401  (decorator side-effects)
     verify as _verify_tool,
 )
 
-# Re-export the locate helpers that overnight scripts import directly
-# (`overnight/phaseZQ_full_v14_replay.py` uses `_geocode_os_open_names`).
-# Keep `_council_postcodes` and `_is_council_postcode` available too in
-# case future scripts need them.
-from tools.agent.tools.locate import (
-    _geocode_os_open_names,
-    _council_postcodes,
-    _is_council_postcode,
-)
 
 
 def _read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict:

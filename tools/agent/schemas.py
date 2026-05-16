@@ -1,14 +1,7 @@
 """Pydantic schemas for the planning-boundary agent pipeline.
 
-These BaseModel classes are extracted from `tools/agent.py` (Stage 1A of the
-agent.py split, 2026-05-11). They define the structured I/O contracts that
-pydantic-ai enforces:
-
-- BoundaryConstraint  : one spatial constraint from boundary-description prose
-                        (collected by the reader; consumed offline in v19+).
 - PDFInfo             : output of the reader agent — everything the worker
                         needs to know about a planning PDF.
-- CenterInput         : a geocoded search center; argument shape for match_at.
 - BoundaryOutcome     : output of the worker agent (status + checklist +
                         reasoning). The output_validator in agent.py enforces
                         that tool-call preconditions are met before accepting.
@@ -26,53 +19,6 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 # ── Structured Outputs (Pydantic models enforced via pydantic-ai) ─────────
-
-class BoundaryConstraint(BaseModel):
-    """One spatial constraint extracted from the boundary description text.
-
-    Idea-A data capture (v18, design at overnight/BOUNDARY_TEXT_CONSTRAINTS_DESIGN.md):
-    UK planning documents describe boundaries in natural language ("from the
-    southwest corner along Mill Road to the bridge over the River Stour, then
-    northeast along the river to OS parcel 4521"). The reader's job here is to
-    decompose that prose into structured constraints. v18 does NOT yet apply
-    these constraints to the predicted polygon — they're collected as a
-    side-output so we can offline-test a constraint refiner against v18's
-    cached predictions, then wire it for v19 with clean attribution.
-    """
-    type: str = Field(
-        description="Constraint type. Use one of these tokens: "
-                    "'follows_road' (boundary edge runs along a named road); "
-                    "'touches_river' (boundary edge meets a named river/stream/canal); "
-                    "'abuts_parcel' (boundary aligns with a named OS parcel / plot / field); "
-                    "'bounded_by' (a side of the boundary is delimited by a named feature, with optional compass direction); "
-                    "'near_landmark' (boundary close to a named landmark e.g. 'next to the church'); "
-                    "'along_centerline' (boundary follows the centerline of a feature, not its edge); "
-                    "'corner_at' (a vertex of the boundary is at a named point); "
-                    "'other' (anything else — describe in description_snippet)."
-    )
-    target: str = Field(
-        description="The NAMED target of the constraint. For 'follows_road' "
-                    "use the road name ('Mill Road'). For 'touches_river' "
-                    "use the river name ('River Stour'). For 'abuts_parcel' "
-                    "use the OS parcel identifier or descriptor ('OS plot 4521', "
-                    "'Field Number 0731'). For 'bounded_by' use the named "
-                    "feature ('the railway line'). Keep the name verbatim."
-    )
-    direction: Optional[str] = Field(
-        default=None,
-        description="Optional compass direction the constraint applies on. "
-                    "One of: 'N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW'. "
-                    "Use only when the text says it explicitly "
-                    "('bounded on the north by ...' → direction='N'). "
-                    "Leave null otherwise."
-    )
-    description_snippet: Optional[str] = Field(
-        default=None,
-        description="A short verbatim quote (up to ~80 chars) from the boundary "
-                    "description that this constraint came from. For debugging "
-                    "and offline verification. Optional but encouraged."
-    )
-
 
 class PDFInfo(BaseModel):
     """Structured output for the reader agent. pydantic-ai enforces the schema;
@@ -125,25 +71,7 @@ class PDFInfo(BaseModel):
                     "corner along Mill Road eastward to the bridge over the River "
                     "Stour, then northeast along the river to OS plot 4521.' "
                     "Leave empty if the doc only has a map without a worded "
-                    "description. Used to populate boundary_constraints below."
-    )
-
-    boundary_constraints: List[BoundaryConstraint] = Field(
-        default_factory=list,
-        description="Structured decomposition of boundary_description into "
-                    "spatial constraints. ONE entry per constraint. Examples for "
-                    "'From the southwest corner along Mill Road eastward to the "
-                    "bridge over the River Stour, then northeast along the river "
-                    "to OS plot 4521, bounded on the south by the railway line': "
-                    "[{type:'follows_road', target:'Mill Road', description_snippet:'along Mill Road eastward'}, "
-                    "{type:'touches_river', target:'River Stour', description_snippet:'the bridge over the River Stour'}, "
-                    "{type:'follows_road', target:'River Stour', along_centerline-ish — use 'follows_road' if uncertain}, "
-                    "{type:'abuts_parcel', target:'OS plot 4521', description_snippet:'to OS plot 4521'}, "
-                    "{type:'bounded_by', target:'the railway line', direction:'S', description_snippet:'bounded on the south by the railway line'}]. "
-                    "If boundary_description is empty or has no spatial cues, leave this empty. "
-                    "Be conservative: if you're not sure what feature a phrase "
-                    "refers to, use type='other' and include the full quote in "
-                    "description_snippet rather than guessing."
+                    "description. Used by verification_checks for area extraction."
     )
     is_district_wide: bool = Field(
         default=False,
@@ -305,13 +233,6 @@ class PDFInfo(BaseModel):
         return self
 
 
-class CenterInput(BaseModel):
-    """A geocoded search center for match_at. All three fields required."""
-    name: str = Field(description="A short label for this center (e.g. 'postcode NR15 2XE').")
-    lat: float = Field(description="Latitude in decimal degrees (e.g. 52.4774).")
-    lon: float = Field(description="Longitude in decimal degrees (e.g. 1.3854).")
-
-
 class BoundaryOutcome(BaseModel):
     """Structured output for the worker agent. Includes mandatory checklist
     fields so the output_validator can enforce that required tools were called.
@@ -353,8 +274,6 @@ class BoundaryOutcome(BaseModel):
 
 
 __all__ = [
-    "BoundaryConstraint",
     "PDFInfo",
-    "CenterInput",
     "BoundaryOutcome",
 ]
