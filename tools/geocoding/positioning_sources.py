@@ -77,7 +77,7 @@ _SOURCE_SIGMA_M = {
     "code_point":       100,
     "grid_ref":         300,    # parsed BNG grid ref
     "agent_websearch": 3000,    # WebSearch → Code-Point. σ=3km covers ~80% of
-    "websearch_pc":    3000,    # locate_v2's WebSearch hit (same semantic as agent_websearch)
+    "websearch_pc":    3000,    # WebSearch hit (alias of agent_websearch)
     "inspire":          100,    # INSPIRE freehold parcel
     "consensus_centroid": 500,  # cluster of agreeing candidates
     "feature_cluster":  2000,   # location where multiple pdf_info features co-occur
@@ -103,13 +103,7 @@ _SOURCE_SIGMA_M = {
     "photon":          4000,
     "osm":             4000,
     "extra_centers":   4000,
-    "gpkg":            4000,    # post-LA filter (REVERTED 2026-05-08 19:00 from 2500
-                                # back to 4000 after critic+strategist review found
-                                # 5/18 catastrophic regressions on v13-passing cases.
-                                # The σ change affected v13's cascade gpkg candidates
-                                # too, not just locate_v2's. Keep table-level σ at v13
-                                # baseline; future locate_v2-only σ tuning should
-                                # use a dedicated source prefix like "gpkg_v2:".
+    "gpkg":            4000,    # post-LA filter.
     "carryover":       4000,
 
     # Broad / fallback (no LA filter or filter not applicable)
@@ -244,7 +238,7 @@ _POI_ZOOMSTACK = {"Sites", "Greenspace", "Landform", "Water", "Woodland",
 #
 # Specificity scale:
 #   0  Nominatim address with house number (best)
-#   1  Nominatim street+city, grid_refs, postcode, code_point, locate_v2 road
+#   1  Nominatim street+city, grid_refs, postcode, code_point, road centroids
 #   2  os_landmark, feature_cluster, filename-derived, Zoomstack
 #      Town/City/Village/Hamlet/Suburb
 #   3  Wikidata named settlement (moderate; can be administrative area)

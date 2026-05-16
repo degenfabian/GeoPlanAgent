@@ -199,12 +199,6 @@ def _read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dic
         return empty
 
 
-# NOTE: critic-driven worker rehand lives inside tools/agent/critic_v2.py
-# (function `_rehand_to_worker`) — it loops critic ↔ rehand up to
-# `max_iters` and tracks compliance. run_agent below just calls
-# run_critic_loop and consumes the returned dict.
-
-
 def run_agent(
     pdf_path: str,
     models_state: dict,

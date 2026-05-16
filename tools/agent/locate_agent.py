@@ -7,9 +7,10 @@ call) to produce ONE high-quality center (lat, lon, sigma, confidence) using:
   - 6 offline geocoder tools (postcode / grid_ref / place / road / intersect /
     la_check)
 
-This replaces the heuristic propose_centers_v2 cascade with a single LLM
-reasoning loop. Used by `tools/agent/tools/locate.py` when
-GEOMAP_USE_V3_LLM_LOCATE=1.
+Called from the worker's propose_centers tool. Pydantic-ai enforces the
+LocatePick schema; on agent-loop failure run_locate emits an emergency
+LA-centroid LocatePick rather than returning None — the pipeline is
+guaranteed at least one candidate.
 
 Model: defaults to Gemini Flash via OpenRouter (matches worker default).
 Override with GEOMAP_LOCATE_MODEL env var.
@@ -522,6 +523,12 @@ def run_locate(pdf_info: dict, map_img_bytes: Optional[bytes],
         user_parts.insert(
             0, BinaryContent(data=map_img_bytes, media_type="image/png"))
 
+    admin = pdf_info.get("admin_region") or "?"
+    pcs = pdf_info.get("postcodes") or []
+    grs = pdf_info.get("grid_refs") or []
+    print(f"  [locate] start: admin_region={admin!r}, postcodes={pcs[:2]}, "
+          f"grid_refs={grs[:2]}, match_context={'yes' if match_context else 'no'}")
+
     try:
         result = _locate_agent.run_sync(
             user_parts,
@@ -529,7 +536,87 @@ def run_locate(pdf_info: dict, map_img_bytes: Optional[bytes],
             model=model,
             usage_limits=UsageLimits(request_limit=15),
         )
-        return result.output
     except Exception as e:
-        print(f"  [locate_agent] failed: {e!s:.200}")
+        print(f"  [locate] FAILED: {e!s:.200}")
         return _emergency_la_centroid_pick(pdf_info, reason=f"agent failed: {e!s:.60}")
+
+    _print_locate_trajectory(result)
+    pick = result.output
+    print(f"  [locate] picked: {pick.picked_source[:50]} → "
+          f"({pick.top_lat:.5f}, {pick.top_lon:.5f}) σ={pick.sigma_m}m "
+          f"conf={pick.confidence} la_ok={pick.la_check_passed}")
+    print(f"  [locate] evidence: {pick.evidence[:200]}")
+    return pick
+
+
+def _print_locate_trajectory(result) -> None:
+    """Print each tool call + summarised result from a pydantic-ai run."""
+    try:
+        msgs = result.all_messages()
+    except Exception:
+        return
+    for msg in msgs:
+        parts = getattr(msg, "parts", None)
+        if not parts:
+            continue
+        for part in parts:
+            kind = (getattr(part, "kind", type(part).__name__) or "").lower()
+            if "toolcall" in kind:
+                name = getattr(part, "tool_name", "?")
+                args = getattr(part, "args", None)
+                if isinstance(args, str):
+                    try:
+                        args = json.loads(args)
+                    except Exception:
+                        pass
+                args_str = _fmt_args(args) if isinstance(args, dict) else str(args)[:100]
+                print(f"    [locate→tool] {name}({args_str})")
+            elif "toolreturn" in kind:
+                content = getattr(part, "content", None)
+                summary = _fmt_tool_return(content)
+                if summary:
+                    print(f"    [locate←ret ] {summary}")
+            elif "retry" in kind:
+                rc = getattr(part, "content", "") or ""
+                print(f"    [locate retry] {str(rc)[:160]}")
+
+
+def _fmt_args(args: dict) -> str:
+    if not isinstance(args, dict):
+        return str(args)[:100]
+    pieces = []
+    for k, v in args.items():
+        if isinstance(v, (list, tuple)):
+            v_str = f"[{', '.join(str(x)[:20] for x in v[:3])}{'...' if len(v) > 3 else ''}]"
+        elif isinstance(v, str):
+            v_str = f"{v[:40]!r}"
+        elif isinstance(v, float):
+            v_str = f"{v:.5f}"
+        else:
+            v_str = str(v)
+        pieces.append(f"{k}={v_str}")
+    return ", ".join(pieces)
+
+
+def _fmt_tool_return(content) -> str:
+    if isinstance(content, dict):
+        if not content.get("success", True):
+            return f"error: {str(content.get('error',''))[:80]}"
+        # Highlight high-value fields per tool
+        out = []
+        for k in ("postcode", "grid_ref", "query", "roads", "la"):
+            if k in content and content[k] is not None:
+                out.append(f"{k}={str(content[k])[:50]}")
+        if "lat" in content and "lon" in content:
+            out.append(f"lat={content['lat']:.5f}, lon={content['lon']:.5f}")
+        if "n_hits" in content:
+            out.append(f"n_hits={content['n_hits']}")
+        if "n_intersections" in content:
+            out.append(f"n_intersections={content['n_intersections']}")
+        if "inside_la" in content:
+            out.append(f"inside_la={content['inside_la']} "
+                       f"d={content.get('distance_km_approx', '?')}km")
+        return "  ".join(out) if out else str(content)[:100]
+    if isinstance(content, str):
+        return content[:120]
+    return ""
