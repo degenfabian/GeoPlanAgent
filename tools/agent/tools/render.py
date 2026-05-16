@@ -52,30 +52,13 @@ def render_page(ctx: RunContext[AgentState], page: int) -> ToolReturn:
             ],
         )
 
-    page_idx = max(0, page - 1)
-    from tools.io.pdf import render_pdf_page
-    try:
-        map_img = render_pdf_page(state.pdf_path, page_idx, dpi=state.dpi)
-    except IndexError as e:
-        raise ModelRetry(str(e))
-
-    try:
-        from tools.io.rotation_classifier import auto_rotate
-        map_img, rot_info = auto_rotate(map_img, verbose=True)
-        if rot_info["applied"]:
-            state.rotation_checked = True
-    except Exception as e:
-        print(f"  rotation_classifier unavailable ({e!s:.80}); "
-              f"proceeding with raw render")
-
-    try:
-        from tools.io.map_crop import detect_title_block_crop
-        cropped, _x_off, _y_off, _crop_info = detect_title_block_crop(map_img)
-        if _crop_info.get("cropped"):
-            print(f"  map_crop: {_crop_info['reason']}")
-            map_img = cropped
-    except Exception as e:
-        print(f"  map_crop unavailable ({e!s:.80}); proceeding without crop")
+    from tools.io.map_page import render_map_page
+    rendered = render_map_page(state.pdf_path, page, dpi=state.dpi, verbose=True)
+    if rendered is None:
+        raise ModelRetry(f"Page {page} could not be rendered (out of range?).")
+    map_img, rot_info, _crop_info = rendered
+    if rot_info.get("applied"):
+        state.rotation_checked = True
 
     state.map_img = map_img
     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:

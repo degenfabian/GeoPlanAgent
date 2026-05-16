@@ -28,9 +28,7 @@ from tools.extraction.sam3 import (
     extract_boundary_sam3_semantic,
     set_fold_for_case,
 )
-from tools.io.pdf import render_pdf_page
-from tools.io.rotation_classifier import auto_rotate
-from tools.io.map_crop import detect_title_block_crop
+from tools.io.map_page import render_map_page
 from tools.matching import mask_to_geojson_affine
 from tools.metrics.geojson import calculate_spatial_metrics, load_geojson
 
@@ -64,19 +62,10 @@ def find_gt(case_name: str) -> Path | None:
 
 
 def render_case_map(pdf_path: Path, page_1based: int, dpi: int = 200):
-    """Reproduce render_page's pipeline: render → auto_rotate → title-block crop."""
-    img = render_pdf_page(str(pdf_path), page_1based - 1, dpi=dpi)
-    try:
-        img, _rot = auto_rotate(img, verbose=False)
-    except Exception:
-        pass
-    try:
-        cropped, _xo, _yo, _info = detect_title_block_crop(img)
-        if _info.get('cropped'):
-            img = cropped
-    except Exception:
-        pass
-    return img
+    """Thin wrapper around tools.io.map_page.render_map_page that returns
+    just the image (the script doesn't need rot_info / crop_info)."""
+    rendered = render_map_page(str(pdf_path), page_1based, dpi=dpi)
+    return rendered[0] if rendered is not None else None
 
 
 def main():

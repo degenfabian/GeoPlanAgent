@@ -286,39 +286,15 @@ def run_agent(
     map_pages = pdf_info.get("map_pages", []) or []
     map_page_details = pdf_info.get("map_page_details", []) or []
     if map_pages:
-        from tools.io.pdf import render_pdf_page
-        try:
-            from tools.io.rotation_classifier import auto_rotate
-        except Exception:
-            auto_rotate = None
-        try:
-            from tools.io.map_crop import detect_title_block_crop
-        except Exception:
-            detect_title_block_crop = None
+        from tools.io.map_page import render_map_page
         for page_1based in map_pages:
-            page_idx = max(0, int(page_1based) - 1)
-            try:
-                page_img = render_pdf_page(str(pdf_path), page_idx, dpi=dpi)
-            except IndexError:
-                page_img = None
-            if page_img is None:
+            rendered = render_map_page(str(pdf_path), int(page_1based),
+                                         dpi=dpi, verbose=verbose)
+            if rendered is None:
                 continue
-            if auto_rotate is not None:
-                try:
-                    page_img, rot_info = auto_rotate(page_img, verbose=verbose)
-                    if rot_info.get("applied") and page_1based == map_pages[0]:
-                        state.rotation_checked = True
-                except Exception as e:
-                    if verbose:
-                        print(f"  rotation_classifier failed for page "
-                              f"{page_1based} ({e!s:.80}); proceeding raw")
-            if detect_title_block_crop is not None:
-                try:
-                    cropped, _xo, _yo, _info = detect_title_block_crop(page_img)
-                    if _info.get("cropped"):
-                        page_img = cropped
-                except Exception:
-                    pass
+            page_img, rot_info, _crop_info = rendered
+            if rot_info.get("applied") and page_1based == map_pages[0]:
+                state.rotation_checked = True
             with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
                 tmp_path = tmp.name
             cv2.imwrite(tmp_path, page_img)
