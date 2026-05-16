@@ -1,8 +1,8 @@
 """Render one map page from a planning PDF into the canonical working image.
 
-The pipeline is render → auto_rotate → title-block crop. Every caller in
-the pipeline needs this exact sequence; centralising it here removes the
-4-way copy (run_agent loop, render_page tool, replay scripts).
+The pipeline is render → auto_rotate. (Title-block cropping was removed:
+the heuristic hurt as often as it helped, and SAM3 + MINIMA handle
+title-block presence robustly without explicit cropping.)
 """
 
 from __future__ import annotations
@@ -17,14 +17,13 @@ def render_map_page(
     page_1based: int,
     dpi: int = 200,
     verbose: bool = False,
-) -> Optional[Tuple[np.ndarray, dict, dict]]:
+) -> Optional[Tuple[np.ndarray, dict]]:
     """Render one page of a planning PDF into the canonical working image.
 
     Pipeline:
       1. fitz render at the requested DPI
       2. auto_rotate via the trained ResNet50 classifier (no-op if
          confidence is below threshold)
-      3. detect_title_block_crop (no-op if no clear title block found)
 
     Args:
         pdf_path: path to the PDF.
@@ -33,11 +32,10 @@ def render_map_page(
         verbose: pass through to auto_rotate's logger.
 
     Returns:
-        (img_bgr, rot_info, crop_info) on success, or None if rendering
-        failed (e.g. page index out of range). rot_info / crop_info are
-        the dicts returned by auto_rotate / detect_title_block_crop —
-        the caller can read e.g. rot_info["applied"] to know whether
-        rotation was performed.
+        (img_bgr, rot_info) on success, or None if rendering failed
+        (e.g. page index out of range). rot_info is the dict returned by
+        auto_rotate — the caller can read rot_info["applied"] to know
+        whether rotation was performed.
     """
     from tools.io.pdf import render_pdf_page
 
@@ -57,17 +55,4 @@ def render_map_page(
         if verbose:
             print(f"  rotation_classifier failed ({e!s:.80}); raw render")
 
-    crop_info: dict = {"cropped": False}
-    try:
-        from tools.io.map_crop import detect_title_block_crop
-        cropped, _x_off, _y_off, info = detect_title_block_crop(img)
-        crop_info = info
-        if info.get("cropped"):
-            img = cropped
-            if verbose:
-                print(f"  map_crop: {info.get('reason','cropped')}")
-    except Exception as e:
-        if verbose:
-            print(f"  map_crop failed ({e!s:.80}); no crop")
-
-    return img, rot_info, crop_info
+    return img, rot_info

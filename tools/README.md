@@ -112,7 +112,6 @@ returns None.
 - `sam3.select_best_candidate(candidates)` — compactness + area picker.
 - `sam3.try_fill_boundary_outline(mask)` — morphological close + flood fill
   for thin-outline masks.
-- `boundary_color` — HSV detection of red / coloured site outlines.
 - `mask_ops` — re-usable mask-cleanup primitives (`expand_thin_mask`,
   `fill_mask_holes`, `keep_dominant_components`, `cleanup_mask_pipeline`).
 
@@ -141,10 +140,11 @@ returns None.
   OS-planning-style raster from the Zoomstack GeoPackage. No API key
   required; OGL v3 licensed.
 - `io.os_tiles.render_tile(zoom, tx, ty)` — single 256×256 tile.
-- `io.rotation_classifier.auto_rotate` — VLM-judged 0/90/180/270° page
-  rotation.
-- `io.map_crop.detect_title_block_crop` — crop title block / legend so the
-  matcher sees only the map.
+- `io.rotation_classifier.auto_rotate` — trained ResNet50 classifier
+  (with test-time augmentation + abstain) for 0/90/180/270° page
+  rotation. Abstains when uncertain.
+- `io.map_page.render_map_page` — single source of truth for the
+  render → auto_rotate pipeline used by every map-rendering caller.
 
 ### `tools/metrics/` — Evaluation metrics & visualisation
 

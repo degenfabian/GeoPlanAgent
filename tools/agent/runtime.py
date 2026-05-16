@@ -154,7 +154,7 @@ def prepare_worker_state(
                                          dpi=dpi, verbose=verbose)
             if rendered is None:
                 continue
-            page_img, rot_info, _crop_info = rendered
+            page_img, rot_info = rendered
             if rot_info.get("applied") and page_1based == map_pages[0]:
                 state.rotation_checked = True
             with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:

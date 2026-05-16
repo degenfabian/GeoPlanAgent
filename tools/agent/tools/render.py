@@ -56,7 +56,7 @@ def render_page(ctx: RunContext[AgentState], page: int) -> ToolReturn:
     rendered = render_map_page(state.pdf_path, page, dpi=state.dpi, verbose=True)
     if rendered is None:
         raise ModelRetry(f"Page {page} could not be rendered (out of range?).")
-    map_img, rot_info, _crop_info = rendered
+    map_img, rot_info = rendered
     if rot_info.get("applied"):
         state.rotation_checked = True
 

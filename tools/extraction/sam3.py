@@ -282,8 +282,8 @@ def find_callout_target_centroid(plan_img_bgr, masks=None):
     remaining red blob (the actual site polygon). Returns None if
     nothing matches.
     """
-    # Direct HSV red detection (more permissive than tools.extraction.boundary_color
-    # for synthetic / muted reds typical in scanned planning maps)
+    # Direct HSV red detection tuned for synthetic / muted reds typical
+    # in scanned planning maps.
     hsv = cv2.cvtColor(plan_img_bgr, cv2.COLOR_BGR2HSV)
     m1 = cv2.inRange(hsv,
                        np.array([0, 70, 50], dtype=np.uint8),
