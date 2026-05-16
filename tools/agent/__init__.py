@@ -13,7 +13,7 @@ The pipeline is three LLM agents:
             extract_boundary → project_boundary → verify_position →
             BoundaryOutcome.
 
-  Phase 3 — Critic. tools.agent.critic.run_critic_loop: LLM visual review
+  Phase 3 — Critic. tools.agent.critic_agent.run_critic_loop: LLM visual review
             + structured directive, optionally rehanded to the worker.
             Off by default for production benchmark runs; opt-in for
             ablations via enable_critic=True.

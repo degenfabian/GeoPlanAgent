@@ -1,12 +1,17 @@
-"""Reader and worker Agent instances + the worker's output validator.
+"""Phase 2 worker: PydanticAI Agent with all tools registered.
 
-The worker `_agent` is decorated by the tool modules
-(tools.agent.tools.{render,locate,match,extract,verify,refine}) at import
+The worker `_agent` is decorated by the tool modules under
+tools.agent.tools.{render,locate,match,extract,verify,refine} at import
 time via @_agent.tool — so this module must be importable BEFORE those
 tool modules.
 
-The reader `_reader_agent` is a separate one-shot Agent with output_type
-locked to PDFInfo; the worker outputs BoundaryOutcome.
+Defines:
+  - _agent — the worker Agent instance
+  - _strip_old_images — history processor that drops binary images from
+    older messages to keep token cost flat
+  - validate_boundary_outcome — output validator enforcing tool-call
+    preconditions (verify_position when 25≤inliers≤100, etc.)
+  - build_system_prompt — registers WORKER_SYSTEM_PROMPT
 """
 
 from __future__ import annotations
@@ -14,26 +19,12 @@ from __future__ import annotations
 from dotenv import load_dotenv
 from pydantic_ai import Agent, ModelRetry, RunContext
 
-from tools.agent.prompts import READER_SYSTEM_PROMPT, WORKER_SYSTEM_PROMPT
-from tools.agent.schemas import BoundaryOutcome, PDFInfo
+from tools.agent.prompts import WORKER_SYSTEM_PROMPT
+from tools.agent.schemas import BoundaryOutcome
 from tools.agent.state import AgentState
 
 load_dotenv()
 
-
-# ── Phase 1: PDF Reader Agent ──────────────────────────────────────────────
-
-_reader_agent = Agent(
-    "test",  # placeholder, overridden at runtime via model= kwarg
-    output_type=PDFInfo,
-    retries=2,
-    output_retries=2,
-    model_settings={"temperature": 0},
-    instructions=READER_SYSTEM_PROMPT,
-)
-
-
-# ── Phase 2: Worker Agent ──────────────────────────────────────────────────
 
 def _strip_old_images(messages):
     """Replace BinaryContent in messages older than KEEP_RECENT with a

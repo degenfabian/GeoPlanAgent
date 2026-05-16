@@ -23,7 +23,8 @@ from pydantic_ai.usage import UsageLimits
 from tools.agent._helpers import _img_to_binary
 from tools.agent._model import resolve_model
 from tools.agent._retry import _run_sync_with_retry
-from tools.agent.agents import _agent, _reader_agent
+from tools.agent.reader_agent import _reader_agent
+from tools.agent.worker_agent import _agent
 from tools.agent.schemas import BoundaryOutcome, PDFInfo
 from tools.agent.state import AgentState
 
@@ -265,7 +266,7 @@ def apply_critic_loop(
             or state.current_mask is None):
         return None
     try:
-        from tools.agent.critic import run_critic_loop
+        from tools.agent.critic_agent import run_critic_loop
         critic_result = run_critic_loop(
             state=state, worker_agent=_agent,
             worker_result=worker_result,

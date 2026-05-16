@@ -1,8 +1,9 @@
 """AgentState — mutable per-case state passed to the worker as deps.
 
-The Agent instances themselves live in tools.agent.agents (which decorates
-_agent with tools and the output validator). Pure helpers live in
-tools.agent._helpers and the HTTP retry helper in tools.agent._retry.
+The Agent instances themselves live in tools.agent.reader_agent and
+tools.agent.worker_agent (the latter decorates _agent with tools and the
+output validator). Pure helpers live in tools.agent._helpers and the
+HTTP retry helper in tools.agent._retry.
 
 This module re-exports the most commonly imported names for backward
 compatibility, so existing `from tools.agent.state import _agent, ...`
@@ -81,7 +82,7 @@ class AgentState:
         self.rotation_checked: bool = False
         self.last_output: Optional["BoundaryOutcome"] = None
 
-        # Critic (Phase 3) — filled by tools/agent/critic.py
+        # Critic (Phase 3) — filled by tools/agent/critic_agent.py
         self.critic_iterations: List[dict] = []
         self.critic_final_decision: Optional[str] = None
         self.critic_changed_mask: bool = False
@@ -129,11 +130,11 @@ from tools.agent._model import (  # noqa: E402, F401
     resolve_model,
     resolve_model_name,
 )
-# agents.py imports AgentState from here, so import it AFTER AgentState
-# is defined.
-from tools.agent.agents import (  # noqa: E402, F401
+# reader_agent.py and worker_agent.py import AgentState from here, so
+# import them AFTER AgentState is defined.
+from tools.agent.reader_agent import _reader_agent  # noqa: E402, F401
+from tools.agent.worker_agent import (  # noqa: E402, F401
     _agent,
-    _reader_agent,
     _strip_old_images,
     validate_boundary_outcome,
     build_system_prompt,

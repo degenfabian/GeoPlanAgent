@@ -336,7 +336,7 @@ def affine_center_to_latlon(affine_H, map_h, map_w, tile_info):
 # (originally extracted from this file on 2026-05-11). The legacy
 # underscore-prefixed names are kept as module-level aliases so existing
 # imports like `from tools.matching import _expand_thin_mask` (used by
-# tools/agent/critic.py) keep working.
+# tools/agent/critic_agent.py) keep working.
 from tools.extraction.mask_ops import (
     cleanup_mask_pipeline,
     expand_thin_mask as _expand_thin_mask,

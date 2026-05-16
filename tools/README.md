@@ -35,7 +35,7 @@ Shared state lives on `AgentState` (`tools/agent/state.py`). The
 `output_validator` enforces preconditions (borderline matches need visual
 checks, etc.) and re-prompts on violations.
 
-### `tools/agent/critic.py` — Phase 3 Commenter
+### `tools/agent/critic_agent.py` — Phase 3 Commenter
 
 Independent VLM agent that reviews the worker's output. Decisions:
 

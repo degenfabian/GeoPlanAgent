@@ -364,7 +364,7 @@ def _rehand_to_worker(state, worker_result, directive: CriticDirective,
     to comply. Mutates state.current_mask and state.current_result["geojson"]
     via the worker's tools. Returns the new pydantic-ai result or the prior
     worker_result on failure."""
-    from tools.agent.state import _agent
+    from tools.agent.worker_agent import _agent
 
     action = directive.action
     bbox = directive.bbox
