@@ -194,7 +194,7 @@ def check_postcode_in_polygon(pdf_info: Dict[str, Any], predicted_geom) -> Check
     if not pcs or predicted_geom is None or predicted_geom.is_empty:
         return (0.5, "")
     try:
-        from tools.geocoding.code_point import lookup_postcode
+        from tools.geo.code_point import lookup_postcode
     except Exception:
         return (0.5, "")
     hit = None

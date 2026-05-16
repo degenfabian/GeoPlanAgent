@@ -146,7 +146,7 @@ def match_at(
     # candidate IDs available. This prevents Gemini Flash from
     # hallucinating "Wheathampstead Village Center" coordinates etc.
     if state.proposed_centers:
-        from tools.geocoding.dispatchers import _distance_m
+        from tools.geo.coords import haversine_m as _distance_m
         nearest = min(
             (_distance_m(lat, lon, c["lat"], c["lon"]), c)
             for c in state.proposed_centers
@@ -484,7 +484,7 @@ def _try_analytical_match_at(state: AgentState, name, lat, lon, scale_ratio,
     or None to fall through to MINIMA.
     """
     from tools.geo.grid_ref import parse_easting_northing
-    from tools.geocoding.dispatchers import _distance_m
+    from tools.geo.coords import haversine_m as _distance_m
     from tools.matching import (analytical_affine_from_anchor,
                                        mask_to_geojson_affine)
     from tools.metrics.reward import RewardResult, AxisResult

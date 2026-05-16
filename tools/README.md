@@ -115,21 +115,20 @@ returns None.
 - `mask_ops` — re-usable mask-cleanup primitives (`expand_thin_mask`,
   `fill_mask_holes`, `keep_dominant_components`, `cleanup_mask_pipeline`).
 
-### `tools/geocoding/` — Geocoding sources
+### `tools/geo/` — Geographic primitives
 
-- `dispatchers.gpkg_place_search` — OS Open Zoomstack gazetteer (offline,
-  OGL v3).
-- `dispatchers.wikidata_place_search` — conservation areas / historic
-  buildings missing from OS data.
-- `dispatchers.nominatim_structured` — OSM ODbL house-number / street
-  lookups.
-- `dispatchers.query_photon` — free-text OSM search (Apache 2.0).
-- `dispatchers.cross_validate_centers`, `_is_valid_uk_coord`, `_distance_m`
-  — shared utilities. `postcodes.io` is dispatched through
-  `tools.geocoding.code_point`.
+Everything geographic in one directory after the 2026-05-17 merge.
+
+- `coords` — Web-Mercator / tile-pixel math, BNG ↔ WGS84, `haversine_m`.
+- `grid_ref` — OS BNG grid-reference parser; `lookup_district_boundary`
+  via OSM Nominatim for the worker's lookup_district tool.
 - `code_point` — Code-Point Open sub-metre postcode lookup.
-- `os_names` — OS Open Names search.
-- `positioning_sources` — anchor cascade primitives.
+- `os_names` — OS Open Names settlement / landmark / road search.
+
+Match-stage source-priority tables (per-source σ defaults, specificity
+ranks, `effective_sigma`, `candidate_passes_la_filter`) live in
+`tools/matching/source_priorities.py` — they're matching config, not
+geocoding.
 
 ### `tools/io/` — PDF, tile, page-frame I/O
 

@@ -8,8 +8,8 @@ Top-level packages:
   matching/   — MINIMA sliding-window matcher + road-name verifier
   scoring.py  — composite_window_score, commit_attempt_score
   extraction/ — SAM3 boundary segmentation + colour primitives + mask ops
-  geocoding/  — Code-Point Open, OS Open Names, postcodes.io dispatch,
-                positioning-source primitives
+  geo/        — Geographic primitives: lat/lon math, BNG grid-ref parsing,
+                Code-Point Open postcode lookup, OS Open Names search.
   io/         — PDF render, OS tile render, page rotation, title-block crop,
                 text extraction
   metrics/    — IoU/F1/positioning metrics, viz overlays, MINIMA reward

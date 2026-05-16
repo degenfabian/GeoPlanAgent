@@ -13,7 +13,7 @@ Setup (one-time):
     unzip opname_csv_gb.zip -d os_opendata/open_names/csv
 
 Usage:
-    from tools.geocoding.os_names import lookup, search
+    from tools.geo.os_names import lookup, search
     hit = lookup("East Langdon")
     # → {'name_full': 'East Langdon', 'type': 'village',
     #    'lat': 51.171, 'lon': 1.345, 'sigma_m': 800,
@@ -32,7 +32,7 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 
-# Three .parent steps because this file lives at tools/geocoding/os_names.py
+# Three .parent steps because this file lives at tools.geo.os_names.py
 # after the 2026-05-13 reorg (was tools/os_names.py before).
 DATA_DIR = (Path(__file__).resolve().parent.parent.parent
             / "os_opendata" / "open_names" / "csv" / "Data")
@@ -368,7 +368,7 @@ def is_loaded() -> bool:
 if __name__ == "__main__":
     import sys, time
     if len(sys.argv) < 2:
-        print("usage: python -m tools.geocoding.os_names <query> [context]")
+        print("usage: python -m tools.geo.os_names <query> [context]")
         sys.exit(1)
     t0 = time.time()
     df = _load()

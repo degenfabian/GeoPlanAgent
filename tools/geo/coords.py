@@ -27,6 +27,17 @@ from typing import Tuple
 WEB_MERCATOR_C: float = 156543.03
 
 
+def haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Approximate haversine distance in metres between two lat/lon points.
+
+    Uses the flat-earth approximation (good to ~0.5% for distances under
+    a few hundred km, which covers every pair we measure inside the UK).
+    """
+    dlat = (lat2 - lat1) * 111111
+    dlon = (lon2 - lon1) * 111111 * math.cos(math.radians((lat1 + lat2) / 2))
+    return math.sqrt(dlat ** 2 + dlon ** 2)
+
+
 def tile_mpp(lat: float, zoom: int) -> float:
     """Meters per pixel of a Web Mercator tile at the given latitude and zoom.
 

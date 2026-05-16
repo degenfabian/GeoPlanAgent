@@ -14,7 +14,7 @@ Setup: download once via
     unzip codepo_gb.zip -d os_opendata/code_point_open/csv
 
 Usage:
-    from tools.geocoding.code_point import lookup_postcode
+    from tools.geo.code_point import lookup_postcode
     hit = lookup_postcode("AL1 3JE")
     # → {'lat': 51.7534, 'lon': -0.3361, 'easting': 515387, 'northing': 206398,
     #    'sigma_m': 50, 'source': 'code_point_open'}
@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Dict, Optional
 
 # Repo root. Three .parent steps because this file lives at
-# tools/geocoding/code_point.py after the 2026-05-13 reorg.
+# tools.geo.code_point.py after the 2026-05-13 reorg.
 ROOT = Path(__file__).resolve().parent.parent.parent
 CSV_DIR = ROOT / "os_opendata" / "code_point_open" / "csv" / "Data" / "CSV"
 
@@ -125,7 +125,7 @@ def is_loaded(area: str = None) -> bool:
 if __name__ == "__main__":
     import sys, time
     if len(sys.argv) < 2:
-        print("usage: python -m tools.geocoding.code_point <postcode>")
+        print("usage: python -m tools.geo.code_point <postcode>")
         sys.exit(1)
     t0 = time.time()
     pc = " ".join(sys.argv[1:])

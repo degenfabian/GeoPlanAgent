@@ -201,6 +201,7 @@ from tools.geo.coords import (
     WEB_MERCATOR_C,
     best_zoom_for_scale,
     compute_map_mpp,
+    haversine_m,
     latlon_to_global_tile_pixel,
     osm_pixel_to_latlon,
     tile_mpp as _tile_mpp_at,
@@ -210,11 +211,11 @@ from tools.geo.coords import (
 _latlon_to_global_tile_pixel = latlon_to_global_tile_pixel
 
 
-# Source-registry tables and lookups moved to `tools/positioning_sources.py`
-# (2026-05-11) to slim this file. Re-exported here so existing imports such
+# Source-registry tables and lookups live in tools/matching/source_priorities.py
+# (matching config, not geocoding). Re-exported here so existing imports such
 # as `from tools.matching import sigma_from_source, _SOURCE_SIGMA_M,
-# _FILTERABLE_SOURCES` keep working unmodified.
-from tools.geocoding.positioning_sources import (
+# _FILTERABLE_SOURCES` keep working.
+from tools.matching.source_priorities import (
     _FILTERABLE_SOURCES,
     _SOURCE_PRIORITY,
     _SOURCE_SIGMA_M,
@@ -422,7 +423,7 @@ def filter_centers(centers, max_centers=5, max_dist_km=50):
     if len(centers) <= 1:
         return centers
 
-    from tools.geocoding.dispatchers import _distance_m
+    from tools.geo.coords import haversine_m as _distance_m
 
     trusted = []
     untrusted = []
@@ -507,7 +508,7 @@ def _deduplicate_centers(centers, min_dist_m=500):
     500m collapsing to a single point and starving MINIMA of signal) is
     exactly the reason for this carve-out.
     """
-    from tools.geocoding.dispatchers import _distance_m
+    from tools.geo.coords import haversine_m as _distance_m
     deduped = []
     for c in centers:
         if _center_specificity(c[0]) <= 1:
@@ -520,9 +521,8 @@ def _deduplicate_centers(centers, min_dist_m=500):
 
 
 # Specificity tables and `_center_specificity` / `filter_centers_by_specificity`
-# moved to `tools/positioning_sources.py` (2026-05-11). Re-exported below so
-# existing imports keep working.
-from tools.geocoding.positioning_sources import (
+# live in tools/matching/source_priorities.py. Re-exported below.
+from tools.matching.source_priorities import (
     SOURCE_SPECIFICITY,
     _BROAD_ZOOMSTACK,
     _HIGH_SPECIFICITY_ZOOMSTACK,
@@ -545,6 +545,72 @@ from tools.matching.road_verify import (
     _DIRECTION_PATTERNS_ANCHORED,
     _DIRECTION_ANYWHERE,
 )
+
+
+# ── Outlier-drop on multi-center lists ─────────────────────────────────────
+
+def cross_validate_centers(centers, max_outlier_km: float = 10):
+    """Drop centers that are > threshold from the median (or from a
+    high-specificity anchor when the list is short).
+
+    Adaptive thresholding: when many centers agree tightly (IQR < 2 km),
+    the threshold tightens to 3× IQR (min 2 km). Otherwise uses
+    `max_outlier_km`. Effectively a no-op when the locate sub-agent
+    returns a single candidate; kept as defensive code in case
+    multi-center lists return.
+    """
+    from tools.geo.coords import haversine_m
+
+    if len(centers) < 3:
+        anchors = [c for c in centers if _center_specificity(c[0]) <= 1]
+        if not anchors:
+            return centers
+        anchors.sort(key=lambda c: _center_specificity(c[0]))
+        a_lat, a_lon = anchors[0][1], anchors[0][2]
+        kept = []
+        for c in centers:
+            if _center_specificity(c[0]) <= 1:
+                kept.append(c)
+                continue
+            d = haversine_m(c[1], c[2], a_lat, a_lon)
+            if d <= max_outlier_km * 1000:
+                kept.append(c)
+            else:
+                print(f"  Cross-validate: dropped {c[0]} ({d/1000:.1f}km "
+                      f"from anchor {anchors[0][0]!r})")
+        return kept if kept else centers
+
+    specific = [c for c in centers if _center_specificity(c[0]) <= 2]
+    median_source = specific if len(specific) >= 1 else centers
+    lats = [c[1] for c in median_source]
+    lons = [c[2] for c in median_source]
+    med_lat = float(np.median(lats))
+    med_lon = float(np.median(lons))
+
+    dists = [haversine_m(c[1], c[2], med_lat, med_lon) for c in centers]
+    dists_sorted = sorted(dists)
+    q1 = dists_sorted[len(dists_sorted) // 4]
+    q3 = dists_sorted[3 * len(dists_sorted) // 4]
+    iqr = q3 - q1
+
+    if len(centers) >= 5 and iqr < 2000:
+        threshold_m = max(2000, 3 * iqr)
+        print(f"  Cross-validate: adaptive threshold={threshold_m:.0f}m "
+              f"(IQR={iqr:.0f}m, {len(centers)} centers)")
+    else:
+        threshold_m = max_outlier_km * 1000
+
+    kept = []
+    dropped = []
+    for c, d in zip(centers, dists):
+        if d <= threshold_m:
+            kept.append(c)
+        else:
+            dropped.append((c[0], d / 1000))
+    if dropped:
+        for name, dist_km in dropped:
+            print(f"  Cross-validate: dropped {name} ({dist_km:.1f}km from median)")
+    return kept if kept else centers
 
 
 # ── Main entry point ─────────────────────────────────────────────────────────
@@ -604,11 +670,8 @@ def sliding_window_position(
         uk_centers = centers[:1]
 
     # Cross-validate: drop centers >5km from median (catches bogus geocode
-    # results AND bad grid-ref centroids). Tightened from 10km — for site-level
-    # matching, anything >5km from the cluster of other centers is almost
-    # certainly wrong. The adaptive IQR path still kicks in when ≥5 centers
-    # cluster tightly.
-    from tools.geocoding.dispatchers import cross_validate_centers
+    # results AND bad grid-ref centroids). Effectively a no-op in v3 since
+    # propose_centers returns 1 candidate, but kept as defensive code.
     uk_centers = cross_validate_centers(uk_centers, max_outlier_km=5)
 
     # Filter outliers + cap. Env GEOMAP_MAX_CENTERS overrides the default
@@ -658,7 +721,7 @@ def sliding_window_position(
         lats = [c[1] for c in centers]
         lons = [c[2] for c in centers]
         # Pairwise max distance (rough — use bounding-box diagonal)
-        from tools.geocoding.dispatchers import _distance_m as _dist_m
+        from tools.geo.coords import haversine_m as _dist_m
         _max_pair = 0.0
         for i in range(len(centers)):
             for j in range(i + 1, len(centers)):

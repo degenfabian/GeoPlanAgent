@@ -162,7 +162,7 @@ def postcode(pc: str) -> dict:
         or {"success": False, "error": str} on not-found.
     """
     try:
-        from tools.geocoding.code_point import lookup_postcode
+        from tools.geo.code_point import lookup_postcode
         h = lookup_postcode(pc)
         if not h:
             return {"success": False,
@@ -216,7 +216,7 @@ def place(query: str, la: Optional[str] = None, limit: int = 5) -> dict:
         "lat", "lon", "admin_district", "county"}, ...]}
     """
     try:
-        from tools.geocoding.os_names import search as os_search
+        from tools.geo.os_names import search as os_search
         hits = os_search(query, max_results=limit * 3, context=la) or []
         hits = hits[:limit]
         out = []
