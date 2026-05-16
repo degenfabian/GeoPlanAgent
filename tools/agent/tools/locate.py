@@ -84,6 +84,7 @@ def geocode(
 def propose_centers(
     ctx: RunContext[AgentState],
     extra_terms: Optional[List[str]] = None,
+    match_context: Optional[str] = None,
 ) -> dict:
     """Run the live LLM-locate sub-agent to pick ONE center for positioning.
 
@@ -98,6 +99,13 @@ def propose_centers(
     Args:
         extra_terms: extra place-name strings to add to the locate sub-agent's
             inputs (e.g. a landmark visible on the map that the reader missed).
+        match_context: feedback to give the locate sub-agent after a prior
+            poor match_at result. Describe what went wrong in plain English,
+            e.g. "Prior pick at (51.51, -2.63) gave only 12 inliers; OS tile
+            showed farmland but planning map shows dense urban streets, so
+            the LA centroid was probably wrong — try a road-based pick
+            instead." The sub-agent gets this in its user message and is
+            told to pick from a DIFFERENT signal type.
 
     Returns:
         {"success": True, "n_candidates": 1, "candidates": [{...}], ...}
@@ -141,6 +149,7 @@ def propose_centers(
         pdf_info=pdf_info,
         map_img_bytes=map_bytes,
         model_name=model_name,
+        match_context=match_context,
     )
 
     conf = pick.confidence

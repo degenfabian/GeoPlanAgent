@@ -460,7 +460,8 @@ def _emergency_la_centroid_pick(pdf_info: dict, reason: str) -> LocatePick:
 
 
 def run_locate(pdf_info: dict, map_img_bytes: Optional[bytes],
-                model_name: str) -> LocatePick:
+                model_name: str,
+                match_context: Optional[str] = None) -> LocatePick:
     """Run the live LLM-locate agent for one case.
 
     Pydantic-ai enforces the LocatePick schema; if the agent loop fails
@@ -472,6 +473,11 @@ def run_locate(pdf_info: dict, map_img_bytes: Optional[bytes],
         pdf_info: live reader output (pdf_info dict).
         map_img_bytes: PNG bytes of the rendered planning map page, or None.
         model_name: OpenRouter model identifier (e.g. "google/gemini-3-flash-preview").
+        match_context: Optional feedback from a prior failed match_at — the
+            worker passes this in when re-calling propose_centers so the
+            locate agent can rethink with concrete signal (e.g. "matched
+            at lat=51.51, lon=-2.63 with 12 inliers; OS tile showed
+            farmland but planning map shows dense urban streets").
 
     Returns:
         LocatePick instance — guaranteed non-None.
@@ -496,8 +502,18 @@ def run_locate(pdf_info: dict, map_img_bytes: Optional[bytes],
         "visible_map_labels": (pdf_info.get("visible_map_labels") or [])[:15],
         "is_district_wide": pdf_info.get("is_district_wide", False),
     }
+    ctx_block = ""
+    if match_context and match_context.strip():
+        ctx_block = (
+            "\n\nPRIOR MATCH FEEDBACK (the worker tried a previous pick and "
+            "reported back — use this to choose a DIFFERENT pick):\n"
+            f"{match_context.strip()[:1200]}\n"
+            "Avoid sources that produced the prior pick; prefer a different "
+            "signal type (e.g. switch from postcode to road/intersection, "
+            "or from likely_town to a parish/landmark)."
+        )
     user_parts: List[object] = [
-        f"PDF_INFO:\n{json.dumps(pi_summary, indent=2)}\n\n"
+        f"PDF_INFO:\n{json.dumps(pi_summary, indent=2)}{ctx_block}\n\n"
         "Apply the protocol: view the map, scan pdf_info, letterhead-check "
         "postcodes, build pool via tool calls, cluster & pick, validate with "
         "la_check, then call submit_pick. Budget: 8 geocode calls max.",

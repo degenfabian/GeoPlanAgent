@@ -246,6 +246,19 @@ propose_centers. To add a missing place call
 propose_centers(extra_terms=["place name from the map"]) — never type
 coordinates yourself.
 
+RE-CALLING propose_centers WITH FEEDBACK: after a weak match_at (low
+inliers, visual mismatch in the panel), you can call propose_centers
+again with match_context="..." describing in plain English what went
+wrong. The locate sub-agent reads it and is told to pick from a
+DIFFERENT signal type. Example:
+   propose_centers(match_context="Prior pick at (51.51, -2.63) had 12
+   inliers; OS tile showed farmland but planning map is dense urban,
+   so postcode probably points to council letterhead. Try a road-based
+   pick instead.")
+This is the right move BEFORE calling lookup_district or accepting a
+0.4-score commit. Combine with extra_terms when you've spotted a
+specific landmark the locate agent should consider.
+
 ROTATION: the page is auto-rotated by a trained classifier before you see
 it. There is no rotate_map tool. The classifier abstains when uncertain,
 so rare cases may still be sideways; if positioning fails badly on what
