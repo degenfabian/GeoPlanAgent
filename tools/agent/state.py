@@ -170,6 +170,8 @@ class AgentState:
         self.accept_reason = ""
         self.recent_calls: set = set()
         self.position_calls: int = 0
+        # reader_refine call counter (bounded per case in refine.py).
+        self.refine_calls: int = 0
 
         # Structured-output validator tracking
         self.pdf_info: Dict[str, Any] = {}  # populated from reader phase

@@ -256,6 +256,12 @@ OTHER:
 • No duplicate tool calls with the same args.
 • geocode() is for postcodes / grid_refs you see on the map that PDFInfo
   missed — it doesn't position; pass the (lat, lon) to match_at.
+• reader_refine(question, page_hint=None): ask the source PDF a focused
+  question when PDFInfo is missing something concrete and the answer is
+  in the document. Examples: "what's the printed scale text on page 4?",
+  "are there any postcodes anywhere in the document?", "does page 3 have
+  a north arrow and what direction?". Budget 3 per case. Do NOT use it
+  for geocoding or to locate places.
 • If stuck, commit the highest-scoring match_at result and proceed
   through extract_boundary + project_boundary. The pipeline does NOT
   support refusing a case — always submit a polygon.
