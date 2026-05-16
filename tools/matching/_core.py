@@ -611,17 +611,8 @@ def sliding_window_position(
     from tools.geocoding.dispatchers import cross_validate_centers
     uk_centers = cross_validate_centers(uk_centers, max_outlier_km=5)
 
-    # GEOMAP_USE_LA_FILTER and GEOMAP_USE_SOURCE_PRIORITY env-gated branches
-    # were deleted in v18: the LA-polygon filter is now applied inside
-    # locate_v2's `candidate_passes_la_filter` before candidates ever reach
-    # MINIMA, and source-priority sort was supplanted by feature_match_score
-    # ranking in `propose_centers_v2`. Both flags were never enabled in
-    # v17 production (run_v17.sh / run_v18.sh do not set them).
-
-    # Filter outliers + cap. Default 5 (v13 behavior); env GEOMAP_MAX_CENTERS
-    # can tighten to 2-3 for fewer MINIMA invocations. With LA filter and
-    # source-priority sort enabled, cap=1-2 saves 60-80% MINIMA compute
-    # while INCREASING GT-inside-σ rate (top-priority candidates more accurate).
+    # Filter outliers + cap. Env GEOMAP_MAX_CENTERS overrides the default
+    # of 5; lower caps save MINIMA compute when candidates are pre-ranked.
     _max_c = int(os.environ.get("GEOMAP_MAX_CENTERS", "5"))
     centers = filter_centers(uk_centers, max_centers=_max_c)
 
@@ -732,9 +723,6 @@ def sliding_window_position(
     else:
         # Unknown-scale path: sweep across common UK planning-map scales
         # (1:1250 to 1:25000), one canonical zoom per scale.
-        # GEOMAP_USE_ZOOM_PREDICTOR was an experimental DINOv2 classifier
-        # that filtered this set; it never shipped to production (env never
-        # set in v17/v18) and is gone with `tools/zoom_predictor.py`.
         common_scales = [2500, 5000, 10000] if _FAST else \
                         [1250, 2500, 5000, 10000, 15000, 25000]
         zoom_mpp_configs = []
@@ -1091,12 +1079,6 @@ def sliding_window_position(
                     ranked = [(metric, 0, cand)] + [r for r in ranked
                                                      if r[2] is not cand]
                     break
-
-    # GEOMAP_USE_HP_PROXIMITY env-gated branch deleted in v18: never set
-    # in production (run_v17.sh / run_v18.sh do not enable it). The intent
-    # (demote MINIMA winners far from postcode/grid_ref anchors) is now
-    # better handled by tighter source-sigma in `_SOURCE_SIGMA_M` and the
-    # LA-polygon filter inside locate_v2.
 
     # Road name verification: if road names available, prefer candidates
     # where nearby OSM roads match the LLM-extracted road names

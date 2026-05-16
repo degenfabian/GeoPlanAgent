@@ -717,11 +717,6 @@ def run_agent(
                 print(f"  {src.upper()}: flagging low-quality (inliers={_inl}, "
                       f"score={_score:.1f}) - keeping geojson for partial IoU")
 
-    # M2 (v18): the FALLBACK_ANCHOR path was deleted along with
-    # `_position_boundary_disabled` (which was the only thing populating
-    # `state.centers`). Under v17/v18 `state.centers` is always empty, so
-    # this block was dead code. If MINIMA fails entirely under v18, we
-    # surface that — no synthesised partial-IoU fallback.
     return {
         "success": True,
         "geojson": final_geojson,

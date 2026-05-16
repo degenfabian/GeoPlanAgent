@@ -449,60 +449,13 @@ def check_scale_factor(match_info: Dict[str, Any]) -> CheckResult:
 # ────────────────────────────────────────────────────────────────────────────
 
 def check_building_overlap(predicted_geom) -> CheckResult:
-    """Disabled 2026-05-14 along with the rest of tools/snap/. Previously
-    depended on tools.snap.parcel.building_polygons_in_bbox which read OS
-    OpenMap Local buildings; that whole snap subpackage was removed after
-    the INSPIRE-snap ablation showed all parcel-style post-processing
-    contributed 0.0 mean IoU on the dataset.
-
-    Returns neutral (0.5, "") so the aggregator's "skip neutral" gate fires
-    and this check contributes 0 weight to verification_score.
+    """Permanently disabled — dependency `tools/snap/` was removed when the
+    INSPIRE-snap ablation showed 0.0 mean IoU contribution. Kept as a
+    neutral-returning stub so removing it doesn't require touching every
+    caller; the aggregator's "skip neutral" gate ensures zero contribution
+    to verification_score.
     """
     return (0.5, "")
-    # Legacy implementation kept as comment for historical reference:
-    if predicted_geom is None or predicted_geom.is_empty:
-        return (0.5, "")
-    try:
-        from tools.snap.parcel import building_polygons_in_bbox  # type: ignore
-    except Exception:
-        return (0.5, "parcel_snap not available")
-    try:
-        # 500m bbox around polygon centroid for urban-context detection
-        c = predicted_geom.centroid
-        # Rough degree-to-meter at UK latitudes: 1 deg lat ≈ 111km;
-        # 1 deg lon ≈ 111km × cos(lat). 500m → ~0.0045 deg lat,
-        # ~0.0072 deg lon at lat 53.
-        import math
-        dlat = 0.005
-        dlon = 0.005 / max(math.cos(math.radians(c.y)), 0.1)
-        bbox_lat_min, bbox_lat_max = c.y - dlat, c.y + dlat
-        bbox_lon_min, bbox_lon_max = c.x - dlon, c.x + dlon
-        nearby = building_polygons_in_bbox(
-            bbox_lat_min, bbox_lon_min, bbox_lat_max, bbox_lon_max
-        )
-        if len(nearby) < 10:
-            return (1.0, f"rural ({len(nearby)} OS buildings in 500m bbox)")
-        # Urban context — measure distance from polygon to nearest building
-        # Convert to BNG for accurate metres
-        pred_bng = _to_bng(predicted_geom)
-        if pred_bng is None or pred_bng.is_empty:
-            return (0.5, "couldn't reproject polygon to BNG")
-        from shapely.ops import unary_union
-        bldg_union = unary_union(nearby)
-        bldg_bng = _to_bng(bldg_union)
-        if bldg_bng is None or bldg_bng.is_empty:
-            return (0.5, "couldn't reproject buildings to BNG")
-        d = pred_bng.distance(bldg_bng)
-        if d <= 30:
-            return (1.0, f"urban: {len(nearby)} buildings nearby, polygon "
-                          f"{'contains/borders' if d == 0 else f'{d:.0f}m from'} buildings")
-        if d <= 100:
-            return (0.5, f"urban: {len(nearby)} buildings nearby, polygon "
-                          f"{d:.0f}m from nearest")
-        return (0.0, f"urban: {len(nearby)} buildings within 500m but polygon "
-                      f"{d:.0f}m from any of them — likely wrong location")
-    except Exception as e:
-        return (0.5, f"building_overlap calc failed: {e!s:.50}")
 
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -552,15 +505,14 @@ def check_multi_zoom_coherence(match_info: Dict[str, Any]) -> CheckResult:
 # ────────────────────────────────────────────────────────────────────────────
 
 DEFAULT_WEIGHTS = {
-    "area_consistency": 0.20,
-    "postcode_in_polygon": 0.10,
-    "la_boundary": 0.15,
+    "area_consistency": 0.30,
+    "postcode_in_polygon": 0.15,
+    "la_boundary": 0.25,
     "inlier_scatter": 0.15,
-    # scale_factor REMOVED — it's a measurement, not a verdict.
-    # The raw value is surfaced in the critic's main metrics line; pretending
-    # it's a "check" with a hard threshold was producing false alarms.
-    "building_overlap": 0.20,
     "multi_zoom_coherence": 0.15,
+    # scale_factor: not a verdict, measurement-only (surfaced raw in the
+    # critic's metrics block).
+    # building_overlap: permanently disabled (tools/snap/ removed).
 }
 
 
@@ -603,8 +555,6 @@ def verification_score(
     diagnosis = "OK"
     if checks["la_boundary"][0] < 0.3:
         diagnosis = "WRONG_TOWN"
-    elif checks["building_overlap"][0] < 0.3:
-        diagnosis = "WRONG_LOCATION"   # urban context, polygon far from buildings
     elif checks["multi_zoom_coherence"][0] < 0.3:
         diagnosis = "ZOOM_LOCKED"      # match unstable across zooms
     elif checks["inlier_scatter"][0] < 0.3:
@@ -618,11 +568,12 @@ def verification_score(
         "score": float(score),
         "checks": {n: {"confidence": float(c), "reason": r} for n, (c, r) in checks.items()},
         "diagnosis": diagnosis,
-        # Hard-gate trigger flag for callers (v18 critic-replacement):
-        # True when at least one of the three v18 hard gates failed.
+        # Hard-gate trigger: True when an actively-wired check failed hard.
+        # inlier_scatter and multi_zoom_coherence depend on match_info fields
+        # (inlier_coords / candidates_per_zoom) that are not yet logged by
+        # match.py — they return neutral until that wiring lands.
         "hard_gate_failed": (
             checks["inlier_scatter"][0] < 0.3
-            or checks["building_overlap"][0] < 0.3
             or checks["multi_zoom_coherence"][0] < 0.3
         ),
     }
