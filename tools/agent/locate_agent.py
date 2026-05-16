@@ -25,8 +25,9 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, BinaryContent, RunContext
-from pydantic_ai.models.openrouter import OpenRouterModel
 from pydantic_ai.usage import UsageLimits
+
+from tools.agent._model import resolve_model
 
 REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO))
@@ -483,7 +484,7 @@ def run_locate(pdf_info: dict, map_img_bytes: Optional[bytes],
     Returns:
         LocatePick instance — guaranteed non-None.
     """
-    model = OpenRouterModel(model_name)
+    model = resolve_model(model_name)
     deps = LocateState(pdf_info=pdf_info)
 
     # Construct the user message: pdf_info as JSON + optional map image

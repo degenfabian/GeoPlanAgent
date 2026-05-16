@@ -14,9 +14,9 @@ from pathlib import Path
 from typing import Optional
 
 from pydantic_ai import Agent, BinaryContent, ModelRetry, RunContext
-from pydantic_ai.models.openrouter import OpenRouterModel
 from pydantic_ai.usage import UsageLimits
 
+from tools.agent._model import resolve_model
 from tools.agent.state import _agent, AgentState
 
 
@@ -105,7 +105,7 @@ def reader_refine(
 
     model_name = os.environ.get(
         "GEOMAP_REFINE_MODEL", "google/gemini-3-flash-preview")
-    model = OpenRouterModel(model_name)
+    model = resolve_model(model_name)
     agent = _ensure_refine_agent(model_name)
 
     prompt = question.strip()

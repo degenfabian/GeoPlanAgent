@@ -364,18 +364,9 @@ def build_system_prompt(ctx: RunContext[AgentState]) -> str:
     return WORKER_SYSTEM_PROMPT
 
 
-# ── Model Aliases ──────────────────────────────────────────────────────────
-
-MODEL_ALIASES = {
-    "claude-opus": "anthropic/claude-opus-4.6",
-    "claude-sonnet": "anthropic/claude-sonnet-4-6",
-    "gpt-5.4": "openai/gpt-5.4",
-    "gpt-5.4-mini": "openai/gpt-5.4-mini",
-    "gpt-5.4-nano": "openai/gpt-5.4-nano",
-    "gemini-pro": "google/gemini-3.1-pro-preview",
-    "gemini-flash": "google/gemini-3-flash-preview",
-    "gemini-flash-lite": "google/gemini-3.1-flash-lite-preview",
-}
+# Model alias table lives in tools/agent/_model.py; re-exported here for
+# backward compat (overnight scripts import MODEL_ALIASES from this module).
+from tools.agent._model import MODEL_ALIASES, resolve_model, resolve_model_name  # noqa: E402,F401
 
 
 # ── Transient-HTTP-error retry helper ───────────────────────────────────────

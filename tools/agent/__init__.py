@@ -49,7 +49,6 @@ from typing import Any, Dict, Optional
 
 import cv2
 from pydantic_ai import BinaryContent
-from pydantic_ai.models.openrouter import OpenRouterModel
 from pydantic_ai.usage import UsageLimits
 
 # Structured I/O schemas live in their own module (extracted 2026-05-11).
@@ -70,7 +69,6 @@ from tools.agent.state import (
     _agent,
     _reader_agent,
     AgentState,
-    MODEL_ALIASES,
     resize_for_api,
     _img_to_binary,
     _dedup_check,
@@ -141,7 +139,8 @@ def _read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dic
                   f"reader will rely on PDF binary only")
         text_block = "(per-page text extraction unavailable)"
 
-    model = OpenRouterModel(model_name)
+    from tools.agent._model import resolve_model
+    model = resolve_model(model_name)
 
     from pydantic_ai.exceptions import UnexpectedModelBehavior
 
@@ -236,7 +235,8 @@ def run_agent(
         Dict with: geojson, match_info, mask, agent_accepted, agent_reason, etc.
     """
     # Resolve model alias
-    model_name = MODEL_ALIASES.get(model_name, model_name)
+    from tools.agent._model import resolve_model_name
+    model_name = resolve_model_name(model_name)
 
     # Get SAM3 model (prefer fine-tuned)
     if "sam3_ft" in models_state:
@@ -340,7 +340,7 @@ def run_agent(
     if verbose:
         print(f"  Running agent ({model_name}, max {max_iterations} turns)")
 
-    model = OpenRouterModel(model_name)
+    model = resolve_model(model_name)
 
     from pydantic_ai.exceptions import UnexpectedModelBehavior, UsageLimitExceeded
 
