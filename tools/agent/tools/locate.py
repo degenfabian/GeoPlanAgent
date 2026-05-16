@@ -317,6 +317,71 @@ def propose_centers(
     if not state.pdf_info:
         return {"success": False, "error": "PDFInfo missing — reader hasn't run"}
 
+    # ── LIVE LLM-LOCATE OVERRIDE ─────────────────────────────────────────
+    # When GEOMAP_USE_V3_LLM_LOCATE=1, run a LIVE sub-agent that:
+    #   - reads the FRESH pdf_info (from this run's reader phase)
+    #   - views the rendered planning map image
+    #   - calls 6 offline geocoder tools (postcode/grid_ref/place/road/intersect/la_check)
+    #   - returns ONE picked (lat, lon, sigma_m, confidence, source)
+    # Skips the entire 2200-line heuristic propose_centers_v2 cascade.
+    # The worker then calls match_at on this one center, MINIMA runs once,
+    # agent visually commits or rejects. No cascade fallback.
+    #
+    # Model: defaults to env GEOMAP_LOCATE_MODEL, falls back to
+    # "google/gemini-3-flash-preview" (the gemini-flash alias).
+    if os.environ.get("GEOMAP_USE_V3_LLM_LOCATE") == "1":
+        try:
+            from tools.agent.locate_agent import run_locate
+            import cv2 as _cv2
+            # Resolve model
+            model_name = os.environ.get(
+                "GEOMAP_LOCATE_MODEL",
+                "google/gemini-3-flash-preview",  # gemini-flash default
+            )
+            # Encode map image to PNG bytes (if available)
+            map_bytes = None
+            if state.map_img is not None:
+                try:
+                    _, buf = _cv2.imencode(".png", state.map_img)
+                    map_bytes = buf.tobytes()
+                except Exception:
+                    map_bytes = None
+            # Call live locate agent with FRESH pdf_info + map image
+            pick = run_locate(
+                pdf_info=state.pdf_info or {},
+                map_img_bytes=map_bytes,
+                model_name=model_name,
+            )
+            if pick is not None:
+                conf = pick.confidence
+                specificity = (5 if conf == "high"
+                               else 3 if conf == "med"
+                               else 1)
+                cand = {
+                    "id": 0,
+                    "source": f"live_locate:{pick.picked_source[:40]}",
+                    "lat": float(pick.top_lat),
+                    "lon": float(pick.top_lon),
+                    "sigma_m": float(pick.sigma_m),
+                    "specificity": specificity,
+                }
+                state.proposed_centers = [cand]
+                return {
+                    "success": True,
+                    "n_candidates": 1,
+                    "candidates": [cand],
+                    "engine": "live_llm_locate",
+                    "evidence": pick.evidence,
+                    "la_check_passed": pick.la_check_passed,
+                }
+            # Fall through to cascade if live locate failed for some reason
+            print("  [propose_centers] live locate returned None — falling "
+                  "back to cascade")
+        except Exception as e:
+            print(f"  [propose_centers] live locate raised: {e!s:.160} — "
+                  f"falling back to cascade")
+        # Fall through to normal cascade below
+
     # Unified locate_v2 cascade. Validated 2026-05-08 against 214 v13 cached
     # cases: 212/214 (99.1%) GT inside sigma for at least one candidate.
     # Pulls postcode + grid_ref + parish/landmark/road-inside-LA + feature_cluster

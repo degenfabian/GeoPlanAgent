@@ -29,7 +29,17 @@ def render_pdf_page(pdf_path, page_index, dpi=200):
             # mediabox 603×847, losing ~11 px on each side of the planning
             # map). set_cropbox goes through the standard rotation pipeline
             # and is a no-op when cropbox already equals mediabox.
-            page.set_cropbox(page.mediabox)
+            #
+            # Some PDFs have a MediaBox in a different coordinate space than
+            # the CropBox (e.g. case 5FA84190 page 6: media=(0,-1920,864,0),
+            # crop=(0,0,864,1920) — Y inverted). PyMuPDF rejects with
+            # "CropBox not in MediaBox" when the rects don't overlap. In
+            # that case the existing CropBox is already correct (matches
+            # the page's effective rect); fall through and render that.
+            try:
+                page.set_cropbox(page.mediabox)
+            except ValueError:
+                pass
             pix = page.get_pixmap(dpi=dpi)
             img = np.frombuffer(pix.samples, dtype=np.uint8).reshape(
                 pix.height, pix.width, pix.n)

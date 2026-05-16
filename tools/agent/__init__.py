@@ -732,9 +732,9 @@ def run_agent(
         "critic_applied_rotation_deg": state.critic_applied_rotation_deg,
         "critic_suspected_wrong_location": state.critic_suspected_wrong_location,
         "critic_worker_reentered": state.critic_worker_reentered,
-        "critic_panel_img": (critic_result.get("panel_img_iter0")
+        "critic_panel_img": (critic_result.get("panel_iter0")
                               if critic_result else None),
-        "critic_tokens": (critic_result.get("tokens")
+        "critic_tokens": (critic_result.get("tokens_used")
                            if critic_result else None),
         # Rigorous-analysis artefacts (written to critic_debug/ by benchmark)
         "critic_pre_snapshot": (critic_result.get("pre_snapshot")

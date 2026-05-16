@@ -298,6 +298,213 @@ def render_tile(zoom, tx, ty, gpkg_path=None, tile_size=256):
     return canvas
 
 
+# ── Schematic / planning-map-style renderer ─────────────────────────────────
+#
+# Hypothesis: feature matching across modalities (planning-map ↔ colored OS
+# tile) is intrinsically hard. If we render the OS data as B&W line art that
+# structurally resembles UK planning maps (white background, thin black
+# building outlines, thin black road centrelines, no fills), the matcher's
+# job becomes near-same-modal — and LoFTR-class matchers are far better at
+# that.
+#
+# This function shares the same projection logic as render_tile() but uses a
+# minimal monochrome style.
+
+SCHEMATIC_STYLE = {
+    "background":       (255, 255, 255),   # pure white
+    "building_outline": (0, 0, 0),         # black
+    "road":             (0, 0, 0),         # black
+    "rail":             (0, 0, 0),         # black
+    "water_outline":    (0, 0, 0),         # black
+}
+
+SCHEMATIC_LINE_WIDTHS_Z17 = {
+    "Motorway":              3,
+    "A Road":                2,
+    "B Road":                2,
+    "Minor Road":            1,
+    "Local Street":          1,
+    "Alley":                 1,
+    "Pedestrianised Street": 1,
+}
+
+
+def render_tile_schematic(zoom, tx, ty, gpkg_path=None, tile_size=256):
+    """Render a single tile as B&W line art (planning-map style).
+
+    Same coverage (buildings, roads, rail, water) as render_tile() but with a
+    monochrome line-art style designed to make planning-map ↔ tile matching
+    near-same-modal.
+
+    Returns:
+        numpy BGR array (tile_size × tile_size × 3) or None on failure.
+    """
+    if gpkg_path is None:
+        gpkg_path = str(GPKG_PATH)
+    if not os.path.exists(gpkg_path):
+        raise FileNotFoundError(
+            f"OS Open Zoomstack GeoPackage not found at {gpkg_path}. "
+            f"Download from https://osdatahub.os.uk/downloads/open/OpenZoomstack"
+        )
+
+    bounds_3857 = _tile_to_bounds_3857(zoom, tx, ty, tile_size)
+    bounds_27700 = _transform_3857_to_27700(*bounds_3857)
+    scale = 2 ** (zoom - 17)
+
+    canvas = np.full((tile_size, tile_size, 3),
+                       SCHEMATIC_STYLE["background"], dtype=np.uint8)
+
+    def _geom_to_pixel_coords(geom):
+        return _transform_27700_to_pixels(geom, bounds_3857, tile_size)
+
+    # Water outline only (no fill — planning maps usually show water as outline)
+    gdf = _read_layer("surfacewater", bounds_27700, gpkg_path)
+    if gdf is not None:
+        for _, row in gdf.iterrows():
+            pixel_geom = _geom_to_pixel_coords(row.geometry)
+            _draw_polygon(canvas, pixel_geom,
+                            SCHEMATIC_STYLE["background"],
+                            outline=SCHEMATIC_STYLE["water_outline"],
+                            outline_width=1)
+
+    # Building outlines (no fill — matches planning map's hatched/outlined
+    # building convention)
+    gdf = _read_layer("local_buildings", bounds_27700, gpkg_path)
+    if gdf is not None:
+        for _, row in gdf.iterrows():
+            pixel_geom = _geom_to_pixel_coords(row.geometry)
+            _draw_polygon(canvas, pixel_geom,
+                            SCHEMATIC_STYLE["background"],
+                            outline=SCHEMATIC_STYLE["building_outline"],
+                            outline_width=1)
+
+    # Roads as single black centrelines (no casings, no fills, no color)
+    import pandas as pd
+    road_gdfs = []
+    for layer_name, default_type in [
+        ("roads_local", "Local Street"),
+        ("roads_regional", "B Road"),
+        ("roads_national", "A Road"),
+    ]:
+        gdf = _read_layer(layer_name, bounds_27700, gpkg_path)
+        if gdf is not None:
+            if "type" not in gdf.columns:
+                gdf["type"] = default_type
+            road_gdfs.append(gdf)
+    if road_gdfs:
+        all_roads = pd.concat(road_gdfs, ignore_index=True)
+        for _, row in all_roads.iterrows():
+            road_type = row.get("type", "Local Street")
+            base_w = SCHEMATIC_LINE_WIDTHS_Z17.get(road_type, 1)
+            w = max(1, int(round(base_w * scale)))
+            pixel_geom = _geom_to_pixel_coords(row.geometry)
+            _draw_line(canvas, pixel_geom, SCHEMATIC_STYLE["road"], w)
+
+    # Railways
+    gdf = _read_layer("rail", bounds_27700, gpkg_path)
+    if gdf is not None:
+        w = max(1, int(round(1 * scale)))
+        for _, row in gdf.iterrows():
+            pixel_geom = _geom_to_pixel_coords(row.geometry)
+            _draw_line(canvas, pixel_geom, SCHEMATIC_STYLE["rail"], w)
+
+    return canvas
+
+
+def _render_schematic_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y, gpkg_path=None):
+    """Bulk render the OS data as B&W planning-map-style line art.
+
+    Same canvas + projection logic as `_render_canvas_bulk` but with the
+    schematic style (white background, black thin outlines for buildings +
+    roads + rail).
+    """
+    import pandas as pd
+    import pyproj
+    from shapely.ops import transform as shapely_transform
+
+    if gpkg_path is None:
+        gpkg_path = str(GPKG_PATH)
+    if not os.path.exists(gpkg_path):
+        raise FileNotFoundError(f"GeoPackage not found at {gpkg_path}")
+
+    tile_size = 256
+    canvas_w = n_tiles_x * tile_size
+    canvas_h = n_tiles_y * tile_size
+    bounds_3857 = (
+        _tile_to_bounds_3857(zoom, tx_min, ty_min, tile_size)[0],
+        _tile_to_bounds_3857(zoom, tx_min, ty_min + n_tiles_y - 1, tile_size)[1],
+        _tile_to_bounds_3857(zoom, tx_min + n_tiles_x - 1, ty_min, tile_size)[2],
+        _tile_to_bounds_3857(zoom, tx_min, ty_min, tile_size)[3],
+    )
+    bounds_27700 = _transform_3857_to_27700(*bounds_3857)
+    scale = 2 ** (zoom - 17)
+    canvas = np.full((canvas_h, canvas_w, 3),
+                       SCHEMATIC_STYLE["background"], dtype=np.uint8)
+
+    x_min_3857, y_min_3857, x_max_3857, y_max_3857 = bounds_3857
+    x_extent = x_max_3857 - x_min_3857
+    y_extent = y_max_3857 - y_min_3857
+    transformer_to_3857 = pyproj.Transformer.from_crs(
+        "EPSG:27700", "EPSG:3857", always_xy=True)
+
+    def _geom_to_pixels(geom):
+        def _to_px(x, y):
+            mx, my = transformer_to_3857.transform(x, y)
+            px = (mx - x_min_3857) / x_extent * canvas_w
+            py = (1 - (my - y_min_3857) / y_extent) * canvas_h
+            return px, py
+        return shapely_transform(_to_px, geom)
+
+    # Water outlines only (planning maps usually show water as outline)
+    gdf = _read_layer("surfacewater", bounds_27700, gpkg_path)
+    if gdf is not None:
+        for _, row in gdf.iterrows():
+            _draw_polygon(canvas, _geom_to_pixels(row.geometry),
+                            SCHEMATIC_STYLE["background"],
+                            outline=SCHEMATIC_STYLE["water_outline"],
+                            outline_width=1)
+
+    # Building outlines (no fill)
+    gdf = _read_layer("local_buildings", bounds_27700, gpkg_path)
+    if gdf is not None:
+        for _, row in gdf.iterrows():
+            _draw_polygon(canvas, _geom_to_pixels(row.geometry),
+                            SCHEMATIC_STYLE["background"],
+                            outline=SCHEMATIC_STYLE["building_outline"],
+                            outline_width=1)
+
+    # Roads as single black centerlines
+    road_gdfs = []
+    for layer_name, default_type in [
+        ("roads_local", "Local Street"),
+        ("roads_regional", "B Road"),
+        ("roads_national", "A Road"),
+    ]:
+        gdf = _read_layer(layer_name, bounds_27700, gpkg_path)
+        if gdf is not None:
+            if "type" not in gdf.columns:
+                gdf["type"] = default_type
+            road_gdfs.append(gdf)
+    if road_gdfs:
+        all_roads = pd.concat(road_gdfs, ignore_index=True)
+        for _, row in all_roads.iterrows():
+            road_type = row.get("type", "Local Street")
+            base_w = SCHEMATIC_LINE_WIDTHS_Z17.get(road_type, 1)
+            w = max(1, int(round(base_w * scale)))
+            _draw_line(canvas, _geom_to_pixels(row.geometry),
+                        SCHEMATIC_STYLE["road"], w)
+
+    # Railways
+    gdf = _read_layer("rail", bounds_27700, gpkg_path)
+    if gdf is not None:
+        w = max(1, int(round(1 * scale)))
+        for _, row in gdf.iterrows():
+            _draw_line(canvas, _geom_to_pixels(row.geometry),
+                        SCHEMATIC_STYLE["rail"], w)
+
+    return canvas
+
+
 def _draw_polygon(canvas, pixel_geom, fill_color, outline=None, outline_width=1):
     """Draw a polygon geometry on the canvas."""
     from shapely.geometry import Polygon, MultiPolygon

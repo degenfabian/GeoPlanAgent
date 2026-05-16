@@ -420,18 +420,28 @@ def check_inlier_scatter(match_info: Dict[str, Any]) -> CheckResult:
 # ────────────────────────────────────────────────────────────────────────────
 
 def check_scale_factor(match_info: Dict[str, Any]) -> CheckResult:
-    """MINIMA's scale_factor (or avg_scale) outside [0.5, 2.0] is suspect."""
+    """Surface the raw scale_factor without an editorial verdict.
+
+    Earlier versions labelled scale_factor outside [0.5, 2.0] as "extreme —
+    wrong-zoom or wrong-rotation". Empirically scale factors well outside
+    that range can be perfectly valid (planning maps render at a wide range
+    of scales that don't align with our fixed OS-tile zoom). Hardcoding the
+    threshold pre-biases the critic with a false signal. The critic still
+    sees the raw value in the main metrics line and can judge from the
+    visual panel.
+    """
     if not match_info:
         return (0.5, "")
     sf = match_info.get("scale_factor") or match_info.get("avg_scale")
     if sf is None:
         return (0.5, "")
     sf = float(sf)
-    if 0.7 <= sf <= 1.5:
-        return (1.0, f"scale_factor={sf:.2f} normal")
-    if 0.5 <= sf <= 2.0:
-        return (0.5, f"scale_factor={sf:.2f} unusual")
-    return (0.0, f"scale_factor={sf:.2f} extreme — wrong-zoom or wrong-rotation")
+    # Always return NEUTRAL confidence (0.5) + value-only string. Never
+    # tagged as a failed check (won't appear in the critic's "failed
+    # checks" block) and not credited toward the aggregate score either
+    # — pure no-opinion. The scale_factor number is still visible in the
+    # main metrics line so the critic can judge for itself.
+    return (0.5, f"scale_factor={sf:.2f}")
 
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -546,7 +556,9 @@ DEFAULT_WEIGHTS = {
     "postcode_in_polygon": 0.10,
     "la_boundary": 0.15,
     "inlier_scatter": 0.15,
-    "scale_factor": 0.05,
+    # scale_factor REMOVED — it's a measurement, not a verdict.
+    # The raw value is surfaced in the critic's main metrics line; pretending
+    # it's a "check" with a hard threshold was producing false alarms.
     "building_overlap": 0.20,
     "multi_zoom_coherence": 0.15,
 }
@@ -573,7 +585,7 @@ def verification_score(
         "postcode_in_polygon": check_postcode_in_polygon(pdf_info, predicted_geom),
         "la_boundary": check_la_boundary(pdf_info, predicted_geom),
         "inlier_scatter": check_inlier_scatter(match_info or {}),
-        "scale_factor": check_scale_factor(match_info or {}),
+        # scale_factor: dropped from the verdict set (see DEFAULT_WEIGHTS comment).
         "building_overlap": check_building_overlap(predicted_geom),
         "multi_zoom_coherence": check_multi_zoom_coherence(match_info or {}),
     }
@@ -601,8 +613,6 @@ def verification_score(
         diagnosis = "OOB_AREA"
     elif checks["postcode_in_polygon"][0] < 0.3:
         diagnosis = "PC_FAR_FROM_POLY"
-    elif checks["scale_factor"][0] < 0.3:
-        diagnosis = "BAD_SCALE"
 
     return {
         "score": float(score),

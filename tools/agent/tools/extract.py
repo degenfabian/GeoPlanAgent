@@ -113,22 +113,11 @@ def extract_boundary(
                 f"bbox is degenerate (x1={x1} y1={y1} x2={x2} y2={y2}); "
                 f"need x2 > x1 and y2 > y1")
 
-    # Instance mode is disabled — semantic-only. Empirical evidence on the
-    # v18 partial 111-case subset: 10 of 21 instance-escalation cases were
-    # actually RESCUED by staying with semantic (+0.193 mean IoU). The agent
-    # was escalating on "suspiciously tiny" masks which are in fact correct
-    # (0.05-0.12% of image is normal for small sites). Redirect to bbox
-    # refinement of semantic instead.
-    if mode == "instance":
-        raise ModelRetry(
-            "Instance mode is disabled. The LoRA-fine-tuned SAM3 semantic "
-            "head is calibrated for planning-boundary segmentation — trust "
-            "its output even when the mask area is small (0.05-1% is normal "
-            "for single-building sites). If the semantic mask is genuinely "
-            "in the WRONG REGION or is a whole-map blob, retry with a "
-            "tighter bbox: extract_boundary(bbox=[x1,y1,x2,y2]). Do NOT "
-            "escalate to instance mode."
-        )
+    # Instance mode is enabled. v18 evidence had shown the worker over-
+    # escalated to instance on "suspiciously tiny" semantic masks that were
+    # actually correct; the v8 k-fold LoRA + critic safety-net make that
+    # failure mode less likely now. Worker prompt explains when each mode
+    # is appropriate; critic can dispatch retry_extract_instance as well.
 
     if mode == "semantic":
         if select_indices is not None:
@@ -146,17 +135,10 @@ def extract_boundary(
         if mask is None:
             return {"success": False, "error": "SAM3 semantic returned no mask"}
         area_pct = float(np.sum(mask > 0)) / mask.size * 100
-        # Auto-fallback: if semantic grabbed >60% of the image, that's
-        # almost always wrong (whole-map blob, like the failure case
-        # 2ACB6DFF). Tell the agent to switch to instance mode instead
-        # of accepting the trash mask.
-        if area_pct > 60:
-            raise ModelRetry(
-                f"Semantic mode produced a mask covering {area_pct:.0f}% "
-                f"of the image — almost certainly the whole map / legend, "
-                f"not the planning boundary. Switch to "
-                f"mode='instance'{' with bbox' if bbox else ''} to get "
-                f"per-slot candidates you can select from.")
+        # No automatic size-based escalation. The agent inspects the
+        # resulting mask + map and decides whether it captured the
+        # application site; if not, the agent can call again with bbox
+        # or mode='instance'. Mask area alone is not a quality signal.
         state.current_mask = mask
         state.selected_indices = None
         if state.map_img is not None:

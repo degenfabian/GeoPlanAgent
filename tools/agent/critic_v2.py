@@ -258,8 +258,9 @@ junctions, road bends, water bodies should line up.
 
 Additional positive signals:
 - n_inliers ≥ 50 with aspect close to 1.0 (square-ish affine, no shear)
-- scale_factor close to 1.0 (matcher found the right zoom)
 - Deterministic overall_score ≥ 0.6
+The scale_factor is shown as a raw number — interpret it from context
+(planning-map scale, what the panel shows), not as a hard threshold.
 
 WHAT "BAD" LOOKS LIKE
 - No road or settlement correspondence between left and right panel.
@@ -267,13 +268,15 @@ WHAT "BAD" LOOKS LIKE
   different street pattern.
 - The SAM mask covers something that isn't a boundary: a title block,
   legend, scale bar, north arrow, or wide region of text/whitespace.
-- Mask coverage > 40% of the image — usually means whole-map blob, not
-  the intended site boundary.
+- The planning map has multiple plausible candidate polygons and the
+  mask picked the wrong one, OR the application site visibly spans
+  multiple parts (non-contiguous parcels, separately-hatched regions)
+  but the mask only covers one of them.
 - The projected polygon (red outline in OS render) lands well outside the
   planning map's bounded area, or its shape doesn't match the planning
   map's boundary shape.
 - Deterministic verification flagged hard gates (look at "failed checks"
-  block) — esp. scale_factor BAD, inlier_scatter BAD, multi_zoom_coherence
+  block) — esp. inlier_scatter BAD, multi_zoom_coherence BAD, la_boundary
   BAD.
 
 ACTIONS (pick exactly one)
@@ -300,11 +303,16 @@ ACTIONS (pick exactly one)
     from the CENTRES list.
 
 - retry_extract_instance
-    Use when the SAM mask might be picking the wrong region among several
-    plausible options on the map (multiple coloured polygons, callout box
-    vs actual site, etc.). The worker will re-run SAM3 in instance mode
-    to expose 5 candidate masks and pick from them.
-    No additional args.
+    Use when the planning map has MULTIPLE plausible polygons and the
+    current single mask is wrong — either picking the wrong one (e.g. a
+    "THE SITE" callout box vs the actual site polygon) or failing to
+    combine parts that together form the site (e.g. two non-contiguous
+    parcels). The worker will re-run SAM3 in instance mode and call
+    extract_boundary(mode='instance', select_indices=[...]) with ONE OR
+    MORE indices; multiple indices are unioned. Do NOT use this when
+    the issue is location (use retry_match_at) or when the mask is in
+    the right region but bleeding into nearby content (use
+    retry_extract_bbox). No additional args.
 
 OUTPUT
 A single structured response with: diagnosis, action, optional bbox /
@@ -361,8 +369,15 @@ def _run_critic_once(state, model: str) -> "tuple[CriticDirective, np.ndarray, d
     in_tokens = 0
     out_tokens = 0
     t0 = time.time()
+    # Use shared retry helper from tools.agent.state. Gemini Flash hits
+    # transient 400s ("Provider returned error") at ~22% per case; without
+    # retries every transient hiccup silently auto-approves, defeating the
+    # critic. _run_sync_with_retry retries 2x on retryable HTTP errors
+    # (400/408/425/429/500/502/503/504) with 5s→10s backoff. Non-retryable
+    # errors (auth, validation, etc.) fall through to the except block.
+    from tools.agent.state import _run_sync_with_retry
     try:
-        result = agent.run_sync(user_input)
+        result = _run_sync_with_retry(agent, user_input, label="critic")
         directive = result.output
         try:
             usage = result.usage()
