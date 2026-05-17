@@ -23,6 +23,15 @@ from tools.agent.state import (
 )
 
 
+# Strict commit-gate thresholds. Statistical miner finding 2026-05-07:
+# accepted matches below these levels had mean IoU 0.439 vs 0.748 overall
+# (per-case stats in results/benchmark_v3/gemini-flash/*/metrics.json).
+# Analytical-affine matches (no n_inliers by design) are exempt — they're
+# fully determined by E/N + scale + DPI + mask centroid.
+MIN_INLIERS_COMMIT = 18
+MIN_MASK_FRAC_COMMIT = 0.002
+
+
 def _build_match_at_panel(map_img: np.ndarray,
                             tile_info: Dict[str, Any],
                             mi: Dict[str, Any]) -> Optional[np.ndarray]:
@@ -421,11 +430,9 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
                 f"LA-polygon containment.)"
             )
 
-    # Strict commit gate: reject low-evidence commits (n_inliers<18 OR
-    # mask_frac<0.002). Statistical miner finding 2026-05-07: accepted
-    # matches below these thresholds have mean IoU 0.439 vs 0.748 overall.
-    # Analytical short-circuit matches are exempt (no n_inliers by design;
-    # fully determined affine from E/N + scale + DPI + mask centroid).
+    # Strict commit gate (see MIN_INLIERS_COMMIT / MIN_MASK_FRAC_COMMIT
+    # at top of file for empirical derivation). Analytical short-circuit
+    # matches are exempt.
     mi = (cand.get("match_info") or {})
     method = str(mi.get("method", ""))
     if method not in ("analytical", "analytical_affine"):
@@ -439,11 +446,12 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
         mask_frac = 0.0
         if state.current_mask is not None and state.current_mask.size > 0:
             mask_frac = float(np.sum(state.current_mask > 0)) / float(state.current_mask.size)
-        if n_in >= 0 and (n_in < 18 or mask_frac < 0.002):
+        if n_in >= 0 and (n_in < MIN_INLIERS_COMMIT or mask_frac < MIN_MASK_FRAC_COMMIT):
             avail_ids = sorted(state.match_attempts.keys())
             raise ModelRetry(
                 f"commit_match REJECTED candidate_id={candidate_id}: "
-                f"low evidence (n_inliers={n_in}<18 OR mask_frac={mask_frac:.4f}<0.002). "
+                f"low evidence (n_inliers={n_in}<{MIN_INLIERS_COMMIT} OR "
+                f"mask_frac={mask_frac:.4f}<{MIN_MASK_FRAC_COMMIT}). "
                 f"Try a different center via match_at, or call propose_centers"
                 f"(extra_terms=[...]) to add more candidates. "
                 f"Available IDs: {avail_ids}."

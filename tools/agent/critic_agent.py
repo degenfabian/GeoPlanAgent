@@ -1,27 +1,19 @@
 """Phase 3 critic — visual review + structured directive, optionally
 rehanded to the worker.
 
-Two implementations live behind `run_critic_loop`:
+`run_critic_agent` runs a separate Gemini-Flash agent that sees a 2-panel
+image (planning map + SAM mask | OS render + projected polygon) plus
+deterministic-verification metrics, and emits a structured CriticDirective
+(approve / retry_extract_bbox / retry_match_at). retry-* directives are
+rehanded to the worker; the worker is prompted to comply via its CRITIC
+DIRECTIVE protocol.
 
-- `run_critic_agent` — LLM critic (default). A separate Gemini-Flash agent
-  sees a 2-panel image (planning map + SAM mask | OS render + projected
-  polygon) plus deterministic-verification metrics, and emits a structured
-  CriticDirective (approve / retry_extract_bbox / retry_match_at).
-  retry-* directives are rehanded to the worker; the worker is prompted
-  to comply via its CRITIC DIRECTIVE protocol.
-
-- `run_deterministic_critic` — label-only baseline. Computes
-  verification_score, labels the result as approve / flag_low_confidence
-  but never modifies the GeoJSON. Used for ablations (env
-  GEOMAP_CRITIC=deterministic) and as the no-cost fallback.
-
-Both return the same dict shape so benchmark_runner._save_critic_debug
-and watch scripts keep working unchanged.
+`run_critic_loop` is the public entry point; benchmark_runner and watch
+scripts call it.
 """
 
 from __future__ import annotations
 
-import os
 import time
 from typing import Any, Dict, List, Optional
 
@@ -538,86 +530,7 @@ def run_critic_agent(
     }
 
 
-# ── Deterministic critic: label-only baseline ─────────────────────────────
-
-def run_deterministic_critic(
-    state: Any,
-    worker_result: Any,
-    verbose: bool = True,
-) -> Dict[str, Any]:
-    """Label-only baseline. Computes verification_score and labels the
-    result as approve / flag_low_confidence; never modifies state. Used
-    for ablations (env GEOMAP_CRITIC=deterministic) and as the no-cost
-    no-LLM cell when comparing critic effectiveness.
-
-    Returns the same dict shape as run_critic_agent so downstream tooling
-    (benchmark_runner, watch scripts) doesn't branch.
-    """
-    from tools.verification_checks import verification_score
-    from shapely.geometry import shape
-
-    iterations: List[Dict[str, Any]] = []
-    geojson = (state.current_result or {}).get("geojson") if state.current_result else None
-    match_info = (state.current_result or {}).get("match_info") if state.current_result else None
-    pdf_info = state.pdf_info or {}
-
-    empty_return = {
-        "iterations": [],
-        "final_decision": None,
-        "changed_mask": False,
-        "tokens_used": {"request": 0, "response": 0},
-        "panel_iter0": None,
-        "applied_rotation_deg": None,
-    }
-
-    if geojson is None:
-        if verbose:
-            print("  det-critic: no geojson, skipping")
-        return empty_return
-
-    try:
-        pred_geom = shape(geojson.get("geometry") or geojson)
-        if not pred_geom.is_valid:
-            pred_geom = pred_geom.buffer(0)
-    except Exception as e:
-        if verbose:
-            print(f"  det-critic: bad geojson ({e!s:.50}), skipping")
-        return empty_return
-
-    score = verification_score(pdf_info, pred_geom, match_info)
-    diag = score["diagnosis"]
-    hard_failed = score.get("hard_gate_failed", False)
-    if hard_failed or score["score"] < 0.5:
-        decision_kind = "flag_low_confidence"
-    else:
-        decision_kind = "approve"
-
-    iterations.append({
-        "iter_idx": 0,
-        "decision": decision_kind,
-        "diagnosis": diag,
-        "score": score["score"],
-        "checks": score["checks"],
-        "fix_applied": "",
-    })
-
-    if verbose:
-        triggered = [n for n, c in score["checks"].items()
-                     if c.get("confidence", 0.5) < 0.3 and c.get("reason")]
-        print(f"  det-critic: {decision_kind} (diag={diag}, "
-              f"score={score['score']:.2f}, triggered={triggered})")
-
-    return {
-        "iterations": iterations,
-        "final_decision": decision_kind,
-        "changed_mask": False,
-        "tokens_used": {"request": 0, "response": 0},
-        "panel_iter0": None,
-        "applied_rotation_deg": None,
-    }
-
-
-# ── Dispatcher ─────────────────────────────────────────────────────────────
+# ── Entry point ────────────────────────────────────────────────────────────
 
 def run_critic_loop(
     state: Any,
@@ -630,16 +543,7 @@ def run_critic_loop(
     max_super: int = 2,
     max_inner: int = 2,
 ) -> Dict[str, Any]:
-    """Critic dispatcher.
-
-    GEOMAP_CRITIC=llm (default): the LLM critic in run_critic_agent.
-    GEOMAP_CRITIC=deterministic: the label-only run_deterministic_critic
-    baseline (no LLM cost, only labels; never modifies state). Used for
-    ablations from a single benchmark run.
-    """
-    variant = os.environ.get("GEOMAP_CRITIC", "llm").lower()
-    if variant == "deterministic":
-        return run_deterministic_critic(state, worker_result, verbose=verbose)
+    """Run the LLM critic. Thin wrapper around `run_critic_agent`."""
     return run_critic_agent(
         state, worker_result, model=model, sam3=sam3,
         minima_matcher=minima_matcher, verbose=verbose,

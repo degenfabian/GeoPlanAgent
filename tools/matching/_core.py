@@ -34,6 +34,33 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # Restoring the full sliding-window search; live wall-clock cost is bearable.
 
 
+# ── Tuned constants (empirical) ──────────────────────────────────────────────
+#
+# These thresholds were empirically tuned against the 211-case cached MINIMA
+# sweep on v3 benchmark output. The original tuning scripts lived in
+# `overnight/` (gitignored, since deleted); the v3 per-case stats remain in
+# `results/benchmark_v3/gemini-flash/<case>/metrics.json` and the bands here
+# can be re-derived from them. See per-constant comments for the specific
+# regression / case the value was calibrated against.
+
+# 6-DOF affine acceptance gates (estimate_affine). Loosened 2026-05-08
+# (case 12:00126 / A4KTRa1): the prior 2.0 ratio + tight [0.7, 1.3] scale
+# window rejected v13's 494-inlier 6-DOF wins, forcing fallback to 4-DOF
+# fits with ~18 inliers. det>0 + shear<0.15 + aspect>=0.85 still guard
+# against mirror-flip and shear-rotation drift on hand-drawn plans.
+GATE_RATIO_6DOF = 1.3
+SCALE_6DOF_MIN = 0.3
+SCALE_6DOF_MAX = 3.0
+
+# Sliding-window stride target: ~100 windows per (center, zoom, rotation).
+# Same coverage density independent of rotation; conditional rotation is
+# what bounds compute. 32-px floor below = ~48 m at z18, fine enough for
+# MINIMA's spatial accuracy. The prior 128-px floor evaluated only ~1
+# window per 192 m × 192 m square, leaving sub-tile match positions
+# untested.
+WINDOW_STRIDE_TARGET = 100
+
+
 # ── MINIMA model management ──────────────────────────────────────────────────
 
 def load_minima(base_dir=None):
@@ -132,31 +159,18 @@ def estimate_affine(mkpts0, mkpts1, mconf=None, reproj_thresh=10.0):
     n6 = int(mask6.sum()) if (H6 is not None and mask6 is not None) else 0
 
     H, n_inliers, inlier_mask = H4, n4, mask4
-    # Loosened 2026-05-08 (per case 12:00126 diagnosis): the 2× gate was
-    # rejecting v13's 494-inlier 6-DOF wins (4-DOF gets ~250 inliers, blocked).
-    # 1.3× threshold + tighter scale [0.85, 1.15] keeps geometric sanity while
-    # letting clear 6-DOF wins commit. Env GEOMAP_6DOF_GATE_RATIO override.
-    gate_ratio = float(os.environ.get("GEOMAP_6DOF_GATE_RATIO", "1.3"))
-    # Widened to [0.3, 3.0] (same as outer scale_factor allowance) after
-    # finding v13's accepted affines for 12:00126 (avg_scale=0.43) and
-    # A4KTRa1 (0.342) were OUTSIDE [0.7, 1.3]. The tight gate was REJECTING
-    # legit 6-DOF wins, forcing fallback to 4-DOF with 18 inliers vs v13's 494.
-    # Other guards (det>0, shear<0.15, aspect≥0.85) still catch malformed fits.
-    scale_lo = float(os.environ.get("GEOMAP_6DOF_SCALE_LO", "0.3"))
-    scale_hi = float(os.environ.get("GEOMAP_6DOF_SCALE_HI", "3.0"))
-    if H6 is not None and n6 >= gate_ratio * max(1, n4):
-        # Geometric sanity check on 6-DOF fit
+    if H6 is not None and n6 >= GATE_RATIO_6DOF * max(1, n4):
+        # Geometric sanity check on 6-DOF fit. Reject reflections (det<0)
+        # and large shear (off-diagonal asymmetry > 0.15) — prevents
+        # mirror-flip and shear-rotation drift on hand-drawn plans.
         a, b = H6[0, 0], H6[0, 1]; c, d = H6[1, 0], H6[1, 1]
         sx = math.sqrt(a*a + c*c); sy = math.sqrt(b*b + d*d)
         if sx > 0 and sy > 0:
             aspect_6 = min(sx, sy) / max(sx, sy)
             avg_scale_6 = (sx + sy) / 2
-            # Validator-added guards: reject reflections (det < 0) and
-            # large shear (off-diagonal asymmetry > 0.15). These prevent
-            # mirror-flip and shear-rotation drift on hand-drawn plans.
             det = a * d - b * c
             shear_asymmetry = abs(b - (-c))
-            if (aspect_6 >= 0.85 and scale_lo <= avg_scale_6 <= scale_hi
+            if (aspect_6 >= 0.85 and SCALE_6DOF_MIN <= avg_scale_6 <= SCALE_6DOF_MAX
                     and det > 0 and shear_asymmetry < 0.15):
                 H, n_inliers, inlier_mask = H6, n6, mask6
 
@@ -404,80 +418,6 @@ def mask_to_geojson_affine(mask, affine_H, tile_info, simplify_px=3.0):
     return {"type": "Feature", "geometry": {"type": "MultiPolygon", "coordinates": all_polys}, "properties": {}}
 
 
-# ── Center filtering ─────────────────────────────────────────────────────────
-
-def filter_centers(centers, max_centers=5, max_dist_km=50):
-    """Filter outlier centers and cap to max_centers. Production-safe (no GT).
-
-    Source-aware: trusted sources (gridref, postcode, nominatim, photon) are
-    used to build consensus. Untrusted sources (place names) are filtered
-    against the consensus.
-
-    Steps:
-    1. Classify centers as trusted vs untrusted
-    2. Compute consensus median from trusted sources
-    3. Validate gridrefs against non-gridref consensus; drop untrusted
-       centers that are >max_dist_km from consensus
-    4. Sort by sigma, cap at max_centers
-    """
-    if len(centers) <= 1:
-        return centers
-
-    from tools.geo.coords import haversine_m as _distance_m
-
-    trusted = []
-    untrusted = []
-    for c in centers:
-        name = c[0].lower()
-        if name.startswith("place_") or name.startswith("ve_"):
-            untrusted.append(c)
-        else:
-            trusted.append(c)
-
-    if len(trusted) >= 2:
-        ref_lats = [c[1] for c in trusted]
-        ref_lons = [c[2] for c in trusted]
-        ref_lat = float(np.median(ref_lats))
-        ref_lon = float(np.median(ref_lons))
-
-        non_gridref_trusted = [c for c in trusted if "gridref" not in c[0]]
-        if len(non_gridref_trusted) >= 2:
-            ngr_lat = float(np.median([c[1] for c in non_gridref_trusted]))
-            ngr_lon = float(np.median([c[2] for c in non_gridref_trusted]))
-            kept_trusted = list(non_gridref_trusted)
-            for c in trusted:
-                if "gridref" in c[0]:
-                    d = _distance_m(c[1], c[2], ngr_lat, ngr_lon)
-                    if d < max_dist_km * 1000:
-                        kept_trusted.append(c)
-            trusted = kept_trusted
-            ref_lat = float(np.median([c[1] for c in trusted]))
-            ref_lon = float(np.median([c[2] for c in trusted]))
-
-        kept_untrusted = []
-        for c in untrusted:
-            d = _distance_m(c[1], c[2], ref_lat, ref_lon)
-            if d < max_dist_km * 1000:
-                kept_untrusted.append(c)
-        untrusted = kept_untrusted
-
-    elif len(trusted) == 1:
-        ref_lat, ref_lon = trusted[0][1], trusted[0][2]
-        kept_untrusted = []
-        for c in untrusted:
-            d = _distance_m(c[1], c[2], ref_lat, ref_lon)
-            if d < max_dist_km * 1000:
-                kept_untrusted.append(c)
-        untrusted = kept_untrusted
-
-    all_valid = trusted + untrusted
-    if not all_valid:
-        return centers[:1]
-
-    all_valid.sort(key=lambda c: c[3] if c[3] else 9999)
-    return all_valid[:max_centers]
-
-
 # ── Internal helpers ─────────────────────────────────────────────────────────
 
 def _build_scale_H(affine_H, wx, wy, sf):
@@ -497,42 +437,6 @@ def _build_scale_H(affine_H, wx, wy, sf):
     return scale_H
 
 
-def _deduplicate_centers(centers, min_dist_m=500):
-    """Remove centers within min_dist_m of each other.
-
-    High-specificity anchors (rank ≤ 1: Nominatim street/addr, grid_refs,
-    postcode) are exempt from dedup — each street returns a slightly
-    different point and having 3 tight anchors is MORE informative than
-    1 (their spatial consistency confirms the right geography). The
-    A4_094:LL:013 regression (Leicester cluster of 3 nominatim hits within
-    500m collapsing to a single point and starving MINIMA of signal) is
-    exactly the reason for this carve-out.
-    """
-    from tools.geo.coords import haversine_m as _distance_m
-    deduped = []
-    for c in centers:
-        if _center_specificity(c[0]) <= 1:
-            # Always keep rank-≤1 anchors; they're each their own signal
-            deduped.append(c)
-            continue
-        if not any(_distance_m(c[1], c[2], d[1], d[2]) < min_dist_m for d in deduped):
-            deduped.append(c)
-    return deduped
-
-
-# Specificity tables and `_center_specificity` / `filter_centers_by_specificity`
-# live in tools/matching/source_priorities.py. Re-exported below.
-from tools.matching.source_priorities import (
-    SOURCE_SPECIFICITY,
-    _BROAD_ZOOMSTACK,
-    _HIGH_SPECIFICITY_ZOOMSTACK,
-    _MID_SPECIFICITY_ZOOMSTACK,
-    _POI_ZOOMSTACK,
-    _center_specificity,
-    filter_centers_by_specificity,
-)
-
-
 # ── Road-name + directional verification (moved to road_verify.py) ───────────
 
 from tools.matching.road_verify import (
@@ -545,72 +449,6 @@ from tools.matching.road_verify import (
     _DIRECTION_PATTERNS_ANCHORED,
     _DIRECTION_ANYWHERE,
 )
-
-
-# ── Outlier-drop on multi-center lists ─────────────────────────────────────
-
-def cross_validate_centers(centers, max_outlier_km: float = 10):
-    """Drop centers that are > threshold from the median (or from a
-    high-specificity anchor when the list is short).
-
-    Adaptive thresholding: when many centers agree tightly (IQR < 2 km),
-    the threshold tightens to 3× IQR (min 2 km). Otherwise uses
-    `max_outlier_km`. Effectively a no-op when the locate sub-agent
-    returns a single candidate; kept as defensive code in case
-    multi-center lists return.
-    """
-    from tools.geo.coords import haversine_m
-
-    if len(centers) < 3:
-        anchors = [c for c in centers if _center_specificity(c[0]) <= 1]
-        if not anchors:
-            return centers
-        anchors.sort(key=lambda c: _center_specificity(c[0]))
-        a_lat, a_lon = anchors[0][1], anchors[0][2]
-        kept = []
-        for c in centers:
-            if _center_specificity(c[0]) <= 1:
-                kept.append(c)
-                continue
-            d = haversine_m(c[1], c[2], a_lat, a_lon)
-            if d <= max_outlier_km * 1000:
-                kept.append(c)
-            else:
-                print(f"  Cross-validate: dropped {c[0]} ({d/1000:.1f}km "
-                      f"from anchor {anchors[0][0]!r})")
-        return kept if kept else centers
-
-    specific = [c for c in centers if _center_specificity(c[0]) <= 2]
-    median_source = specific if len(specific) >= 1 else centers
-    lats = [c[1] for c in median_source]
-    lons = [c[2] for c in median_source]
-    med_lat = float(np.median(lats))
-    med_lon = float(np.median(lons))
-
-    dists = [haversine_m(c[1], c[2], med_lat, med_lon) for c in centers]
-    dists_sorted = sorted(dists)
-    q1 = dists_sorted[len(dists_sorted) // 4]
-    q3 = dists_sorted[3 * len(dists_sorted) // 4]
-    iqr = q3 - q1
-
-    if len(centers) >= 5 and iqr < 2000:
-        threshold_m = max(2000, 3 * iqr)
-        print(f"  Cross-validate: adaptive threshold={threshold_m:.0f}m "
-              f"(IQR={iqr:.0f}m, {len(centers)} centers)")
-    else:
-        threshold_m = max_outlier_km * 1000
-
-    kept = []
-    dropped = []
-    for c, d in zip(centers, dists):
-        if d <= threshold_m:
-            kept.append(c)
-        else:
-            dropped.append((c[0], d / 1000))
-    if dropped:
-        for name, dist_km in dropped:
-            print(f"  Cross-validate: dropped {name} ({dist_km:.1f}km from median)")
-    return kept if kept else centers
 
 
 # ── Main entry point ─────────────────────────────────────────────────────────
@@ -643,7 +481,10 @@ def sliding_window_position(
                    mask_to_geojson_affine() afterwards to project masks.
         tile_fetcher: Function(lat, lon, zoom, nx, ny) → tile_info dict.
                       Default: fetch_os_opendata_grid (modern OS tiles).
-        centers: List of (name, lat, lon, sigma_m) tuples from geocoding.
+        centers: 1-element list ``[(name, lat, lon, sigma_m)]`` returned by
+                 the agentic locate sub-agent and passed through by the
+                 worker's ``match_at`` tool. The list shape is historical;
+                 only the first entry is used.
         scale_ratio: Map scale ratio (e.g. 2500 for 1:2500). None = try common scales.
         dpi: DPI used to render the PDF page.
         rotations: List of rotation angles to try, e.g. [0] or [0, 90, 270].
@@ -661,86 +502,19 @@ def sliding_window_position(
         from tools.io.os_tiles import fetch_os_opendata_grid
         tile_fetcher = fetch_os_opendata_grid
 
-    # UK bounding box filter
-    UK_LAT_MIN, UK_LAT_MAX = 49.0, 61.0
-    UK_LON_MIN, UK_LON_MAX = -8.5, 2.0
-    uk_centers = [c for c in centers
-                  if UK_LAT_MIN <= c[1] <= UK_LAT_MAX and UK_LON_MIN <= c[2] <= UK_LON_MAX]
-    if not uk_centers:
-        uk_centers = centers[:1]
-
-    # Cross-validate: drop centers >5km from median (catches bogus geocode
-    # results AND bad grid-ref centroids). Effectively a no-op in v3 since
-    # propose_centers returns 1 candidate, but kept as defensive code.
-    uk_centers = cross_validate_centers(uk_centers, max_outlier_km=5)
-
-    # Filter outliers + cap. Env GEOMAP_MAX_CENTERS overrides the default
-    # of 5; lower caps save MINIMA compute when candidates are pre-ranked.
-    _max_c = int(os.environ.get("GEOMAP_MAX_CENTERS", "5"))
-    centers = filter_centers(uk_centers, max_centers=_max_c)
-
-    # Deduplicate within 500m
-    centers = _deduplicate_centers(centers, min_dist_m=500)
-
-    # Specificity filter: when a street-level anchor exists, drop broad-area
-    # admin/POI centers that tend to produce coincidental high-inlier matches
-    # at wrong locations. Targets v3_flash IoU=0 failures like
-    # gpkg:Presbytery(Greenspace), gpkg:St Albans Church(Sites),
-    # gpkg:Wirral(District), wikidata:London Borough of Camden.
-    centers = filter_centers_by_specificity(centers,
-                                             anchor_threshold=2,
-                                             drop_above=4, min_keep=1)
-
     if not centers:
         return {
             "geojson": None, "affine_H": None, "tile_info": None,
             "match_info": {}, "n_windows": 0,
         }
 
-    # Per-source sigma calibrated by empirical candidate→GT distance distribution.
-    #
-    # Old behavior: hard-replace every sigma with sigma_from_scale, floored at
-    # 2500m. That was wrong in BOTH directions:
-    #   - too LOOSE for postcodes (Code-Point Open is sub-metre; getting
-    #     a 2500m window wasted 5-10× MINIMA compute)
-    #   - too TIGHT for Nominatim cottages (empirical p95 = 4.35km;
-    #     the 2500m floor missed 25% of rural-cottage GTs)
-    #
-    # effective_sigma combines source-driven sigma (empirical p95) and
-    # scale-driven sigma (map visible extent), taking the MAX. Tightens
-    # postcode cases AND fixes Nominatim cottage misses.
-    centers = [(n, la, lo, effective_sigma(n, scale_ratio)) for (n, la, lo, _) in centers]
-    _scale_sigma = max(2500, sigma_from_scale(scale_ratio))
-
-    # Center clustering: if the surviving centers all agree tightly (within
-    # ~500m of each other), collapse them to a single centroid to avoid 5-7×
-    # redundant MINIMA searches around essentially-the-same-spot. If they
-    # disagree (e.g., two true-positive clusters at different geographic sites),
-    # keep them all so MINIMA picks the right one.
-    if len(centers) >= 2:
-        lats = [c[1] for c in centers]
-        lons = [c[2] for c in centers]
-        # Pairwise max distance (rough — use bounding-box diagonal)
-        from tools.geo.coords import haversine_m as _dist_m
-        _max_pair = 0.0
-        for i in range(len(centers)):
-            for j in range(i + 1, len(centers)):
-                d = _dist_m(centers[i][1], centers[i][2],
-                            centers[j][1], centers[j][2])
-                if d > _max_pair:
-                    _max_pair = d
-        # Collapse if spread is small relative to sigma; 500m is a tight
-        # agreement threshold for site-level matching.
-        if _max_pair <= 500:
-            lat_c = sum(lats) / len(lats)
-            lon_c = sum(lons) / len(lons)
-            print(f"  Center clustering: {len(centers)} centers agree within "
-                  f"{_max_pair:.0f}m — collapsing to centroid "
-                  f"({lat_c:.5f}, {lon_c:.5f})")
-            centers = [("consensus_centroid", lat_c, lon_c, _scale_sigma)]
-        else:
-            print(f"  Center clustering: centers spread {_max_pair:.0f}m > 500m, "
-                  f"keeping all {len(centers)} for independent search")
+    # Recompute σ from source/scale via effective_sigma so the search
+    # radius stays consistent with the per-source p95 calibration (see
+    # effective_sigma docstring). The locate sub-agent's calibrated σ on
+    # the input candidate is overwritten by design — a single canonical
+    # σ-policy across runs.
+    name, lat, lon, _ = centers[0]
+    centers = [(name, lat, lon, effective_sigma(name, scale_ratio))]
 
     # Track top-N candidates for post-verification (road name check).
     # Per-(center, zoom) bucket caps to PER_BUCKET. Without this cap one
@@ -765,29 +539,22 @@ def sliding_window_position(
     map_mpp = compute_map_mpp(scale_ratio, dpi)
     map_h, map_w = map_img.shape[:2]
 
-    # Determine (zoom, mpp) configs.
-    # Env var GEOMAP_FAST=1 forces a single best-guess zoom per center —
-    # used by offline tests to speed up iteration. Default (production)
-    # explores multiple zooms and ±15% scale perturbations.
-    _FAST = os.environ.get("GEOMAP_FAST") == "1"
+    # Determine (zoom, mpp) configs. Explores best_z + neighbours plus
+    # ±15% scale perturbations to absorb DPI/metadata errors.
     ref_lat = centers[0][1]
     if map_mpp is not None:
         best_z = best_zoom_for_scale(map_mpp, ref_lat)
-        if _FAST:
-            zoom_mpp_configs = [(best_z, map_mpp)]
-        else:
-            zoom_mpp_configs = [
-                (z, map_mpp)
-                for z in sorted(set([best_z, max(15, best_z - 1), min(19, best_z + 1)]))
-            ]
-            # +/-15% scale perturbation at best zoom (handles DPI/metadata errors)
-            zoom_mpp_configs.append((best_z, map_mpp * 0.85))
-            zoom_mpp_configs.append((best_z, map_mpp * 1.15))
+        zoom_mpp_configs = [
+            (z, map_mpp)
+            for z in sorted(set([best_z, max(15, best_z - 1), min(19, best_z + 1)]))
+        ]
+        # +/-15% scale perturbation at best zoom (handles DPI/metadata errors)
+        zoom_mpp_configs.append((best_z, map_mpp * 0.85))
+        zoom_mpp_configs.append((best_z, map_mpp * 1.15))
     else:
         # Unknown-scale path: sweep across common UK planning-map scales
         # (1:1250 to 1:25000), one canonical zoom per scale.
-        common_scales = [2500, 5000, 10000] if _FAST else \
-                        [1250, 2500, 5000, 10000, 15000, 25000]
+        common_scales = [1250, 2500, 5000, 10000, 15000, 25000]
         zoom_mpp_configs = []
         seen = set()
         for sr in common_scales:
@@ -799,11 +566,10 @@ def sliding_window_position(
 
         # Add ±15% scale perturbations on the modal scale (1:2500 by default).
         # Scales like 1:3500 or 1:7000 fall between the canonical grid points.
-        if not _FAST:
-            modal_mpp = compute_map_mpp(2500, dpi)
-            modal_z = best_zoom_for_scale(modal_mpp, ref_lat)
-            zoom_mpp_configs.append((modal_z, modal_mpp * 0.85))
-            zoom_mpp_configs.append((modal_z, modal_mpp * 1.15))
+        modal_mpp = compute_map_mpp(2500, dpi)
+        modal_z = best_zoom_for_scale(modal_mpp, ref_lat)
+        zoom_mpp_configs.append((modal_z, modal_mpp * 0.85))
+        zoom_mpp_configs.append((modal_z, modal_mpp * 1.15))
 
     if rotations is None:
         # Single orientation. Rotation detection happens upstream — the reader
@@ -903,16 +669,8 @@ def sliding_window_position(
                 # any 192 m × 192 m square, so sub-tile match positions were
                 # never tested. 32 px = ~48 m at z18, fine enough for the
                 # MINIMA matcher's spatial accuracy.
-                #
-                # Override via env GEOMAP_WINDOW_TARGET (default 100). Used by
-                # offline experiments (overnight/fine_sigma_sweep.py etc.) to
-                # test denser stride. Hot-path default unchanged.
-                try:
-                    _target = int(os.environ.get("GEOMAP_WINDOW_TARGET", "100"))
-                except Exception:
-                    _target = 100
                 _area_available = max(1, (ch - rot_h) * (cw - rot_w))
-                _target_stride = int(math.sqrt(_area_available / _target))
+                _target_stride = int(math.sqrt(_area_available / WINDOW_STRIDE_TARGET))
                 step_x = max(32, min(_target_stride, max(1, cw - rot_w)))
                 step_y = max(32, min(_target_stride, max(1, ch - rot_h)))
 
@@ -1116,32 +874,6 @@ def sliding_window_position(
                 print(f"  Directional verifier ({directional_modifier!r} → "
                       f"{expected_brg:.0f}°): "
                       f"penalized {n_penalized}/{len(verified)} candidates")
-
-    # Specificity-aware re-ranking: if the top candidate is from a
-    # broad-area center (rank ≥ 3, e.g. wikidata admin boundary, gpkg
-    # Suburban Area) but another candidate in the top-5 is from a
-    # street-level anchor (rank ≤ 1) with a metric ≥ 0.5x the top, prefer
-    # the street-level one. This fixes cases where MINIMA locks onto a
-    # wikidata borough/admin centroid with marginally more inliers than a
-    # correctly-placed Nominatim street hit.
-    if len(ranked) >= 2:
-        top_metric, _, top_cand = ranked[0]
-        top_center = (top_cand.get("match_info") or {}).get("center", "")
-        top_rank = _center_specificity(top_center)
-        if top_rank >= 3:
-            for metric, _, cand in ranked[1:]:
-                if metric < 0.5 * top_metric:
-                    break
-                c_center = (cand.get("match_info") or {}).get("center", "")
-                c_rank = _center_specificity(c_center)
-                if c_rank <= 1:
-                    print(f"  Specificity re-rank: "
-                          f"{top_center!r} (m={top_metric:.1f}, rank={top_rank}) "
-                          f"→ {c_center!r} (m={metric:.1f}, rank={c_rank})")
-                    # Move the chosen candidate to top
-                    ranked = [(metric, 0, cand)] + [r for r in ranked
-                                                     if r[2] is not cand]
-                    break
 
     # Road name verification: if road names available, prefer candidates
     # where nearby OSM roads match the LLM-extracted road names

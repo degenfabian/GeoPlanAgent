@@ -9,7 +9,6 @@ case to keep cost predictable.
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Optional
 
@@ -103,8 +102,7 @@ def reader_refine(
         return {"success": False, "error": "PDF binary unavailable in state."}
     pdf_bytes = Path(pdf_path).read_bytes()
 
-    model_name = os.environ.get(
-        "GEOMAP_REFINE_MODEL", "google/gemini-3-flash-preview")
+    model_name = "google/gemini-3-flash-preview"
     model = resolve_model(model_name)
     agent = _ensure_refine_agent(model_name)
 

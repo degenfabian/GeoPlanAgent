@@ -25,14 +25,10 @@ from tools.matching._core import (
     compute_map_mpp, best_zoom_for_scale, sigma_from_scale,
     sigma_from_source,
     effective_sigma, candidate_passes_la_filter,
-    # Center specificity table (consumed by geocoders.cross_validate_centers)
-    _center_specificity,
     # Affine + GeoJSON
     analytical_affine_from_anchor, resize_map_to_match_zoom,
     affine_center_to_latlon, mask_to_geojson_affine,
     _build_scale_H,
-    # Center filtering
-    filter_centers,
     # Road-name verification (re-exported from tools.matching.road_verify)
     _verify_candidates_with_road_names,
     _query_gpkg_road_names,
@@ -49,6 +45,5 @@ __all__ = [
     "effective_sigma", "candidate_passes_la_filter",
     "analytical_affine_from_anchor", "resize_map_to_match_zoom",
     "affine_center_to_latlon", "mask_to_geojson_affine",
-    "filter_centers",
     "sliding_window_position",
 ]

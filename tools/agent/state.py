@@ -5,9 +5,9 @@ tools.agent.worker_agent (the latter decorates _agent with tools and the
 output validator). Pure helpers live in tools.agent._helpers and the
 HTTP retry helper in tools.agent._retry.
 
-This module re-exports the most commonly imported names for backward
-compatibility, so existing `from tools.agent.state import _agent, ...`
-keeps working.
+Re-exports `_agent` and a few helpers so the worker-tool modules under
+`tools/agent/tools/` can keep doing `from tools.agent.state import
+_agent, AgentState, _img_to_binary, _dedup_check, ...`.
 """
 
 from __future__ import annotations
@@ -109,33 +109,17 @@ class AgentState:
         self.match_at_budget: int = 5
 
 
-# ── Backward-compat re-exports ────────────────────────────────────────────
-# Existing callers do `from tools.agent.state import _agent, _img_to_binary, ...`
-# Keep those working by re-exporting from the new canonical locations.
+# ── Re-exports used by tools/agent/tools/*.py ─────────────────────────────
+# The worker-tool modules import `_agent` (for the decorator) plus a few
+# image/dedup helpers from here rather than reaching across the package.
 
 from tools.agent._helpers import (  # noqa: E402, F401
-    resize_for_api,
     _img_to_binary,
     _dedup_check,
     _create_boundary_overlay,
     _draw_geojson_on_tiles,
 )
-from tools.agent._retry import (  # noqa: E402, F401
-    _RETRYABLE_STATUS,
-    _is_retryable_http_error,
-    _run_sync_with_retry,
-)
-from tools.agent._model import (  # noqa: E402, F401
-    MODEL_ALIASES,
-    resolve_model,
-    resolve_model_name,
-)
-# reader_agent.py and worker_agent.py import AgentState from here, so
-# import them AFTER AgentState is defined.
-from tools.agent.reader_agent import _reader_agent  # noqa: E402, F401
-from tools.agent.worker_agent import (  # noqa: E402, F401
-    _agent,
-    _strip_old_images,
-    validate_boundary_outcome,
-    build_system_prompt,
-)
+from tools.agent._retry import _run_sync_with_retry  # noqa: E402, F401
+# worker_agent.py imports AgentState from here, so import _agent AFTER
+# AgentState is defined.
+from tools.agent.worker_agent import _agent  # noqa: E402, F401

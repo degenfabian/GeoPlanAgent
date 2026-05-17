@@ -445,21 +445,7 @@ def check_scale_factor(match_info: Dict[str, Any]) -> CheckResult:
 
 
 # ────────────────────────────────────────────────────────────────────────────
-# Check 6 — OS Open Map Local building proximity
-# ────────────────────────────────────────────────────────────────────────────
-
-def check_building_overlap(predicted_geom) -> CheckResult:
-    """Permanently disabled — dependency `tools/snap/` was removed when the
-    INSPIRE-snap ablation showed 0.0 mean IoU contribution. Kept as a
-    neutral-returning stub so removing it doesn't require touching every
-    caller; the aggregator's "skip neutral" gate ensures zero contribution
-    to verification_score.
-    """
-    return (0.5, "")
-
-
-# ────────────────────────────────────────────────────────────────────────────
-# Check 7 — Multi-zoom coherence
+# Check 6 — Multi-zoom coherence
 # ────────────────────────────────────────────────────────────────────────────
 
 def check_multi_zoom_coherence(match_info: Dict[str, Any]) -> CheckResult:
@@ -512,7 +498,6 @@ DEFAULT_WEIGHTS = {
     "multi_zoom_coherence": 0.15,
     # scale_factor: not a verdict, measurement-only (surfaced raw in the
     # critic's metrics block).
-    # building_overlap: permanently disabled (tools/snap/ removed).
 }
 
 
@@ -538,7 +523,6 @@ def verification_score(
         "la_boundary": check_la_boundary(pdf_info, predicted_geom),
         "inlier_scatter": check_inlier_scatter(match_info or {}),
         # scale_factor: dropped from the verdict set (see DEFAULT_WEIGHTS comment).
-        "building_overlap": check_building_overlap(predicted_geom),
         "multi_zoom_coherence": check_multi_zoom_coherence(match_info or {}),
     }
     total_w = 0.0; total = 0.0

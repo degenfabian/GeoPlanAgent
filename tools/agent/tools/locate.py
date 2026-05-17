@@ -110,17 +110,13 @@ def propose_centers(
     Returns:
         {"success": True, "n_candidates": 1, "candidates": [{...}], ...}
     """
-    import os
     state = ctx.deps
     if not state.pdf_info:
         return {"success": False, "error": "PDFInfo missing — reader hasn't run"}
 
     from tools.agent.locate_agent import run_locate
 
-    model_name = os.environ.get(
-        "GEOMAP_LOCATE_MODEL",
-        "google/gemini-3-flash-preview",
-    )
+    model_name = "google/gemini-3-flash-preview"
 
     map_bytes = None
     if state.map_img is not None:

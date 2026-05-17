@@ -12,13 +12,11 @@ LocatePick schema; on agent-loop failure run_locate emits an emergency
 LA-centroid LocatePick rather than returning None — the pipeline is
 guaranteed at least one candidate.
 
-Model: defaults to Gemini Flash via OpenRouter (matches worker default).
-Override with GEOMAP_LOCATE_MODEL env var.
+Model: Gemini Flash via OpenRouter (matches worker default).
 """
 from __future__ import annotations
 import json
 import math
-import os
 import sys
 from pathlib import Path
 from typing import List, Optional

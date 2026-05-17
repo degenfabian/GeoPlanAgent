@@ -13,8 +13,6 @@ Top-level packages:
   io/         — PDF render, OS tile render, page rotation, title-block crop,
                 text extraction
   metrics/    — IoU/F1/positioning metrics, viz overlays, MINIMA reward
-  geo/        — Read-only geospatial data adapters
-  data/       — Cached geocoder responses (websearch landmark, adjacency, …)
 
 Top-level helpers:
 
