@@ -21,27 +21,69 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 # ── Structured Outputs (Pydantic models enforced via pydantic-ai) ─────────
 
 class MapPageMeta(BaseModel):
-    """One entry per map page found in the PDF. Parallel to PDFInfo.map_pages."""
+    """Per-page categorisation. One entry per page that contains any
+    map-like or potentially-map content (BOTH the pages we want to
+    position — category='match' — and the ones we explicitly discard).
+    """
     page: int = Field(description="1-based page number in the PDF.")
-    role: Literal["detail", "context", "location", "key", "other"] = Field(
-        description="What this map page shows. "
-                    "'detail' = the site map with the drawn planning boundary "
-                    "at a useful scale (this is what the worker should position); "
-                    "'context' = a wider regional/town overview, no boundary drawn; "
-                    "'location' = a small locator inset (e.g. '<site> within "
-                    "Borough X', usually a pin or arrow); "
-                    "'key' = legend / key / symbol table; "
-                    "'other' = anything else (e.g. floor plan, photo, diagram). "
-                    "Only one page should typically be 'detail'."
+
+    category: Literal["match", "discard"] = Field(
+        description="Whether this page is a positionable map. "
+                    "'match' = real cartographic page with a drawn "
+                    "planning boundary on a recognisable map background "
+                    "(OS-style / aerial / hand-drawn over OS). The "
+                    "downstream MINIMA matcher runs on this page and "
+                    "projects the SAM mask. "
+                    "'discard' = NOT positionable. Legends, key tables, "
+                    "text-heavy pages, regional context overviews with "
+                    "no drawn boundary, bare location pins, indicative "
+                    "diagrams without scale, decorative imagery."
     )
+
+    area_group: int = Field(
+        description="Equivalence class over the 'match' pages. "
+                    "Pages with the SAME area_group show the SAME "
+                    "geographic area (duplicate scans, same site at "
+                    "different zoom). Pages with DIFFERENT area_groups "
+                    "show DIFFERENT geographic areas — these are "
+                    "projected separately and the resulting polygons "
+                    "UNIONED. Use -1 for category='discard' pages and "
+                    "0, 1, 2, … for category='match' pages."
+    )
+
+    boundary_clarity: Literal["clear", "ambiguous", "none"] = Field(
+        description="'clear' requires BOTH (a) the boundary "
+                    "line/hatch/edge is unambiguous to trace AND "
+                    "(b) cartographic detail (streets, labels) is "
+                    "visible within and around the boundary. "
+                    "Otherwise 'ambiguous'. 'none' = no boundary drawn."
+    )
+
+    detail_level: Literal["close", "medium", "wide"] = Field(
+        description="Zoom / scale of this view. "
+                    "'close' ≈ parcel / property level (≈ 1:500-1:2500); "
+                    "'medium' ≈ neighbourhood (≈ 1:2500-1:10000); "
+                    "'wide' ≈ town / district / regional (≈ 1:10000+)."
+    )
+
+    area_signature: str = Field(
+        default="",
+        description="Short noun phrase (≤8 words) identifying the "
+                    "geographic area shown. Pages with the same "
+                    "area_group MUST have the identical signature "
+                    "(same spelling, same case). For category='discard' "
+                    "pages give a short description like 'legend' / "
+                    "'location pin' / 'application form text'."
+    )
+
     caption: str = Field(
         default="",
-        description="One-line description of what's on the page so the worker "
-                    "can pick wisely without re-rendering. Examples: "
-                    "'Detail map at 1:1250 showing red boundary around 4 houses'; "
-                    "'Regional context map of South Norfolk with site marked'; "
-                    "'Site plan key — legend for hatching styles'. "
-                    "Keep under ~120 chars."
+        description="One-line description of the page content so the "
+                    "worker can pick wisely without re-rendering "
+                    "(≤120 chars). Examples: "
+                    "'Detail map at 1:1250 showing red boundary around 4 "
+                    "houses'; 'Regional context of South Norfolk with site "
+                    "marked'; 'Site plan key — legend for hatching styles'."
     )
 
 
@@ -68,27 +110,27 @@ class PDFInfo(BaseModel):
     )
     map_pages: List[int] = Field(
         default_factory=list,
-        description="1-based page numbers containing maps, RANKED by which is "
-                    "most likely the canonical site map (best candidate FIRST). "
-                    "The first entry is what the worker uses by default. "
-                    "Ranking criteria, in order: (1) the page that most "
-                    "clearly shows ONE drawn planning boundary (red line, "
-                    "stippled area, edged region) at a useful scale; "
-                    "(2) prefer pages with visible site labels, road names, "
-                    "and OS-style cartography over location-context maps "
-                    "(town overviews, regional maps with no boundary drawn); "
-                    "(3) for multi-page docs where a small-scale overview "
-                    "appears alongside a detailed site map, the DETAILED page "
-                    "comes first. Include ALL map pages even if some are "
-                    "context-only — the worker can fall back to them."
+        description="Pages with category='match' (positionable maps), "
+                    "RANKED for the worker. Ordering across different "
+                    "area_groups is arbitrary — they will all be "
+                    "projected and unioned. WITHIN an area_group, the "
+                    "primary (best by boundary_clarity > wider "
+                    "detail_level > more cartographic detail) comes "
+                    "first; any additional duplicates from the same "
+                    "group may follow as fallbacks. "
+                    "Do NOT include category='discard' pages here — "
+                    "they live only in map_page_details for audit."
     )
     map_page_details: List[MapPageMeta] = Field(
         default_factory=list,
-        description="Parallel to map_pages, in the same order: one MapPageMeta "
-                    "per page describing what's on it (role + short caption). "
-                    "Lets the worker pick the right page without re-rendering. "
-                    "If you populate map_pages with N entries, populate "
-                    "map_page_details with N entries in the same order."
+        description="ONE MapPageMeta per page that contains any "
+                    "map-like or potentially-map content. SUPERSET of "
+                    "map_pages: it includes BOTH category='match' "
+                    "pages AND the category='discard' pages the reader "
+                    "examined (legends, context overviews, location "
+                    "pins, text-heavy pages), so downstream consumers "
+                    "can audit discards. Match category='match' "
+                    "entries by page number against map_pages."
     )
     n_pages: int = 0
     road_names: List[str] = Field(default_factory=list)
@@ -121,23 +163,12 @@ class PDFInfo(BaseModel):
     )
     multiple_map_areas: bool = Field(
         default=False,
-        description="True if different map pages show different geographic areas. "
-                    "Set true whenever map_pages has more than one entry unless all "
-                    "pages are zoomed views of the same site."
+        description="True iff the match pages span more than one distinct "
+                    "area_group (i.e. the document covers more than one "
+                    "geographic area, requiring per-group projection + "
+                    "union downstream). False when all match pages share "
+                    "the same area_group (duplicate views of one site)."
     )
-    map_rotation: int = Field(
-        default=0,
-        description="Rotation in degrees CLOCKWISE needed to make the map's north "
-                    "point UP. Set 0 if the map is already correctly oriented. "
-                    "Set 90 if the map is rotated 90° counterclockwise (i.e., "
-                    "north points right and you'd rotate it 90° clockwise to fix it). "
-                    "Set 180 if upside-down. Set 270 if rotated 90° clockwise "
-                    "(north points left). Look at the north arrow if visible, "
-                    "or the orientation of place-name labels and the scale bar. "
-                    "Most modern maps are 0; planning maps and historic OS sheets "
-                    "can be 90, 180, or 270."
-    )
-
     # ── Fields for the dedicated locate stage (added 2026-04-24) ─────────
     # These mirror things that downstream regex parsers currently extract
     # from site_address / notes. Having the LLM populate them directly is

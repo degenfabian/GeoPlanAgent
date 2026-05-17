@@ -15,67 +15,9 @@ from __future__ import annotations
 from typing import List, Optional
 
 import cv2
-from pydantic_ai import ModelRetry, RunContext
+from pydantic_ai import RunContext
 
 from tools.agent.state import _agent, AgentState
-
-
-# ── Tool 2: geocode ────────────────────────────────────────────────────────
-
-@_agent.tool_plain
-def geocode(
-    type: str,
-    postcode: Optional[str] = None,
-    grid_ref: Optional[str] = None,
-) -> dict:
-    """Geocode a UK postcode or OS grid reference.
-
-    USE THIS ONLY for postcodes or grid references YOU SEE on the map image
-    that PDFInfo did NOT already extract. Place-name geocoding (villages,
-    farms, conservation areas, named buildings, addresses) is handled by
-    propose_centers automatically.
-
-    Types:
-      - "postcode": UK postcode (e.g. "AL1 1BY").
-      - "grid_ref": OS grid reference (e.g. "TL 1507 0672" or "TL 15 07")
-        or full easting/northing like "528942 E 184544 N".
-
-    Returns:
-        {"success": true, "lat": float, "lon": float, ...} or
-        {"success": false, "error": str}.
-    """
-    if type == "postcode":
-        import requests as req
-        if not postcode:
-            raise ModelRetry("postcode is required for type='postcode'")
-        pc = postcode.strip()
-        try:
-            r = req.get(f"https://api.postcodes.io/postcodes/{pc}", timeout=10)
-            data = r.json()
-            if data.get("status") == 200 and data.get("result"):
-                res = data["result"]
-                return {"success": True, "lat": res["latitude"],
-                        "lon": res["longitude"], "type": "postcode",
-                        "admin_district": res.get("admin_district", "")}
-        except Exception as e:
-            return {"success": False, "error": str(e)}
-        return {"success": False, "error": f"Postcode '{pc}' not found"}
-
-    elif type == "grid_ref":
-        from tools.geo.grid_ref import os_grid_ref_to_latlon
-        if not grid_ref:
-            raise ModelRetry("grid_ref is required for type='grid_ref'")
-        result = os_grid_ref_to_latlon(grid_ref)
-        if result:
-            return {"success": True, "lat": result[0], "lon": result[1],
-                    "type": "grid_ref", "grid_ref": grid_ref}
-        return {"success": False,
-                "error": f"Could not parse grid reference '{grid_ref}'"}
-
-    raise ModelRetry(
-        f"Invalid type '{type}'. Use 'postcode' or 'grid_ref' only — "
-        f"place names are handled by propose_centers automatically."
-    )
 
 
 # ── propose_centers ─────────────────────────────────────────────────────────
@@ -118,10 +60,17 @@ def propose_centers(
 
     model_name = "google/gemini-3-flash-preview"
 
+    # Locate sub-agent always sees the primary match page (the
+    # reader's top-ranked one). Single image is sufficient — locate
+    # picks one centre per worker run regardless of how many
+    # area_groups the document has.
+    from tools.agent.state import primary_match_page
+    primary_page = primary_match_page(state)
+    map_img = state.rendered_pages.get(primary_page) if primary_page else None
     map_bytes = None
-    if state.map_img is not None:
+    if map_img is not None:
         try:
-            _, buf = cv2.imencode(".png", state.map_img)
+            _, buf = cv2.imencode(".png", map_img)
             map_bytes = buf.tobytes()
         except Exception:
             map_bytes = None

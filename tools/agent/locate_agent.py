@@ -3,7 +3,7 @@
 A pydantic_ai Agent that runs at runtime (inside the worker's propose_centers
 call) to produce ONE high-quality center (lat, lon, sigma, confidence) using:
   - pdf_info (from the live reader phase — FRESH per case, not cached)
-  - the rendered planning map image (state.map_img)
+  - the rendered primary match page (state.rendered_pages[map_pages[0]])
   - 6 offline geocoder tools (postcode / grid_ref / place / road / intersect /
     la_check)
 

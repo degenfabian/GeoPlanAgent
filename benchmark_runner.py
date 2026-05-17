@@ -337,8 +337,12 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
             })
             continue
 
-        # Prefer PDFs with "map" in filename (dedicated map files)
-        map_pdfs = [p for p in pdf_files if "map" in p.name.lower()]
+        # Prefer PDFs whose filename hints at a map/plan (dedicated diagram).
+        # "plan" catches cases like A4Da2 where the map PDF is named
+        # "..._Direction_Plan.pdf" and the other PDF is a notice.
+        _MAP_TOKENS = ("map", "plan")
+        map_pdfs = [p for p in pdf_files
+                    if any(t in p.name.lower() for t in _MAP_TOKENS)]
         pdf_path = map_pdfs[0] if map_pdfs else pdf_files[0]
         gt_files = list(folder_path.glob(geojson_file))
         if not gt_files:

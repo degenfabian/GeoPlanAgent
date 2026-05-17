@@ -2,17 +2,11 @@
 
 For each page in a PDF:
   * If born-digital (fitz returns substantial text), use it — perfect.
-  * If scanned (fitz returns < OCR_FALLBACK_THRESHOLD chars), OCR the page.
-    Default backend is macOS Vision framework (Apple Neural Engine
-    accelerated, ~0.5-2s per page, quality ≥ PaddleOCR). Other backends
-    are kept as fallbacks for portability or when Vision returns empty.
-
-Backend ordering for OCR (controlled by ``backend`` arg):
-  "vision"    — vision → easyocr → paddleocr → tesseract  (default; macOS-only,
-                ANE-accelerated, fastest + highest quality)
-  "easyocr"   — easyocr → paddleocr → tesseract  (PyTorch/MPS, cross-platform)
-  "paddle"    — paddleocr → easyocr → tesseract  (CPU-only, slow on Mac)
-  "tesseract" — tesseract only  (lowest quality, no GPU)
+  * If scanned (fitz returns < OCR_FALLBACK_THRESHOLD chars), OCR via
+    macOS Vision framework (Apple Neural Engine accelerated, ~0.5-2s
+    per page). PaddleOCR is kept as a cross-platform fallback for
+    environments without Vision (Linux/Windows) or when Vision returns
+    empty on a particular page.
 
 Results are cached on disk under ``cache/text_extraction/`` keyed by PDF
 content hash, so reruns are instant.
@@ -29,7 +23,6 @@ from typing import Any, Dict, List, Optional
 OCR_FALLBACK_THRESHOLD = 50    # chars below which we OCR the page
 OCR_DPI = 250                  # body-text OCR — lower than the 700 DPI used
                                # for graticule labels in tools.candidates
-OCR_TIMEOUT_S = 30
 MAX_TEXT_PER_PAGE = 8000       # truncate per-page text to this many chars
 
 CACHE_DIR = Path("cache/text_extraction")
@@ -45,25 +38,6 @@ def _cache_path(pdf_path: str) -> Path:
         h.update(pdf_path.encode())
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     return CACHE_DIR / f"{h.hexdigest()}.json"
-
-
-def _ocr_page_tesseract(img_bgr) -> str:
-    """OCR a page image with Tesseract. PSM 6 (uniform block of text) is
-    the right mode for body content; PSM 11 is better for sparse map labels
-    but worse for paragraphs. Returns "" on failure (timeout / engine error)."""
-    try:
-        import pytesseract
-        import cv2
-        text = pytesseract.image_to_string(
-            cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB),
-            config="--psm 6",
-            timeout=OCR_TIMEOUT_S,
-        )
-        return text or ""
-    except RuntimeError:
-        return ""  # tesseract timeout
-    except Exception:
-        return ""
 
 
 def _ocr_page_vision(img_bgr) -> Optional[str]:
@@ -116,29 +90,6 @@ def _ocr_page_vision(img_bgr) -> Optional[str]:
             if top and len(top) > 0:
                 lines.append(str(top[0].string()))
         return "\n".join(lines)
-    except Exception:
-        return ""
-
-
-def _ocr_page_easyocr(img_bgr) -> Optional[str]:
-    """OCR via EasyOCR (PyTorch backend, MPS-accelerated on Apple Silicon).
-    Returns None if not installed; "" on runtime error.
-
-    EasyOCR auto-detects available device with gpu=True (MPS on Mac, CUDA
-    on Linux/NVIDIA, falls back to CPU). The reader is a singleton — model
-    load is ~20s on first call, then ~1-3s per page on MPS.
-    """
-    try:
-        import easyocr
-    except ImportError:
-        return None
-    try:
-        global _EASYOCR_READER
-        if "_EASYOCR_READER" not in globals():
-            _EASYOCR_READER = easyocr.Reader(["en"], gpu=True, verbose=False)
-        # detail=0 returns just the text strings in detection (≈ reading) order
-        lines = _EASYOCR_READER.readtext(img_bgr, detail=0, paragraph=False)
-        return "\n".join(l for l in lines if l)
     except Exception:
         return ""
 
@@ -196,28 +147,17 @@ def _render_page_for_ocr(page, dpi: int):
 
 
 def extract_text_per_page(pdf_path: str, use_cache: bool = True,
-                           backend: str = "vision",
                            verbose: bool = False) -> List[Dict[str, Any]]:
     """Return per-page text with extraction-method labels.
 
     Args:
         pdf_path: Path to the PDF.
         use_cache: If True, check ``cache/text_extraction/<hash>.json`` first.
-        backend: Preferred OCR backend for scanned pages.
-            "vision" (default) — vision → easyocr → paddleocr → tesseract.
-                macOS Vision framework, ANE-accelerated (~0.5-2s per page,
-                quality ≥ PaddleOCR).
-            "easyocr" — easyocr → paddleocr → tesseract.
-                MPS-accelerated PyTorch (~1-3s per page on Apple Silicon).
-            "paddle" — paddleocr → easyocr → tesseract.
-                CPU-only, slightly higher quality on hard scans
-                (~25-55s per page on CPU).
-            "tesseract" — tesseract only. Lowest quality, no GPU.
         verbose: Print per-page progress.
 
     Returns:
         List of ``{"page": int (1-based), "text": str, "method":
-         "fitz"|"ocr_vision"|"ocr_easyocr"|"ocr_paddle"|"ocr_tesseract"|"failed",
+         "fitz"|"ocr_vision"|"ocr_paddle"|"failed",
          "chars": int}``. ``text`` truncated at MAX_TEXT_PER_PAGE chars.
     """
     cache_p = _cache_path(pdf_path)
@@ -227,21 +167,11 @@ def extract_text_per_page(pdf_path: str, use_cache: bool = True,
         except Exception:
             pass  # corrupted cache, re-extract
 
-    # Build OCR backend cascade by preference
-    cascades = {
-        "vision":    [("ocr_vision",    _ocr_page_vision),
-                      ("ocr_easyocr",   _ocr_page_easyocr),
-                      ("ocr_paddle",    _ocr_page_paddle),
-                      ("ocr_tesseract", _ocr_page_tesseract)],
-        "easyocr":   [("ocr_easyocr",   _ocr_page_easyocr),
-                      ("ocr_paddle",    _ocr_page_paddle),
-                      ("ocr_tesseract", _ocr_page_tesseract)],
-        "paddle":    [("ocr_paddle",    _ocr_page_paddle),
-                      ("ocr_easyocr",   _ocr_page_easyocr),
-                      ("ocr_tesseract", _ocr_page_tesseract)],
-        "tesseract": [("ocr_tesseract", _ocr_page_tesseract)],
-    }
-    cascade = cascades.get(backend, cascades["vision"])
+    # OCR backend cascade: Vision (macOS, ANE-accelerated) → PaddleOCR
+    # (cross-platform CPU fallback). Both return None if their library
+    # is unavailable (e.g. Vision on Linux), letting us fall through.
+    cascade = [("ocr_vision", _ocr_page_vision),
+               ("ocr_paddle", _ocr_page_paddle)]
 
     import fitz
     out: List[Dict[str, Any]] = []
@@ -307,9 +237,7 @@ def format_for_reader_prompt(pages: List[Dict[str, Any]]) -> str:
             method_note = {
                 "fitz": "exact text from digital PDF",
                 "ocr_vision": "OCR (macOS Vision — high accuracy)",
-                "ocr_easyocr": "OCR (EasyOCR — high accuracy)",
                 "ocr_paddle": "OCR (PaddleOCR — high accuracy)",
-                "ocr_tesseract": "OCR (Tesseract — may have character errors)",
             }.get(p["method"], p["method"])
             sections.append(
                 f"--- Page {p['page']} ({method_note}) ---\n{p['text']}"

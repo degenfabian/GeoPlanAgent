@@ -3,15 +3,19 @@
 The pipeline is three LLM agents:
 
   Phase 1 — Reader. One-shot pydantic-ai call (output_type=PDFInfo) over
-            the raw PDF + per-page text from fitz/OCR. Pre-renders every
-            map_page and tags each with a role.
+            the raw PDF + per-page text from fitz/OCR. Each map_page is
+            tagged with category (match/discard), area_group, and
+            boundary clarity/zoom. Pre-rendered for every match page.
 
   Phase 2 — Worker. PydanticAI loop with tools registered against
-            tools.agent.agents._agent. The worker calls propose_centers
-            (which delegates to the LLM-locate sub-agent in
-            tools.agent.locate_agent) → match_at → commit_match →
-            extract_boundary → project_boundary → verify_position →
-            BoundaryOutcome.
+            tools.agent.worker_agent._agent. The canonical loop is:
+              propose_centers → match_at(page=X) → commit_match
+              → verify_position (when borderline) → submit BoundaryOutcome.
+            match_at takes the page explicitly. For multi-area_group
+            documents one match_at call handles all groups at the same
+            centre (per-group MINIMA + per-page SAM3 cache) and unions
+            the resulting polygons; commit_match commits the unioned
+            candidate.
 
   Phase 3 — Critic. tools.agent.critic_agent.run_critic_loop: LLM visual review
             + structured directive, optionally rehanded to the worker.
@@ -41,18 +45,13 @@ from tools.agent.state import AgentState
 # Importing these modules triggers the `@_agent.tool` decorators inside
 # them, registering every worker tool against the shared _agent. Order
 # between tool modules doesn't matter, but they MUST be imported AFTER
-# tools.agent.agents (the file that defines _agent itself).
+# tools.agent.worker_agent (the file that defines _agent itself).
 from tools.agent.tools import (  # noqa: F401  (decorator side-effects)
-    render as _render_tool,
     locate as _locate_tool,
     match as _match_tool,
-    extract as _extract_tool,
     verify as _verify_tool,
     refine as _refine_tool,
 )
-
-# Re-export the locate helpers that older scripts import directly.
-from tools.agent.tools.locate import geocode  # noqa: F401
 
 from tools.agent import runtime as _rt
 
@@ -143,12 +142,14 @@ def run_agent(
             print(f"  Agent error: {e}")
             traceback.print_exc()
         partial_stats = _rt.dump_partial_state(state, pdf_info, e, case_dir, verbose)
+        from tools.agent.state import committed_primary_page
+        pp = committed_primary_page(state)
         return {
             "success": False,
             "error": str(e),
             "geojson": state.current_result.get("geojson"),
             "match_info": state.current_result.get("match_info", {}),
-            "mask": state.current_mask,
+            "mask": state.sam_masks_by_page.get(pp) if pp else None,
             "agent_stats": partial_stats,
         }
     else:

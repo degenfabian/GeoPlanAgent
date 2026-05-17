@@ -575,10 +575,10 @@ def sliding_window_position(
         zoom_mpp_configs.append((modal_z, modal_mpp * 1.15))
 
     if rotations is None:
-        # Single orientation. Rotation detection happens upstream — the reader
-        # phase populates PDFInfo.map_rotation, and run_agent pre-rotates the
-        # map image once before SAM3/MINIMA see it. By the time we get here,
-        # the map is already correctly oriented.
+        # Single orientation. Rotation detection happens upstream:
+        # tools.io.map_page.render_map_page runs the auto-rotation classifier
+        # (k-fold ResNet50, TTA) so by the time MINIMA sees the image it is
+        # already upright. There is no per-window rotation search at match time.
         rotations = [0]
 
     # Early termination: once we find an excellent match, skip remaining

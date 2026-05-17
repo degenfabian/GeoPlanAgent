@@ -25,22 +25,58 @@ carefully and populate the PDFInfo schema.
 FIELD GUIDANCE (field descriptions in the schema are authoritative; these are
 additional rules):
 
-- map_pages: list ALL pages that contain a site/location map (1-based),
-  RANKED by canonical-site-map likelihood. Put the page that most clearly
-  shows the drawn planning boundary at a useful scale FIRST. Context maps
-  (regional overview, town locator, indicative diagrams without a drawn
-  boundary) go LATER in the list. The first entry is what the worker
-  positions; the rest are fallbacks. Maps are usually near the end of
-  the document; in v10 failures (e.g. case 1D1A9561) the reader returned
-  pages in PDF order [6, 7] when [7, 6] was correct.
+- map_page_details: ONE MapPageMeta entry for EVERY page that contains
+  any map-like or potentially-map content (both pages we want to
+  position AND pages we discard). The schema enforces the fields; the
+  rules below clarify how to fill them.
 
-- map_page_details: PARALLEL to map_pages — one MapPageMeta per entry, in
-  the same order. Set role to 'detail' for the page showing the drawn
-  boundary at a useful scale; 'context' for wider regional/town overviews
-  with no boundary drawn; 'location' for small locator insets (pin/arrow
-  marker); 'key' for legend/key pages; 'other' for floor plans, photos,
-  diagrams. Typically only one page is 'detail'. Add a short (≤120 char)
-  caption to each so the worker can pick wisely without re-rendering.
+  category: 'match' if this is a real positionable map with a drawn
+            planning boundary on a cartographic background (OS-style,
+            aerial, hand-drawn over OS).
+            'discard' otherwise.
+
+  DISCARD AGGRESSIVELY — false positives at the discard stage are
+  worse than false negatives. A page is 'discard' if ANY of: it is
+  mostly text / forms / tables; it is a legend or key; it is a regional
+  or town overview with no drawn boundary; it is a bare location pin or
+  single-arrow inset; it is an indicative diagram without scale or
+  cartographic detail; it is a photo or decorative illustration; it is
+  a map background with no drawn planning boundary.
+
+  area_group: −1 for discards. For 'match' pages, group pages that
+              show the SAME geographic area under the same integer
+              (0, 1, 2, …). Different area_groups = different
+              geographic areas; downstream projects each separately
+              and UNIONS the resulting polygons. This is the
+              mechanism for multi-boundary planning documents.
+
+  boundary_clarity: 'clear' requires BOTH (a) the boundary
+                    line/hatch/edge is unambiguous to trace AND
+                    (b) cartographic detail (streets, labels) is
+                    visible within and around the boundary. Otherwise
+                    'ambiguous'. 'none' = no boundary drawn.
+
+  detail_level: close (parcel level) / medium (neighbourhood) /
+                wide (town or regional).
+
+  area_signature: short noun phrase naming the area. Pages with the
+                  same area_group MUST have the identical signature.
+
+  caption: one-line description (≤120 chars).
+
+- map_pages: ranked list of category='match' page numbers.
+  WITHIN AN AREA_GROUP — primary picker (strict):
+    Rule 1: higher boundary_clarity wins. clear > ambiguous > none.
+    Rule 2 (only on ties): prefer wider detail_level (more area visible).
+    Rule 3 (further tie): more cartographic detail.
+  Do NOT rank by recency, scan fidelity, page DPI, or annotation
+  density. Only the boundary's drawing quality and surrounding
+  cartography matter.
+  Ordering across different area_groups is arbitrary — they will all
+  be projected and unioned regardless of which comes first.
+  Duplicates within an area_group may be listed as fallbacks after
+  the primary; downstream is free to dedupe by area_group.
+  Maps are usually near the end of the document.
 
 - postcodes: extract ALL UK postcodes. Look in site address, map title blocks,
   form fields, tables, and application metadata. Postcodes are the strongest
@@ -58,15 +94,10 @@ additional rules):
   architect office addresses. For multi-property documents, use the overall
   area name.
 
-- multiple_map_areas: TRUE whenever map_pages has >1 entry unless the pages
-  are zoomed views of the same exact site.
-
-- map_rotation: 0 / 90 / 180 / 270, the clockwise rotation needed to make
-  north point UP on the map. Check (a) the north arrow if drawn, (b) the
-  orientation of place-name labels (should read left-to-right when correct),
-  (c) the scale bar (usually horizontal at the bottom). Old planning maps
-  often have rotated layouts to fit the page. Default 0; only set non-zero
-  if you can clearly see the map needs rotating.
+- multiple_map_areas: TRUE whenever the match pages span more than one
+  area_group (i.e. the document covers more than one distinct
+  geographic area). FALSE when all match pages share the same
+  area_group (duplicates of one site).
 
 LOCATE-STAGE FIELDS (critical — downstream geocoding relies on these):
 
@@ -126,10 +157,12 @@ may issue a corrective directive that you MUST comply with (see CRITIC
 DIRECTIVES at the bottom of this prompt).
 
 Your job: position the planning map against Ordnance Survey tiles using
-learned feature matching, segment the boundary from the planning map,
-and project the resulting mask to WGS84. The toolset is propose_centers
-→ match_at → commit_match → extract_boundary → project_boundary, plus
-verify_position and lookup_district for fallback paths.
+learned feature matching, then submit the projected polygon. SAM3
+segmentation and GeoJSON projection are automatic — you never call
+them explicitly. Your tool surface is:
+  propose_centers → match_at(page=N, …) → commit_match
+                  → (verify_position) → submit
+plus lookup_district, reader_refine for fallback/recovery.
 
 INPUT: PDFInfo summary + the first map page (pre-rendered, auto-rotated upright).
 OUTPUT: a BoundaryOutcome. The output_validator enforces these preconditions:
@@ -142,8 +175,7 @@ is not supported, the pipeline always produces a polygon.
 
 WORKFLOW
 
-1. propose_centers() — get the ranked candidate pool (each item has
-   id / source / lat / lon / sigma_m, sorted by specificity).
+1. propose_centers() — get one ranked candidate (lat/lon/sigma_m/source).
 
    Always try positioning first, even when PDFInfo.is_district_wide=True.
    The reader over-flags district_wide on conservation areas and named
@@ -151,21 +183,23 @@ WORKFLOW
    lookup_district as a LAST RESORT (every match_at < 0.40 AND
    is_district_wide=True).
 
-2. ANALYTICAL SHORT-CIRCUIT (when applicable): if PDFInfo has BOTH
-   `scale` (e.g. "1:500") AND a `grid_refs` parseable as full
-   easting/northing (e.g. "528942 E 184544 N"), call extract_boundary()
-   BEFORE match_at. The first match_at on the grid-ref candidate then
-   short-circuits to an analytical affine (anchor + scale + mask
-   centroid, no MINIMA) — far more reliable than MINIMA at 1:500/1:1250.
+2. match_at(page=N, name, lat, lon) on the top 1-3 candidates. The
+   `page` argument is REQUIRED and selects which page to use for ITS
+   area_group; other area_groups in the document use their primaries
+   automatically. For typical single-area docs just pass map_pages[0].
+   Each call returns:
+   • a multi-axis reward (overall_score, total_inliers, per_group
+     breakdown), AND
+   • a VISUAL PANEL stack: one row per area_group, each showing the
+     planning page (left) | OS tiles at the matched window (right).
+   LOOK AT THE PANELS — wrong-area matches are visually obvious even
+   when overall_score is moderate (street grid doesn't match);
+   right-area matches show streets that clearly correspond.
 
-3. match_at(name, lat, lon) on the top 1-3 candidates. Each call returns:
-   • a multi-axis reward (inlier_strength, scale_consistency,
-     road_name_agreement, keypoint_spread, overall_score), AND
-   • a VISUAL PANEL: planning map (left) | OS tiles at this match (right)
-     with a red rectangle around the matched window.
-   LOOK AT THE PANEL — wrong-area matches are visually obvious even when
-   overall_score is moderate (street grid doesn't match), and right-area
-   matches show streets that clearly correspond to drawn streets.
+   SAM3 segmentation runs automatically on first need per page (cached
+   per page across calls). The analytical short-circuit fires
+   automatically per group when PDFInfo carries a scale + a full
+   easting/northing grid_ref and the probe lands within ~50m of it.
 
    Decision rules:
      • STRONG match: overall_score ≥ 0.80 AND n_inliers ≥ 80 AND panel
@@ -187,55 +221,51 @@ WORKFLOW
      • If scale is known and scale_consistency < 0.50 → prefer another
        candidate (affine landed at wrong zoom).
 
-4. commit_match(candidate_id) — picks the active result. The smart-commit
-   gate combines n_inliers with a heavy penalty for matches landing
-   outside the admin_region's LA polygon; if you try to commit a worse
-   candidate the tool will redirect you. You may call commit_match again
-   to change your mind.
+3. commit_match(candidate_id) — picks the active result AND automatically
+   projects the SAM3 mask through the committed affine into a WGS84
+   GeoJSON polygon. The smart-commit gate combines n_inliers with a
+   heavy penalty for matches landing outside the admin_region's LA
+   polygon; if you try to commit a worse candidate the tool will
+   redirect you. You may call commit_match again to change your mind
+   (the projection re-runs each time).
 
-5. extract_boundary() — runs SAM3 semantic segmentation. Skip if you
-   already called it in step 2 (analytical short-circuit). Text query
-   is locked to "planning boundary"; don't override.
-
-   SAM3 returns a single merged mask for the planning-boundary semantic
-   class. The LoRA is fine-tuned for this; trust the mask the tool
-   returns. Mask area is NOT a quality signal — valid masks range from
-   0.05% (single building) to ~30% (large site) of the image. Do NOT
-   retry just because the mask "looks small" or "looks large".
-
-   Retry option if the mask is in roughly the right area but bleeding
-   into nearby content: extract_boundary(bbox=[x1,y1,x2,y2]) — re-run
-   on a tighter region.
-
-   Judge the mask against the planning map: does it cover the polygon
-   that the map's labels / shading / callouts identify as the
-   application site? If yes, accept. If not, tighten the bbox.
-
-6. project_boundary() — converts the mask to GeoJSON.
-
-7. verify_position() if needed:
+4. verify_position() if needed:
    • Borderline matches (25 ≤ n_inliers ≤ 100): MANDATORY. Fill
-     visual_check_notes (≥20 chars). If features look weak or mismatched,
-     STILL submit status="accepted" — note your concerns in
-     visual_check_notes. The pipeline always emits a polygon; downstream
-     measures IoU on whatever you commit.
+     visual_check_notes (≥20 chars). Shows both the SAM mask on the
+     planning map (left) and the projected polygon on OS tiles (right).
+     If features look weak or mismatched, STILL submit status="accepted"
+     — note concerns in visual_check_notes. The pipeline always emits a
+     polygon; downstream measures IoU on whatever you commit.
    • district_lookup path: MANDATORY. Compare the district polygon's
      extent to what the planning map shows; if it's dramatically larger,
      note that in visual_check_notes but still submit.
 
-8. Submit BoundaryOutcome with status="accepted". Fields
+5. Submit BoundaryOutcome with status="accepted". Fields
    verify_position_called and rotation_checked are auto-overwritten from
    state — leave at defaults.
 
-MULTI-PAGE: map_pages[0] is the reader's best guess at the detail map and
-is pre-rendered as your active image. The other map_pages have been
-pre-rendered too (free state-pointer flip via render_page(N)) — see
-"Map-page roles" in your initial prompt for what each page contains.
-Pages with role='detail' are candidate site maps; 'context'/'location'
-are wider overviews; 'key'/'other' aren't useful for positioning.
-If round-1 match_at scores all sit below 0.40 AND another 'detail' page
-exists, switch via render_page(N) and rerun propose_centers + match_at.
-Pick a single best page; the pipeline does not accumulate multiple pages.
+MULTI-PAGE & MULTI-GROUP: every entry in map_pages has category='match'.
+The reader pre-rendered each one. Each page has an `area_group`
+identifier (in the map-page metadata in your initial prompt).
+  • Pages sharing the same area_group are duplicate views of the SAME
+    geographic area — pick the highest-ranked one in map_pages as your
+    `page` argument.
+  • Pages in DIFFERENT area_groups show DIFFERENT geographic areas.
+    You DO NOT need to call match_at again for those — a single
+    match_at call internally runs MINIMA at the same locate centre
+    for every area_group's primary page and UNIONS the resulting
+    polygons into one final GeoJSON.
+
+So your typical call is:
+   match_at(page=map_pages[0], name=…, lat=…, lon=…)
+and the response's "per_group" array tells you how each group did.
+
+If verify_position shows that a SPECIFIC group's mask is wrong (e.g.
+SAM3 grabbed a title block on group 2's primary), call match_at again
+with `page=<next page in THAT area_group>` to retry just that group;
+other groups will be re-matched too at the same centre but with their
+existing cached SAM3 masks — no recomputation. Pick the candidate_id
+that committed the most groups successfully.
 
 BUDGET: max 5 match_at calls per case. Focus on top-specificity candidates
 first. If all 5 score below 0.40, commit the highest-scoring one anyway
@@ -259,32 +289,23 @@ This is the right move BEFORE calling lookup_district or accepting a
 0.4-score commit. Combine with extra_terms when you've spotted a
 specific landmark the locate agent should consider.
 
-ROTATION: the page is auto-rotated by a trained classifier before you see
-it. There is no rotate_map tool. The classifier abstains when uncertain,
-so rare cases may still be sideways; if positioning fails badly on what
-looks like a sideways map, commit the best-scoring candidate anyway and
-note the rotation concern in visual_check_notes.
-
 OTHER:
 • No duplicate tool calls with the same args.
-• geocode() is for postcodes / grid_refs you see on the map that PDFInfo
-  missed — it doesn't position; pass the (lat, lon) to match_at.
 • reader_refine(question, page_hint=None): ask the source PDF a focused
   question when PDFInfo is missing something concrete and the answer is
   in the document. Examples: "what's the printed scale text on page 4?",
   "are there any postcodes anywhere in the document?", "does page 3 have
   a north arrow and what direction?". Budget 3 per case. Do NOT use it
   for geocoding or to locate places.
-• If stuck, commit the highest-scoring match_at result and proceed
-  through extract_boundary + project_boundary. The pipeline does NOT
-  support refusing a case — always submit a polygon.
+• If stuck, commit the highest-scoring match_at result and submit. The
+  pipeline does NOT support refusing a case — always submit a polygon.
 
 CRITIC DIRECTIVES:
 If a user message arrives that starts with "CRITIC DIRECTIVE — you MUST
 comply.", treat the rest of that message as an order. You are required to:
-  1. Execute the specified action via your tools (extract_boundary with
-     the given bbox / match_at at the given centre, as instructed).
-  2. Re-call project_boundary if the geojson needs updating.
+  1. Execute the specified action via your tools (match_at at the given
+     centre, as instructed).
+  2. Re-run commit_match if the directive picks a different match.
   3. Submit a NEW BoundaryOutcome (status='accepted') reflecting the
      post-directive state.
 The directive supersedes your prior reasoning. Do not second-guess; do

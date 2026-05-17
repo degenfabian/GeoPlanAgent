@@ -1,10 +1,17 @@
 """Rotation classifier inference for planning maps.
 
-Loads the trained ResNet50 checkpoint from
-`models/rotation_classifier/best.pt` and predicts the CW rotation
-needed to make a planning-map image upright.
+Two checkpoint layouts supported, in order of preference:
 
-Uses 4-rotation TTA + confidence threshold:
+  1. K-fold (preferred when present): ``models/rotation_classifier_kfold/``
+     with one ``fold_K/best.pt`` per fold plus a ``fold_assignment.json``
+     mapping case_name → fold_idx. Each case is routed to the fold that
+     did NOT see it during training (mirrors the SAM3 k-fold loader's
+     ``set_fold_for_case``). Caller passes ``case_name``.
+
+  2. Legacy single checkpoint: ``models/rotation_classifier/best.pt``.
+     Used when the k-fold dir is missing or ``case_name`` is None.
+
+Both paths apply 4-rotation TTA + confidence threshold:
   1. Predict on the input AND its 90/180/270 CW rotations
   2. Cyclically shift each rotated-frame prediction back to the
      original frame and ensemble (mean softmax)
@@ -13,19 +20,21 @@ Uses 4-rotation TTA + confidence threshold:
      map alone than rotate it wrongly
 
 Public API:
-  predict_rotation_cw(map_bgr) -> int
+  predict_rotation_cw(map_bgr, case_name=None) -> int
       Returns CW degrees to rotate `map_bgr` to upright (0/90/180/270).
       Returns 0 if confidence is below threshold (abstain = no rotation).
 
-  predict_rotation_with_confidence(map_bgr, threshold=0.80) -> dict
+  predict_rotation_with_confidence(map_bgr, case_name=None, threshold=0.80) -> dict
       Same prediction with explicit metadata for callers that want to
       log / decide based on confidence.
 """
 
 from __future__ import annotations
 
+import json
 import threading
 from pathlib import Path
+from typing import Optional
 
 import cv2
 import numpy as np
@@ -40,8 +49,9 @@ import torchvision.transforms as T
 # .parent steps now to reach the repo root (was two before the reorg).
 _REPO = Path(__file__).resolve().parent.parent.parent
 _CKPT_PATH = _REPO / "models" / "rotation_classifier" / "best.pt"
+_KFOLD_DIR = _REPO / "models" / "rotation_classifier_kfold"
 
-_DEFAULT_CONFIDENCE_THRESHOLD = 0.80
+_DEFAULT_CONFIDENCE_THRESHOLD = 0.50
 
 _IMAGENET_MEAN = [0.485, 0.456, 0.406]
 _IMAGENET_STD = [0.229, 0.224, 0.225]
@@ -59,6 +69,7 @@ _CV2_ROTATE_CODES = {
 # Singleton state — load once on first call, keep cached.
 _state_lock = threading.Lock()
 _state: dict | None = None
+_kfold_state: dict | None = None
 
 
 class _RotationClassifier(torch.nn.Module):
@@ -78,8 +89,25 @@ def _build_model(n_classes: int = 4) -> torch.nn.Module:
     return _RotationClassifier(n_classes=n_classes)
 
 
+def _device() -> torch.device:
+    return torch.device(
+        "mps" if torch.backends.mps.is_available()
+        else "cuda" if torch.cuda.is_available() else "cpu")
+
+
+def _make_transform(img_size: int):
+    return T.Compose([
+        T.ToPILImage(),
+        T.Resize((img_size, img_size), antialias=True),
+        T.ToTensor(),
+        T.Normalize(_IMAGENET_MEAN, _IMAGENET_STD),
+    ])
+
+
 def _load_state() -> dict:
-    """Load the model + transform on first call. Thread-safe singleton."""
+    """Load the legacy single-checkpoint model + transform.
+    Thread-safe singleton; used when the k-fold dir is unavailable or
+    no case_name was passed."""
     global _state
     if _state is not None:
         return _state
@@ -94,28 +122,120 @@ def _load_state() -> dict:
         cfg = ckpt.get("config") or {}
         img_size = int(cfg.get("img_size", 768))
 
-        device = torch.device(
-            "mps" if torch.backends.mps.is_available()
-            else "cuda" if torch.cuda.is_available() else "cpu")
+        device = _device()
         model = _build_model(n_classes=int(cfg.get("n_classes", 4)))
         model.load_state_dict(ckpt["state_dict"])
         model = model.to(device).eval()
 
-        transform = T.Compose([
-            T.ToPILImage(),
-            T.Resize((img_size, img_size), antialias=True),
-            T.ToTensor(),
-            T.Normalize(_IMAGENET_MEAN, _IMAGENET_STD),
-        ])
-
         _state = {
-            "model": model,
+            "models": {None: model},  # None = "any case" (legacy)
             "device": device,
             "img_size": img_size,
-            "transform": transform,
+            "transform": _make_transform(img_size),
+            "fold_assignment": None,
+            "kind": "legacy",
             "best_val_acc": float(ckpt.get("best_val_acc", 0.0)),
         }
         return _state
+
+
+def _load_kfold_state() -> Optional[dict]:
+    """Load all available fold_K/best.pt checkpoints + fold_assignment.json.
+
+    Returns the kfold state dict, or None if the k-fold dir is missing
+    (caller should fall back to the legacy single-checkpoint loader).
+    Thread-safe singleton."""
+    global _kfold_state
+    if _kfold_state is not None:
+        return _kfold_state
+    with _state_lock:
+        if _kfold_state is not None:
+            return _kfold_state
+        fa_path = _KFOLD_DIR / "fold_assignment.json"
+        if not fa_path.exists():
+            return None
+        try:
+            fa = json.loads(fa_path.read_text())
+        except Exception:
+            return None
+
+        device = _device()
+        models: dict = {}
+        img_size = 768
+        for fold_dir in sorted(_KFOLD_DIR.glob("fold_*")):
+            ckpt_path = fold_dir / "best.pt"
+            if not ckpt_path.exists():
+                continue
+            try:
+                fold_k = int(fold_dir.name.split("_")[-1])
+            except ValueError:
+                continue
+            ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+            cfg = ckpt.get("config") or {}
+            img_size = int(cfg.get("img_size", img_size))
+            model = _build_model(n_classes=int(cfg.get("n_classes", 4)))
+            model.load_state_dict(ckpt["state_dict"])
+            model = model.to(device).eval()
+            models[fold_k] = model
+        if not models:
+            return None
+
+        _kfold_state = {
+            "models": models,
+            "device": device,
+            "img_size": img_size,
+            "transform": _make_transform(img_size),
+            "fold_assignment": fa,
+            "kind": "kfold",
+            "available_folds": sorted(models.keys()),
+        }
+        print(f"  rotation_classifier: loaded {len(models)} k-fold adapter(s) "
+              f"from {_KFOLD_DIR.name}/ "
+              f"({len(fa)} cases routed via fold_assignment.json)")
+        return _kfold_state
+
+
+def _normalise_case_name(case: str) -> str:
+    """Mirrors tools.extraction.sam3._normalise_case_name. Inlined to keep
+    this module dependency-light (the SAM3 module imports torch + peft +
+    transformers, which we don't want for a small classifier loader)."""
+    return (case or "").replace(":", "_").replace("/", "_")
+
+
+def _fold_for_case(case_name: str, n_folds: int = 5) -> int:
+    """Mirror of tools.extraction.sam3._fold_for_case. md5 hash routing.
+    Inlined to avoid pulling in transformers/peft just for the hash."""
+    import hashlib
+    canonical = _normalise_case_name(case_name)
+    h = hashlib.md5(canonical.encode()).hexdigest()
+    return int(h, 16) % n_folds
+
+
+def _model_for_case(case_name: Optional[str]) -> tuple[torch.nn.Module, dict]:
+    """Pick the right model for `case_name`. Routing order:
+       1. k-fold state (preferred when available + case_name given)
+       2. legacy single-checkpoint state
+
+    Returns (model, state_dict) where state_dict carries device/transform/
+    img_size for the prediction loop."""
+    if case_name is not None:
+        kf = _load_kfold_state()
+        if kf is not None:
+            fa = kf["fold_assignment"]
+            fold = fa.get(case_name)
+            if fold is None:
+                fold = fa.get(_normalise_case_name(case_name))
+            if fold is None:
+                fold = _fold_for_case(case_name)
+            avail = kf["available_folds"]
+            if fold not in avail:
+                # Fall back to the lowest available fold — same fallback
+                # SAM3's set_fold_for_case uses.
+                fold = min(avail)
+            return kf["models"][int(fold)], kf
+    # Legacy path
+    st = _load_state()
+    return st["models"][None], st
 
 
 def _preprocess(map_bgr: np.ndarray, transform) -> torch.Tensor:
@@ -131,6 +251,7 @@ def _preprocess(map_bgr: np.ndarray, transform) -> torch.Tensor:
 @torch.no_grad()
 def predict_rotation_with_confidence(
     map_bgr: np.ndarray,
+    case_name: Optional[str] = None,
     threshold: float = _DEFAULT_CONFIDENCE_THRESHOLD,
 ) -> dict:
     """Predict CW rotation (0/90/180/270) needed to make `map_bgr` upright.
@@ -141,6 +262,10 @@ def predict_rotation_with_confidence(
 
     Args:
         map_bgr: HxWx3 BGR uint8 numpy array (the format cv2 produces).
+        case_name: optional case identifier. When provided AND a k-fold
+            checkpoint dir is available, the case is routed to the fold
+            that did NOT see it during training (clean inference). When
+            absent the legacy single-checkpoint model is used.
         threshold: confidence below which we abstain (return 0).
 
     Returns:
@@ -153,12 +278,20 @@ def predict_rotation_with_confidence(
                        original-frame order [0°, 90°, 180°, 270°],
             "abstained_low_confidence": bool — true if confidence < threshold,
             "raw_class": int — argmax class before threshold (for logging),
+            "fold": int | None — which k-fold model handled this case
+                       (or None if the legacy path was used),
         }
     """
-    state = _load_state()
-    model = state["model"]
+    model, state = _model_for_case(case_name)
     device = state["device"]
     transform = state["transform"]
+    fold = None
+    if state["kind"] == "kfold" and case_name is not None:
+        fa = state["fold_assignment"]
+        fold = fa.get(case_name) or fa.get(_normalise_case_name(case_name)) \
+            or _fold_for_case(case_name)
+        if fold not in state["available_folds"]:
+            fold = min(state["available_folds"])
 
     base = _preprocess(map_bgr, transform).unsqueeze(0).to(device)  # (1, 3, H, W)
 
@@ -202,20 +335,24 @@ def predict_rotation_with_confidence(
         "all_probs": probs_np.tolist(),
         "abstained_low_confidence": abstained,
         "raw_class": top_class,
+        "fold": fold,
     }
 
 
 def predict_rotation_cw(
     map_bgr: np.ndarray,
+    case_name: Optional[str] = None,
     threshold: float = _DEFAULT_CONFIDENCE_THRESHOLD,
 ) -> int:
     """Convenience wrapper: returns just the CW degrees to rotate (0 if abstained)."""
-    return predict_rotation_with_confidence(map_bgr, threshold=threshold)[
-        "rotation_cw_degrees"]
+    return predict_rotation_with_confidence(
+        map_bgr, case_name=case_name, threshold=threshold,
+    )["rotation_cw_degrees"]
 
 
 def auto_rotate(
     map_bgr: np.ndarray,
+    case_name: Optional[str] = None,
     threshold: float = _DEFAULT_CONFIDENCE_THRESHOLD,
     verbose: bool = False,
 ) -> tuple[np.ndarray, dict]:
@@ -223,9 +360,11 @@ def auto_rotate(
 
     The returned map is the input rotated CW by the predicted amount
     (or unchanged if abstained / class 0). info_dict is the same as
-    predict_rotation_with_confidence's return.
+    predict_rotation_with_confidence's return. Pass `case_name` to route
+    the prediction through k-fold (excludes the case from training).
     """
-    info = predict_rotation_with_confidence(map_bgr, threshold=threshold)
+    info = predict_rotation_with_confidence(
+        map_bgr, case_name=case_name, threshold=threshold)
     rot = info["rotation_cw_degrees"]
     if rot == 0:
         if verbose:
@@ -241,6 +380,8 @@ def auto_rotate(
         return map_bgr, info
     rotated = cv2.rotate(map_bgr, _CV2_ROTATE_CODES[rot])
     if verbose:
+        fold_str = (f" fold={info['fold']}" if info.get("fold") is not None
+                    else "")
         print(f"  rotation_classifier: rotating {rot}° CW "
-              f"(conf={info['confidence']:.2f})")
+              f"(conf={info['confidence']:.2f}{fold_str})")
     return rotated, info

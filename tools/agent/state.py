@@ -47,25 +47,19 @@ class AgentState:
             except Exception:
                 pass
 
-        # Set by render_page (active page)
-        self.map_img: Optional[np.ndarray] = None
-        self.map_crop_path: Optional[str] = None
-
-        # Pre-rendered cache of every map_page from the reader.
-        # Populated by _read_pdf_phase; render_page(N) does a state-pointer
-        # flip into these rather than re-rendering. Keyed by 1-based page.
+        # Pre-rendered cache of every category='match' page from the reader.
+        # Populated by prepare_worker_state. Each match_at call reads the
+        # rendered page out of these by page number.
         self.rendered_pages: Dict[int, np.ndarray] = {}
         self.rendered_page_paths: Dict[int, str] = {}
 
-        # Set by extract_boundary
-        self.current_mask: Optional[np.ndarray] = None
+        # SAM3 mask cache, keyed by 1-based page number. Computed lazily
+        # inside match_at on first need per page; persists across
+        # subsequent match_at calls on the same page (no re-segmentation).
+        self.sam_masks_by_page: Dict[int, np.ndarray] = {}
 
         # Set by match_at + commit_match
         self.current_result: dict = {}
-
-        # Final boundary overlay (planning map + SAM mask, used by benchmark
-        # output writer + critic panel build).
-        self.selected_overlay: Optional[np.ndarray] = None
 
         # Agent metadata
         self.accepted = False
@@ -101,6 +95,37 @@ class AgentState:
         # Per-case budget — agent can call match_at up to this many times
         # before being forced to commit.
         self.match_at_budget: int = 5
+
+
+# ── Page-of-interest helpers ─────────────────────────────────────────────
+
+def primary_match_page(state: "AgentState") -> Optional[int]:
+    """Return the page the worker should default to (highest-ranked match
+    page from the reader). None when pdf_info has no match pages yet."""
+    pages = ((state.pdf_info or {}).get("map_pages") or [])
+    return int(pages[0]) if pages else None
+
+
+def committed_primary_page(state: "AgentState") -> Optional[int]:
+    """1-based page number of the worker's committed primary group.
+
+    Primary = the worker's requested area_group, or the first per_group
+    entry. Falls back to primary_match_page when no commit has happened
+    yet (used by tools that need a 'default working map' before the
+    worker has committed).
+    """
+    cr = state.current_result or {}
+    per_group = cr.get("per_group") or []
+    if per_group:
+        requested = cr.get("requested_group")
+        primary = next(
+            (g for g in per_group if g.get("area_group") == requested),
+            per_group[0],
+        )
+        page = primary.get("page")
+        if page is not None:
+            return int(page)
+    return primary_match_page(state)
 
 
 # ── Re-exports used by tools/agent/tools/*.py ─────────────────────────────

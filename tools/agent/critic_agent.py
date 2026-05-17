@@ -22,6 +22,8 @@ import numpy as np
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, BinaryContent
 
+from tools.agent._model import resolve_model
+
 
 # ── Critic output schema (structured directive) ────────────────────────────
 
@@ -155,7 +157,7 @@ def _ensure_agent(model_name: str) -> Agent:
     if _critic_agent is not None and _critic_agent_model == model_name:
         return _critic_agent
     _critic_agent = Agent[None, CriticDirective](
-        model=model_name,
+        model=resolve_model(model_name),
         output_type=CriticDirective,
         instructions=CRITIC_INSTRUCTIONS,
     )
@@ -165,8 +167,18 @@ def _ensure_agent(model_name: str) -> Agent:
 
 # ── State snapshot helper ──────────────────────────────────────────────────
 
+def _committed_primary_view(state) -> tuple:
+    """Return (page, map_img, mask) for the worker's committed primary
+    group, or (None, None, None) when nothing is committed."""
+    from tools.agent.state import committed_primary_page
+    page = committed_primary_page(state)
+    if page is None:
+        return None, None, None
+    return page, state.rendered_pages.get(page), state.sam_masks_by_page.get(page)
+
+
 def _snapshot_state(state) -> Dict[str, Any]:
-    mask = state.current_mask
+    _, _, mask = _committed_primary_view(state)
     cr = state.current_result or {}
     aff = cr.get("affine_H")
     return {
@@ -184,8 +196,7 @@ def build_critic_panel(state) -> Optional[np.ndarray]:
     """LEFT: planning map + current SAM mask (translucent green).
     RIGHT: OS tile canvas + projected polygon outline (red).
     Both side-by-side, labelled. None if state is missing essentials."""
-    map_img = state.map_img
-    mask = state.current_mask
+    _, map_img, mask = _committed_primary_view(state)
     cr = state.current_result or {}
     tile_info = cr.get("tile_info") or {}
     affine_H = cr.get("affine_H")
@@ -255,7 +266,7 @@ def build_critic_panel(state) -> Optional[np.ndarray]:
 def format_metrics_text(state, det_score: Dict[str, Any]) -> str:
     cr = state.current_result or {}
     mi = cr.get("match_info") or {}
-    mask = state.current_mask
+    _, _, mask = _committed_primary_view(state)
     pi = state.pdf_info or {}
     mask_pct = (float((mask > 0).mean()) * 100
                 if isinstance(mask, np.ndarray) and mask.size else 0.0)
@@ -355,9 +366,9 @@ def _run_critic_once(state, model_name: str):
 def _rehand_to_worker(state, worker_result, directive: CriticDirective,
                        verbose: bool = True):
     """Re-invoke the worker with a CRITIC DIRECTIVE message instructing it
-    to comply. Mutates state.current_mask and state.current_result["geojson"]
-    via the worker's tools. Returns the new pydantic-ai result or the prior
-    worker_result on failure."""
+    to comply. Mutates state.sam_masks_by_page and
+    state.current_result["geojson"] via the worker's tools. Returns the
+    new pydantic-ai result or the prior worker_result on failure."""
     from tools.agent.worker_agent import _agent
 
     action = directive.action
@@ -511,7 +522,7 @@ def run_critic_agent(
         snapshots.append(snap)
 
         if (snap_before.get("geojson") == snap_after.get("geojson")
-                and state.current_mask is not None):
+                and snap_after.get("mask") is not None):
             if verbose:
                 print(f"  critic rehand: state unchanged, worker may not have "
                       f"complied — exiting loop")

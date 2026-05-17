@@ -78,8 +78,9 @@ def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict
                 "Read this UK planning PDF and populate the PDFInfo schema "
                 "with all geographic information you can find.\n\n"
                 "Below is the PDF text already extracted by a dedicated OCR "
-                "pipeline (fitz for digital pages — 100% accurate; PaddleOCR "
-                "for scanned pages — ~95-98% accurate). For ANY exact-string "
+                "pipeline (fitz for digital pages — 100% accurate; macOS "
+                "Vision for scanned pages — ~95-98% accurate). For ANY "
+                "exact-string "
                 "field — postcodes, grid_refs, site_address, "
                 "house_number_road_pairs, parish_names, admin_region, "
                 "district_name, scale — this TEXT BLOCK is the source of "
@@ -148,11 +149,15 @@ def prepare_worker_state(
 
     map_pages = pdf_info.get("map_pages", []) or []
     map_page_details = pdf_info.get("map_page_details", []) or []
+
+    # Pre-render only category='match' pages (others are reader-flagged
+    # discards). Auto-rotation classifier runs in render_map_page.
     if map_pages:
         from tools.io.map_page import render_map_page
         for page_1based in map_pages:
             rendered = render_map_page(str(pdf_path), int(page_1based),
-                                         dpi=dpi, verbose=verbose)
+                                         dpi=dpi, verbose=verbose,
+                                         case_name=case_name)
             if rendered is None:
                 continue
             page_img, rot_info = rendered
@@ -163,9 +168,6 @@ def prepare_worker_state(
             cv2.imwrite(tmp_path, page_img)
             state.rendered_pages[int(page_1based)] = page_img
             state.rendered_page_paths[int(page_1based)] = tmp_path
-            if page_1based == map_pages[0]:
-                state.map_img = page_img
-                state.map_crop_path = tmp_path
 
     summary_text = json.dumps(
         {k: v for k, v in pdf_info.items() if not k.startswith("_")},
@@ -173,20 +175,57 @@ def prepare_worker_state(
     roles_line = ""
     if map_page_details:
         roles = ", ".join(
-            f"page {d.get('page', '?')}=[{d.get('role', '?')}] "
-            f"{(d.get('caption') or '')[:60]!r}"
+            f"page {d.get('page', '?')}=["
+            f"{d.get('category', '?')}, "
+            f"grp={d.get('area_group', '?')}, "
+            f"{d.get('boundary_clarity', '?')}/"
+            f"{d.get('detail_level', '?')}"
+            f"] {(d.get('caption') or '')[:60]!r}"
             for d in map_page_details
         )
-        roles_line = f"\nMap-page roles (cached, switch via render_page(N)): {roles}\n"
+        roles_line = (
+            "\nMap-page metadata (only category='match' pages are pre-"
+            "rendered; pass the page number you want as match_at's "
+            f"`page` argument): {roles}\n"
+        )
+        # Group-ordered view of match pages — makes "next page in
+        # group G" lookups one-step for the worker.
+        by_group: dict[int, list[int]] = {}
+        page_to_group = {int(d["page"]): int(d.get("area_group", 0))
+                         for d in map_page_details
+                         if d.get("category") == "match"}
+        for p in map_pages:
+            g = page_to_group.get(int(p))
+            if g is None:
+                continue
+            by_group.setdefault(g, []).append(int(p))
+        if by_group:
+            grouped = "; ".join(
+                f"Group {g}: pages {pages} (primary={pages[0]}"
+                + (f", alternates={pages[1:]}" if len(pages) > 1 else "")
+                + ")"
+                for g, pages in sorted(by_group.items())
+            )
+            roles_line += (
+                "\nMatch pages by area_group (each match_at call internally "
+                "runs every group at the locate centre; to retry a specific "
+                "group, pass `page=<next alternate in that group>`): "
+                f"{grouped}\n"
+            )
     user_parts: list = [
         f"PDF EXTRACTION SUMMARY:\n{summary_text}\n{roles_line}\n"
         f"Use this information to geolocate and extract the planning boundary. "
-        f"Page {map_pages[0] if map_pages else '?'} (role='detail', the "
-        f"top-ranked map) is pre-rendered as your working map."
+        f"Page {map_pages[0] if map_pages else '?'} (the top-ranked match "
+        f"page) is pre-rendered as your default working map. For multi-area "
+        f"docs you don't iterate groups — a single match_at call internally "
+        f"runs MINIMA per area_group at the same locate centre and unions "
+        f"the resulting polygons."
     ]
-    if state.map_img is not None:
+    primary_img = (state.rendered_pages.get(int(map_pages[0]))
+                   if map_pages else None)
+    if primary_img is not None:
         user_parts.append(f"Map page {map_pages[0]}:")
-        user_parts.append(_img_to_binary(state.map_img))
+        user_parts.append(_img_to_binary(primary_img))
     return state, user_parts
 
 
@@ -262,7 +301,7 @@ def apply_critic_loop(
     if (state.last_output is None
             or state.last_output.status != "accepted"
             or state.current_result.get("geojson") is None
-            or state.current_mask is None):
+            or not state.sam_masks_by_page):
         return None
     try:
         from tools.agent.critic_agent import run_critic_loop
@@ -301,9 +340,9 @@ def apply_critic_loop(
 # ── Cleanup ───────────────────────────────────────────────────────────────
 
 def cleanup_temp_pages(state: AgentState) -> None:
-    """Unlink every pre-rendered page tempfile (and rotated variants)."""
+    """Unlink every pre-rendered page tempfile."""
     seen_paths = set()
-    for p in list(state.rendered_page_paths.values()) + [state.map_crop_path]:
+    for p in state.rendered_page_paths.values():
         if not p or p in seen_paths:
             continue
         seen_paths.add(p)
@@ -509,11 +548,20 @@ def build_run_agent_return(
     critic_result: Optional[Dict[str, Any]],
 ) -> dict:
     """Assemble the dict that run_agent returns to benchmark_runner."""
+    from tools.agent.state import committed_primary_page
+    primary_page = committed_primary_page(state)
+    primary_img = state.rendered_pages.get(primary_page) if primary_page else None
+    primary_mask = state.sam_masks_by_page.get(primary_page) if primary_page else None
+    primary_overlay = None
+    if primary_img is not None and primary_mask is not None:
+        sel = primary_img.copy()
+        sel[primary_mask > 0] = [0, 255, 0]
+        primary_overlay = cv2.addWeighted(primary_img, 0.5, sel, 0.5, 0)
     return {
         "success": True,
         "geojson": state.current_result.get("geojson"),
         "match_info": state.current_result.get("match_info", {}),
-        "mask": state.current_mask,
+        "mask": primary_mask,
         "affine_H": state.current_result.get("affine_H"),
         "tile_info_meta": {
             k: v for k, v in (state.current_result.get("tile_info") or {}).items()
@@ -523,7 +571,7 @@ def build_run_agent_return(
         "agent_reason": state.accept_reason,
         "agent_stats": agent_stats,
         "message_log": message_log,
-        "selected_overlay": state.selected_overlay,
+        "selected_overlay": primary_overlay,
         "critic_iterations": state.critic_iterations,
         "critic_final_decision": state.critic_final_decision,
         "critic_changed_mask": state.critic_changed_mask,

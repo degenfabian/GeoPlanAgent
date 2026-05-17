@@ -1,15 +1,27 @@
-"""Match-stage worker tools: match_at + commit_match.
+"""Match-stage worker tools: match_at + commit_match (multi-group capable).
 
-Extracted from ``tools/agent.py`` (stage-2 split, 2026-05-11). Registers
-``match_at`` and ``commit_match`` against the shared ``_agent`` instance
-at import time. Also defines two private helpers used only by these
-tools: ``_build_match_at_panel`` and ``_try_analytical_match_at``.
+Each match_at call:
+  - takes an explicit `page` argument (the worker chooses which page to
+    use for the area_group it wants to override)
+  - resolves the full set of area_groups in the document and the page
+    each should be matched on (worker's choice for its group, primaries
+    for the others)
+  - per group: lazily renders the page, lazily segments with SAM3
+    (caches both per page across calls), runs MINIMA at the supplied
+    (lat, lon) centre, projects the mask through the resulting affine
+  - drops groups whose match fails the strict commit gate
+  - unions remaining per-group polygons into a single GeoJSON
+  - stores ONE candidate; commit_match commits it as-is.
+
+SAM3 masks are cached on state.sam_masks_by_page keyed by 1-based page
+number, so re-calling match_at on a page that's been segmented is fast
+(MINIMA only).
 """
 
 from __future__ import annotations
 
-import os
-from typing import Any, Dict, Optional
+import tempfile
+from typing import Any, Dict, List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -23,31 +35,110 @@ from tools.agent.state import (
 )
 
 
-# Strict commit-gate thresholds. Statistical miner finding 2026-05-07:
-# accepted matches below these levels had mean IoU 0.439 vs 0.748 overall
-# (per-case stats in results/benchmark_v3/gemini-flash/*/metrics.json).
-# Analytical-affine matches (no n_inliers by design) are exempt — they're
-# fully determined by E/N + scale + DPI + mask centroid.
+# Strict commit-gate thresholds (unchanged from v_postrot).
 MIN_INLIERS_COMMIT = 18
 MIN_MASK_FRAC_COMMIT = 0.002
 
+# Fixed query for SAM3 semantic segmentation. The LoRA was trained against
+# this literal phrase.
+_SAM3_QUERY = "planning boundary"
+
+
+# ── Per-page render + segmentation helpers ──────────────────────────────
+
+def _get_or_render_page(state: AgentState, page: int) -> Tuple[Optional[np.ndarray], Optional[str]]:
+    """Return (map_img, map_crop_path) for `page`. Cache on first need."""
+    cached = state.rendered_pages.get(page)
+    cached_path = state.rendered_page_paths.get(page)
+    if cached is not None and cached_path is not None:
+        return cached, cached_path
+
+    from tools.io.map_page import render_map_page
+    rendered = render_map_page(state.pdf_path, page, dpi=state.dpi,
+                                  verbose=False, case_name=state.case_name)
+    if rendered is None:
+        return None, None
+    map_img, rot_info = rendered
+    if rot_info.get("applied"):
+        state.rotation_checked = True
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+        path = tmp.name
+    cv2.imwrite(path, map_img)
+    state.rendered_pages[page] = map_img
+    state.rendered_page_paths[page] = path
+    return map_img, path
+
+
+def _get_or_compute_mask(state: AgentState, page: int,
+                          map_crop_path: str) -> Optional[np.ndarray]:
+    """Return SAM3 mask for `page`. Compute + cache on first need."""
+    cached = state.sam_masks_by_page.get(page)
+    if cached is not None:
+        return cached
+    from tools.extraction.sam3 import (extract_boundary_sam3_semantic,
+                                        set_fold_for_case)
+    set_fold_for_case(state.sam3_state, state.case_name)
+    mask = extract_boundary_sam3_semantic(
+        map_crop_path, state.sam3_processor, state.sam3_model,
+        state.device, query=_SAM3_QUERY,
+    )
+    if mask is not None:
+        state.sam_masks_by_page[page] = mask
+    return mask
+
+
+def _groups_to_match(state: AgentState,
+                       requested_page: int) -> List[Tuple[int, int]]:
+    """Return [(area_group_id, page_to_match), ...] across all match groups.
+
+    For the area_group of `requested_page`, use that page.
+    For all other area_groups, use the primary (first map_pages entry of
+    that group).
+    """
+    details = (state.pdf_info or {}).get("map_page_details") or []
+    map_pages = (state.pdf_info or {}).get("map_pages") or []
+    if not details or not map_pages:
+        return [(0, requested_page)]
+
+    by_page = {int(d["page"]): d for d in details
+               if d.get("category") == "match"}
+    req_meta = by_page.get(int(requested_page))
+    if req_meta is None:
+        raise ModelRetry(
+            f"page={requested_page} is not a category='match' page. "
+            f"Valid match pages: {sorted(by_page.keys())}. "
+            f"Pick one from pdf_info.map_pages."
+        )
+    req_group = int(req_meta.get("area_group", 0))
+
+    # Walk map_pages in order; pick first match page per area_group.
+    seen: set = set()
+    out: List[Tuple[int, int]] = []
+    for page in map_pages:
+        page = int(page)
+        meta = by_page.get(page)
+        if meta is None:
+            continue
+        g = int(meta.get("area_group", 0))
+        if g in seen:
+            continue
+        seen.add(g)
+        if g == req_group:
+            out.append((g, int(requested_page)))
+        else:
+            out.append((g, page))
+    return out or [(req_group, requested_page)]
+
+
+# ── Visual helpers ───────────────────────────────────────────────────────
 
 def _build_match_at_panel(map_img: np.ndarray,
                             tile_info: Dict[str, Any],
-                            mi: Dict[str, Any]) -> Optional[np.ndarray]:
-    """Visual panel for one match_at attempt: planning map | OS tiles at match.
-
-    Returned to the LLM in match_at's ToolReturn so that across multiple
-    match_at calls the agent has the visual evidence to compare candidates,
-    not just textual reward scores. The OS tile region inside the matched
-    window (the part the affine actually fits) is highlighted with a red
-    rectangle.
-
-    None if required state is missing.
-    """
+                            mi: Dict[str, Any],
+                            label: str = "PLANNING MAP") -> Optional[np.ndarray]:
+    """Visual panel for one group's match attempt."""
     if map_img is None or not isinstance(tile_info, dict) or "image" not in tile_info:
         return None
-
     target_h = 500
 
     def _label(img, text):
@@ -56,11 +147,8 @@ def _build_match_at_panel(map_img: np.ndarray,
                     (255, 255, 255), 1, cv2.LINE_AA)
         return np.vstack([bar, img])
 
-    # Left: planning map
     h, w = map_img.shape[:2]
     map_resized = cv2.resize(map_img, (max(1, int(w * target_h / h)), target_h))
-
-    # Right: OS tiles at the candidate's match, with the matched window rect.
     tile_img = tile_info["image"]
     if tile_img.shape[2] == 3 and tile_info.get("_was_rgb", True):
         tile_bgr = cv2.cvtColor(tile_img, cv2.COLOR_RGB2BGR)
@@ -68,11 +156,6 @@ def _build_match_at_panel(map_img: np.ndarray,
         tile_bgr = tile_img.copy()
     th, tw = tile_bgr.shape[:2]
     wx, wy = mi.get("window") or (0, 0)
-    # The matched window's size on the tile canvas equals the resized map
-    # size MINIMA ran against. We don't store it explicitly, so estimate
-    # from sf+map shape: tile pixels per map pixel ≈ sf, but sf is the
-    # resize factor applied to the map BEFORE matching, so the window in
-    # tile space is map.shape * sf. If sf missing, fall back to map shape.
     sf = mi.get("scale_factor") or 1.0
     win_w = max(1, int(map_img.shape[1] * sf))
     win_h = max(1, int(map_img.shape[0] * sf))
@@ -82,14 +165,12 @@ def _build_match_at_panel(map_img: np.ndarray,
                   (0, 0, 255), max(2, th // 200))
     tile_resized = cv2.resize(rect_img,
                               (max(1, int(tw * target_h / th)), target_h))
-
-    left = _label(map_resized, "PLANNING MAP")
+    left = _label(map_resized, label)
     right = _label(tile_resized,
-                   f"OS TILES @ z={mi.get('zoom')} "
-                   f"({mi.get('center_latlon', ['?', '?'])[0]:.4f}, "
-                   f"{mi.get('center_latlon', ['?', '?'])[1]:.4f}) "
-                   f"— red box = matched window")
-
+                   f"OS TILES z={mi.get('zoom')} "
+                   f"({(mi.get('center_latlon') or ['?','?'])[0]:.4f},"
+                   f"{(mi.get('center_latlon') or ['?','?'])[1]:.4f}) "
+                   f"— red = matched window")
     panel = np.hstack([left, right])
     if panel.shape[1] > 1800:
         s = 1800 / panel.shape[1]
@@ -97,63 +178,67 @@ def _build_match_at_panel(map_img: np.ndarray,
     return panel
 
 
+def _stack_panels(panels: List[np.ndarray]) -> np.ndarray:
+    """Vertically stack per-group panels, padding to a common width."""
+    if not panels:
+        return None
+    max_w = max(p.shape[1] for p in panels)
+    out = []
+    for p in panels:
+        if p.shape[1] < max_w:
+            pad = np.full((p.shape[0], max_w - p.shape[1], 3), 200, dtype=np.uint8)
+            p = np.hstack([p, pad])
+        out.append(p)
+        out.append(np.full((6, max_w, 3), 200, dtype=np.uint8))
+    return np.vstack(out[:-1])
+
+
+# ── match_at ─────────────────────────────────────────────────────────────
+
 @_agent.tool
 def match_at(
     ctx: RunContext[AgentState],
+    page: int,
     name: str,
     lat: float,
     lon: float,
     sigma_m: Optional[float] = None,
     scale_ratio: Optional[float] = None,
-    rotation: int = 0,
 ) -> ToolReturn:
-    """Run MINIMA at ONE candidate center, score it, return reward + panel.
+    """Run MINIMA at (lat, lon); auto-matches every area_group in the doc.
 
-    Per-candidate probe. Stores the result under an integer candidate_id
-    (returned in the response) — pass that id to commit_match when you decide.
-    See the system prompt (step 3) for decision rules on overall_score.
+    The `page` argument selects which page to use FOR ITS area_group.
+    Other area_groups in the document use their primaries automatically.
+    The returned candidate's polygon is the UNION of per-group projections.
 
     Args:
-        name: Short label (e.g. "gpkg:Hampstead Heath").
-        lat / lon: The center's latitude / longitude (must come from
+        page: 1-based page number. Must be a category='match' page from
+            the reader's map_pages list.
+        name: Short label, e.g. "gpkg:Hampstead Heath".
+        lat / lon: Centre latitude / longitude (must come from
             propose_centers — fabricated coordinates are rejected).
-        sigma_m: Search radius in metres (default: scale-aware from PDFInfo).
+        sigma_m: Search radius in metres (default: scale-aware).
         scale_ratio: Map scale denominator (default: parsed from PDFInfo.scale).
-        rotation: Map rotation in degrees (default 0; auto-rotation has
-            already run at render_page time).
 
     Returns:
         {"success": True, "candidate_id": int, "overall_score": float,
-         "reward": <formatted summary>, "match_summary": {...}}
-        Plus a planning-map | OS-tiles visual panel.
+         "n_groups_committed": int, "per_group": [...]} + multi-panel viz.
     """
     state = ctx.deps
-    if state.map_img is None:
-        raise ModelRetry("No map image available. Call render_page first.")
     if state.match_at_budget <= 0:
         raise ModelRetry(
-            "match_at budget exhausted (5 attempts). Pick the best stored "
-            "candidate via commit_match and proceed — the pipeline always "
-            "produces a polygon, even if the best score is low."
+            "match_at budget exhausted. Pick the best stored candidate via "
+            "commit_match and proceed — the pipeline always produces a "
+            "polygon, even if the best score is low."
         )
 
-    # Dedup: refuse identical match_at(name, lat, lon, sigma_m, scale_ratio,
-    # rotation) calls. Prevents Gemini-Flash from burning 5-15s of MINIMA
-    # work on a candidate it already evaluated. Mirrors the dedup pattern
-    # already wired into position_boundary, extract_boundary, lookup_district.
-    # Note: this fires BEFORE the budget decrement so a duplicate doesn't
-    # spend a budget unit.
     _dedup_check(state, "match_at", {
-        "name": name, "lat": round(float(lat), 5), "lon": round(float(lon), 5),
-        "sigma_m": sigma_m, "scale_ratio": scale_ratio, "rotation": rotation,
+        "page": int(page), "name": name,
+        "lat": round(float(lat), 5), "lon": round(float(lon), 5),
+        "sigma_m": sigma_m, "scale_ratio": scale_ratio,
     })
 
-    # ── STRICT TOOL: reject invented coordinates ────────────────────────
-    # The agent must call match_at with a (lat, lon) that came from
-    # propose_centers. If the coordinate is not within 100m of any entry
-    # in state.proposed_centers, we refuse and tell the agent the actual
-    # candidate IDs available. This prevents Gemini Flash from
-    # hallucinating "Wheathampstead Village Center" coordinates etc.
+    # Reject invented coordinates (same logic as before).
     matched_candidate = None
     if state.proposed_centers:
         from tools.geo.coords import haversine_m as _distance_m
@@ -172,14 +257,15 @@ def match_at(
                 f"is {nearest[0]:.0f}m away ({nearest[1]['source']}). "
                 f"Use a (lat, lon) from a propose_centers candidate "
                 f"directly. Available: {avail}. If none look right, call "
-                f"propose_centers(extra_terms=[...]) to add more, do NOT "
-                f"invent coordinates."
+                f"propose_centers(extra_terms=[...]) — do NOT invent "
+                f"coordinates."
             )
         matched_candidate = nearest[1]
 
     state.match_at_budget -= 1
 
-    from tools.matching import sliding_window_position, sigma_from_scale
+    # σ resolution.
+    from tools.matching import sigma_from_scale
 
     def _parse_scale(s: Any) -> Optional[int]:
         if not s:
@@ -193,11 +279,6 @@ def match_at(
         except ValueError:
             return None
 
-    # σ resolution: explicit arg → matched-candidate's σ (from locate
-    # sub-agent's LocatePick — Spearman ρ=+0.629 against pick→GT error
-    # on v3) → scale-derived fallback. Respecting the sub-agent's σ
-    # tightens MINIMA on confident picks (most cases) and widens it on
-    # low-confidence picks (where the sub-agent flagged uncertainty).
     if sigma_m is None and matched_candidate is not None:
         cand_sigma = matched_candidate.get("sigma_m")
         if cand_sigma is not None and float(cand_sigma) > 0:
@@ -210,173 +291,264 @@ def match_at(
     if scale_ratio is None and state.pdf_info:
         scale_ratio = _parse_scale(state.pdf_info.get("scale"))
 
-    # Analytical short-circuit: when this probe anchor sits within ~50m of
-    # an exact OS easting/northing parsed from the PDF AND scale is known
-    # AND a SAM mask is set, skip MINIMA entirely. The affine is fully
-    # determined by E/N + scale + DPI + mask centroid (see Phase 34 in
-    # /tmp/recovery for the original experiment, e.g. A4KTRa1 0→0.71).
+    # Resolve the per-group page list.
+    groups_pages = _groups_to_match(state, int(page))
+
+    per_group: List[Dict[str, Any]] = []
+    panels: List[np.ndarray] = []
+    requested_group = None
+    for d in (state.pdf_info or {}).get("map_page_details") or []:
+        if int(d.get("page", -1)) == int(page) and d.get("category") == "match":
+            requested_group = int(d.get("area_group", 0))
+            break
+
+    for group_id, group_page in groups_pages:
+        single = _match_single_page(state, group_page, name, float(lat), float(lon),
+                                       float(sigma_m), scale_ratio, matched_candidate)
+        single["area_group"] = int(group_id)
+        single["page"] = int(group_page)
+        per_group.append(single)
+        if single.get("panel") is not None:
+            label = (f"PAGE {group_page} (grp {group_id}"
+                     f"{', requested' if group_id == requested_group else ''})")
+            panel = _build_match_at_panel(
+                state.rendered_pages.get(group_page),
+                single.get("tile_info"), single.get("match_info") or {},
+                label=label,
+            )
+            if panel is not None:
+                panels.append(panel)
+        del single["panel"]
+
+    # Aggregate metrics across groups that produced a valid match.
+    valid = [g for g in per_group
+             if g.get("affine_H") is not None
+             and not g.get("error")]
+    total_inliers = sum(int((g.get("match_info") or {}).get("n_inliers") or 0)
+                        for g in valid)
+    # Weighted-mean overall_score, weighted by per-group n_inliers.
+    overall_score = 0.0
+    if valid:
+        weights = [max(1, int((g.get("match_info") or {}).get("n_inliers") or 1))
+                   for g in valid]
+        scores = [float(g.get("overall_score") or 0.0) for g in valid]
+        overall_score = float(np.average(scores, weights=weights))
+
+    # Union per-group GeoJSONs that passed the per-group commit gate.
+    committed_groups = []
+    for g in valid:
+        mi = g.get("match_info") or {}
+        method = str(mi.get("method", ""))
+        n_in = int(mi.get("n_inliers") or 0)
+        mask_frac = float(g.get("mask_frac") or 0.0)
+        if (method in ("analytical", "analytical_affine")
+                or (n_in >= MIN_INLIERS_COMMIT
+                    and mask_frac >= MIN_MASK_FRAC_COMMIT)):
+            if g.get("geojson") is not None:
+                committed_groups.append(g)
+
+    unioned_geojson = _union_geojsons([g["geojson"] for g in committed_groups])
+
+    cid = state._match_attempt_counter
+    state._match_attempt_counter += 1
+    state.match_attempts[cid] = {
+        "candidate_id": cid,
+        "name": name, "lat": float(lat), "lon": float(lon),
+        "sigma_m": float(sigma_m), "scale_ratio": scale_ratio,
+        "per_group": per_group,
+        "committed_groups_idx": [i for i, g in enumerate(per_group)
+                                  if g in committed_groups],
+        "geojson": unioned_geojson,
+        "overall_score": float(overall_score),
+        "total_inliers": int(total_inliers),
+        "n_groups": len(per_group),
+        "n_groups_committed": len(committed_groups),
+        "requested_page": int(page),
+        "requested_group": requested_group,
+    }
+
+    summary = {
+        "success": True,
+        "candidate_id": cid,
+        "overall_score": float(overall_score),
+        "total_inliers": int(total_inliers),
+        "n_groups": len(per_group),
+        "n_groups_committed": len(committed_groups),
+        "per_group": [
+            {
+                "page": g["page"], "area_group": g["area_group"],
+                "n_inliers": int((g.get("match_info") or {}).get("n_inliers") or 0),
+                "score": float((g.get("match_info") or {}).get("score") or 0.0),
+                "overall_score": float(g.get("overall_score") or 0.0),
+                "passed_gate": g in committed_groups,
+            }
+            for g in per_group
+        ],
+        "budget_remaining": state.match_at_budget,
+    }
+
+    if not panels:
+        return summary
+    big = _stack_panels(panels)
+    text = (f"match_at id={cid}, overall_score={overall_score:.2f}, "
+            f"{len(committed_groups)}/{len(per_group)} groups passed gate. "
+            f"Per-group panels stacked vertically — each shows that group's "
+            f"page (left) vs OS tiles at the matched window (right). "
+            f"For multi-group docs the final polygon is the UNION of all "
+            f"groups that passed.")
+    return ToolReturn(return_value=summary,
+                      content=[text, _img_to_binary(big)])
+
+
+# ── Per-page MINIMA driver (called once per group inside match_at) ──────
+
+def _match_single_page(state: AgentState, page: int, name: str,
+                        lat: float, lon: float, sigma_m: float,
+                        scale_ratio: Optional[int],
+                        matched_candidate: Optional[dict]) -> Dict[str, Any]:
+    """Render+segment+MINIMA on a single page at (lat, lon). Returns a dict
+    with affine_H / tile_info / match_info / geojson / mask_frac /
+    overall_score / panel-data; or error."""
+    map_img, map_crop_path = _get_or_render_page(state, page)
+    if map_img is None or map_crop_path is None:
+        return {"error": f"render failed for page {page}"}
+    mask = _get_or_compute_mask(state, page, map_crop_path)
+    if mask is None:
+        return {"error": f"SAM3 returned no mask for page {page}"}
+    mask_frac = float(np.sum(mask > 0)) / float(mask.size)
+
+    # Analytical short-circuit on this page.
     analytical = _try_analytical_match_at(
-        state, name, lat, lon, scale_ratio)
+        state, page, map_img, mask, name, lat, lon, scale_ratio,
+    )
     if analytical is not None:
-        cid = state._match_attempt_counter
-        state._match_attempt_counter += 1
-        state.match_attempts[cid] = analytical
-        state.match_attempts[cid]["candidate_id"] = cid
-        print(f"  match_at: analytical short-circuit for {name!r} "
-              f"(skipped MINIMA)")
-        return {
-            "success": True,
-            "candidate_id": cid,
-            "overall_score": float(analytical["overall_score"]),
-            "reward": analytical["reward"]["summary"],
-            "match_summary": {
-                "n_inliers": "n/a (analytical)",
-                "score": "n/a (analytical)",
-                "method": "analytical_affine",
-                "chosen_zoom": analytical["tile_info"]["zoom"],
-                "chosen_center_latlon": [lat, lon],
-            },
-            "budget_remaining": state.match_at_budget,
-        }
+        return analytical
+
+    from tools.matching import sliding_window_position, mask_to_geojson_affine
+    from tools.metrics.reward import compute_match_reward
 
     def _run_minima(sigma_used):
-        centers_local = [(name, float(lat), float(lon), float(sigma_used))]
         return sliding_window_position(
-            matcher=state.minima_matcher, map_img=state.map_img,
-            sam3_mask=state.current_mask, centers=centers_local,
+            matcher=state.minima_matcher, map_img=map_img,
+            sam3_mask=mask, centers=[(name, lat, lon, sigma_used)],
             scale_ratio=scale_ratio, dpi=state.dpi,
-            rotations=[rotation] if rotation else None,
+            rotations=None,
             road_names=state.pdf_info.get("road_names") or [],
             grayscale=False, return_candidates=False,
             directional_modifier=state.pdf_info.get("directional_modifier"),
         )
-
-    from tools.metrics.reward import compute_match_reward
 
     def _evaluate(res):
         if not res or res.get("affine_H") is None:
             return None, None
         mi_local = res.get("match_info") or {}
         rw = compute_match_reward(
-            match_info=mi_local,
-            pdf_info=state.pdf_info,
-            inlier_pts_in_map=None,
-            map_shape_hw=tuple(state.map_img.shape[:2]) if state.map_img is not None else None,
+            match_info=mi_local, pdf_info=state.pdf_info,
+            inlier_pts_in_map=None, map_shape_hw=tuple(map_img.shape[:2]),
         )
         return mi_local, rw
 
     try:
         result = _run_minima(sigma_m)
     except Exception as e:
-        return {"success": False, "error": f"sliding_window_position: {e}"}
-
+        return {"error": f"sliding_window_position: {e!s:.140}"}
     if not result or result.get("affine_H") is None:
-        return {"success": False,
-                "error": "MINIMA returned no usable match at this center"}
+        return {"error": "MINIMA returned no usable match",
+                "mask_frac": mask_frac}
 
-    mi = result.get("match_info") or {}
-    _, reward = _evaluate(result)
+    mi, reward = _evaluate(result)
 
-    # 2× sigma retry on weak round-1: if n_inliers < 25 or overall_score
-    # < 0.4, rerun with sigma×2 on the same center. Targets SSA*-style
-    # rural cottages where the geocoded village center is 800-1900m from
-    # GT — bigger search radius gives MINIMA a chance to actually see GT.
-    # Only the better of the two results is kept.
-    weak = (int(mi.get("n_inliers", 0) or 0) < 25
+    # 2× σ retry on weak first attempt.
+    weak = (int((mi or {}).get("n_inliers") or 0) < 25
             or float(reward.overall_score) < 0.4)
     if weak:
-        retry_sigma = float(sigma_m) * 2.0
         try:
-            retry_result = _run_minima(retry_sigma)
+            retry_result = _run_minima(sigma_m * 2.0)
         except Exception:
             retry_result = None
         if retry_result and retry_result.get("affine_H") is not None:
             retry_mi, retry_reward = _evaluate(retry_result)
             if (retry_reward is not None
                     and retry_reward.overall_score > reward.overall_score):
-                print(f"  match_at: 2× sigma retry won "
-                      f"({reward.overall_score:.2f} → "
-                      f"{retry_reward.overall_score:.2f})")
                 result = retry_result
                 mi = retry_mi
                 reward = retry_reward
-                sigma_m = retry_sigma
 
     affine_H = result.get("affine_H")
     tile_info = result.get("tile_info")
+    geojson = result.get("geojson")
+    if geojson is None and affine_H is not None and tile_info is not None:
+        geojson = mask_to_geojson_affine(mask, affine_H, tile_info)
 
-    # Store the attempt for later commit
-    cid = state._match_attempt_counter
-    state._match_attempt_counter += 1
-    state.match_attempts[cid] = {
-        "candidate_id": cid,
-        "name": name, "lat": lat, "lon": lon, "sigma_m": sigma_m,
-        "scale_ratio": scale_ratio, "rotation": rotation,
+    return {
         "affine_H": affine_H, "tile_info": tile_info,
-        "match_info": mi, "geojson": result.get("geojson"),
-        "reward": reward.to_dict(),
-        "overall_score": reward.overall_score,
+        "match_info": mi, "geojson": geojson,
+        "reward": reward.to_dict() if reward is not None else None,
+        "overall_score": float(reward.overall_score) if reward is not None else 0.0,
+        "mask_frac": mask_frac,
+        "panel": True,
     }
 
-    summary = {
-        "success": True,
-        "candidate_id": cid,
-        "overall_score": float(reward.overall_score),
-        "reward": reward.summary,  # multi-line text for the LLM
-        "match_summary": {
-            "n_inliers": int(mi.get("n_inliers", 0)),
-            "score": float(mi.get("score", 0)),
-            "aspect": float(mi.get("aspect", 0)),
-            "avg_scale": float(mi.get("avg_scale", 0)),
-            "chosen_zoom": mi.get("zoom"),
-            "chosen_center_latlon": mi.get("center_latlon"),
-        },
-        "budget_remaining": state.match_at_budget,
+
+# ── Polygon union helper ────────────────────────────────────────────────
+
+def _union_geojsons(geojsons: List[dict]) -> Optional[dict]:
+    """shapely-union per-group GeoJSON Features → one combined Feature.
+
+    Single input → return as-is. Empty → None. Multiple → MultiPolygon.
+    """
+    if not geojsons:
+        return None
+    if len(geojsons) == 1:
+        return geojsons[0]
+
+    from shapely.geometry import shape, mapping
+    from shapely.ops import unary_union
+
+    geoms = []
+    properties: Dict[str, Any] = {}
+    for g in geojsons:
+        if not isinstance(g, dict):
+            continue
+        geom = g.get("geometry") or g
+        try:
+            geoms.append(shape(geom))
+        except Exception:
+            continue
+        if not properties:
+            properties = dict(g.get("properties") or {})
+    if not geoms:
+        return None
+    union = unary_union(geoms)
+    if union.is_empty or union.geom_type not in ("Polygon", "MultiPolygon"):
+        return None
+    out = {
+        "type": "Feature",
+        "geometry": mapping(union),
+        "properties": {**properties, "source": "match_at_union"},
     }
+    # Normalise to MultiPolygon for downstream.
+    if out["geometry"].get("type") == "Polygon":
+        out["geometry"] = {
+            "type": "MultiPolygon",
+            "coordinates": [out["geometry"]["coordinates"]],
+        }
+    return out
 
-    # Attach a visual panel: planning map | OS tiles at this match. Across
-    # multiple match_at calls the agent accumulates these panels in its
-    # conversation history so it can compare candidates VISUALLY (not just
-    # by reward scores) before commit_match. Targets the v10 wrong-area
-    # accepts where MINIMA's textual scores were marginally beaten by a
-    # wrong-area window — visually obvious, scalar-invisible.
-    panel = None
-    try:
-        panel = _build_match_at_panel(state.map_img, tile_info, mi)
-    except Exception as e:
-        print(f"  match_at: panel build failed: {e}")
-    if panel is None:
-        return summary
-    return ToolReturn(
-        return_value=summary,
-        content=[
-            f"match_at id={cid} (overall_score={reward.overall_score:.2f}). "
-            f"Visual: planning map (left) vs OS tiles at this match (right, "
-            f"red rectangle = matched window). Compare road patterns: do the "
-            f"streets inside the red box look like the planning map's drawn "
-            f"streets? If you call match_at again on a different center, you "
-            f"will see another panel and can pick the one that visually agrees.",
-            _img_to_binary(panel),
-        ],
-    )
 
+# ── commit_match ─────────────────────────────────────────────────────────
 
 @_agent.tool
 def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
-    """Mark a stored match attempt as the active result.
+    """Mark a stored match_at candidate as the active result.
 
-    After commit_match, extract_boundary / project_boundary / verify_position
-    operate on this candidate's affine + tile_info. The smart-commit gate
-    rejects commits with low evidence (n_inliers < 18 or mask_frac < 0.002)
-    and redirects to a better candidate when one is available (combines
-    n_inliers with an inside-LA-polygon weight). Analytical short-circuit
-    matches are exempt. You may call commit_match again to change your mind.
+    For multi-group docs the candidate's geojson is already the union
+    across area_groups that passed the per-group commit gate. The
+    smart-commit gate below picks the BEST candidate when the worker
+    has tried multiple match_at calls.
 
     Args:
         candidate_id: ID returned from a prior match_at call.
-
-    Returns:
-        {"success": True, "committed": {n_inliers, overall_score, ...}}
     """
     state = ctx.deps
     cand = state.match_attempts.get(int(candidate_id))
@@ -386,28 +558,27 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
             f"{sorted(state.match_attempts.keys())}"
         )
 
-    # Smart commit gate: pick the BEST match_attempt to commit, not just
-    # argmax(n_inliers). Combines n_inliers with inside-LA-polygon (catches
-    # wrong-town homonyms — 0.3x penalty for outside-LA). Exempts analytical
-    # short-circuit matches and skips when the agent has tried <2 candidates.
-    cand_mi = (cand.get("match_info") or {})
-    cand_method = str(cand_mi.get("method", ""))
-    if cand_method not in ("analytical", "analytical_affine"):
+    # Smart-commit: prefer the candidate with the most total inliers
+    # across groups, weighted by inside-LA filter on the requested page's
+    # match. Skips when the worker has tried <2 candidates.
+    if len(state.match_attempts) >= 2:
         from tools.matching import candidate_passes_la_filter
         from tools.scoring import commit_attempt_score
         admin_region = (state.pdf_info or {}).get("admin_region") if state.pdf_info else None
 
         def _attempt_score(c):
-            """Score a match_attempt for commit-priority ranking."""
-            mi = c.get("match_info") or {}
-            method = str(mi.get("method", ""))
-            if method in ("analytical", "analytical_affine"):
-                return float("inf")  # always wins
+            # Use total inliers across all groups for multi-group candidates.
             try:
-                n = int(mi.get("n_inliers", 0))
+                n = int(c.get("total_inliers") or 0)
             except (TypeError, ValueError):
                 return -1
-            ll = mi.get("center_latlon") or mi.get("chosen_center_latlon")
+            ll = None
+            for g in c.get("per_group") or []:
+                mi = g.get("match_info") or {}
+                if mi.get("method") in ("analytical", "analytical_affine"):
+                    return float("inf")
+                if ll is None:
+                    ll = mi.get("center_latlon") or mi.get("chosen_center_latlon")
             inside_la = True
             if admin_region and ll:
                 try:
@@ -415,7 +586,7 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
                         "feature_cluster", ll[0], ll[1], admin_region
                     )
                 except Exception:
-                    inside_la = True  # fail-open
+                    inside_la = True
             return commit_attempt_score(n, inside_la)
 
         best_id = None
@@ -428,87 +599,95 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
                 best_score = cscore
                 best_id = cid
 
-        if (best_id is not None
-            and len(state.match_attempts) >= 2):
-            best_mi = (state.match_attempts[best_id].get("match_info") or {})
-            best_n = best_mi.get("n_inliers", "?")
+        if best_id is not None:
+            best_cand = state.match_attempts[best_id]
             raise ModelRetry(
-                f"commit_match REJECTED candidate_id={candidate_id} "
-                f"(score={best_score - 0.01:.1f}). Candidate_id={best_id} "
-                f"has a better commit-score (n_inliers={best_n}, "
+                f"commit_match REJECTED candidate_id={candidate_id}. "
+                f"Candidate_id={best_id} has a better commit-score "
+                f"(total_inliers={best_cand.get('total_inliers', '?')}, "
                 f"inside-LA-weighted). Commit candidate_id={best_id} "
-                f"instead. (Smart-commit gate combines inliers + "
-                f"LA-polygon containment.)"
+                f"instead."
             )
 
-    # Strict commit gate (see MIN_INLIERS_COMMIT / MIN_MASK_FRAC_COMMIT
-    # at top of file for empirical derivation). Analytical short-circuit
-    # matches are exempt.
-    mi = (cand.get("match_info") or {})
-    method = str(mi.get("method", ""))
-    if method not in ("analytical", "analytical_affine"):
-        n_in_raw = mi.get("n_inliers", 0)
-        try:
-            n_in = int(n_in_raw)
-        except (TypeError, ValueError):
-            # Non-numeric n_inliers (e.g. "n/a (analytical)") — treat as
-            # analytical and exempt rather than rejecting on parse.
-            n_in = -1
-        mask_frac = 0.0
-        if state.current_mask is not None and state.current_mask.size > 0:
-            mask_frac = float(np.sum(state.current_mask > 0)) / float(state.current_mask.size)
-        if n_in >= 0 and (n_in < MIN_INLIERS_COMMIT or mask_frac < MIN_MASK_FRAC_COMMIT):
-            avail_ids = sorted(state.match_attempts.keys())
-            raise ModelRetry(
-                f"commit_match REJECTED candidate_id={candidate_id}: "
-                f"low evidence (n_inliers={n_in}<{MIN_INLIERS_COMMIT} OR "
-                f"mask_frac={mask_frac:.4f}<{MIN_MASK_FRAC_COMMIT}). "
-                f"Try a different center via match_at, or call propose_centers"
-                f"(extra_terms=[...]) to add more candidates. "
-                f"Available IDs: {avail_ids}."
-            )
+    # Strict gate: at least one group must have passed, OR an analytical
+    # short-circuit fired in some group.
+    n_committed = int(cand.get("n_groups_committed") or 0)
+    has_analytical = any(
+        str((g.get("match_info") or {}).get("method", ""))
+        in ("analytical", "analytical_affine")
+        for g in cand.get("per_group") or []
+    )
+    if n_committed == 0 and not has_analytical:
+        avail_ids = sorted(state.match_attempts.keys())
+        raise ModelRetry(
+            f"commit_match REJECTED candidate_id={candidate_id}: no group "
+            f"passed the strict gate (n_inliers≥{MIN_INLIERS_COMMIT} AND "
+            f"mask_frac≥{MIN_MASK_FRAC_COMMIT}). Try a different page or "
+            f"a different centre via match_at; or call propose_centers"
+            f"(extra_terms=[...]) to add more candidates. "
+            f"Available IDs: {avail_ids}."
+        )
 
+    geojson = cand.get("geojson")
+    # The committed primary is the worker's requested area_group; other
+    # groups in per_group represent the auto-matched alternates that were
+    # unioned in. Downstream consumers (critic, benchmark output, verify)
+    # use committed_primary_page(state) to derive the relevant page/mask.
+    primary_group = next(
+        (g for g in cand.get("per_group") or []
+         if g.get("area_group") == cand.get("requested_group")),
+        (cand.get("per_group") or [{}])[0],
+    )
     state.current_result = {
-        "affine_H": cand["affine_H"],
-        "tile_info": cand["tile_info"],
-        "match_info": cand["match_info"],
-        "geojson": cand.get("geojson"),
-        # Stashed so the critic can read reward axes + know which candidate
-        # is the live one (and therefore which match_attempts entries are
-        # unpicked alternates worth offering as retry_at_center targets).
+        "affine_H": primary_group.get("affine_H"),
+        "tile_info": primary_group.get("tile_info"),
+        "match_info": primary_group.get("match_info"),
+        "geojson": geojson,
         "candidate_id": int(candidate_id),
-        "reward": cand.get("reward"),
+        "reward": primary_group.get("reward"),
+        "per_group": cand.get("per_group"),
+        "requested_group": cand.get("requested_group"),
+        "requested_page": cand.get("requested_page"),
+        "n_groups_committed": n_committed,
     }
-    # Surface for benchmark visibility
     state.position_calls += 1
+
+    n_polys = 0
+    if isinstance(geojson, dict):
+        geom = geojson.get("geometry") or {}
+        if geom.get("type") == "MultiPolygon":
+            n_polys = len(geom.get("coordinates") or [])
+        elif geom.get("type") == "Polygon":
+            n_polys = 1
 
     return {
         "success": True,
         "committed": {
             "candidate_id": candidate_id,
             "name": cand["name"],
-            "n_inliers": int((cand["match_info"] or {}).get("n_inliers", 0)),
+            "total_inliers": int(cand.get("total_inliers") or 0),
             "overall_score": cand["overall_score"],
+            "n_groups_committed": n_committed,
+            "n_polygons": n_polys,
         }
     }
 
 
-def _try_analytical_match_at(state: AgentState, name, lat, lon, scale_ratio,
-                                tolerance_m=50.0):
-    """Analytical-affine variant for the v2 match_at flow.
+# ── Analytical short-circuit (per-page) ──────────────────────────────────
 
-    Triggered when the probe anchor `(lat, lon)` is within `tolerance_m` of
-    an OS easting/northing parsed from `pdf_info.grid_refs`. Returns a
-    match-attempt dict (same shape as MINIMA writes into match_attempts)
-    or None to fall through to MINIMA.
-    """
+def _try_analytical_match_at(state: AgentState, page: int, map_img: np.ndarray,
+                                mask: np.ndarray, name: str, lat: float,
+                                lon: float, scale_ratio: Optional[int],
+                                tolerance_m: float = 50.0):
+    """Per-page analytical-affine. None if no E/N anchor near (lat, lon)
+    or scale_ratio missing."""
     from tools.geo.grid_ref import parse_easting_northing
     from tools.geo.coords import haversine_m as _distance_m
     from tools.matching import (analytical_affine_from_anchor,
                                        mask_to_geojson_affine)
     from tools.metrics.reward import RewardResult, AxisResult
 
-    if state.current_mask is None or state.map_img is None or scale_ratio is None:
+    if mask is None or map_img is None or scale_ratio is None:
         return None
 
     en_anchor = None
@@ -522,28 +701,24 @@ def _try_analytical_match_at(state: AgentState, name, lat, lon, scale_ratio,
     if en_anchor is None:
         return None
 
-    bin_m = (state.current_mask > 0).astype(np.uint8)
+    bin_m = (mask > 0).astype(np.uint8)
     M = cv2.moments(bin_m)
     if M["m00"] == 0:
         return None
     cx, cy = M["m10"] / M["m00"], M["m01"] / M["m00"]
-
     a_lat, a_lon, gr_text = en_anchor
     affine_H, tile_info = analytical_affine_from_anchor(
-        plan_shape=state.map_img.shape[:2],
+        plan_shape=map_img.shape[:2],
         mask_centroid_xy=(cx, cy),
         anchor_lat=a_lat, anchor_lon=a_lon,
         scale_ratio=int(scale_ratio), dpi=int(state.dpi),
     )
-    geojson = mask_to_geojson_affine(state.current_mask, affine_H, tile_info)
+    geojson = mask_to_geojson_affine(mask, affine_H, tile_info)
     match_info = {
         "center": name, "center_latlon": [a_lat, a_lon],
-        "zoom": tile_info["zoom"], "rotation": 0,
+        "zoom": tile_info["zoom"],
         "method": "analytical", "anchor_grid_ref": gr_text,
     }
-    # Synthetic reward — analytical bypasses the multi-axis consistency
-    # check (it's not a search, it's a construction). Score conveys
-    # "trust this strongly" so commit_match prefers it over MINIMA probes.
     reward = RewardResult(
         axes={"analytical": AxisResult(
             score=1.0,
@@ -551,13 +726,14 @@ def _try_analytical_match_at(state: AgentState, name, lat, lon, scale_ratio,
         )},
         overall_score=0.95,
         summary=(f"Analytical affine from {gr_text} + scale 1:{int(scale_ratio)} "
-                 f"@ {state.dpi}dpi (no MINIMA)"),
+                 f"@ {state.dpi}dpi (no MINIMA, page {page})"),
     )
+    mask_frac = float(np.sum(mask > 0)) / float(mask.size)
     return {
-        "name": name, "lat": float(a_lat), "lon": float(a_lon),
-        "sigma_m": 0.0, "scale_ratio": float(scale_ratio), "rotation": 0,
         "affine_H": affine_H, "tile_info": tile_info,
         "match_info": match_info, "geojson": geojson,
         "reward": reward.to_dict(),
         "overall_score": float(reward.overall_score),
+        "mask_frac": mask_frac,
+        "panel": True,
     }
