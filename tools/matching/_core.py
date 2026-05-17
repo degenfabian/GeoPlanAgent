@@ -508,13 +508,16 @@ def sliding_window_position(
             "match_info": {}, "n_windows": 0,
         }
 
-    # Recompute σ from source/scale via effective_sigma so the search
-    # radius stays consistent with the per-source p95 calibration (see
-    # effective_sigma docstring). The locate sub-agent's calibrated σ on
-    # the input candidate is overwritten by design — a single canonical
-    # σ-policy across runs.
-    name, lat, lon, _ = centers[0]
-    centers = [(name, lat, lon, effective_sigma(name, scale_ratio))]
+    # Respect the input σ — the locate sub-agent's σ has Spearman ρ=+0.629
+    # against actual pick→GT error on v3 (tight σ → small error, wide σ →
+    # large error). The previous default-to-effective_sigma() overwrite
+    # always landed at the 5km fallback because `live_locate:*` isn't
+    # registered in _SOURCE_SIGMA_M. Fall back to effective_sigma only
+    # when σ is missing or non-positive.
+    name, lat, lon, sigma_in = centers[0]
+    if sigma_in is None or float(sigma_in) <= 0:
+        sigma_in = effective_sigma(name, scale_ratio)
+    centers = [(name, lat, lon, float(sigma_in))]
 
     # Track top-N candidates for post-verification (road name check).
     # Per-(center, zoom) bucket caps to PER_BUCKET. Without this cap one

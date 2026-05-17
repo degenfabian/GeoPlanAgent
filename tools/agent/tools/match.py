@@ -154,6 +154,7 @@ def match_at(
     # in state.proposed_centers, we refuse and tell the agent the actual
     # candidate IDs available. This prevents Gemini Flash from
     # hallucinating "Wheathampstead Village Center" coordinates etc.
+    matched_candidate = None
     if state.proposed_centers:
         from tools.geo.coords import haversine_m as _distance_m
         nearest = min(
@@ -174,6 +175,7 @@ def match_at(
                 f"propose_centers(extra_terms=[...]) to add more, do NOT "
                 f"invent coordinates."
             )
+        matched_candidate = nearest[1]
 
     state.match_at_budget -= 1
 
@@ -191,6 +193,15 @@ def match_at(
         except ValueError:
             return None
 
+    # σ resolution: explicit arg → matched-candidate's σ (from locate
+    # sub-agent's LocatePick — Spearman ρ=+0.629 against pick→GT error
+    # on v3) → scale-derived fallback. Respecting the sub-agent's σ
+    # tightens MINIMA on confident picks (most cases) and widens it on
+    # low-confidence picks (where the sub-agent flagged uncertainty).
+    if sigma_m is None and matched_candidate is not None:
+        cand_sigma = matched_candidate.get("sigma_m")
+        if cand_sigma is not None and float(cand_sigma) > 0:
+            sigma_m = float(cand_sigma)
     if sigma_m is None:
         sr = scale_ratio
         if sr is None and state.pdf_info:
