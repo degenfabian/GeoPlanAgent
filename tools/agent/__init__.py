@@ -167,7 +167,6 @@ def run_agent(
     if enable_critic and result is not None:
         critic_result = _rt.apply_critic_loop(
             state=state, worker_result=result, model_name=model_name,
-            sam3=sam3, minima_matcher=models_state["minima"],
             verbose=verbose,
         )
 

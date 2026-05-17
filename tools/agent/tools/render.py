@@ -2,9 +2,9 @@
 
 Switches the active map page. All map_pages from the reader are pre-
 rendered into state.rendered_pages during _read_pdf_phase (with
-auto-rotate + title-block crop applied), so this tool is a free
-state-pointer flip in the common case. Falls back to a fresh render
-only for pages outside that cache.
+auto-rotate applied), so this tool is a free state-pointer flip in the
+common case. Falls back to a fresh render only for pages outside that
+cache.
 """
 
 from __future__ import annotations

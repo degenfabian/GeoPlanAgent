@@ -224,7 +224,6 @@ def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
         "error": str(exc),
         "error_type": type(exc).__name__,
         "current_match_info": state.current_result.get("match_info", {}),
-        "centers_tried": state.centers_tried,
         "match_attempts_summary": {
             cid: {
                 "name": a.get("name"),
@@ -256,7 +255,7 @@ def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
 
 def apply_critic_loop(
     state: AgentState, worker_result: Any, model_name: str,
-    sam3: Dict[str, Any], minima_matcher: Any, verbose: bool,
+    verbose: bool,
 ) -> Optional[Dict[str, Any]]:
     """Run the critic loop and propagate results onto state. Returns the
     critic_result dict (or None when the critic was skipped/failed)."""
@@ -268,10 +267,10 @@ def apply_critic_loop(
     try:
         from tools.agent.critic_agent import run_critic_loop
         critic_result = run_critic_loop(
-            state=state, worker_agent=_agent,
+            state=state,
             worker_result=worker_result,
-            model=resolve_model(model_name),
-            sam3=sam3, minima_matcher=minima_matcher, verbose=verbose,
+            model_name=model_name,
+            verbose=verbose,
         )
     except Exception as _critic_err:
         if verbose:
@@ -282,8 +281,6 @@ def apply_critic_loop(
     state.critic_iterations = critic_result["iterations"]
     state.critic_final_decision = critic_result["final_decision"]
     state.critic_changed_mask = critic_result["changed_mask"]
-    state.critic_suspected_wrong_location = critic_result.get(
-        "suspected_wrong_location", False)
     state.critic_worker_reentered = critic_result.get("worker_reentered", False)
 
     if critic_result["final_decision"] == "flag_low_confidence":
@@ -526,14 +523,10 @@ def build_run_agent_return(
         "agent_reason": state.accept_reason,
         "agent_stats": agent_stats,
         "message_log": message_log,
-        "candidate_overlays": state.candidate_overlays,
         "selected_overlay": state.selected_overlay,
-        "selected_indices": state.selected_indices,
         "critic_iterations": state.critic_iterations,
         "critic_final_decision": state.critic_final_decision,
         "critic_changed_mask": state.critic_changed_mask,
-        "critic_applied_rotation_deg": state.critic_applied_rotation_deg,
-        "critic_suspected_wrong_location": state.critic_suspected_wrong_location,
         "critic_worker_reentered": state.critic_worker_reentered,
         "critic_panel_img": (critic_result.get("panel_iter0")
                               if critic_result else None),
@@ -547,5 +540,4 @@ def build_run_agent_return(
                                       if critic_result else []),
         "critic_iteration_snapshots": (critic_result.get("per_iteration_snapshots")
                                          if critic_result else []),
-        "centers_tried": state.centers_tried,
     }

@@ -62,7 +62,6 @@ def extract_boundary(
         return {"success": False, "error": "SAM3 semantic returned no mask"}
     area_pct = float(np.sum(mask > 0)) / mask.size * 100
     state.current_mask = mask
-    state.selected_indices = None
     if state.map_img is not None:
         sel_overlay = state.map_img.copy()
         sel_overlay[mask > 0] = [0, 255, 0]

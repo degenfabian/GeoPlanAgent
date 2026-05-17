@@ -35,7 +35,7 @@ from tools.matching._core import (
     _fuzzy_road_match,
     # Sliding-window search (the master entry point)
     sliding_window_position,
-    # Thin-mask helper used by critic.retry_projection
+    # Thin-mask helper used by mask_to_geojson_affine
     _expand_thin_mask,
 )
 

@@ -10,8 +10,7 @@ Top-level packages:
   extraction/ — SAM3 boundary segmentation + colour primitives + mask ops
   geo/        — Geographic primitives: lat/lon math, BNG grid-ref parsing,
                 Code-Point Open postcode lookup, OS Open Names search.
-  io/         — PDF render, OS tile render, page rotation, title-block crop,
-                text extraction
+  io/         — PDF render, OS tile render, page rotation, text extraction
   metrics/    — IoU/F1/positioning metrics, viz overlays, MINIMA reward
 
 Top-level helpers:

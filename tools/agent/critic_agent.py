@@ -144,17 +144,22 @@ fine', 'reasonable', 'I think').
 
 
 _critic_agent: Optional[Agent] = None
+_critic_agent_model: Optional[str] = None
 
 
-def _ensure_agent(model: str = "google/gemini-2.5-flash-preview-09-2025") -> Agent:
-    global _critic_agent
-    if _critic_agent is not None:
+def _ensure_agent(model_name: str) -> Agent:
+    """Build (or return cached) critic Agent. Rebuilds if the model_name
+    changes between calls — important when a benchmark sweep tests
+    different worker/critic models."""
+    global _critic_agent, _critic_agent_model
+    if _critic_agent is not None and _critic_agent_model == model_name:
         return _critic_agent
     _critic_agent = Agent[None, CriticDirective](
-        model=model,
+        model=model_name,
         output_type=CriticDirective,
         instructions=CRITIC_INSTRUCTIONS,
     )
+    _critic_agent_model = model_name
     return _critic_agent
 
 
@@ -278,13 +283,10 @@ def format_metrics_text(state, det_score: Dict[str, Any]) -> str:
             lines.append(f"    {name}={conf:.2f}: {reason}")
 
     lines.append("\n=== CENTRES (for retry_match_at center_idx) ===")
-    proposed = state.proposed_centers or []
-    tried_names = {c.get("center") for c in (state.centers_tried or [])}
-    for i, p in enumerate(proposed[:8]):
-        name = p.get("name") or p.get("desc") or f"candidate_{i}"
+    for i, p in enumerate((state.proposed_centers or [])[:8]):
+        name = p.get("name") or p.get("source") or f"candidate_{i}"
         sigma = p.get("sigma_m", "?")
-        tag = "tried" if name in tried_names else "untried"
-        lines.append(f"  [{i}] {name}  σ={sigma}m  [{tag}]")
+        lines.append(f"  [{i}] {name}  σ={sigma}m")
 
     lines.append("\n=== PDF HINTS ===")
     lines.append(
@@ -301,7 +303,7 @@ def format_metrics_text(state, det_score: Dict[str, Any]) -> str:
 
 # ── LLM critic: one iteration ──────────────────────────────────────────────
 
-def _run_critic_once(state, model: str):
+def _run_critic_once(state, model_name: str):
     """One critic LLM call. Returns (directive, panel, det_score, wall, in_tokens, out_tokens)."""
     from tools.verification_checks import verification_score
     from shapely.geometry import shape
@@ -326,7 +328,7 @@ def _run_critic_once(state, model: str):
     else:
         user_input = [metrics_text]
 
-    agent = _ensure_agent(model)
+    agent = _ensure_agent(model_name)
     in_tokens = 0
     out_tokens = 0
     t0 = time.time()
@@ -418,14 +420,22 @@ def _rehand_to_worker(state, worker_result, directive: CriticDirective,
 def run_critic_agent(
     state: Any,
     worker_result: Any,
-    model: Any = None,
-    sam3: Optional[Dict[str, Any]] = None,
-    minima_matcher: Any = None,
+    model_name: str,
     verbose: bool = True,
     max_iters: int = 2,
 ) -> Dict[str, Any]:
     """LLM critic + worker-rehand loop. Up to `max_iters` outer iterations
     of (critic → maybe rehand → critic re-check → ...).
+
+    Args:
+        state: AgentState carrying the worker's commit + tile_info.
+        worker_result: pydantic-ai result from the worker (used for
+            message_history when re-handing).
+        model_name: OpenRouter model identifier (full ID, no alias). Pass
+            through from benchmark_runner so the critic uses the SAME
+            model family as the worker — keeps ablation experiments
+            single-variable.
+        max_iters: max outer (critic → rehand) loops.
 
     Each iteration captures:
       - panel image the critic saw
@@ -433,7 +443,6 @@ def run_critic_agent(
       - post-fix mask + geojson (state AFTER this iter's action, if any)
       - the critic's directive (diagnosis, action, reason, args)
     """
-    model_name = model or "google/gemini-2.5-flash-preview-09-2025"
 
     pre_snapshot = _snapshot_state(state)
     if pre_snapshot["geojson"] is None:
@@ -534,18 +543,13 @@ def run_critic_agent(
 
 def run_critic_loop(
     state: Any,
-    worker_agent: Any,
     worker_result: Any,
-    model: Any,
-    sam3: Dict[str, Any],
-    minima_matcher: Any,
+    model_name: str,
     verbose: bool = True,
-    max_super: int = 2,
-    max_inner: int = 2,
+    max_iters: int = 2,
 ) -> Dict[str, Any]:
     """Run the LLM critic. Thin wrapper around `run_critic_agent`."""
     return run_critic_agent(
-        state, worker_result, model=model, sam3=sam3,
-        minima_matcher=minima_matcher, verbose=verbose,
-        max_iters=max_super,
+        state, worker_result, model_name=model_name,
+        verbose=verbose, max_iters=max_iters,
     )

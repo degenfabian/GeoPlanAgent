@@ -414,12 +414,7 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
 
             iou = metrics.get("iou", 0)
             crit = result.get("critic_final_decision") or "-"
-            rot_applied = result.get("critic_applied_rotation_deg")
-            crit_extra = ""
-            if rot_applied:
-                crit_extra += f" rot={rot_applied}"
-            if result.get("critic_worker_reentered"):
-                crit_extra += " worker_re"
+            crit_extra = " worker_re" if result.get("critic_worker_reentered") else ""
             print(f"  IoU={iou:.3f}  inliers={mi.get('n_inliers', 0)}  "
                   f"critic={crit}{crit_extra}  "
                   f"t={dt:.1f}s  reason={result.get('agent_reason', '')[:60]}")
@@ -473,24 +468,11 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                     json.dumps(tile_meta, indent=2, default=str)
                 )
 
-            # Instance candidate overlays (each candidate on the map)
-            candidate_overlays = result.get("candidate_overlays", [])
-            if candidate_overlays:
-                for i, overlay in enumerate(candidate_overlays):
-                    cv2.imwrite(str(case_dir / f"candidate_{i}.png"), overlay)
-
             # Final selected boundary overlay
             selected_overlay = result.get("selected_overlay")
             if selected_overlay is not None:
                 cv2.imwrite(str(case_dir / "selected_boundary.png"),
                             selected_overlay)
-
-            # Which candidate indices were selected
-            selected_indices = result.get("selected_indices")
-            if selected_indices is not None:
-                (case_dir / "selected_indices.json").write_text(
-                    json.dumps({"selected_indices": selected_indices})
-                )
 
             # Phase 3 critic artifacts
             critic_iters = result.get("critic_iterations") or []
@@ -499,9 +481,6 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                     "iterations": critic_iters,
                     "final_decision": result.get("critic_final_decision"),
                     "changed_mask": result.get("critic_changed_mask"),
-                    "applied_rotation_deg": result.get("critic_applied_rotation_deg"),
-                    "suspected_wrong_location": result.get(
-                        "critic_suspected_wrong_location"),
                     "worker_reentered": result.get("critic_worker_reentered"),
                     "tokens": result.get("critic_tokens"),
                 }, indent=2, default=str))
@@ -511,12 +490,6 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
 
             # Rigorous-analysis: full critic trace under critic_debug/
             _save_critic_debug(case_dir, result, gt_geojson)
-
-            # Geocoding transparency log
-            centers_tried = result.get("centers_tried") or []
-            if centers_tried:
-                (case_dir / "centers_tried.json").write_text(
-                    json.dumps(centers_tried, indent=2, default=str))
 
             # Visualization (with timeout). The agent cleans up map_img
             # before returning, so only comparison viz runs here.

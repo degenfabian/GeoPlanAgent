@@ -1,163 +1,183 @@
 # tools/
 
-Core modules for the boundary extraction pipeline. `tools.agent` orchestrates
-the LLM tool calls; `tools.agent.critic` runs afterwards to verify and correct.
+Core modules for the boundary-extraction pipeline. `tools.agent` orchestrates
+three LLM agents (reader → worker → optional critic) plus two sub-agents
+(locate, reader-refine). Matching is MINIMA (LoFTR); segmentation is SAM3 +
+LoRA; geocoding is offline (Code-Point Open + OS Open Names + OML road
+index).
 
 ## Entry points
 
-- `tools.agent.run_agent(pdf_path, models_state, model_name, enable_critic=True)`
+- `tools.agent.run_agent(pdf_path, models_state, model_name, enable_critic=False)`
   — full pipeline for a single case.
-- `tools.agent.critic.run_critic_loop(...)` — Phase 3 standalone, invoked by
-  `run_agent` after the worker submits.
+- `tools.agent.critic_agent.run_critic_loop(state, worker_result, model_name)`
+  — Phase 3 standalone, invoked by `run_agent` when `enable_critic=True`.
 
 ## Package map
 
-### `tools/agent/` — Reader + Worker agents
+### `tools/agent/` — Three top-level agents + sub-agents
 
-PydanticAI agent with two phases:
+| File | Role |
+|---|---|
+| `reader_agent.py` | Phase 1: one-shot read of the PDF binary → `PDFInfo` |
+| `worker_agent.py` | Phase 2: tool-calling agent → `BoundaryOutcome` |
+| `critic_agent.py` | Phase 3 (opt-in): visual review + structured retry directive |
+| `locate_agent.py` | Sub-agent called by the worker's `propose_centers` — six offline geocoder tools, one `LocatePick` out |
+| `runtime.py` | Phase orchestration helpers called by `run_agent` |
+| `state.py` | `AgentState` (mutable per-case state passed as deps) |
+| `schemas.py` | `PDFInfo`, `BoundaryOutcome`, `MapPageMeta`, `LocatePick` |
+| `prompts.py` | `READER_SYSTEM_PROMPT`, `WORKER_SYSTEM_PROMPT` |
+| `_model.py` | `resolve_model` + alias table |
+| `_helpers.py` | Image/dedup/overlay helpers |
+| `_retry.py` | Transient-HTTP-error retry helper |
 
-- **Reader** — one-shot structured extraction. Output schema: `PDFInfo` (site
-  address, postcodes, grid refs, scale, boundary colour, map rotation, map
-  pages, district-wide flag).
-- **Worker** — tool-calling agent producing a validated `BoundaryOutcome`.
+### `tools/agent/tools/` — Worker tools
 
-Worker tools (one module per logical step under `tools/agent/tools/`):
+Each module registers its tool against `_agent` via `@_agent.tool` at import
+time.
 
 | Tool | Module | Purpose |
 |---|---|---|
-| `render_page` | `agent/tools/render.py` | Render a PDF page as a BGR image |
-| `propose_centers` | `agent/tools/locate.py` | Delegates to the live LLM-locate sub-agent in `agent/locate_agent.py` |
-| `match_at` | `agent/tools/match.py` | MINIMA sliding-window match at one centre |
-| `commit_match` | `agent/tools/match.py` | Smart commit gate over all `match_at` attempts |
-| `extract_boundary` | `agent/tools/extract.py` | SAM3 mask → GeoJSON polygon (+ INSPIRE snap) |
+| `render_page` | `render.py` | Switch active map page (state-pointer flip; falls back to fresh fitz render) |
+| `geocode` | `locate.py` | Postcode / grid_ref lookups the worker spots on the map after `propose_centers` |
+| `propose_centers` | `locate.py` | Calls `tools.agent.locate_agent.run_locate` — locate sub-agent picks ONE center |
+| `match_at` | `match.py` | MINIMA sliding-window match at one centre |
+| `commit_match` | `match.py` | Smart-commit gate over accumulated `match_at` attempts |
+| `extract_boundary` | `extract.py` | SAM3 semantic mask (optional bbox) |
+| `project_boundary` | `extract.py` | Mask → GeoJSON via committed affine |
+| `verify_position` | `verify.py` | Render OS tiles with predicted polygon for visual check |
+| `lookup_district` | `verify.py` | OSM district polygon fallback (used when `is_district_wide`) |
+| `visualize` | `verify.py` | Show current mask + tile overlay |
+| `reader_refine` | `refine.py` | Fresh small-context call on the PDF binary for a focused question (budget 3/case) |
 
-Shared state lives on `AgentState` (`tools/agent/state.py`). The
-`output_validator` enforces preconditions (borderline matches need visual
-checks, etc.) and re-prompts on violations.
+### `tools/agent/critic_agent.py` — Phase 3 visual critic
 
-### `tools/agent/critic_agent.py` — Phase 3 Commenter
+LLM critic that sees a 2-panel image (planning map + SAM mask on the left,
+OS tile canvas + projected polygon on the right) plus a deterministic-
+verification metrics block. Outputs a structured `CriticDirective`:
 
-Independent VLM agent that reviews the worker's output. Decisions:
-
-| Decision | Action |
+| Action | Worker response |
 |---|---|
-| `approve` | Proceed, no changes |
-| `retry_sam` | Re-extract SAM3 with a new query / candidate, re-project |
-| `retry_projection` | Apply hole-fill (`MORPH_CLOSE`) and/or `_expand_thin_mask` dilation, re-project |
-| `retry_rotation` | Rotate map 90/180/270°, re-SAM, re-MINIMA at existing centres, re-project |
-| `retry_in_worker` | Re-enter the worker with `message_history` replay + critic feedback |
-| `flag_low_confidence` | Keep GeoJSON, label `CRITIC_LOW_CONFIDENCE` in `accept_reason` |
+| `approve` | No change. |
+| `retry_extract_bbox` | Re-run `extract_boundary(bbox=[x1,y1,x2,y2])` then project. |
+| `retry_match_at` | Re-run `match_at` at one of the untried centres. |
 
-Budget: 2 inner critic iterations + 1 worker re-entry per case. The critic
-**never nullifies** the GeoJSON.
+When the directive is a retry, the worker is re-invoked with `CRITIC
+DIRECTIVE — you MUST comply.` prepended and the prior message_history
+preserved. Budget: 2 outer iterations per case. **The critic never
+nullifies the GeoJSON**; the worst it does is flag the case as
+`flag_low_confidence`.
 
-**Hard-failure escalation.** Each `_apply_retry_*` function returns a status
-string. Suffixes `_failed`, `_no_candidates`, `_no_sam_candidates`,
-`_invalid`, `_no_affine`, `_projection_failed` mean the path could not execute
-against the current state. The runtime short-circuits the inner critic loop
-on those and escalates to worker re-entry. Soft statuses (`_noop`, `_no_mask`,
-`_no_map`) stay in the inner loop so the critic can pick a different decision.
-
-`build_critic_panel` composes the image the critic reasons over: planning map
-+ SAM mask on the left, the MINIMA-matched OS tile canvas with the mask warped
-through `affine_H` on the right. Both panels depict the same region at the
-same scale and orientation. `build_context_text` appends worker reasoning,
-tool-call counts, `centers_tried`, and prior iteration decisions.
+`build_critic_panel(state)` composes the panel; `format_metrics_text(state,
+det_score)` builds the metrics block.
 
 ### `tools/matching/` — Map georeferencing
 
 - `sliding_window_position(matcher, map_img, sam3_mask, centers, scale_ratio, ...)`
-  — production entry. Searches centres × zooms × rotations × window positions.
-  Returns `match_info` with `n_inliers`, `score`, `aspect`, `center_latlon`,
-  `zoom`, and an `affine_H`. Background-colour windows are skipped early
-  (module-level `_BG_RGB`, `_BG_TOL`, `_BG_FRAC_THR` constants).
-- `run_minima(matcher, map_img, tile_img, grayscale=False)` — LoFTR feature
-  match.
-- `estimate_affine(mkpts0, mkpts1, mconf)` — RANSAC affine fit (single-seed,
-  4-DOF with a 6-DOF fallback gated on inlier improvement + shear sanity).
-- `mask_to_geojson_affine(mask, affine_H, tile_info)` — project a binary mask
-  to GeoJSON.
-- `_expand_thin_mask` — re-exported alias of `tools.extraction.mask_ops.expand_thin_mask`
-  (used by `retry_projection`).
-- `compute_map_mpp`, `best_zoom_for_scale`, `sigma_from_scale`,
-  `candidate_passes_la_filter` — scale / zoom / search-radius / LA-filter
-  helpers.
+  — production entry. Searches centres × zooms × rotations × window
+  positions. Returns `match_info` with `n_inliers`, `score`, `aspect`,
+  `center_latlon`, `zoom`, and `affine_H`.
+- `run_minima(matcher, map_img, tile_img, grayscale=False)` — LoFTR
+  feature match.
+- `estimate_affine(mkpts0, mkpts1, mconf)` — RANSAC affine. 4-DOF
+  similarity by default, 6-DOF full-affine fallback gated on inlier
+  improvement (`GATE_RATIO_6DOF=1.3`) + scale band
+  (`SCALE_6DOF_MIN=0.3, SCALE_6DOF_MAX=3.0`) + det/shear sanity.
+- `mask_to_geojson_affine(mask, affine_H, tile_info)` — project a binary
+  mask through the committed affine.
+- `analytical_affine_from_anchor(...)` — closed-form affine built from an
+  exact OS easting/northing + scale + DPI (skips MINIMA).
+- `source_priorities` — `_SOURCE_SIGMA_M`, `effective_sigma`,
+  `sigma_from_scale`, `candidate_passes_la_filter` — per-source σ
+  defaults + LA-polygon filter used by `sliding_window_position`.
+- `road_verify._verify_candidates_with_road_names` — OSM road-name
+  cross-check of MINIMA candidates.
 
-### Locate sub-agent (`tools/agent/locate_agent.py`)
+### `tools/agent/locate_agent.py` — Locate sub-agent
 
-`propose_centers` in the worker calls `run_locate(pdf_info, map_img_bytes,
-model_name)`, which spawns a live LLM-locate pydantic-ai agent with 6
-offline geocoder tools:
+`propose_centers` calls `run_locate(pdf_info, map_img_bytes, model_name,
+match_context, prior_messages)`. The sub-agent has 6 offline geocoder
+tools:
 
-- `postcode(pc)` — Code-Point Open lookup
-- `grid_ref(gr)` — OS BNG parse
-- `place(query, la?)` — OS Open Names settlements / landmarks
-- `road(query, la?)` — OS OpenMap Local road centroid (LA-bbox filtered)
-- `intersect(road_a, road_b, la?, road_c?)` — geometric junction (≤100 m)
-- `la_check(lat, lon, la)` — LA polygon containment + distance
+- `postcode(pc)` — Code-Point Open lookup (sub-100 m).
+- `grid_ref(gr)` — OS BNG parse.
+- `place(query, la?)` — OS Open Names settlements / landmarks / churches.
+- `road(query, la?)` — OS OpenMap Local road centroid (LA-bbox filtered).
+- `intersect(road_a, road_b, la?, road_c?)` — geometric junction (≤100 m).
+- `la_check(lat, lon, la)` — LA polygon containment + distance.
 
-The agent views the rendered map image, runs ≤8 geocoder calls, then
-returns ONE `LocatePick` (top_lat, top_lon, sigma_m, confidence, source,
-evidence, la_check_passed). Pydantic-ai enforces the schema; on agent-loop
-failure `run_locate` emits an emergency LA-centroid LocatePick — never
-returns None.
+It views the rendered map image, runs ≤8 tool calls, then returns one
+`LocatePick(top_lat, top_lon, sigma_m, confidence, picked_source,
+evidence, la_check_passed)`. Pydantic-ai enforces the schema; on
+agent-loop failure `run_locate` emits an emergency LA-centroid pick
+rather than returning None.
+
+`prior_messages` carries the agent's full conversation across worker
+re-calls so the sub-agent SEES its own previous reasoning + the new
+`match_context` (worker's feedback after a poor match_at).
 
 ### `tools/extraction/` — Boundary segmentation
 
-- `sam3.load_sam3_ft()` — base SAM3 + LoRA adapter.
-- `sam3.extract_boundary_sam3_semantic(image_path, processor, model, device, query)`
-  — single best mask via semantic segmentation.
-- `sam3.extract_candidates(image_path, …, top_k=5)` — multi-candidate
-  extraction ranked by confidence.
-- `sam3.select_best_candidate(candidates)` — compactness + area picker.
-- `sam3.try_fill_boundary_outline(mask)` — morphological close + flood fill
-  for thin-outline masks.
-- `mask_ops` — re-usable mask-cleanup primitives (`expand_thin_mask`,
-  `fill_mask_holes`, `keep_dominant_components`, `cleanup_mask_pipeline`).
+- `sam3.load_sam3_ft()` — base SAM3 + LoRA adapter (k-fold).
+- `sam3.extract_boundary_sam3_semantic(image_path, processor, model, device, query, bbox)`
+  — single best mask via semantic segmentation. The query is locked to
+  `"planning boundary"` (the LoRA was trained against it).
+- `sam3.try_fill_boundary_outline(mask)` — morphological close + flood
+  fill for thin-outline masks.
+- `mask_ops` — `expand_thin_mask`, `fill_mask_holes`,
+  `keep_dominant_components`, `cleanup_mask_pipeline`.
 
 ### `tools/geo/` — Geographic primitives
 
-Everything geographic in one directory after the 2026-05-17 merge.
-
 - `coords` — Web-Mercator / tile-pixel math, BNG ↔ WGS84, `haversine_m`.
 - `grid_ref` — OS BNG grid-reference parser; `lookup_district_boundary`
-  via OSM Nominatim for the worker's lookup_district tool.
+  via OSM Nominatim for the worker's `lookup_district` tool.
 - `code_point` — Code-Point Open sub-metre postcode lookup.
 - `os_names` — OS Open Names settlement / landmark / road search.
 
-Match-stage source-priority tables (per-source σ defaults, specificity
-ranks, `effective_sigma`, `candidate_passes_la_filter`) live in
-`tools/matching/source_priorities.py` — they're matching config, not
-geocoding.
-
 ### `tools/io/` — PDF, tile, page-frame I/O
 
-- `io.pdf` — PyMuPDF rendering with pdf2image fallback.
-- `io.text_extraction` — structured PDFInfo extraction from rendered pages.
+- `io.pdf` — PyMuPDF page rendering.
+- `io.text_extraction` — fitz/PaddleOCR per-page text for the reader prompt
+  (cached on disk).
 - `io.os_tiles.fetch_os_opendata_grid(lat, lon, zoom, nx, ny)` — NxN tile
-  canvas + tile metadata (`zoom`, `tx_min`, `ty_min`, `tile_size`). Styled
-  OS-planning-style raster from the Zoomstack GeoPackage. No API key
-  required; OGL v3 licensed.
-- `io.os_tiles.render_tile(zoom, tx, ty)` — single 256×256 tile.
+  canvas from the Zoomstack GeoPackage (OGL v3, no API key).
 - `io.rotation_classifier.auto_rotate` — trained ResNet50 classifier
-  (with test-time augmentation + abstain) for 0/90/180/270° page
-  rotation. Abstains when uncertain.
+  (TTA + abstain) for 0/90/180/270° page rotation.
 - `io.map_page.render_map_page` — single source of truth for the
-  render → auto_rotate pipeline used by every map-rendering caller.
+  `render → auto_rotate` pipeline used everywhere a planning page is
+  rendered.
 
-### `tools/metrics/` — Evaluation metrics & visualisation
+### `tools/metrics/` — Evaluation + visualisation
 
-- `geojson.calculate_spatial_metrics(gt_geojson, predicted_geojson)` — IoU,
-  precision, recall, F1, centroid positioning error.
+- `geojson.calculate_spatial_metrics(gt_geojson, predicted_geojson)` —
+  IoU, precision, recall, F1, centroid positioning error.
 - `geojson.load_geojson(path)` — validated GeoJSON loader.
-- `visualization.visualize_comparison` — GeoPandas + contextily helpers for
-  predicted-vs-GT overlays (`viz_comparison.png`).
-- `reward` — MINIMA-axis reward shaping used by `agent.tools.match`.
+- `visualization.visualize_comparison` — GeoPandas + contextily
+  predicted-vs-GT overlay (`viz_comparison.png`).
+- `reward.compute_match_reward` — multi-axis MINIMA reward used by
+  `match_at`.
 
-### Other modules
+### Other top-level modules
 
-- `delaunay_filter.py` — optional Delaunay-consistency RANSAC filter.
-- `verification_checks.py` — cross-checks (LA polygon, scale, area) for the
-  critic context.
-- `scoring.py` — `composite_window_score`, `commit_attempt_score`.
-- `build_oml_road_index.py` — regenerate the OML road index/geometry caches.
+- `scoring.py` — `composite_window_score`, `commit_attempt_score`
+  (single source of truth for match-stage candidate ranking).
+- `delaunay_filter.py` — Delaunay-consistency RANSAC filter applied
+  inside `estimate_affine`.
+- `verification_checks.py` — area / postcode-in-polygon / LA-boundary /
+  inlier-scatter / multi-zoom-coherence cross-checks. Aggregated by
+  `verification_score`, surfaced to the critic in `format_metrics_text`.
+- `build_oml_road_index.py` — script to regenerate the OML road indexes
+  consumed by the locate sub-agent's `road` / `intersect` tools.
+
+## Empirically-tuned constants (single source of truth)
+
+| Constant | Home | Value | Note |
+|---|---|---|---|
+| `MIN_INLIERS_COMMIT` | `tools/agent/tools/match.py` | 18 | Strict commit-gate floor |
+| `MIN_MASK_FRAC_COMMIT` | `tools/agent/tools/match.py` | 0.002 | Strict commit-gate mask floor |
+| `GATE_RATIO_6DOF` | `tools/matching/_core.py` | 1.3 | 6-DOF affine fallback threshold |
+| `SCALE_6DOF_MIN/MAX` | `tools/matching/_core.py` | 0.3 / 3.0 | 6-DOF affine scale-sanity band |
+| `WINDOW_STRIDE_TARGET` | `tools/matching/_core.py` | 100 | Sliding-window stride target |
+| `REFINE_BUDGET_PER_CASE` | `tools/agent/tools/refine.py` | 3 | Cap on `reader_refine` calls |
+| `OUTSIDE_LA_PENALTY` | `tools/agent/tools/match.py` | (see file) | Smart-commit penalty for outside-LA picks |

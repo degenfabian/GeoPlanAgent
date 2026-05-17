@@ -63,10 +63,9 @@ class AgentState:
         # Set by match_at + commit_match
         self.current_result: dict = {}
 
-        # Cache for offline analysis: candidate overlays + final selection
-        self.candidate_overlays: List[np.ndarray] = []
+        # Final boundary overlay (planning map + SAM mask, used by benchmark
+        # output writer + critic panel build).
         self.selected_overlay: Optional[np.ndarray] = None
-        self.selected_indices: Optional[List[int]] = None
 
         # Agent metadata
         self.accepted = False
@@ -86,12 +85,7 @@ class AgentState:
         self.critic_iterations: List[dict] = []
         self.critic_final_decision: Optional[str] = None
         self.critic_changed_mask: bool = False
-        self.critic_applied_rotation_deg: Optional[int] = None
-        self.critic_suspected_wrong_location: bool = False
         self.critic_worker_reentered: bool = False
-
-        # Geocoding transparency — written by tools that emit centers.
-        self.centers_tried: List[Dict[str, Any]] = []
 
         # Locate sub-agent's picked candidates (one entry usually).
         self.proposed_centers: List[Dict[str, Any]] = []
