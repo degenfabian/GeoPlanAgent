@@ -319,7 +319,8 @@ def match_at(
             )
             if panel is not None:
                 panels.append(panel)
-        del single["panel"]
+        # Safe even when `_match_single_page` took an error path (no 'panel' key).
+        single.pop("panel", None)
 
     # Aggregate metrics across groups that produced a valid match.
     valid = [g for g in per_group
