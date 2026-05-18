@@ -286,15 +286,16 @@ class BoundaryOutcome(BaseModel):
     verify_position_called: bool = Field(
         default=False,
         description="Did you call verify_position for this result? "
-                    "MUST be true if final_n_inliers is in 25-100 band."
+                    "MUST be true if status='accepted' AND final_n_inliers "
+                    "is in 25-100 band. Not required for status='district_lookup'."
     )
     visual_check_notes: str = Field(
         default="",
         description="If you called verify_position, describe whether OS tile features "
                     "(roads, buildings, settlement shape) matched the planning map. "
                     "If features looked weak or mismatched, still submit accepted "
-                    "and note your concerns here. Required when final_n_inliers "
-                    "is 25-100."
+                    "and note your concerns here. Required (≥20 chars) when "
+                    "status='accepted' AND final_n_inliers is 25-100."
     )
     rotation_checked: bool = Field(
         default=False,

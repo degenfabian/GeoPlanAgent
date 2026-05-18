@@ -1,16 +1,18 @@
 """Phase 2 worker: PydanticAI Agent with all tools registered.
 
 The worker `_agent` is decorated by the tool modules under
-tools.agent.tools.{render,locate,match,extract,verify,refine} at import
-time via @_agent.tool — so this module must be importable BEFORE those
-tool modules.
+tools.agent.tools.{locate,match,verify,refine} at import time via
+@_agent.tool — so this module must be importable BEFORE those tool
+modules.
 
 Defines:
   - _agent — the worker Agent instance
   - _strip_old_images — history processor that drops binary images from
     older messages to keep token cost flat
-  - validate_boundary_outcome — output validator enforcing tool-call
-    preconditions (verify_position when 25≤inliers≤100, etc.)
+  - validate_boundary_outcome — output validator enforcing that
+    verify_position was called for borderline status='accepted' commits
+    (25 ≤ n_inliers ≤ 100) and that lookup_district produced a geojson
+    for status='district_lookup'
   - build_system_prompt — registers WORKER_SYSTEM_PROMPT
 """
 

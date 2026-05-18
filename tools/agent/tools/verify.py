@@ -43,8 +43,10 @@ def verify_position(
     stacked vertically — one per area_group — followed by a single
     wider OS-tile panel showing the UNIONED polygon across all groups.
 
-    Required by the output validator when borderline (25 ≤ n_inliers
-    ≤ 100) or when submitting status='district_lookup'.
+    Required by the output validator when the committed result is
+    borderline (25 ≤ n_inliers ≤ 100). NOT required (or useful) for
+    status='district_lookup' — the district polygon comes from
+    OS BoundaryLine and cannot be refined visually.
 
     Args:
         lat: Latitude to render the OS tiles at (default: committed
@@ -195,7 +197,7 @@ def lookup_district(
                     "type": "MultiPolygon",
                     "coordinates": [geom["coordinates"]],
                 }
-            geojson["properties"]["source"] = "osm_district_lookup"
+            geojson["properties"]["source"] = "os_boundaryline_district_lookup"
             state.current_result = {"geojson": geojson, "match_info": {}}
             return {
                 "success": True,
@@ -205,6 +207,6 @@ def lookup_district(
                                "reasoning. No positioning or verify_position needed.",
             }
     return {"success": False,
-            "error": f"None of the variants {variants} matched in OSM"}
+            "error": f"None of the variants {variants} matched in OS BoundaryLine"}
 
 
