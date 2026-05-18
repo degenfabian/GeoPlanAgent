@@ -200,8 +200,10 @@ WORKFLOW
        score "looks acceptable" (e.g. 0.65-0.79). The second match often
        lands at a different zoom and reveals a much better fit.
      • < 0.40 on the first try → reject; try another center.
-     • After 2+ match_at attempts: commit the highest-n_inliers result that
-       lands inside the expected admin region.
+     • After 2+ match_at attempts: commit the highest-n_inliers result.
+       The smart-commit gate enforces an inside-admin-region check
+       against OS BoundaryLine and will redirect you if your pick falls
+       outside the LA polygon — so you don't need to verify this yourself.
      • Visual mismatch overrides scores: reject even at high overall_score
        if streets in the red box look NOTHING like the planning map.
      • If scale is known and scale_consistency < 0.50 → prefer another
