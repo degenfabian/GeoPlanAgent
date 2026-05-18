@@ -26,7 +26,7 @@ from tools.matching._core import (
     sigma_from_source,
     effective_sigma, candidate_passes_la_filter,
     # Affine + GeoJSON
-    analytical_affine_from_anchor, resize_map_to_match_zoom,
+    resize_map_to_match_zoom,
     affine_center_to_latlon, mask_to_geojson_affine,
     _build_scale_H,
     # Road-name verification (re-exported from tools.matching.road_verify)
@@ -43,7 +43,7 @@ __all__ = [
     "load_minima", "run_minima", "estimate_affine",
     "compute_map_mpp", "best_zoom_for_scale", "sigma_from_scale",
     "effective_sigma", "candidate_passes_la_filter",
-    "analytical_affine_from_anchor", "resize_map_to_match_zoom",
+    "resize_map_to_match_zoom",
     "affine_center_to_latlon", "mask_to_geojson_affine",
     "sliding_window_position",
 ]

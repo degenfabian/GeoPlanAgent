@@ -413,13 +413,6 @@ def _match_single_page(state: AgentState, page: int, name: str,
         return {"error": f"SAM3 returned no mask for page {page}"}
     mask_frac = float(np.sum(mask > 0)) / float(mask.size)
 
-    # Analytical short-circuit on this page.
-    analytical = _try_analytical_match_at(
-        state, page, map_img, mask, name, lat, lon, scale_ratio,
-    )
-    if analytical is not None:
-        return analytical
-
     from tools.matching import sliding_window_position, mask_to_geojson_affine
     from tools.metrics.reward import compute_match_reward
 
@@ -573,8 +566,8 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
     smart-commit gate below redirects to a better candidate if the
     worker has tried multiple match_at calls and picked a worse one;
     the strict gate rejects commits where NO group produced an affine
-    (and no analytical short-circuit fired) — try a different page or
-    centre via match_at, or call propose_centers(extra_terms=[…]).
+    — try a different page or centre via match_at, or call
+    propose_centers(extra_terms=[…]).
 
     Args:
         candidate_id: ID returned from a prior match_at call.
@@ -604,8 +597,6 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
             ll = None
             for g in c.get("per_group") or []:
                 mi = g.get("match_info") or {}
-                if mi.get("method") in ("analytical", "analytical_affine"):
-                    return float("inf")
                 if ll is None:
                     ll = mi.get("center_latlon") or mi.get("chosen_center_latlon")
             inside_la = True
@@ -638,15 +629,9 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
                 f"instead."
             )
 
-    # Strict gate: at least one group must have passed, OR an analytical
-    # short-circuit fired in some group.
+    # Strict gate: at least one group must have produced a valid affine.
     n_committed = int(cand.get("n_groups_committed") or 0)
-    has_analytical = any(
-        str((g.get("match_info") or {}).get("method", ""))
-        in ("analytical", "analytical_affine")
-        for g in cand.get("per_group") or []
-    )
-    if n_committed == 0 and not has_analytical:
+    if n_committed == 0:
         avail_ids = sorted(state.match_attempts.keys())
         raise ModelRetry(
             f"commit_match REJECTED candidate_id={candidate_id}: MINIMA "
@@ -699,70 +684,4 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
             "n_groups_committed": n_committed,
             "n_polygons": n_polys,
         }
-    }
-
-
-# ── Analytical short-circuit (per-page) ──────────────────────────────────
-
-def _try_analytical_match_at(state: AgentState, page: int, map_img: np.ndarray,
-                                mask: np.ndarray, name: str, lat: float,
-                                lon: float, scale_ratio: Optional[int],
-                                tolerance_m: float = 50.0):
-    """Per-page analytical-affine. None if no E/N anchor near (lat, lon)
-    or scale_ratio missing."""
-    from tools.geo.grid_ref import parse_easting_northing
-    from tools.geo.coords import haversine_m as _distance_m
-    from tools.matching import (analytical_affine_from_anchor,
-                                       mask_to_geojson_affine)
-    from tools.metrics.reward import RewardResult, AxisResult
-
-    if mask is None or map_img is None or scale_ratio is None:
-        return None
-
-    en_anchor = None
-    for gr in (state.pdf_info or {}).get("grid_refs") or []:
-        ll = parse_easting_northing(gr)
-        if ll is None:
-            continue
-        if _distance_m(lat, lon, ll[0], ll[1]) <= tolerance_m:
-            en_anchor = (ll[0], ll[1], gr)
-            break
-    if en_anchor is None:
-        return None
-
-    bin_m = (mask > 0).astype(np.uint8)
-    M = cv2.moments(bin_m)
-    if M["m00"] == 0:
-        return None
-    cx, cy = M["m10"] / M["m00"], M["m01"] / M["m00"]
-    a_lat, a_lon, gr_text = en_anchor
-    affine_H, tile_info = analytical_affine_from_anchor(
-        plan_shape=map_img.shape[:2],
-        mask_centroid_xy=(cx, cy),
-        anchor_lat=a_lat, anchor_lon=a_lon,
-        scale_ratio=int(scale_ratio), dpi=int(state.dpi),
-    )
-    geojson = mask_to_geojson_affine(mask, affine_H, tile_info)
-    match_info = {
-        "center": name, "center_latlon": [a_lat, a_lon],
-        "zoom": tile_info["zoom"],
-        "method": "analytical", "anchor_grid_ref": gr_text,
-    }
-    reward = RewardResult(
-        axes={"analytical": AxisResult(
-            score=1.0,
-            verdict=f"affine constructed from {gr_text} + scale 1:{int(scale_ratio)}",
-        )},
-        overall_score=0.95,
-        summary=(f"Analytical affine from {gr_text} + scale 1:{int(scale_ratio)} "
-                 f"@ {state.dpi}dpi (no MINIMA, page {page})"),
-    )
-    mask_frac = float(np.sum(mask > 0)) / float(mask.size)
-    return {
-        "affine_H": affine_H, "tile_info": tile_info,
-        "match_info": match_info, "geojson": geojson,
-        "reward": reward.to_dict(),
-        "overall_score": float(reward.overall_score),
-        "mask_frac": mask_frac,
-        "panel": True,
     }

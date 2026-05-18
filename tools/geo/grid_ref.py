@@ -49,8 +49,8 @@ def parse_easting_northing(text: str) -> Optional[Tuple[float, float]]:
 
     Accepts formats like "528942 E 184544 N" (typical OS grid coords printed
     on UK planning maps). This is the highest-precision anchor we ever get
-    from a PDF — site centre to within ~1 m. Use it to short-circuit MINIMA
-    via the analytical-affine path in `tools.matching`.
+    from a PDF — site centre to within ~1 m. Used as a high-confidence
+    geocoder candidate via the locate sub-agent's `grid_ref` tool.
     """
     if not isinstance(text, str):
         return None

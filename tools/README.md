@@ -60,8 +60,6 @@ time.
   (`SCALE_6DOF_MIN=0.3, SCALE_6DOF_MAX=3.0`) + det/shear sanity.
 - `mask_to_geojson_affine(mask, affine_H, tile_info)` — project a binary
   mask through the committed affine.
-- `analytical_affine_from_anchor(...)` — closed-form affine built from an
-  exact OS easting/northing + scale + DPI (skips MINIMA).
 - `source_priorities` — `_SOURCE_SIGMA_M`, `effective_sigma`,
   `sigma_from_scale`, `candidate_passes_la_filter` — per-source σ
   defaults + LA-polygon filter used by `sliding_window_position`.
