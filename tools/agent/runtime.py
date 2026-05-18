@@ -36,10 +36,10 @@ def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict
 
     Augments the prompt with per-page text extracted via fitz (digital
     pages) or OCR (scanned pages, ~60% of the eval). Gemini still does
-    its own PDF processing for vision-required fields (boundary_color,
-    rotation, map labels), but exact-string fields benefit from being
-    given the ground-truth text. Text extraction is cached on disk under
-    cache/text_extraction/.
+    its own PDF processing for vision-required fields (rotation, map
+    labels, boundary geometry), but exact-string fields benefit from
+    being given the ground-truth text. Text extraction is cached on disk
+    under cache/text_extraction/.
 
     Returns the PDFInfo dict plus a "_reader_tokens" key. On reader
     failure: an empty PDFInfo dict with an "error" key set.

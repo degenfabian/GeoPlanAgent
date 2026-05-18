@@ -101,11 +101,6 @@ additional rules):
   architect office addresses. For multi-property documents, use the overall
   area name.
 
-- multiple_map_areas: TRUE whenever the match pages span more than one
-  area_group (i.e. the document covers more than one distinct
-  geographic area). FALSE when all match pages share the same
-  area_group (duplicates of one site).
-
 LOCATE-STAGE FIELDS (critical — downstream geocoding relies on these):
 
 - directional_modifier: if site_address says "Field north of 98 Pipers Lane",
@@ -139,15 +134,6 @@ LOCATE-STAGE FIELDS (critical — downstream geocoding relies on these):
 - adjacency_hints: named features touching/bordering the boundary from
   phrases like "adjoining X", "bordered by Y", "fronting Z". Include only
   the named reference (X / Y / Z), not the preposition.
-
-- coordinate_labels_on_map: OS grid labels on the map MARGINS if any are
-  printed (many modern planning maps have no graticule). "TG 210 080",
-  "TR 34 SE" style. Leave empty if no graticule labels visible.
-
-- boundary_description: Verbatim quote of any prose describing the boundary
-  path (e.g. "From the southwest corner along Mill Road eastward to the
-  bridge over the River Stour..."). Used downstream for area extraction
-  in verification checks. Leave empty if the doc is map-only.
 """
 
 
@@ -155,13 +141,12 @@ WORKER_SYSTEM_PROMPT = """You are the worker agent in a pipeline that extracts t
 site boundary from UK planning permission PDFs and projects it to a
 WGS84 GeoJSON polygon. The boundary is the area the applicant is
 requesting permission for, marked on a site map within the PDF. Its
-visual style varies — solid line, dashed, hatched, coloured fill —
-PDFInfo.boundary_color is the reader's best guess. A separate reader
-agent has already parsed the PDF; your input is its structured summary
-plus the first map page (pre-rendered, auto-rotated upright). After you
-submit a polygon, an independent critic agent visually reviews it and
-may issue a corrective directive that you MUST comply with (see CRITIC
-DIRECTIVES at the bottom of this prompt).
+visual style varies — solid line, dashed, hatched, coloured fill. A
+separate reader agent has already parsed the PDF; your input is its
+structured summary plus the first map page (pre-rendered, auto-rotated
+upright). After you submit a polygon, an independent critic agent
+visually reviews it and may issue a corrective directive that you MUST
+comply with (see CRITIC DIRECTIVES at the bottom of this prompt).
 
 Your job: position the planning map against Ordnance Survey tiles using
 learned feature matching, then submit the projected polygon. SAM3

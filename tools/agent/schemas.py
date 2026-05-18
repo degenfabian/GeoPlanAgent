@@ -135,19 +135,6 @@ class PDFInfo(BaseModel):
     n_pages: int = 0
     road_names: List[str] = Field(default_factory=list)
     place_names: List[str] = Field(default_factory=list)
-    boundary_color: Optional[str] = Field(
-        default=None,
-        description="Color of the planning boundary line (red, blue, pink, etc.)."
-    )
-    boundary_description: str = Field(
-        default="",
-        description="Verbatim quote of the prose describing the boundary path "
-                    "if the document contains one. Examples: 'From the southwest "
-                    "corner along Mill Road eastward to the bridge over the River "
-                    "Stour, then northeast along the river to OS plot 4521.' "
-                    "Leave empty if the doc only has a map without a worded "
-                    "description. Used by verification_checks for area extraction."
-    )
     is_district_wide: bool = Field(
         default=False,
         description="TRUE if the boundary covers an ENTIRE borough/district/ward/"
@@ -158,16 +145,10 @@ class PDFInfo(BaseModel):
     )
     district_name: Optional[str] = Field(
         default=None,
-        description="If is_district_wide, the OSM-format name with 'UK' suffix. "
-                    "Provide '|' alternates if ambiguous (e.g. 'Dover District, Kent, UK | Dover, Kent, UK')."
-    )
-    multiple_map_areas: bool = Field(
-        default=False,
-        description="True iff the match pages span more than one distinct "
-                    "area_group (i.e. the document covers more than one "
-                    "geographic area, requiring per-group projection + "
-                    "union downstream). False when all match pages share "
-                    "the same area_group (duplicate views of one site)."
+        description="If is_district_wide, the UK administrative name with 'UK' "
+                    "suffix. Provide '|' alternates if ambiguous (e.g. "
+                    "'Dover District, Kent, UK | Dover, Kent, UK'). Downstream "
+                    "lookup uses OS BoundaryLine and normalises common variants."
     )
     # ── Fields for the dedicated locate stage (added 2026-04-24) ─────────
     # These mirror things that downstream regex parsers currently extract
@@ -252,21 +233,9 @@ class PDFInfo(BaseModel):
                     "residential properties' → ['Pipers Lane']."
     )
 
-    coordinate_labels_on_map: List[str] = Field(
-        default_factory=list,
-        description="OS grid references or coordinate labels printed ON THE MAP "
-                    "MARGINS (graticule ticks). Examples: 'TG 210 080', 'TR 34 SE', "
-                    "'TL 452 305'. These are hyper-precise anchors for "
-                    "georeferencing. If the map shows no visible graticule labels "
-                    "(many modern planning maps do not), leave empty. Duplicate of "
-                    "grid_refs is OK — grid_refs is text-body; this is map-surface."
-    )
-
-    notes: str = ""
-
     @field_validator("place_names", "road_names", "parish_names",
                      "house_number_road_pairs", "visible_map_labels",
-                     "adjacency_hints", "coordinate_labels_on_map",
+                     "adjacency_hints",
                      mode="after")
     @classmethod
     def _strict_ascii(cls, v: List[str]) -> List[str]:

@@ -303,8 +303,6 @@ def format_metrics_text(state, det_score: Dict[str, Any]) -> str:
     lines.append(
         f"  admin_region: {pi.get('admin_region', '?')}  "
         f"scale: {pi.get('scale', '?')}")
-    if pi.get("boundary_color"):
-        lines.append(f"  boundary_color: {pi.get('boundary_color')}")
     if pi.get("postcodes"):
         lines.append(f"  postcodes: {pi.get('postcodes')[:3]}")
     if pi.get("road_names"):
