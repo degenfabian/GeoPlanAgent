@@ -142,19 +142,37 @@ site boundary from UK planning permission PDFs and projects it to a
 WGS84 GeoJSON polygon. The boundary is the area the applicant is
 requesting permission for, marked on a site map within the PDF. Its
 visual style varies — solid line, dashed, hatched, coloured fill. A
-separate reader agent has already parsed the PDF; your input is its
-structured summary plus the first map page (pre-rendered, auto-rotated
-upright).
+separate reader agent has already parsed the PDF and pre-rendered the
+map pages.
 
 Your job: position the planning map against Ordnance Survey tiles using
-learned feature matching, then submit the projected polygon. SAM3
+learned feature matching, then return the projected polygon. SAM3
 segmentation and GeoJSON projection are automatic — you never call
 them explicitly. Your tool surface is:
   propose_centers → match_at(page=N, …) → commit_match
-                  → (verify_position) → submit
+                  → (verify_position) → return BoundaryOutcome
 plus lookup_district, reader_refine for fallback/recovery.
 
-INPUT: PDFInfo summary + the first map page (pre-rendered, auto-rotated upright).
+DOCUMENT STRUCTURE (you'll see this in the user prompt):
+• map_pages: ranked list of page numbers carrying a positionable map
+  (the reader already filtered out forms / legends / decorative pages).
+• area_group: every match page has an integer `area_group`. Pages with
+  the SAME area_group are duplicate views of the SAME geographic area
+  (pick the highest-ranked one). Pages with DIFFERENT area_groups
+  cover DIFFERENT geographic areas — multi-boundary planning docs.
+• match_at internally runs MINIMA at one locate centre for the primary
+  page of EVERY area_group and UNIONS the resulting polygons into one
+  final GeoJSON. You do NOT iterate groups — a single match_at handles
+  them all, and the response's `per_group` array tells you how each
+  group did.
+• To retry just ONE group whose mask or alignment looks wrong, call
+  match_at again with page=<next alternate page in that group>; the
+  other groups are re-matched at the same centre but reuse their
+  existing cached SAM3 masks (no recomputation).
+
+INPUT: PDFInfo summary + the top-ranked match page rendered upright. Other
+match pages only enter the conversation as side-effects of match_at(page=N)
+panels or verify_position panels — you cannot inspect them directly.
 OUTPUT: a BoundaryOutcome. The output_validator enforces these preconditions:
 • 25 ≤ final_n_inliers ≤ 100 AND status="accepted" → must call verify_position()
   and fill visual_check_notes (≥20 chars on feature comparison).
@@ -176,10 +194,11 @@ WORKFLOW
 2. match_at(page=N, name, lat, lon) on the candidate from propose_centers.
    propose_centers returns ONE pick per call — to try a different anchor,
    call propose_centers again (optionally with match_context="..." feedback,
-   see below). The `page` argument is REQUIRED and selects which page to
-   use for ITS area_group; other area_groups in the document use their
-   primaries automatically. For typical single-area docs just pass
-   map_pages[0].
+   see below). The `page` argument is REQUIRED; for single-area docs just
+   pass map_pages[0]. For multi-area docs, pass the primary page of the
+   area_group you want this candidate evaluated against — other groups
+   are matched automatically at the same centre (see DOCUMENT STRUCTURE
+   above).
    Each call returns:
    • a multi-axis reward (overall_score, total_inliers, per_group
      breakdown), AND
@@ -255,32 +274,9 @@ WORKFLOW
      (or call reader_refine to confirm the right district name) before
      submitting status="district_lookup".
 
-5. Submit BoundaryOutcome with status="accepted". Fields
+5. Return BoundaryOutcome with status="accepted". Fields
    verify_position_called and rotation_checked are auto-overwritten from
    state — leave at defaults.
-
-MULTI-PAGE & MULTI-GROUP: every entry in map_pages has category='match'.
-The reader pre-rendered each one. Each page has an `area_group`
-identifier (in the map-page metadata in your initial prompt).
-  • Pages sharing the same area_group are duplicate views of the SAME
-    geographic area — pick the highest-ranked one in map_pages as your
-    `page` argument.
-  • Pages in DIFFERENT area_groups show DIFFERENT geographic areas.
-    You DO NOT need to call match_at again for those — a single
-    match_at call internally runs MINIMA at the same locate centre
-    for every area_group's primary page and UNIONS the resulting
-    polygons into one final GeoJSON.
-
-So your typical call is:
-   match_at(page=map_pages[0], name=…, lat=…, lon=…)
-and the response's "per_group" array tells you how each group did.
-
-If verify_position shows that a SPECIFIC group's mask is wrong (e.g.
-SAM3 grabbed a title block on group 2's primary), call match_at again
-with `page=<next page in THAT area_group>` to retry just that group;
-other groups will be re-matched too at the same centre but with their
-existing cached SAM3 masks — no recomputation. Pick the candidate_id
-that committed the most groups successfully.
 
 BUDGET: max 5 match_at calls per case. Focus on top-specificity candidates
 first. If all 5 score below 0.40, commit the highest-scoring one anyway
@@ -312,8 +308,9 @@ OTHER:
   "are there any postcodes anywhere in the document?", "does page 3 have
   a north arrow and what direction?". Budget 3 per case. Do NOT use it
   for geocoding or to locate places.
-• If stuck, commit the highest-scoring match_at result and submit. The
-  pipeline does NOT support refusing a case — always submit a polygon."""
+• If stuck, commit the highest-scoring match_at result and return
+  BoundaryOutcome. The pipeline does NOT support refusing a case —
+  always emit a polygon."""
 
 
 __all__ = [

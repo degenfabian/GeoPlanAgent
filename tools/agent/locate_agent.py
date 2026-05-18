@@ -93,9 +93,9 @@ PROTOCOL (every case):
 
 1. **VIEW the map image carefully.** Look for labels, landmarks, distinctive
    features, road junctions, named buildings, hatched site polygon, neighbouring
-   features. Note ANYTHING that's on the map but missing from pdf_info_text.
+   features. Note ANYTHING that's on the map but missing from pdf_info.
 
-2. **SCAN pdf_info_text.** Priority of signals (most specific first):
+2. **SCAN pdf_info.** Priority of signals (most specific first):
    - Full postcode IN site_address (= SITE postcode, trust)
    - OS grid_ref (any precision)
    - house_number + named road in site_address
@@ -110,7 +110,7 @@ PROTOCOL (every case):
 
 4. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal
    types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to
-   pdf_info_text).
+   pdf_info).
 
 5. **CLUSTER & PICK:**
    - 2+ candidates within 500m → tight consensus, σ=200m, confidence='high'
@@ -121,14 +121,16 @@ PROTOCOL (every case):
 6. **VALIDATE with la_check.** Final pick must be inside admin_region polygon
    OR within 5 km of its boundary. Set la_check_passed accordingly.
 
-7. **CALL submit_pick to terminate.** Emit your final pick via the
-   submit_pick tool. Do NOT call any other tool after submit_pick.
+7. **Emit the LocatePick to terminate.** Once you have your pick, output
+   the LocatePick directly as your final response — do NOT make further
+   tool calls. Pydantic-ai parses your final structured output as the
+   LocatePick schema.
 
 BUDGET: ≤ 8 geocode tool calls per case. If you've made 8 calls, commit your
 best current guess with confidence='low'.
 
 EDGE CASES:
-- Empty pdf_info_text → look hardest at the map image for any labels, then
+- Empty pdf_info → look hardest at the map image for any labels, then
   fall back to LA centroid with wide σ and confidence='low'.
 - "District-wide" cases (whole-borough policy zone) → LA centroid with σ=LA_radius_m.
 - Multi-parish sites → midpoint of named parishes/villages with wide σ.
@@ -509,13 +511,14 @@ def run_locate(
                 "Avoid sources that produced your prior pick; prefer a "
                 "different signal type (e.g. switch from postcode to "
                 "road/intersection, or from likely_town to a parish/"
-                "landmark). Apply the protocol again and call submit_pick."
+                "landmark). Apply the protocol again, then emit your "
+                "final LocatePick."
             ]
         else:
             user_parts = [
                 "Re-pick: the worker re-invoked you. Apply the protocol "
                 "again, preferring a DIFFERENT signal type than your last "
-                "pick, and call submit_pick."
+                "pick, then emit your final LocatePick."
             ]
     else:
         # First call: full pdf_info JSON + (optional) match_context.
@@ -548,8 +551,8 @@ def run_locate(
             f"PDF_INFO:\n{json.dumps(pi_summary, indent=2)}{ctx_block}\n\n"
             "Apply the protocol: view the map, scan pdf_info, "
             "letterhead-check postcodes, build pool via tool calls, "
-            "cluster & pick, validate with la_check, then call submit_pick. "
-            "Budget: 8 geocode calls max.",
+            "cluster & pick, validate with la_check, then emit your "
+            "final LocatePick. Budget: 8 geocode calls max.",
         ]
         if map_img_bytes:
             user_parts.insert(

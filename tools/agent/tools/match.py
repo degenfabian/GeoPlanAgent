@@ -45,6 +45,17 @@ from tools.agent.state import (
 _SAM3_QUERY = "planning boundary"
 
 
+def _axis_field(reward_dict: Optional[Dict[str, Any]], axis_name: str,
+                  field: str) -> Any:
+    """Safe extract of an axis's score/verdict from a reward.to_dict() dump.
+    Returns None if the reward, axes table, or axis entry is missing."""
+    if not reward_dict:
+        return None
+    axes = reward_dict.get("axes") or {}
+    axis = axes.get(axis_name) or {}
+    return axis.get(field)
+
+
 # ── Per-page render + segmentation helpers ──────────────────────────────
 
 def _get_or_render_page(state: AgentState, page: int) -> Tuple[Optional[np.ndarray], Optional[str]]:
@@ -223,7 +234,11 @@ def match_at(
 
     Returns:
         {"success": True, "candidate_id": int, "overall_score": float,
-         "n_groups_committed": int, "per_group": [...]} + multi-panel viz.
+         "total_inliers": int, "n_groups": int, "n_groups_committed": int,
+         "per_group": [{"page", "area_group", "n_inliers", "score",
+         "overall_score", "road_name_agreement", "road_name_verdict",
+         "scale_consistency", "passed_gate", "weak_retry"}, ...],
+         "budget_remaining": int} + multi-panel viz.
     """
     state = ctx.deps
     if state.match_at_budget <= 0:
@@ -375,6 +390,12 @@ def match_at(
                 "n_inliers": int((g.get("match_info") or {}).get("n_inliers") or 0),
                 "score": float((g.get("match_info") or {}).get("score") or 0.0),
                 "overall_score": float(g.get("overall_score") or 0.0),
+                "road_name_agreement": _axis_field(
+                    g.get("reward"), "road_name_agreement", "score"),
+                "road_name_verdict": _axis_field(
+                    g.get("reward"), "road_name_agreement", "verdict"),
+                "scale_consistency": _axis_field(
+                    g.get("reward"), "scale_consistency", "score"),
                 "passed_gate": g in committed_groups,
                 "weak_retry": g.get("weak_retry"),
             }

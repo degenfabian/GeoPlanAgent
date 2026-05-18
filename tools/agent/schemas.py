@@ -132,9 +132,27 @@ class PDFInfo(BaseModel):
                     "can audit discards. Match category='match' "
                     "entries by page number against map_pages."
     )
-    n_pages: int = 0
-    road_names: List[str] = Field(default_factory=list)
-    place_names: List[str] = Field(default_factory=list)
+    n_pages: int = Field(
+        default=0,
+        description="Total page count of the PDF."
+    )
+    road_names: List[str] = Field(
+        default_factory=list,
+        description="Named UK roads that appear in the document text OR on "
+                    "the map image. Bare road names with full suffix "
+                    "(e.g. 'Norwich Road', 'High Street', 'Pipers Lane'). "
+                    "Used downstream for road-based geocoding and for the "
+                    "road_name_agreement reward axis, which checks how many "
+                    "of these names actually exist at the matched location."
+    )
+    place_names: List[str] = Field(
+        default_factory=list,
+        description="Named places (villages, towns, neighbourhoods, "
+                    "landmarks, named buildings) that appear in the document "
+                    "text OR on the map image. Bare names "
+                    "(e.g. 'Hampstead Heath', 'Colney', 'St Mary\\'s Church'). "
+                    "Used downstream for place-name geocoding via OS Open Names."
+    )
     is_district_wide: bool = Field(
         default=False,
         description="TRUE if the boundary covers an ENTIRE borough/district/ward/"

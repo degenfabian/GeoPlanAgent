@@ -3,8 +3,10 @@
 When the worker discovers it needs information the reader didn't surface
 (e.g. a missed postcode, an unclear scale, a north-arrow check), it can
 call reader_refine(question) to spawn a fresh small Gemini-Flash call
-on the PDF binary. One LLM call per invocation; bounded to ≤3 calls per
-case to keep cost predictable.
+on the PDF binary PLUS the cached per-page OCR text block (same source
+the main reader uses in Phase 1, hit from cache so no extra extraction
+cost). One LLM call per invocation; bounded to ≤3 calls per case to
+keep cost predictable.
 """
 
 from __future__ import annotations
@@ -17,6 +19,8 @@ from pydantic_ai.usage import UsageLimits
 
 from tools.agent._model import resolve_model
 from tools.agent.state import _agent, AgentState
+from tools.io.text_extraction import (extract_text_per_page,
+                                       format_for_reader_prompt)
 
 
 REFINE_BUDGET_PER_CASE = 3
@@ -24,9 +28,13 @@ REFINE_BUDGET_PER_CASE = 3
 
 _refine_instructions = """You are a focused PDF-reading helper.
 
-You receive ONE planning-document PDF and ONE question from a downstream
-worker agent. Read whatever pages are relevant and answer the question
-directly.
+You receive ONE planning-document PDF, a per-page TEXT BLOCK extracted by
+a dedicated OCR pipeline (fitz for digital pages, macOS Vision for
+scanned), and ONE question from a downstream worker agent. The TEXT BLOCK
+is more accurate than re-OCR'ing the image for exact strings (postcodes,
+grid refs, scale text, road names, title-block content) — trust it over
+re-reading those from the image. For visual questions (north arrow,
+boundary geometry, page layout, hatching style), use the PDF image itself.
 
 - If the question references a specific page (e.g. "on page 4"), focus
   there but read other pages if the answer crosses pages.
@@ -35,6 +43,8 @@ directly.
 - Be terse. Two-to-three sentences max. Quote the source verbatim when
   the worker is asking for an exact string (postcodes, grid refs, scale
   text, road names, etc.).
+- If a page in the TEXT BLOCK says "(extraction failed; rely on PDF
+  image)", do vision-OCR for that page only.
 - If the answer is genuinely not in the PDF, say so plainly: "Not
   found in this PDF." Do not invent.
 - Do not guess at locations or coordinates. Geocoding is the worker's job.
@@ -102,6 +112,13 @@ def reader_refine(
         return {"success": False, "error": "PDF binary unavailable in state."}
     pdf_bytes = Path(pdf_path).read_bytes()
 
+    # Reuse the per-page OCR cache the main reader populated in Phase 1.
+    try:
+        page_texts = extract_text_per_page(pdf_path, use_cache=True, verbose=False)
+        text_block = format_for_reader_prompt(page_texts)
+    except Exception:
+        text_block = "(per-page text extraction unavailable)"
+
     model_name = "google/gemini-3-flash-preview"
     model = resolve_model(model_name)
     agent = _ensure_refine_agent(model_name)
@@ -109,11 +126,16 @@ def reader_refine(
     prompt = question.strip()
     if page_hint is not None:
         prompt = f"(Focus on page {int(page_hint)}.) {prompt}"
+    full_prompt = (
+        f"TEXT BLOCK (per page, OCR-extracted; trust over image for exact "
+        f"strings):\n\n{text_block}\n\n"
+        f"QUESTION:\n{prompt}"
+    )
 
     try:
         result = agent.run_sync(
             [BinaryContent(data=pdf_bytes, media_type="application/pdf"),
-             prompt],
+             full_prompt],
             model=model,
             usage_limits=UsageLimits(request_limit=3),
         )
