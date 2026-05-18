@@ -232,10 +232,22 @@ WORKFLOW
      visual_check_notes (≥20 chars). Shows the SAM mask on each
      committed group's planning page (single-group: side-by-side with
      OS tiles; multi-group: N planning panels stacked above one OS-tile
-     panel showing the union polygon). If features look weak or
-     mismatched, STILL submit status="accepted" — note concerns in
-     visual_check_notes. The pipeline always emits a polygon; downstream
-     measures IoU on whatever you commit.
+     panel showing the union polygon).
+
+     If you see a problem, TRY TO RECOVER before submitting:
+     • Bad SAM mask (grabbed title block / legend / text / wrong shape)
+       AND the area_group has an alternate page in map_pages → call
+       match_at(page=<next alternate in that group>, …) to trigger a
+       fresh SAM3 mask on that page; then commit_match the new candidate.
+     • Projection misaligned / wrong-area AND an earlier match_at
+       candidate scored better in retrospect → call commit_match(other_id)
+       to switch the active commit (projection re-runs).
+
+     If recovery isn't possible (single-page area_group with bad mask,
+     no other candidates to switch to), submit status="accepted" anyway
+     with concerns in visual_check_notes. The pipeline always emits a
+     polygon; downstream measures IoU on whatever you commit.
+
    • district_lookup path: MANDATORY. The panel shows only the OS-tile
      side (no planning-map SAM overlay). Compare the district polygon's
      extent to what the planning map shows; if it's dramatically larger,
