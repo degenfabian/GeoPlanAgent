@@ -93,31 +93,18 @@ async def validate_boundary_outcome(
     if out.final_n_inliers != final_inl:
         out.final_n_inliers = final_inl
 
-    # district_lookup requires verify_position — catches cases where the
-    # reader mis-flagged district-wide and lookup_district returned a 900 km²
-    # polygon when the real boundary is a single site.
+    # district_lookup requires only that lookup_district succeeded. verify_position
+    # adds no value here: the polygon comes from OS BoundaryLine and cannot be
+    # refined via SAM3 or re-projection. If the agent suspects the wrong district
+    # was looked up, the recovery is to call lookup_district again with a
+    # different '|'-alternate name, not to render a tile at z=17 that only
+    # shows a fragment of the polygon.
     if out.status == "district_lookup":
         if state.current_result.get("geojson") is None:
             raise ModelRetry(
                 "status='district_lookup' requires a successful lookup_district "
                 "call that produced a GeoJSON. Call lookup_district with the "
                 "district_name from the PDFInfo and retry."
-            )
-        if not state.verify_position_called:
-            raise ModelRetry(
-                "status='district_lookup' requires you to call verify_position "
-                "first. Look at the OS tile with the district polygon overlaid, "
-                "then compare against the planning map. If the district polygon "
-                "is dramatically larger than what the map shows, note your "
-                "concern in visual_check_notes but still submit. The pipeline "
-                "always produces a polygon. Call verify_position now, fill "
-                "visual_check_notes, then resubmit."
-            )
-        if len(out.visual_check_notes.strip()) < 20:
-            raise ModelRetry(
-                "district_lookup requires visual_check_notes (≥20 chars) "
-                "describing whether the district polygon matches the planning "
-                "map's apparent scope."
             )
         return out
 

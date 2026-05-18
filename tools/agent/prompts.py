@@ -248,10 +248,12 @@ WORKFLOW
      with concerns in visual_check_notes. The pipeline always emits a
      polygon; downstream measures IoU on whatever you commit.
 
-   • district_lookup path: MANDATORY. The panel shows only the OS-tile
-     side (no planning-map SAM overlay). Compare the district polygon's
-     extent to what the planning map shows; if it's dramatically larger,
-     note that in visual_check_notes but still submit.
+   • district_lookup path: no verify_position call needed. The polygon
+     comes from OS BoundaryLine and is fixed — you can't refine it via
+     SAM3 or re-projection. If you suspect the wrong district was looked
+     up, call lookup_district again with a different '|'-alternate name
+     (or call reader_refine to confirm the right district name) before
+     submitting status="district_lookup".
 
 5. Submit BoundaryOutcome with status="accepted". Fields
    verify_position_called and rotation_checked are auto-overwritten from

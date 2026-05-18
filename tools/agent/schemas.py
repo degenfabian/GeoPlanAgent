@@ -272,12 +272,12 @@ class BoundaryOutcome(BaseModel):
 
     NOTE: rejection was removed from the schema 2026-05-14. The agent always
     submits status="accepted" (with concerns captured in visual_check_notes)
-    or status="district_lookup" for the OSM-district fallback. Refusing a
-    case is no longer a supported action — the pipeline always produces a
-    polygon, downstream measures IoU on whatever was committed."""
+    or status="district_lookup" for the OS BoundaryLine district fallback.
+    Refusing a case is no longer a supported action — the pipeline always
+    produces a polygon, downstream measures IoU on whatever was committed."""
     status: Literal["accepted", "district_lookup"] = Field(
-        description="accepted = produce GeoJSON from match_at + extract_boundary; "
-                    "district_lookup = boundary from OSM district fallback."
+        description="accepted = produce GeoJSON from match_at + commit_match; "
+                    "district_lookup = boundary from OS BoundaryLine district fallback."
     )
     final_n_inliers: int = Field(
         default=0,
