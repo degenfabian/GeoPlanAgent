@@ -30,13 +30,19 @@ def propose_centers(
 ) -> dict:
     """Run the live LLM-locate sub-agent to pick ONE center for positioning.
 
+    Returns EXACTLY ONE candidate per call. To try a different anchor,
+    call propose_centers AGAIN — optionally with match_context="..."
+    feedback telling the sub-agent why the previous pick was wrong, so
+    it picks from a DIFFERENT signal type next time.
+
     The sub-agent has 6 offline geocoder tools (postcode, grid_ref, place,
     road, intersect, la_check), views the rendered map image, and returns
     one picked (lat, lon, sigma_m, confidence, source).
 
-    If the sub-agent loop fails (validation retries exhausted, HTTP error,
-    budget exceeded), run_locate emits an emergency LA-centroid LocatePick
-    — the worker always gets at least one candidate.
+    If the sub-agent loop fails entirely (validation retries exhausted,
+    HTTP error, budget exceeded), run_locate emits an emergency
+    LA-centroid LocatePick — so propose_centers always returns one
+    candidate, never zero.
 
     Args:
         extra_terms: extra place-name strings to add to the locate sub-agent's
@@ -50,7 +56,11 @@ def propose_centers(
             told to pick from a DIFFERENT signal type.
 
     Returns:
-        {"success": True, "n_candidates": 1, "candidates": [{...}], ...}
+        {"success": True, "n_candidates": 1, "candidates": [{...}],
+         "engine": "live_llm_locate", "evidence": str,
+         "la_check_passed": bool}
+        — "candidates" is always a one-element list (this call returns
+        exactly one pick).
     """
     state = ctx.deps
     if not state.pdf_info:
