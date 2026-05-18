@@ -112,10 +112,6 @@ def commit_attempt_score(n_inliers: int, inside_la: bool) -> float:
     * ``inside_la``  — whether the predicted centre falls inside the
       reader-extracted admin_region polygon. Catches wrong-town homonym
       matches (e.g. CB:82's road_intersection 5 km outside the LA).
-
-    Analytical short-circuit matches (E/N + scale + DPI + mask centroid)
-    have no n_inliers and are scored as ``+inf`` by the caller — they
-    always win the gate.
     """
     if n_inliers < 0:
         return -1.0
