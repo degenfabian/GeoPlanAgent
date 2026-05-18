@@ -131,7 +131,7 @@ re-calls so the sub-agent SEES its own previous reasoning + the new
 
 - `coords` — Web-Mercator / tile-pixel math, BNG ↔ WGS84, `haversine_m`.
 - `grid_ref` — OS BNG grid-reference parser; `lookup_district_boundary`
-  via OSM Nominatim for the worker's `lookup_district` tool.
+  via OS BoundaryLine (offline) for the worker's `lookup_district` tool.
 - `code_point` — Code-Point Open sub-metre postcode lookup.
 - `os_names` — OS Open Names settlement / landmark / road search.
 

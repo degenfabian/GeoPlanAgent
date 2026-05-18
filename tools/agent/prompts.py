@@ -86,8 +86,15 @@ additional rules):
 
 - is_district_wide: true if the planning boundary covers an entire
   administrative district, false otherwise.
-- district_name: if is_district_wide, the OSM-format name with "UK" suffix.
-  Provide "|"-separated alternates if ambiguous.
+- district_name: if is_district_wide, the standard UK administrative
+  name with a "UK" suffix. Examples: "Camden, UK", "Royal Borough of
+  Kensington and Chelsea, UK", "Broadland District, Norfolk, UK",
+  "Rossendale Borough, UK". Provide "|"-separated alternates if
+  ambiguous (e.g. "City of Westminster, UK | Westminster, UK"). The
+  downstream lookup uses OS BoundaryLine and normalises common variants
+  ("London Borough of X" → "X", trailing "Borough"/"District"/"Council"
+  stripped), so don't overthink the exact form — be specific enough to
+  disambiguate.
 
 - site_address: the SITE address (location of the boundary). Prefer
   "Site Address", "Location", or "Land at..." fields. IGNORE council/agent/
@@ -121,8 +128,8 @@ LOCATE-STAGE FIELDS (critical — downstream geocoding relies on these):
 - likely_town_or_city: your best single answer for the town/city. Synthesise
   from text, map labels, postcodes, ALL available signals. Crucial for
   disambiguating common road names — if you say "Linden Grove" and
-  likely_town_or_city is "London", downstream Nominatim can find it; if
-  you say null, it'll pick the wrong UK Linden Grove.
+  likely_town_or_city is "London", downstream OS Open Names + OML roads
+  can find it; if you say null, they'll pick the wrong UK Linden Grove.
 
 - visible_map_labels: what labels can you actually READ on the map image?
   Road names shown on roads, named buildings ("Colney Hall"), adjacent

@@ -17,9 +17,6 @@ import numpy as np
 from typing import List, Dict, Any, Optional, Tuple
 import json
 
-from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut
-import osmnx as ox
 from pyproj import Transformer
 
 # Average meters per degree of latitude
@@ -372,113 +369,89 @@ def lookup_district_boundary(
     district_name: str,
 ) -> Dict[str, Any]:
     """
-    Look up the boundary of an administrative district from OpenStreetMap.
+    Look up the boundary polygon of a UK administrative district from
+    OS BoundaryLine (offline, OS Open Data).
 
-    This tool retrieves the official boundary polygon for a named administrative
-    area (borough, ward, parish, etc.) from OpenStreetMap data.
+    Resolves the name through tools.verification_checks._resolve_la, which
+    normalises common UK admin variants (strips "District", "Borough",
+    "London Borough of", "City of …", "Council", etc.) and tries all
+    "|"-separated alternates in order until one resolves.
 
-    WHEN TO USE:
-    - When the planning document covers an entire administrative district
-    - When you can identify the district name from the document
-    - As a fallback when boundary extraction from the map image fails
-    - To verify extracted boundaries against known district shapes
-
-    NAMING CONVENTIONS:
-    - UK Borough: "Royal Borough of Kensington and Chelsea, London"
-    - UK Ward: "Rowley Green, London Borough of Barnet, London"
-    - Include parent areas for disambiguation: "Kensington, London, UK"
+    Used by the worker's `lookup_district` tool for district-wide planning
+    documents (entire LA / borough / ward covered).
 
     Args:
-        district_name (str):
-            The full name of the administrative district.
-            Be as specific as possible to avoid ambiguous matches.
-            Examples:
-            - "Royal Borough of Kensington and Chelsea, London, UK"
-            - "Rowley Green, London Borough of Barnet, London, UK"
-            - "City of Westminster, London, UK"
+        district_name: e.g. "Camden, UK", "Royal Borough of Kensington
+            and Chelsea, UK", "Broadland District, Norfolk, UK", or
+            "City of Westminster, UK | Westminster, UK".
 
     Returns:
-        Dict containing:
-        - "success" (bool): Whether lookup succeeded
-        - "geojson" (Dict): GeoJSON Feature with the boundary
-        - "coordinates" (List): Boundary coordinates
-        - "bbox" (Dict): Bounding box
-        - "osm_info" (Dict): OpenStreetMap metadata about the area
-        - "error" (str): Error message if lookup failed
-
-    LIMITATIONS:
-    - Requires internet connection
-    - OSM data quality varies by region
-    - Some small areas may not have boundary data
-    - Rate-limited by Nominatim usage policy
+        Dict with:
+          - success (bool)
+          - geojson (Feature with MultiPolygon geometry; source =
+            "os_boundaryline")
+          - coordinates, geometry_type, bbox
+          - resolved_variant (which "|" alternate matched)
+          - error (on failure)
     """
-    try:
-        # Query OSM for the district boundary
-        gdf = ox.geocode_to_gdf(district_name)
+    from shapely.geometry import mapping, MultiPolygon, Polygon
+    from tools.verification_checks import _resolve_la
 
-        if gdf.empty:
-            return {
-                "success": False,
-                "error": f"No boundary found for: {district_name}",
-            }
+    variants = [v.strip() for v in district_name.split("|") if v.strip()]
+    if not variants:
+        variants = [district_name]
 
-        # Convert to GeoJSON
-        geojson_dict = json.loads(gdf.to_json())
-        feature = geojson_dict["features"][0]
+    poly = None
+    resolved_variant = None
+    for v in variants:
+        try:
+            poly = _resolve_la(v)
+        except Exception:
+            poly = None
+        if poly is not None:
+            resolved_variant = v
+            break
 
-        # Extract geometry
-        geometry = feature["geometry"]
-        geom_type = geometry["type"]
+    if poly is None:
+        return {
+            "success": False,
+            "error": f"No OS BoundaryLine polygon found for: {district_name}",
+        }
 
-        # Normalize to consistent coordinate format
-        if geom_type == "Polygon" or geom_type == "MultiPolygon":
-            coordinates = geometry["coordinates"]
-        else:
-            return {"success": False, "error": f"Unexpected geometry type: {geom_type}"}
+    # Normalise to MultiPolygon for downstream consistency
+    if isinstance(poly, Polygon):
+        poly = MultiPolygon([poly])
+    elif not isinstance(poly, MultiPolygon):
+        return {
+            "success": False,
+            "error": f"Unexpected geometry type from _resolve_la: "
+                     f"{type(poly).__name__}",
+        }
 
-        # Calculate bounding box
-        all_coords = []
-        if geom_type == "Polygon":
-            for ring in coordinates:
-                all_coords.extend(ring)
-        else:  # MultiPolygon
-            for polygon in coordinates:
-                for ring in polygon:
-                    all_coords.extend(ring)
+    geometry = mapping(poly)
+    minx, miny, maxx, maxy = poly.bounds
 
-        lons = [c[0] for c in all_coords]
-        lats = [c[1] for c in all_coords]
-
-        # Build result GeoJSON
-        result_geojson = {
+    return {
+        "success": True,
+        "geojson": {
             "type": "Feature",
             "properties": {
-                "source": "openstreetmap",
+                "source": "os_boundaryline",
                 "query": district_name,
-                "osm_type": feature.get("properties", {}).get("osm_type", "unknown"),
-                "display_name": feature.get("properties", {}).get(
-                    "display_name", district_name
-                ),
+                "resolved_variant": resolved_variant,
             },
             "geometry": geometry,
-        }
-
-        return {
-            "success": True,
-            "geojson": result_geojson,
-            "coordinates": coordinates,
-            "geometry_type": geom_type,
-            "bbox": {
-                "min_lon": min(lons),
-                "max_lon": max(lons),
-                "min_lat": min(lats),
-                "max_lat": max(lats),
-            },
-            "osm_info": feature.get("properties", {}),
-        }
-
-    except Exception as e:
-        return {"success": False, "error": f"District lookup failed: {str(e)}"}
+        },
+        "coordinates": geometry["coordinates"],
+        "geometry_type": geometry["type"],
+        "bbox": {
+            "min_lon": float(minx),
+            "max_lon": float(maxx),
+            "min_lat": float(miny),
+            "max_lat": float(maxy),
+        },
+        "resolved_variant": resolved_variant,
+    }
 
 
 def try_district_boundary(analysis: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -498,177 +471,5 @@ def try_district_boundary(analysis: Dict[str, Any]) -> Optional[Dict[str, Any]]:
             "type": "MultiPolygon",
             "coordinates": [geom["coordinates"]],
         }
-    geojson["properties"]["source"] = "osm_district_lookup"
+    geojson["properties"]["source"] = "os_boundaryline_district_lookup"
     return geojson
-
-
-def geocode_address(address: str) -> Dict[str, Any]:
-    """
-    Convert an address or place name to geographic coordinates.
-
-    This tool uses Nominatim (OpenStreetMap's geocoding service) to find
-    the latitude and longitude of a named location.
-
-    WHEN TO USE:
-    - To find the center coordinates for pixels_to_geo_linear
-    - To verify locations mentioned in planning documents
-
-    Args:
-        address (str):
-            The address or place name to geocode.
-            Examples:
-            - "Chelsea Embankment, London, UK"
-            - "Notting Hill Gate Station, London"
-            - "51.5074, -0.1278" (will parse as coordinates)
-
-    Returns:
-        Dict containing:
-        - "success" (bool): Whether geocoding succeeded
-        - "latitude" (float): Latitude in decimal degrees
-        - "longitude" (float): Longitude in decimal degrees
-        - "display_name" (str): Full name returned by geocoder
-        - "address_components" (Dict): Parsed address components
-    """
-    geolocator = Nominatim(user_agent="planning_doc_extractor")
-
-    for attempt in range(3):
-        if attempt > 0:
-            wait = 2 ** attempt
-            print(f"    WARN:Nominatim retry {attempt}/2 after {wait}s...")
-            import time as _time
-            _time.sleep(wait)
-        try:
-            location = geolocator.geocode(address, timeout=10)
-
-            if location is None:
-                return {"success": False, "error": f"Could not geocode: {address}"}
-
-            return {
-                "success": True,
-                "latitude": location.latitude,
-                "longitude": location.longitude,
-                "display_name": location.address,
-                "raw": location.raw,
-            }
-
-        except GeocoderTimedOut:
-            continue
-        except Exception as e:
-            return {"success": False, "error": f"Geocoding failed: {str(e)}"}
-
-    print(f"    WARN:Nominatim: all retries failed for '{address[:40]}'")
-    return {"success": False, "error": f"Nominatim timed out after 3 retries: {address}"}
-
-
-# Tool definitions for LLM function calling
-GEO_TOOLS = [
-    {
-        "type": "function",
-        "function": {
-            "name": "pixels_to_geo_linear",
-            "description": """Transform pixel boundary coordinates to geographic coordinates using LINEAR transformation.
-
-Uses center point + scale to transform. Best when:
-- You know the map center location (from document text or geocoding a mentioned place)
-- You know the scale (e.g., 1:2500 means ~525m width on A4 paper)
-- The map has minimal rotation
-
-SCALE EXAMPLES:
-- 1:1250 on A4 → ~262m width
-- 1:2500 on A4 → ~525m width
-- 1:5000 on A4 → ~1050m width
-
-Simple and effective for most planning documents.""",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "boundary_pixels": {
-                        "type": "array",
-                        "items": {"type": "array", "items": {"type": "number"}},
-                        "description": "List of [x, y] pixel coordinates from boundary extraction",
-                    },
-                    "image_height": {
-                        "type": "integer",
-                        "description": "Image height in pixels (from boundary extraction result)",
-                    },
-                    "image_width": {
-                        "type": "integer",
-                        "description": "Image width in pixels (from boundary extraction result)",
-                    },
-                    "center_lat": {
-                        "type": "number",
-                        "description": "Latitude of map center in decimal degrees (e.g., 51.5074)",
-                    },
-                    "center_lon": {
-                        "type": "number",
-                        "description": "Longitude of map center in decimal degrees (e.g., -0.1278)",
-                    },
-                    "scale_meters": {
-                        "type": "number",
-                        "description": "Real-world width covered by the map in meters (e.g., 500.0)",
-                    },
-                },
-                "required": [
-                    "boundary_pixels",
-                    "image_height",
-                    "image_width",
-                    "center_lat",
-                    "center_lon",
-                    "scale_meters",
-                ],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "lookup_district_boundary",
-            "description": """Look up the official boundary of an administrative district from OpenStreetMap.
-
-Use when:
-- The planning area is an entire district/ward/borough
-- You can identify the district name from the document
-- As verification for extracted boundaries
-- As fallback when image extraction fails
-
-NAMING TIPS:
-- Be specific: "Royal Borough of Kensington and Chelsea, London, UK"
-- Include parent areas: "Rowley Green, London Borough of Barnet, London"
-- UK boroughs, wards, parishes are usually available""",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "district_name": {
-                        "type": "string",
-                        "description": "Full name of the district (be specific to avoid ambiguity)",
-                    },
-                },
-                "required": ["district_name"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "geocode_address",
-            "description": """Convert an address or place name to latitude/longitude coordinates.
-
-Use to:
-- Find center coordinates for pixels_to_geo_linear
-- Geocode landmarks for pixels_to_geo_affine control points
-- Verify locations mentioned in documents
-
-Returns latitude and longitude in decimal degrees.""",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "address": {
-                        "type": "string",
-                        "description": "Address or place name to geocode (e.g., 'Chelsea Embankment, London, UK')",
-                    }
-                },
-                "required": ["address"],
-            },
-        },
-    },
-]
