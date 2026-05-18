@@ -1,12 +1,12 @@
 """LA-polygon resolution helpers (OS BoundaryLine).
 
-This module used to host the full critic-time verification suite
-(area-consistency / postcode-in-polygon / scale / scatter / multi-zoom
-coherence). With the critic removed (R21), only the LA-polygon resolver
-is still needed — it's called by the locate sub-agent's `la_check` tool,
-the worker's `lookup_district` tool, and the smart-commit LA filter.
+Resolves a UK administrative-area name to its boundary polygon using
+local OS BoundaryLine shapefiles. Called by:
+- the locate sub-agent's `la_check` tool,
+- the worker's `lookup_district` tool,
+- the smart-commit gate's inside-LA filter.
 
-Public surface (kept for callers across the codebase):
+Public surface:
 - _resolve_la(query)        → shapely (Multi)Polygon | None
 - _load_la_polygons()       → Dict[name_variant → polygon]
 - _normalize_la_name(s)     → canonicalized lowercase name
