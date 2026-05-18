@@ -190,9 +190,7 @@ WORKFLOW
    right-area matches show streets that clearly correspond.
 
    SAM3 segmentation runs automatically on first need per page (cached
-   per page across calls). The analytical short-circuit fires
-   automatically per group when PDFInfo carries a scale + a full
-   easting/northing grid_ref and the probe lands within ~50m of it.
+   per page across calls).
 
    Decision rules:
      • STRONG match: overall_score ≥ 0.80 AND n_inliers ≥ 80 AND panel
