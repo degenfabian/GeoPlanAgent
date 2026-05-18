@@ -835,10 +835,10 @@ def _render_roads_only_canvas(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y,
                                 gpkg_path=None):
     """Render a tile grid with ONLY road layers on a white background.
 
-    Used by the Phase 3 critic for a cleaner visual comparison — planning
-    maps and OS tiles agree reliably on road topology but diverge on
-    styling (building colours, text labels, greenspace shading). Dropping
-    everything except roads gives the LLM a crisp apples-to-apples signal.
+    Planning maps and OS tiles agree reliably on road topology but
+    diverge on styling (building colours, text labels, greenspace
+    shading). Dropping everything except roads gives a crisp
+    apples-to-apples signal for any caller that needs roads only.
     """
     import pandas as pd
 
@@ -959,8 +959,8 @@ def fetch_os_opendata_roads_for_tile_info(tile_info: dict, gpkg_path=None):
     """Produce a roads-only canvas matching an existing styled-tile_info.
 
     The returned canvas shares tx_min/ty_min/nx/ny/zoom with `tile_info`, so
-    the same affine_H overlays correctly on both. Used by the Phase 3 critic
-    to swap its middle panel background without touching any other geometry.
+    the same affine_H overlays correctly on both. Lets callers swap the
+    background to a roads-only view without touching any other geometry.
     """
     return _fetch_roads_at_grid(
         int(tile_info["zoom"]), int(tile_info["tx_min"]),

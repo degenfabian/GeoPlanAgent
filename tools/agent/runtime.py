@@ -2,8 +2,8 @@
 
 run_agent itself is a thin coordinator in tools.agent.__init__; the
 phase-specific logic (reader call, pre-render, prompt build, message
-log assembly, critic, cleanup, return-dict packaging) lives here so
-the orchestrator stays under 100 lines and each phase is independently
+log assembly, cleanup, return-dict packaging) lives here so the
+orchestrator stays under 100 lines and each phase is independently
 testable.
 """
 

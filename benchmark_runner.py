@@ -94,20 +94,6 @@ def save_visualizations(result_dir, map_img, boundary_mask, predicted_geojson,
                 pass
 
 
-# ── Critic-trace writer (rigorous post-mortem analysis) ─────────────────────
-
-def _iou_vs_gt(gt_geojson, pred_geojson):
-    """Compute IoU against ground truth. Returns None if either side missing."""
-    if gt_geojson is None or pred_geojson is None:
-        return None
-    try:
-        from tools.metrics.geojson import calculate_spatial_metrics
-        m = calculate_spatial_metrics(gt_geojson, pred_geojson)
-        return float(m.get("iou", 0) or 0)
-    except Exception:
-        return None
-
-
 # ── Main Runner ──────────────────────────────────────────────────────────────
 
 def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,

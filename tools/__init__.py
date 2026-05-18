@@ -2,8 +2,8 @@
 
 Top-level packages:
 
-  agent/      — PydanticAI orchestrator (reader, worker, critic) + the
-                live LLM-locate sub-agent (locate_agent.py) called from the
+  agent/      — PydanticAI orchestrator (reader, worker) + the live
+                LLM-locate sub-agent (locate_agent.py) called from the
                 worker's propose_centers tool.
   matching/   — MINIMA sliding-window matcher + road-name verifier
   scoring.py  — composite_window_score, commit_attempt_score
@@ -16,8 +16,8 @@ Top-level packages:
 Top-level helpers:
 
   delaunay_filter.py     — optional Delaunay-consistency RANSAC filter
-  verification_checks.py — cross-checks (LA polygon, scale, area) fed to the
-                           critic context
+  verification_checks.py — OS BoundaryLine LA-polygon resolver used by
+                           lookup_district + la_check + LA filter.
   build_oml_road_index.py — script to regenerate oml_road_index.json /
                             oml_road_geom_subset.json from OS OpenMap Local
 """
