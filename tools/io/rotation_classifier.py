@@ -15,7 +15,7 @@ Both paths apply 4-rotation TTA + confidence threshold:
   1. Predict on the input AND its 90/180/270 CW rotations
   2. Cyclically shift each rotated-frame prediction back to the
      original frame and ensemble (mean softmax)
-  3. If the top class probability exceeds the threshold (default 0.80),
+  3. If the top class probability exceeds the threshold (default 0.50),
      return it; otherwise return 0 (don't rotate) — safer to leave a
      map alone than rotate it wrongly
 
@@ -24,7 +24,7 @@ Public API:
       Returns CW degrees to rotate `map_bgr` to upright (0/90/180/270).
       Returns 0 if confidence is below threshold (abstain = no rotation).
 
-  predict_rotation_with_confidence(map_bgr, case_name=None, threshold=0.80) -> dict
+  predict_rotation_with_confidence(map_bgr, case_name=None, threshold=0.50) -> dict
       Same prediction with explicit metadata for callers that want to
       log / decide based on confidence.
 """

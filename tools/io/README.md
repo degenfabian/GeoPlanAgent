@@ -11,7 +11,7 @@ composition, per-page OCR, and the rotation classifier wrapper.
 | `text_extraction` | `extract_text_per_page(pdf_path, use_cache=True, verbose=False)` | Per-page text for the reader prompt. fitz for born-digital pages, macOS Vision (PaddleOCR fallback) for scanned ones. Cached on disk under `cache/text_extraction/` keyed by PDF content hash. |
 | `text_extraction` | `format_for_reader_prompt(pages)` | Format the cache output as the `TEXT BLOCK (per page):` string the reader + `reader_refine` consume. |
 | `os_tiles` | `fetch_os_opendata_grid(lat, lon, zoom, n_tiles_x, n_tiles_y)` | Render an `N×M` tile canvas centred on `(lat, lon)` from `OS_Open_Zoomstack.gpkg`. Returns `{image, zoom, tx_min, ty_min, tile_size_px, …}`. Lazy raster cache keyed by tile coords. No API key — OS OpenData is OGL v3. |
-| `rotation_classifier` | `predict_rotation_cw(map_bgr, case_name=None)` | Returns 0/90/180/270 CW degrees to upright. Uses k-fold checkpoints when present (`models/rotation_classifier_kfold/`) and routes by case via `fold_assignment.json`; falls back to a legacy single checkpoint. 4-rotation TTA + 0.80 softmax-confidence abstain (returns 0 if below threshold). |
+| `rotation_classifier` | `predict_rotation_cw(map_bgr, case_name=None)` | Returns 0/90/180/270 CW degrees to upright. Uses k-fold checkpoints when present (`models/rotation_classifier_kfold/`) and routes by case via `fold_assignment.json`; falls back to a legacy single checkpoint. 4-rotation TTA + 0.50 softmax-confidence abstain (returns 0 if below threshold). |
 | `rotation_classifier` | `predict_rotation_with_confidence(...)` | Same prediction with the confidence + fold-routing metadata exposed. |
 | `map_page` | `render_map_page(pdf_path, page_1based, dpi=200, case_name=None)` | The single source of truth for `render → auto_rotate`. Called from `prepare_worker_state` and `_get_or_render_page` in the worker. Returns `(map_img, rot_info)`. |
 
@@ -91,7 +91,7 @@ benchmark (~60% of cases are scanned).
   cyclically shift each rotated prediction back to the original frame,
   ensemble (mean softmax), return top class.
 - **Confidence abstain**: if the top class softmax probability is
-  below `threshold=0.80`, return `0` (don't rotate). Safer than
+  below `threshold=0.50`, return `0` (don't rotate). Safer than
   rotating wrongly — a few-degree off page is still positionable, a
   90°-wrong page never is.
 - **Fold routing**: when `case_name` is given and the k-fold dir is
