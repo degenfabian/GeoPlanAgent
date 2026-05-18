@@ -37,7 +37,7 @@ from typing import List, Optional, Tuple
 import numpy as np
 from PIL import Image, ImageDraw
 from pydantic import BaseModel, Field
-from pydantic_ai import Agent, BinaryContent
+from pydantic_ai import Agent, BinaryContent, NativeOutput
 from pydantic_ai.usage import UsageLimits
 
 REPO = Path(__file__).resolve().parents[1]
@@ -123,10 +123,22 @@ WHAT TO IGNORE
 def build_agent(instructions: str) -> Agent:
     return Agent(
         "test",  # model is overridden per-call
-        output_type=VlmSegmentation,
+        # NativeOutput → pydantic-ai uses Gemini's native response_format /
+        # json_schema mode instead of the default tool-call mechanism.
+        # Avoids the tool-call framing overhead that was causing complex
+        # boundary outputs to hit the provider's default max_output_tokens
+        # mid-response and fail with UnexpectedModelBehavior.
+        output_type=NativeOutput(VlmSegmentation),
         retries=3,
         output_retries=2,
-        model_settings={"temperature": 0},
+        model_settings={
+            "temperature": 0,
+            # Cap well above any plausible polygon output. 100-vertex
+            # multi-polygon JSON serialises to ~3-4K tokens; 32K is
+            # comfortable headroom and well within Gemini 3 Flash's
+            # output budget.
+            "max_tokens": 32768,
+        },
         instructions=instructions,
     )
 
