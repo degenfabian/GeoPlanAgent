@@ -1,4 +1,4 @@
-# GeoMapAgent
+# GeoPlanAgent
 
 Autonomous extraction of the application-site boundary from UK planning
 permission PDFs. An LLM agent reads each PDF, geocodes likely locations,
