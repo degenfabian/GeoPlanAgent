@@ -228,6 +228,18 @@ def main() -> None:
                          "manifest). Useful to A/B against eval_sam_kfold_v2's "
                          "per-fold output.")
     ap.add_argument("--out-dir", default="results/ablation_vlm_seg")
+    ap.add_argument("--cases", nargs="+", default=None,
+                    help="Only run these specific case identifiers (matches "
+                         "manifest['case']). Useful for re-running failed cases.")
+    ap.add_argument("--max-image-dim", type=int, default=None,
+                    help="If set, resize input map so its longest side is at "
+                         "most this many pixels (preserves aspect). Helps with "
+                         "413 errors on very large maps. Recommended: 2048.")
+    ap.add_argument("--jpeg-quality", type=int, default=None,
+                    help="If set, re-encode the input image as JPEG at this "
+                         "quality (1-100) before sending. Cuts request payload "
+                         "without resizing — useful for cases that hit 413 "
+                         "errors on large PNGs. Recommended: 95.")
     ap.add_argument("--throttle-s", type=float, default=1.0,
                     help="Seconds to sleep between API calls (rate-limit safety)")
     ap.add_argument("--prompt-file", type=str, default=None,
@@ -245,6 +257,12 @@ def main() -> None:
         sys.exit(f"manifest not found: {manifest_path}")
     manifest = json.loads(manifest_path.read_text())
 
+    if args.cases:
+        wanted = set(args.cases)
+        manifest = [r for r in manifest if r.get("case") in wanted]
+        missing = wanted - {r.get("case") for r in manifest}
+        if missing:
+            print(f"WARNING: {len(missing)} requested cases not in manifest: {sorted(missing)}")
     if args.fold is not None:
         manifest = [r for r in manifest if r.get("fold") == args.fold]
     if args.held_out_only:
@@ -307,7 +325,34 @@ def main() -> None:
             continue
 
         img = Image.open(img_path).convert("RGB")
-        png_bytes = img_path.read_bytes()
+        # Optionally downscale very large maps to avoid 413 errors at the
+        # provider. Aspect is preserved.
+        if args.max_image_dim is not None:
+            longest = max(img.width, img.height)
+            if longest > args.max_image_dim:
+                scale = args.max_image_dim / longest
+                new_w = int(img.width * scale)
+                new_h = int(img.height * scale)
+                img = img.resize((new_w, new_h), Image.LANCZOS)
+
+        # Encode as JPEG (smaller payload, dodges 413 on large maps) or PNG
+        # (lossless, default).
+        if args.jpeg_quality is not None:
+            import io as _io
+            buf = _io.BytesIO()
+            img.save(buf, format="JPEG", quality=int(args.jpeg_quality))
+            png_bytes = buf.getvalue()
+            media_type = "image/jpeg"
+        elif args.max_image_dim is not None and max(img.width, img.height) <= args.max_image_dim:
+            # Resized → re-encode PNG from the resized image
+            import io as _io
+            buf = _io.BytesIO()
+            img.save(buf, format="PNG")
+            png_bytes = buf.getvalue()
+            media_type = "image/png"
+        else:
+            png_bytes = img_path.read_bytes()
+            media_type = "image/png"
         gt = np.asarray(Image.open(mask_path).convert("L"))
         gt_bin = (gt > 127).astype(np.uint8)
 
@@ -322,7 +367,7 @@ def main() -> None:
         try:
             result = agent.run_sync(
                 [
-                    BinaryContent(data=png_bytes, media_type="image/png"),
+                    BinaryContent(data=png_bytes, media_type=media_type),
                     "Locate the drawn site boundary and output it per the schema.",
                 ],
                 model=model,

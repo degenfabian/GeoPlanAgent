@@ -352,10 +352,17 @@ def match_at(
         overall_score = float(np.average(scores, weights=weights))
 
     # Union per-group GeoJSONs that passed the per-group commit gate.
+    # Track committed entries by object identity rather than equality —
+    # the per-group dicts hold numpy arrays (affine_H, etc.) and dict-equality
+    # comparison triggers numpy element-wise `==` which raises
+    # "truth value of an array is ambiguous" whenever Python's `in` falls
+    # back from identity to equality (the multi-group, partial-success case).
     committed_groups = []
+    committed_ids: set = set()
     for g in valid:
         if g.get("geojson") is not None:
             committed_groups.append(g)
+            committed_ids.add(id(g))
 
     unioned_geojson = _union_geojsons([g["geojson"] for g in committed_groups])
 
@@ -367,7 +374,7 @@ def match_at(
         "sigma_m": float(sigma_m), "scale_ratio": scale_ratio,
         "per_group": per_group,
         "committed_groups_idx": [i for i, g in enumerate(per_group)
-                                  if g in committed_groups],
+                                  if id(g) in committed_ids],
         "geojson": unioned_geojson,
         "overall_score": float(overall_score),
         "total_inliers": int(total_inliers),
@@ -396,7 +403,7 @@ def match_at(
                     g.get("reward"), "road_name_agreement", "verdict"),
                 "scale_consistency": _axis_field(
                     g.get("reward"), "scale_consistency", "score"),
-                "passed_gate": g in committed_groups,
+                "passed_gate": id(g) in committed_ids,
                 "weak_retry": g.get("weak_retry"),
             }
             for g in per_group
