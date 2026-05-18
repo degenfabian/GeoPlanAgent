@@ -569,9 +569,12 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
     """Mark a stored match_at candidate as the active result.
 
     For multi-group docs the candidate's geojson is already the union
-    across area_groups that passed the per-group commit gate. The
-    smart-commit gate below picks the BEST candidate when the worker
-    has tried multiple match_at calls.
+    across area_groups for which MINIMA produced a valid affine. The
+    smart-commit gate below redirects to a better candidate if the
+    worker has tried multiple match_at calls and picked a worse one;
+    the strict gate rejects commits where NO group produced an affine
+    (and no analytical short-circuit fired) — try a different page or
+    centre via match_at, or call propose_centers(extra_terms=[…]).
 
     Args:
         candidate_id: ID returned from a prior match_at call.

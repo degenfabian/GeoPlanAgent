@@ -149,27 +149,33 @@ def lookup_district(
     ctx: RunContext[AgentState],
     district_name: str,
 ) -> dict:
-    """Look up the full boundary of an administrative district from OpenStreetMap.
+    """Look up the boundary of a UK administrative district from
+    OS BoundaryLine (offline, OS Open Data).
 
-    Use this when the planning document covers an ENTIRE district, borough, ward,
-    or parish — not a specific site within one.
+    Use this when the planning document covers an ENTIRE district,
+    borough, unitary authority, ward, or parish — not a specific site
+    within one.
 
-    This returns the official boundary polygon directly from OSM, no positioning
-    or SAM3 extraction needed. If this succeeds, you're done — respond with DONE.
+    Returns the official boundary polygon directly. If this succeeds,
+    submit BoundaryOutcome with status="district_lookup".
 
-    Naming conventions (be specific to avoid ambiguous matches):
-      - "London Borough of Barnet, London, UK"
-      - "Royal Borough of Kensington and Chelsea, London, UK"
-      - "City of Westminster, London, UK"
-      - "Rowley Green, London Borough of Barnet, London, UK" (for wards)
+    Naming conventions (be specific to avoid ambiguous matches; the
+    downstream resolver normalises "London Borough of X" → "X" and
+    strips trailing "District"/"Borough"/"Council"):
+      - "Camden, UK"
+      - "Royal Borough of Kensington and Chelsea, UK"
+      - "City of Westminster, UK"
+      - "Broadland District, Norfolk, UK"
 
     Args:
-        district_name: Full name of the district/borough/ward, including parent
-            areas for disambiguation and "UK" suffix.
+        district_name: UK admin name with "UK" suffix. May contain
+            "|"-separated alternates (e.g.
+            "City of Westminster, UK | Westminster, UK") — each is
+            tried in order until one resolves.
 
     Returns:
-        {"success": true, "geojson": <GeoJSON Feature>} — the complete boundary
-        {"success": false, "error": str} — if the district wasn't found in OSM
+        {"success": true, "geojson": <GeoJSON Feature>, ...} — boundary
+        {"success": false, "error": str} — name not in OS BoundaryLine
     """
     state = ctx.deps
     _dedup_check(state, "lookup_district", {"district_name": district_name})
