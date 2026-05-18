@@ -1,27 +1,23 @@
 # tools/
 
 Core modules for the boundary-extraction pipeline. `tools.agent` orchestrates
-three LLM agents (reader → worker → optional critic) plus two sub-agents
-(locate, reader-refine). Matching is MINIMA (LoFTR); segmentation is SAM3 +
-LoRA; geocoding is offline (Code-Point Open + OS Open Names + OML road
-index).
+two LLM agents (reader → worker) plus two sub-agents (locate, reader-refine).
+Matching is MINIMA (LoFTR); segmentation is SAM3 + LoRA; geocoding is offline
+(Code-Point Open + OS Open Names + OML road index).
 
 ## Entry points
 
-- `tools.agent.run_agent(pdf_path, models_state, model_name, enable_critic=False)`
-  — full pipeline for a single case.
-- `tools.agent.critic_agent.run_critic_loop(state, worker_result, model_name)`
-  — Phase 3 standalone, invoked by `run_agent` when `enable_critic=True`.
+- `tools.agent.run_agent(pdf_path, models_state, model_name)` — full pipeline
+  for a single case.
 
 ## Package map
 
-### `tools/agent/` — Three top-level agents + sub-agents
+### `tools/agent/` — Two top-level agents + sub-agents
 
 | File | Role |
 |---|---|
 | `reader_agent.py` | Phase 1: one-shot read of the PDF binary → `PDFInfo` |
 | `worker_agent.py` | Phase 2: tool-calling agent → `BoundaryOutcome` |
-| `critic_agent.py` | Phase 3 (opt-in): visual review + structured retry directive |
 | `locate_agent.py` | Sub-agent called by the worker's `propose_centers` — six offline geocoder tools, one `LocatePick` out |
 | `runtime.py` | Phase orchestration helpers called by `run_agent` |
 | `state.py` | `AgentState` (mutable per-case state passed as deps) |
@@ -49,27 +45,6 @@ time.
 | `lookup_district` | `verify.py` | OSM district polygon fallback (used when `is_district_wide`) |
 | `visualize` | `verify.py` | Show current mask + tile overlay |
 | `reader_refine` | `refine.py` | Fresh small-context call on the PDF binary for a focused question (budget 3/case) |
-
-### `tools/agent/critic_agent.py` — Phase 3 visual critic
-
-LLM critic that sees a 2-panel image (planning map + SAM mask on the left,
-OS tile canvas + projected polygon on the right) plus a deterministic-
-verification metrics block. Outputs a structured `CriticDirective`:
-
-| Action | Worker response |
-|---|---|
-| `approve` | No change. |
-| `retry_extract_bbox` | Re-run `extract_boundary(bbox=[x1,y1,x2,y2])` then project. |
-| `retry_match_at` | Re-run `match_at` at one of the untried centres. |
-
-When the directive is a retry, the worker is re-invoked with `CRITIC
-DIRECTIVE — you MUST comply.` prepended and the prior message_history
-preserved. Budget: 2 outer iterations per case. **The critic never
-nullifies the GeoJSON**; the worst it does is flag the case as
-`flag_low_confidence`.
-
-`build_critic_panel(state)` composes the panel; `format_metrics_text(state,
-det_score)` builds the metrics block.
 
 ### `tools/matching/` — Map georeferencing
 
@@ -164,9 +139,10 @@ re-calls so the sub-agent SEES its own previous reasoning + the new
   (single source of truth for match-stage candidate ranking).
 - `delaunay_filter.py` — Delaunay-consistency RANSAC filter applied
   inside `estimate_affine`.
-- `verification_checks.py` — area / postcode-in-polygon / LA-boundary /
-  inlier-scatter / multi-zoom-coherence cross-checks. Aggregated by
-  `verification_score`, surfaced to the critic in `format_metrics_text`.
+- `verification_checks.py` — OS BoundaryLine LA-polygon resolver
+  (`_resolve_la`, `_load_la_polygons`) used by the worker's
+  `lookup_district`, locate sub-agent's `la_check`, and the smart-commit
+  LA filter.
 - `build_oml_road_index.py` — script to regenerate the OML road indexes
   consumed by the locate sub-agent's `road` / `intersect` tools.
 

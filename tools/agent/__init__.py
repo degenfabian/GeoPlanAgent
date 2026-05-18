@@ -17,11 +17,6 @@ The pipeline is three LLM agents:
             the resulting polygons; commit_match commits the unioned
             candidate.
 
-  Phase 3 — Critic. tools.agent.critic_agent.run_critic_loop: LLM visual review
-            + structured directive, optionally rehanded to the worker.
-            Off by default for production benchmark runs; opt-in for
-            ablations via enable_critic=True.
-
 The pure functions for each phase live in tools.agent.runtime; this
 module is just the coordinator + tool-module import (which triggers the
 @_agent.tool decorators at import time so all worker tools are
@@ -63,11 +58,10 @@ def run_agent(
     max_iterations: int = 8,
     dpi: int = 200,
     verbose: bool = True,
-    enable_critic: bool = False,
     case_name: Optional[str] = None,
     case_dir: Optional[Path] = None,
 ) -> Dict[str, Any]:
-    """Run reader → worker → (optional) critic on one planning PDF.
+    """Run reader → worker on one planning PDF.
 
     Args:
         pdf_path: Path to the planning PDF.
@@ -77,8 +71,6 @@ def run_agent(
             covers healthy hard cases.
         dpi: PDF rendering DPI for the planning map pages.
         verbose: Print phase headers and progress.
-        enable_critic: Run the Phase 3 critic loop after the worker
-            finishes. Off by default; opt-in for ablations.
         case_name: Override for the case identifier (used by k-fold SAM3
             adapter routing). Defaults to the PDF's parent directory.
         case_dir: Where to flush pdf_info.json + partial_state.json on
@@ -86,7 +78,7 @@ def run_agent(
 
     Returns:
         Dict with keys including geojson, mask, match_info, agent_accepted,
-        agent_reason, agent_stats, message_log, critic_*.
+        agent_reason, agent_stats, message_log.
     """
     from tools.agent._model import resolve_model_name
     model_name = resolve_model_name(model_name)
@@ -163,14 +155,6 @@ def run_agent(
                   f"verify={outcome.verify_position_called} "
                   f"rotation_checked={outcome.rotation_checked}")
 
-    # ── Phase 3: critic (optional) ────────────────────────────────────────
-    critic_result = None
-    if enable_critic and result is not None:
-        critic_result = _rt.apply_critic_loop(
-            state=state, worker_result=result, model_name=model_name,
-            verbose=verbose,
-        )
-
     # ── Cleanup, stats, soft quality gate, return ─────────────────────────
     _rt.cleanup_temp_pages(state)
 
@@ -193,4 +177,4 @@ def run_agent(
     agent_rejected = (state.accept_reason or "").upper().lstrip().startswith("REJECTED")
     _rt.apply_quality_gate(state, agent_rejected, verbose)
 
-    return _rt.build_run_agent_return(state, agent_stats, message_log, critic_result)
+    return _rt.build_run_agent_return(state, agent_stats, message_log)

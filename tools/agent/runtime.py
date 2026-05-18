@@ -290,53 +290,6 @@ def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
     return partial_stats
 
 
-# ── Phase 3: critic ───────────────────────────────────────────────────────
-
-def apply_critic_loop(
-    state: AgentState, worker_result: Any, model_name: str,
-    verbose: bool,
-) -> Optional[Dict[str, Any]]:
-    """Run the critic loop and propagate results onto state. Returns the
-    critic_result dict (or None when the critic was skipped/failed)."""
-    if (state.last_output is None
-            or state.last_output.status != "accepted"
-            or state.current_result.get("geojson") is None
-            or not state.sam_masks_by_page):
-        return None
-    try:
-        from tools.agent.critic_agent import run_critic_loop
-        critic_result = run_critic_loop(
-            state=state,
-            worker_result=worker_result,
-            model_name=model_name,
-            verbose=verbose,
-        )
-    except Exception as _critic_err:
-        if verbose:
-            print(f"  Critic loop failed (continuing): {_critic_err}")
-            traceback.print_exc()
-        return None
-
-    state.critic_iterations = critic_result["iterations"]
-    state.critic_final_decision = critic_result["final_decision"]
-    state.critic_changed_mask = critic_result["changed_mask"]
-    state.critic_worker_reentered = critic_result.get("worker_reentered", False)
-
-    if critic_result["final_decision"] == "flag_low_confidence":
-        state.accepted = False
-        last_reason = (critic_result["iterations"][-1].get("reason", "")[:160]
-                       if critic_result["iterations"] else "")
-        state.accept_reason = (
-            f"CRITIC_LOW_CONFIDENCE: {last_reason} | prior: "
-            f"{(state.accept_reason or '')[:100]}"
-        )
-    if verbose:
-        print(f"  Critic final: {critic_result['final_decision']} "
-              f"(changed_mask={state.critic_changed_mask}, "
-              f"worker_reentered={state.critic_worker_reentered})")
-    return critic_result
-
-
 # ── Cleanup ───────────────────────────────────────────────────────────────
 
 def cleanup_temp_pages(state: AgentState) -> None:
@@ -545,7 +498,6 @@ def build_run_agent_return(
     state: AgentState,
     agent_stats: dict,
     message_log: list,
-    critic_result: Optional[Dict[str, Any]],
 ) -> dict:
     """Assemble the dict that run_agent returns to benchmark_runner."""
     from tools.agent.state import committed_primary_page
@@ -572,20 +524,4 @@ def build_run_agent_return(
         "agent_stats": agent_stats,
         "message_log": message_log,
         "selected_overlay": primary_overlay,
-        "critic_iterations": state.critic_iterations,
-        "critic_final_decision": state.critic_final_decision,
-        "critic_changed_mask": state.critic_changed_mask,
-        "critic_worker_reentered": state.critic_worker_reentered,
-        "critic_panel_img": (critic_result.get("panel_iter0")
-                              if critic_result else None),
-        "critic_tokens": (critic_result.get("tokens_used")
-                           if critic_result else None),
-        "critic_pre_snapshot": (critic_result.get("pre_snapshot")
-                                  if critic_result else None),
-        "critic_final_snapshot": (critic_result.get("final_snapshot")
-                                    if critic_result else None),
-        "critic_iteration_panels": (critic_result.get("per_iteration_panels")
-                                      if critic_result else []),
-        "critic_iteration_snapshots": (critic_result.get("per_iteration_snapshots")
-                                         if critic_result else []),
     }

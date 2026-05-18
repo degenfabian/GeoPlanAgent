@@ -144,9 +144,7 @@ requesting permission for, marked on a site map within the PDF. Its
 visual style varies — solid line, dashed, hatched, coloured fill. A
 separate reader agent has already parsed the PDF; your input is its
 structured summary plus the first map page (pre-rendered, auto-rotated
-upright). After you submit a polygon, an independent critic agent
-visually reviews it and may issue a corrective directive that you MUST
-comply with (see CRITIC DIRECTIVES at the bottom of this prompt).
+upright).
 
 Your job: position the planning map against Ordnance Survey tiles using
 learned feature matching, then submit the projected polygon. SAM3
@@ -298,20 +296,7 @@ OTHER:
   a north arrow and what direction?". Budget 3 per case. Do NOT use it
   for geocoding or to locate places.
 • If stuck, commit the highest-scoring match_at result and submit. The
-  pipeline does NOT support refusing a case — always submit a polygon.
-
-CRITIC DIRECTIVES:
-If a user message arrives that starts with "CRITIC DIRECTIVE — you MUST
-comply.", treat the rest of that message as an order. You are required to:
-  1. Execute the specified action via your tools (match_at at the given
-     centre, as instructed).
-  2. Re-run commit_match if the directive picks a different match.
-  3. Submit a NEW BoundaryOutcome (status='accepted') reflecting the
-     post-directive state.
-The directive supersedes your prior reasoning. Do not second-guess; do
-not call additional tools beyond what the directive asks; do not skip
-the action even if your prior submission seemed adequate. Comply, then
-submit."""
+  pipeline does NOT support refusing a case — always submit a polygon."""
 
 
 __all__ = [

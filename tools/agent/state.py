@@ -75,12 +75,6 @@ class AgentState:
         self.rotation_checked: bool = False
         self.last_output: Optional["BoundaryOutcome"] = None
 
-        # Critic (Phase 3) — filled by tools/agent/critic_agent.py
-        self.critic_iterations: List[dict] = []
-        self.critic_final_decision: Optional[str] = None
-        self.critic_changed_mask: bool = False
-        self.critic_worker_reentered: bool = False
-
         # Locate sub-agent's picked candidates (one entry usually).
         self.proposed_centers: List[Dict[str, Any]] = []
         # Full message history from the most recent run_locate call.

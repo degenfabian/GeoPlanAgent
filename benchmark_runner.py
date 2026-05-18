@@ -108,101 +108,6 @@ def _iou_vs_gt(gt_geojson, pred_geojson):
         return None
 
 
-def _save_critic_debug(case_dir, result, gt_geojson):
-    """Persist every artefact the critic produced this run for post-hoc analysis.
-
-    Layout:
-      case_dir/critic_debug/
-        pre_critic_mask.png
-        pre_critic.geojson
-        final_mask.png
-        final.geojson
-        iter_<k>_panel.png              # what the critic actually saw
-        iter_<k>_pre_fix_mask.png       # mask at critic-call time
-        iter_<k>_pre_fix.geojson
-        iter_<k>_post_fix_mask.png      # after code-fix if one ran
-        iter_<k>_post_fix.geojson
-        iter_<k>_post_fix_affine.npy    # only for retry_rotation
-        trace.json                      # iteration-by-iteration summary with
-                                        # ground-truth IoU trajectory
-    """
-    pre = result.get("critic_pre_snapshot")
-    final_snap = result.get("critic_final_snapshot")
-    panels = result.get("critic_iteration_panels") or []
-    snapshots = result.get("critic_iteration_snapshots") or []
-    crit_iters = result.get("critic_iterations") or []
-    if not (pre or final_snap or panels or snapshots):
-        return
-
-    debug_dir = Path(case_dir) / "critic_debug"
-    debug_dir.mkdir(parents=True, exist_ok=True)
-
-    def _write_mask(path, mask):
-        if mask is not None:
-            cv2.imwrite(str(path), mask)
-
-    def _write_geojson(path, gj):
-        if gj is not None:
-            Path(path).write_text(json.dumps(gj, indent=2, default=str))
-
-    # Pre/final snapshots
-    if pre is not None:
-        _write_mask(debug_dir / "pre_critic_mask.png", pre.get("mask"))
-        _write_geojson(debug_dir / "pre_critic.geojson", pre.get("geojson"))
-        if pre.get("affine_H") is not None:
-            np.save(str(debug_dir / "pre_critic_affine.npy"), pre["affine_H"])
-    if final_snap is not None:
-        _write_mask(debug_dir / "final_mask.png", final_snap.get("mask"))
-        _write_geojson(debug_dir / "final.geojson", final_snap.get("geojson"))
-        if final_snap.get("affine_H") is not None:
-            np.save(str(debug_dir / "final_affine.npy"), final_snap["affine_H"])
-
-    # Per-iteration artefacts
-    trace = []
-    for i, snap in enumerate(snapshots):
-        iter_entry = dict(crit_iters[i]) if i < len(crit_iters) else {"iter_idx": i}
-
-        # Panel
-        if i < len(panels) and panels[i] is not None:
-            p = debug_dir / f"iter_{i}_panel.png"
-            cv2.imwrite(str(p), panels[i])
-            iter_entry["panel_png"] = p.name
-
-        # Mask/geojson pre-fix and post-fix
-        pre_mask = snap.get("pre_fix_mask")
-        if pre_mask is not None:
-            _write_mask(debug_dir / f"iter_{i}_pre_fix_mask.png", pre_mask)
-        pre_gj = snap.get("pre_fix_geojson")
-        if pre_gj is not None:
-            _write_geojson(debug_dir / f"iter_{i}_pre_fix.geojson", pre_gj)
-            iter_entry["pre_fix_iou_vs_gt"] = _iou_vs_gt(gt_geojson, pre_gj)
-
-        post_mask = snap.get("post_fix_mask")
-        if post_mask is not None:
-            _write_mask(debug_dir / f"iter_{i}_post_fix_mask.png", post_mask)
-        post_gj = snap.get("post_fix_geojson")
-        if post_gj is not None:
-            _write_geojson(debug_dir / f"iter_{i}_post_fix.geojson", post_gj)
-            iter_entry["post_fix_iou_vs_gt"] = _iou_vs_gt(gt_geojson, post_gj)
-        post_aff = snap.get("post_fix_affine_H")
-        if post_aff is not None:
-            np.save(str(debug_dir / f"iter_{i}_post_fix_affine.npy"), post_aff)
-
-        trace.append(iter_entry)
-
-    # Trace summary: ground-truth IoU at pre-critic, per iteration, and final
-    pre_iou = _iou_vs_gt(gt_geojson, pre.get("geojson")) if pre else None
-    final_iou = _iou_vs_gt(gt_geojson, final_snap.get("geojson")) if final_snap else None
-    (debug_dir / "trace.json").write_text(json.dumps({
-        "pre_critic_iou_vs_gt": pre_iou,
-        "final_iou_vs_gt": final_iou,
-        "iou_delta_from_critic": (
-            (final_iou - pre_iou) if (pre_iou is not None and final_iou is not None)
-            else None),
-        "iterations": trace,
-    }, indent=2, default=str))
-
-
 # ── Main Runner ──────────────────────────────────────────────────────────────
 
 def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
@@ -210,8 +115,7 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                   dataset_path="evaluation_data/0_planning_dataset_list.xlsx",
                   eval_dir="evaluation_data",
                   only_cases=None, force=False,
-                  hard_first=False, prev_results_dir=None,
-                  enable_critic=False):
+                  hard_first=False, prev_results_dir=None):
     """Run benchmark using the unified tool-calling agent.
 
     Args:
@@ -222,9 +126,6 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
         dpi: PDF rendering DPI.
         max_iterations: Max agent turns per case.
         only_cases: If set, only run these specific folder names.
-        enable_critic: Run Phase 3 Commenter VLM critic. Default OFF — the
-            critic is now an opt-in ablation knob, not part of the default
-            production pipeline.
     """
     from tools.agent import run_agent
 
@@ -372,7 +273,6 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                 max_iterations=max_iterations,
                 dpi=dpi,
                 verbose=True,
-                enable_critic=enable_critic,
                 case_name=folder_name,
                 case_dir=case_dir,
             )
@@ -417,10 +317,7 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                 metrics = calculate_spatial_metrics(gt_geojson, geojson)
 
             iou = metrics.get("iou", 0)
-            crit = result.get("critic_final_decision") or "-"
-            crit_extra = " worker_re" if result.get("critic_worker_reentered") else ""
             print(f"  IoU={iou:.3f}  inliers={mi.get('n_inliers', 0)}  "
-                  f"critic={crit}{crit_extra}  "
                   f"t={dt:.1f}s  reason={result.get('agent_reason', '')[:60]}")
 
             # Save results — cache everything for offline analysis
@@ -477,23 +374,6 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
             if selected_overlay is not None:
                 cv2.imwrite(str(case_dir / "selected_boundary.png"),
                             selected_overlay)
-
-            # Phase 3 critic artifacts
-            critic_iters = result.get("critic_iterations") or []
-            if critic_iters:
-                (case_dir / "critic_log.json").write_text(json.dumps({
-                    "iterations": critic_iters,
-                    "final_decision": result.get("critic_final_decision"),
-                    "changed_mask": result.get("critic_changed_mask"),
-                    "worker_reentered": result.get("critic_worker_reentered"),
-                    "tokens": result.get("critic_tokens"),
-                }, indent=2, default=str))
-            critic_panel = result.get("critic_panel_img")
-            if critic_panel is not None:
-                cv2.imwrite(str(case_dir / "critic_panel.png"), critic_panel)
-
-            # Rigorous-analysis: full critic trace under critic_debug/
-            _save_critic_debug(case_dir, result, gt_geojson)
 
             # Visualization (with timeout). The agent cleans up map_img
             # before returning, so only comparison viz runs here.
@@ -632,12 +512,6 @@ if __name__ == "__main__":
     parser.add_argument("--prev-results", default=None,
                         help="Path to previous results dir for --hard-first "
                              "ordering (default: same as output-dir/model)")
-    parser.add_argument("--with-critic", action="store_true",
-                        help="Enable Phase 3 Commenter critic loop. Default is "
-                             "OFF — the critic was disabled as the production "
-                             "default 2026-05-14 after measuring minimal IoU "
-                             "lift. Use this flag for ablation runs that test "
-                             "what the critic adds.")
     args = parser.parse_args()
 
     run_benchmark(
@@ -651,5 +525,4 @@ if __name__ == "__main__":
         force=args.force,
         hard_first=args.hard_first,
         prev_results_dir=args.prev_results,
-        enable_critic=args.with_critic,
     )
