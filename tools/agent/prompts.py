@@ -173,10 +173,13 @@ WORKFLOW
    lookup_district as a LAST RESORT (every match_at < 0.40 AND
    is_district_wide=True).
 
-2. match_at(page=N, name, lat, lon) on the top 1-3 candidates. The
-   `page` argument is REQUIRED and selects which page to use for ITS
-   area_group; other area_groups in the document use their primaries
-   automatically. For typical single-area docs just pass map_pages[0].
+2. match_at(page=N, name, lat, lon) on the candidate from propose_centers.
+   propose_centers returns ONE pick per call — to try a different anchor,
+   call propose_centers again (optionally with match_context="..." feedback,
+   see below). The `page` argument is REQUIRED and selects which page to
+   use for ITS area_group; other area_groups in the document use their
+   primaries automatically. For typical single-area docs just pass
+   map_pages[0].
    Each call returns:
    • a multi-axis reward (overall_score, total_inliers, per_group
      breakdown), AND
