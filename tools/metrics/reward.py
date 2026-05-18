@@ -153,8 +153,13 @@ def axis_road_name_agreement(
     at the matched location?
 
     Uses the offline OS Open Zoomstack GeoPackage (no network calls).
-    Returns score = matched / total reader roads. Score 0 with
-    reader_road_names empty is treated as "no signal" (score 0.5).
+
+    Three regimes (distinguishes "no data" from "data disagrees"):
+      * `reader_road_names` empty           → 0.5 neutral (no signal to test)
+      * OS has no roads in radius           → 0.5 neutral (sparse cartography,
+        common in rural villages — NOT a wrong-area signal)
+      * OS has roads, but none match reader → 0.0 strong wrong-area signal
+      * Some / all match                    → matched / total
     """
     n_total = len(reader_road_names or [])
     if n_total == 0:
@@ -173,9 +178,13 @@ def axis_road_name_agreement(
 
     nearby = _query_gpkg_road_names(chosen_lat, chosen_lon, radius_m=radius_m)
     if not nearby:
+        # Sparse OS cartography (rural villages often render no road labels
+        # at z15). Geometry might be perfectly correct — we just can't test
+        # road agreement here. Neutral, NOT a wrong-area signal.
         return AxisResult(
-            score=0.0,
-            verdict="no roads found in OS data within radius — likely wrong area",
+            score=0.5,
+            verdict=("no OS roads within radius — sparse cartography "
+                     "(rural / unlabelled), neutral signal"),
             evidence={"reader_roads": list(reader_road_names),
                       "matched_roads": [], "radius_m": radius_m})
 
@@ -193,8 +202,8 @@ def axis_road_name_agreement(
     elif score > 0:
         v = f"weak agreement ({n_matched}/{n_total} reader roads found)"
     else:
-        v = (f"NO reader roads found in OS at this location "
-             f"({n_total} expected, 0 matched) — strong wrong-area signal")
+        v = (f"OS roads present here but ZERO of {n_total} reader roads "
+             f"match — strong wrong-area signal")
 
     return AxisResult(
         score=score, verdict=v,
@@ -351,9 +360,10 @@ def format_for_agent(axes: Dict[str, AxisResult], overall: float) -> str:
     if inl and inl.score < 0.4 and sc and sc.score < 0.5:
         hints.append("Both inlier count AND scale are weak — reject this candidate.")
     if rn and rn.score == 0.0:
-        hints.append("Zero reader road names found in OS data here — strong "
-                     "signal this is the wrong area; reject unless other "
-                     "axes are unusually strong.")
+        hints.append("Zero road-name agreement: OS roads exist at this "
+                     "location but none match the reader's — strong "
+                     "wrong-area signal; reject unless other axes are "
+                     "unusually strong.")
     if inl and inl.score >= 0.75 and sc and sc.score >= 0.7 and rn and rn.score >= 0.5:
         hints.append("Strong inliers AND consistent scale AND reasonable road "
                      "agreement — this is a high-confidence accept.")

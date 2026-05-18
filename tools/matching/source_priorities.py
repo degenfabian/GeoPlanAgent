@@ -7,7 +7,7 @@ The registry centralises two complementary lookups keyed by a candidate's
   - `sigma_from_source(name)`     — empirical p95 candidate→GT distance,
     used as the MINIMA search-window radius.
   - `source_priority(name)`       — preference for capping candidate count
-    (postcodes/code_point/INSPIRE rank 0; admin/parish rank 9).
+    (postcodes/code_point rank 0; admin/parish rank 9).
 
 `tools/matching.py` re-exports every public + private name in this module
 so existing imports like::
@@ -75,7 +75,6 @@ _SOURCE_SIGMA_M = {
     "grid_ref":         300,    # parsed BNG grid ref
     "agent_websearch": 3000,    # WebSearch → Code-Point. σ=3km covers ~80% of
     "websearch_pc":    3000,    # WebSearch hit (alias of agent_websearch)
-    "inspire":          100,    # INSPIRE freehold parcel
     "consensus_centroid": 500,  # cluster of agreeing candidates
     "feature_cluster":  2000,   # location where multiple pdf_info features co-occur
 
@@ -87,7 +86,6 @@ _SOURCE_SIGMA_M = {
     # case 69 regressed 0.779→0.000 with 570m drift because σ=5000 default
     # made MINIMA's search window too wide.
     "nominatim_addr":  2500,
-    "nominatim:addr":  2500,    # not actually keyed (split[0] → "nominatim"); kept for documentation
 
     # Medium-precision: AFTER LA filter, the catastrophic tail is gone.
     # σ calibrated to cover edge-of-village cases (rural sites can be at the
@@ -155,7 +153,7 @@ def candidate_passes_la_filter(source: str, lat: float, lon: float,
 # tails that the LA filter catches but which still warrant lower priority
 # when LA filter is unavailable.
 SOURCE_PRIORITY: Dict[str, int] = {
-    "postcode": 0, "code_point": 0, "agent_websearch": 0, "inspire": 0,
+    "postcode": 0, "code_point": 0, "agent_websearch": 0,
     "grid_ref": 1, "grid_refs_centroid": 1,
     "consensus_centroid": 2,
     "nominatim": 3, "photon": 3,

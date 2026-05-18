@@ -35,9 +35,10 @@ from tools.agent.state import (
 )
 
 
-# Strict commit-gate thresholds (unchanged from v_postrot).
-MIN_INLIERS_COMMIT = 18
-MIN_MASK_FRAC_COMMIT = 0.002
+# No inlier-count gate. A group "passes" iff MINIMA produced a valid
+# affine_H (and therefore a geojson) for it. The mathematical floor is
+# 3 inlier point pairs (6 equations, 6 unknowns), but MINIMA's internal
+# RANSAC already enforces that — if we got a geojson back, we trust it.
 
 # Fixed query for SAM3 semantic segmentation. The LoRA was trained against
 # this literal phrase.
@@ -337,15 +338,8 @@ def match_at(
     # Union per-group GeoJSONs that passed the per-group commit gate.
     committed_groups = []
     for g in valid:
-        mi = g.get("match_info") or {}
-        method = str(mi.get("method", ""))
-        n_in = int(mi.get("n_inliers") or 0)
-        mask_frac = float(g.get("mask_frac") or 0.0)
-        if (method in ("analytical", "analytical_affine")
-                or (n_in >= MIN_INLIERS_COMMIT
-                    and mask_frac >= MIN_MASK_FRAC_COMMIT)):
-            if g.get("geojson") is not None:
-                committed_groups.append(g)
+        if g.get("geojson") is not None:
+            committed_groups.append(g)
 
     unioned_geojson = _union_geojsons([g["geojson"] for g in committed_groups])
 
@@ -381,6 +375,7 @@ def match_at(
                 "score": float((g.get("match_info") or {}).get("score") or 0.0),
                 "overall_score": float(g.get("overall_score") or 0.0),
                 "passed_gate": g in committed_groups,
+                "weak_retry": g.get("weak_retry"),
             }
             for g in per_group
         ],
@@ -458,21 +453,50 @@ def _match_single_page(state: AgentState, page: int, name: str,
 
     mi, reward = _evaluate(result)
 
-    # 2× σ retry on weak first attempt.
+    # 2× σ retry on weak first attempt. Telemetry on whether the retry
+    # fired + whether it strictly improved overall_score is persisted in
+    # the return dict so post-benchmark analysis can compute rescue rate.
+    weak_retry = {
+        "fired": False,
+        "kept": False,
+        "original_n_inliers": int((mi or {}).get("n_inliers") or 0),
+        "original_overall_score": float(reward.overall_score) if reward is not None else 0.0,
+        "retry_n_inliers": None,
+        "retry_overall_score": None,
+        "retry_sigma_m": None,
+    }
     weak = (int((mi or {}).get("n_inliers") or 0) < 25
             or float(reward.overall_score) < 0.4)
     if weak:
+        weak_retry["fired"] = True
+        weak_retry["retry_sigma_m"] = float(sigma_m * 2.0)
         try:
             retry_result = _run_minima(sigma_m * 2.0)
         except Exception:
             retry_result = None
         if retry_result and retry_result.get("affine_H") is not None:
             retry_mi, retry_reward = _evaluate(retry_result)
+            weak_retry["retry_n_inliers"] = int((retry_mi or {}).get("n_inliers") or 0)
+            weak_retry["retry_overall_score"] = (
+                float(retry_reward.overall_score) if retry_reward is not None else 0.0)
             if (retry_reward is not None
                     and retry_reward.overall_score > reward.overall_score):
+                weak_retry["kept"] = True
+                print(f"    [weak-retry] page {page}: "
+                      f"score {weak_retry['original_overall_score']:.2f} → "
+                      f"{weak_retry['retry_overall_score']:.2f}, "
+                      f"n_inliers {weak_retry['original_n_inliers']} → "
+                      f"{weak_retry['retry_n_inliers']}, σ "
+                      f"{int(sigma_m)} → {int(sigma_m * 2.0)}m")
                 result = retry_result
                 mi = retry_mi
                 reward = retry_reward
+            else:
+                print(f"    [weak-retry] page {page}: not kept "
+                      f"(score {weak_retry['original_overall_score']:.2f} ≥ "
+                      f"{weak_retry['retry_overall_score']:.2f})")
+        else:
+            print(f"    [weak-retry] page {page}: retry returned no usable match")
 
     affine_H = result.get("affine_H")
     tile_info = result.get("tile_info")
@@ -486,6 +510,7 @@ def _match_single_page(state: AgentState, page: int, name: str,
         "reward": reward.to_dict() if reward is not None else None,
         "overall_score": float(reward.overall_score) if reward is not None else 0.0,
         "mask_frac": mask_frac,
+        "weak_retry": weak_retry,
         "panel": True,
     }
 
@@ -620,10 +645,10 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
     if n_committed == 0 and not has_analytical:
         avail_ids = sorted(state.match_attempts.keys())
         raise ModelRetry(
-            f"commit_match REJECTED candidate_id={candidate_id}: no group "
-            f"passed the strict gate (n_inliers≥{MIN_INLIERS_COMMIT} AND "
-            f"mask_frac≥{MIN_MASK_FRAC_COMMIT}). Try a different page or "
-            f"a different centre via match_at; or call propose_centers"
+            f"commit_match REJECTED candidate_id={candidate_id}: MINIMA "
+            f"produced no usable affine for any group (every group is "
+            f"missing affine_H/geojson). Try a different page or a "
+            f"different centre via match_at; or call propose_centers"
             f"(extra_terms=[...]) to add more candidates. "
             f"Available IDs: {avail_ids}."
         )

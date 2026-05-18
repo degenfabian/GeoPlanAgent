@@ -619,7 +619,7 @@ if __name__ == "__main__":
     parser.add_argument("--max-cases", type=int, default=None)
     parser.add_argument("--start-from", type=int, default=0)
     parser.add_argument("--dpi", type=int, default=200)
-    parser.add_argument("--max-iterations", type=int, default=6,
+    parser.add_argument("--max-iterations", type=int, default=8,
                         help="Max agent turns per case")
     parser.add_argument("--output-dir", default="results/benchmark")
     parser.add_argument("--cases", nargs="+", default=None,

@@ -60,7 +60,7 @@ def run_agent(
     pdf_path: str,
     models_state: dict,
     model_name: str = "google/gemini-3.1-pro-preview",
-    max_iterations: int = 6,
+    max_iterations: int = 8,
     dpi: int = 200,
     verbose: bool = True,
     enable_critic: bool = False,

@@ -209,17 +209,22 @@ WORKFLOW
        score "looks acceptable" (e.g. 0.65-0.79). The second match often
        lands at a different zoom and reveals a much better fit.
      • < 0.40 on the first try → reject; try another center.
-     • RURAL OVERRIDE: if n_inliers ≥ 100 AND scale_consistency ≥ 0.85 AND
-       avg_scale ∈ [0.85, 1.15], commit even when overall_score < 0.40.
-       Catches rural villages whose A-road labels are missing from OS
-       zoom-15 tiles (collapses road_name_agreement). Still verify the
-       panel visually before accepting.
      • After 2+ match_at attempts: commit the highest-n_inliers result that
        lands inside the expected admin region.
      • Visual mismatch overrides scores: reject even at high overall_score
        if streets in the red box look NOTHING like the planning map.
      • If scale is known and scale_consistency < 0.50 → prefer another
        candidate (affine landed at wrong zoom).
+
+   Reading the multi-axis reward:
+     • road_name_agreement = 0.0 means OS has roads at this location but
+       NONE match the reader's road names — strong wrong-area signal.
+     • road_name_agreement = 0.5 with verdict "no OS roads within radius"
+       means sparse OS cartography (typical rural villages); it is NOT a
+       wrong-area signal — trust n_inliers + scale_consistency instead.
+     • scale_consistency near 1.0 means the recovered affine scale agrees
+       with the reader's stated map scale; far from 1.0 means the assumed
+       scale was wrong OR this is the wrong area (use the panel to tell).
 
 3. commit_match(candidate_id) — picks the active result AND automatically
    projects the SAM3 mask through the committed affine into a WGS84
@@ -231,12 +236,15 @@ WORKFLOW
 
 4. verify_position() if needed:
    • Borderline matches (25 ≤ n_inliers ≤ 100): MANDATORY. Fill
-     visual_check_notes (≥20 chars). Shows both the SAM mask on the
-     planning map (left) and the projected polygon on OS tiles (right).
-     If features look weak or mismatched, STILL submit status="accepted"
-     — note concerns in visual_check_notes. The pipeline always emits a
-     polygon; downstream measures IoU on whatever you commit.
-   • district_lookup path: MANDATORY. Compare the district polygon's
+     visual_check_notes (≥20 chars). Shows the SAM mask on each
+     committed group's planning page (single-group: side-by-side with
+     OS tiles; multi-group: N planning panels stacked above one OS-tile
+     panel showing the union polygon). If features look weak or
+     mismatched, STILL submit status="accepted" — note concerns in
+     visual_check_notes. The pipeline always emits a polygon; downstream
+     measures IoU on whatever you commit.
+   • district_lookup path: MANDATORY. The panel shows only the OS-tile
+     side (no planning-map SAM overlay). Compare the district polygon's
      extent to what the planning map shows; if it's dramatically larger,
      note that in visual_check_notes but still submit.
 

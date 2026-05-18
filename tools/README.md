@@ -174,10 +174,8 @@ re-calls so the sub-agent SEES its own previous reasoning + the new
 
 | Constant | Home | Value | Note |
 |---|---|---|---|
-| `MIN_INLIERS_COMMIT` | `tools/agent/tools/match.py` | 18 | Strict commit-gate floor |
-| `MIN_MASK_FRAC_COMMIT` | `tools/agent/tools/match.py` | 0.002 | Strict commit-gate mask floor |
 | `GATE_RATIO_6DOF` | `tools/matching/_core.py` | 1.3 | 6-DOF affine fallback threshold |
 | `SCALE_6DOF_MIN/MAX` | `tools/matching/_core.py` | 0.3 / 3.0 | 6-DOF affine scale-sanity band |
 | `WINDOW_STRIDE_TARGET` | `tools/matching/_core.py` | 100 | Sliding-window stride target |
 | `REFINE_BUDGET_PER_CASE` | `tools/agent/tools/refine.py` | 3 | Cap on `reader_refine` calls |
-| `OUTSIDE_LA_PENALTY` | `tools/agent/tools/match.py` | (see file) | Smart-commit penalty for outside-LA picks |
+| `OUTSIDE_LA_PENALTY` | `tools/scoring.py` | 0.3 | Smart-commit penalty for outside-LA picks |
