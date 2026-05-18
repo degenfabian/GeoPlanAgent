@@ -94,12 +94,13 @@ def verify_position(
     geojson = cr.get("geojson")
     if geojson:
         tile_bgr = _draw_geojson_on_tiles(tile_bgr, geojson, tile_info)
-    target_h = (plan_panels[0].shape[0]
-                if plan_panels else 500)
+    # Use the SAME pre-label target_h as plan_panels so heights match after
+    # _label() adds 28 px. (Plan panels are 360 if multi-group else 500.)
+    tile_target_h = 360 if len(per_group) > 1 else 500
     tile_panel = _label(
         cv2.resize(tile_bgr,
-                   (max(1, int(tile_bgr.shape[1] * target_h / tile_bgr.shape[0])),
-                    target_h)),
+                   (max(1, int(tile_bgr.shape[1] * tile_target_h / tile_bgr.shape[0])),
+                    tile_target_h)),
         f"OS tiles @ ({lat:.4f},{lon:.4f}) + polygon"
         + (" (union)" if len(per_group) > 1 else "")
     )
