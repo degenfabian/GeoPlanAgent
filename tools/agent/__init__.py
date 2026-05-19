@@ -215,11 +215,22 @@ def run_agent(
               f"inliers={mi.get('n_inliers', 0)}, "
               f"reason={state.accept_reason[:100]}")
 
+    # When the critic ran AND triggered rehands, the post-critic
+    # worker_result carries the FULL conversation including the rehand
+    # sub-turns. Use it for log extraction so the on-disk message log
+    # captures critic-triggered worker activity (otherwise the rehand
+    # turns are lost from disk).
+    log_source_result = result
+    if critic_result is not None and "error" not in critic_result:
+        final_wr = critic_result.get("final_worker_result")
+        if final_wr is not None:
+            log_source_result = final_wr
+
     message_log = []
     extracted_stats: dict = {}
-    if result is not None:
+    if log_source_result is not None:
         try:
-            message_log, extracted_stats = _rt.extract_message_log(result)
+            message_log, extracted_stats = _rt.extract_message_log(log_source_result)
         except Exception:
             pass
 

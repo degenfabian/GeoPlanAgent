@@ -571,4 +571,9 @@ def run_critic_loop(
         "n_rejections": n_rej,
         "tokens": {"request": total_in, "response": total_out},
         "panel_iter0": panel_iter0,
+        # The latest worker result — carries the full conversation
+        # including all critic-triggered rehand sub-turns. Use this for
+        # message_log extraction so the on-disk log includes critic
+        # interventions; otherwise the rehand turns are lost.
+        "final_worker_result": current_worker_result,
     }

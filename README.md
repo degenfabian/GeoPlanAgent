@@ -27,10 +27,13 @@ ground-truth GeoJSON.
             • text & visual       SAM3 + projection    SAM mask →
               cues for locate     across all groups)   GeoJSON)
                                                        │
-                                       verify_position (when borderline)
-                                                       │
                                                        ▼
                                        BoundaryOutcome → final GeoJSON
+                                                       │
+                                       (optional) LLM critic — pairwise
+                                       review across stored candidates;
+                                       may direct switch / retry_locate
+                                       (enable_critic=True; default off)
 ```
 
 ## Project structure
@@ -161,7 +164,7 @@ labels). Cached for speed.
 
 ### Phase 2 — Worker
 
-Tool-calling pydantic-ai agent. Five worker tools:
+Tool-calling pydantic-ai agent. Four worker tools:
 
 1. **`propose_centers(extra_terms?, match_context?)`** — invokes the
    locate sub-agent (see `tools/agent/README.md`), which uses six
@@ -171,20 +174,15 @@ Tool-calling pydantic-ai agent. Five worker tools:
    centre. For multi-area-group documents one call handles every group
    automatically (per-group MINIMA on each group's primary page, per-page
    SAM3 mask caching, polygons UNIONed). Returns a multi-axis reward
-   (overall_score, n_inliers, road_name_agreement, scale_consistency) —
-   numbers only; visual confirmation of the committed polygon happens
-   post-commit via `verify_position`.
+   (overall_score, total_inliers, road_name_agreement, scale_consistency)
+   — numbers only.
 3. **`commit_match(candidate_id)`** — picks the best stored match_at
    attempt as the active result and projects the SAM mask through the
    committed affine to GeoJSON. The smart-commit gate combines
    `total_inliers` with an outside-LA penalty so a worse pick gets
    redirected; the strict gate rejects commits where MINIMA produced
    no usable affine for any group.
-4. **`verify_position(lat?, lon?)`** — renders a visual panel (planning
-   map + SAM mask on the left, OS tiles + projected polygon on the
-   right). Mandatory by the output validator for borderline inliers
-   (25-100 band).
-5. **`lookup_district(district_name)`** — OS BoundaryLine offline lookup
+4. **`lookup_district(district_name)`** — OS BoundaryLine offline lookup
    for documents that cover an entire admin district (e.g. Article 4
    directions, conservation-area-wide documents). When this succeeds
    the worker submits `status="district_lookup"` and the polygon comes
@@ -196,6 +194,21 @@ Plus `reader_refine(question, page_hint?)` — re-consults the source PDF
 The worker output (`BoundaryOutcome`) is validated by an
 `output_validator` that re-reads tool-call state, so the worker can't
 report flags it didn't actually set.
+
+### Phase 3 (optional) — Independent LLM critic
+
+Opt-in via `--enable-critic` (or `enable_critic=True` to `run_agent`).
+After the worker submits, a separate LLM call sees the visual panels
+for ALL stored match candidates plus per-candidate metrics
+(`n_inliers`, `road_name_agreement`, `scale_consistency`) and emits a
+`CriticDirective` with `action ∈ {approve, switch, retry_locate}`. On
+switch / retry_locate the worker is re-invoked via a templated user
+message (neutral framing — the worker stays opaque to the critic's
+existence during initial exploration). Max 2 rejections per case.
+
+The worker's first-committed polygon is snapshotted before the loop
+fires, so a single run produces paired no-critic / with-critic IoUs
+for the ablation. Defined in `tools/agent/critic_agent.py`.
 
 ## Output layout (per case)
 
@@ -223,7 +236,7 @@ per-case rows.
 |---|---|
 | ≥ 100 | Strong match |
 | 50–100 | Decent — should still pass smart-commit gate |
-| 25–50 | Borderline — `verify_position` is MANDATORY |
+| 25–50 | Borderline — worker must try at least one more candidate |
 | < 25 | Weak — worker should try another centre |
 
 Multi-axis reward axes (returned in each `match_at` per-group entry):
