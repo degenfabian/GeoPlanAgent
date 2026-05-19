@@ -264,9 +264,6 @@ def match_at(
         single["area_group"] = int(group_id)
         single["page"] = int(group_page)
         per_group.append(single)
-        # Per-group panel image isn't surfaced to the agent (numbers-only
-        # return; visual confirmation happens via verify_position post-commit).
-        single.pop("panel", None)
 
     # Aggregate metrics across groups that produced a valid match.
     valid = [g for g in per_group
@@ -353,7 +350,7 @@ def _match_single_page(state: AgentState, page: int, name: str,
                         matched_candidate: Optional[dict]) -> Dict[str, Any]:
     """Render+segment+MINIMA on a single page at (lat, lon). Returns a dict
     with affine_H / tile_info / match_info / geojson / mask_frac /
-    overall_score / panel-data; or error."""
+    overall_score / reward; or error."""
     map_img, map_crop_path = _get_or_render_page(state, page)
     if map_img is None or map_crop_path is None:
         return {"error": f"render failed for page {page}"}
@@ -454,7 +451,6 @@ def _match_single_page(state: AgentState, page: int, name: str,
         "overall_score": float(reward.overall_score) if reward is not None else 0.0,
         "mask_frac": mask_frac,
         "weak_retry": weak_retry,
-        "panel": True,
     }
 
 

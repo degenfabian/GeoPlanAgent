@@ -101,7 +101,8 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                   dataset_path="evaluation_data/0_planning_dataset_list.xlsx",
                   eval_dir="evaluation_data",
                   only_cases=None, force=False,
-                  hard_first=False, prev_results_dir=None):
+                  hard_first=False, prev_results_dir=None,
+                  enable_critic=False, critic_max_iters=2):
     """Run benchmark using the unified tool-calling agent.
 
     Args:
@@ -241,13 +242,24 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
         cached_metrics = case_dir / "metrics.json"
         if cached_metrics.exists() and not force:
             prev = json.loads(cached_metrics.read_text())
-            print(f"  [cached] IoU={prev.get('iou', 0):.3f}")
-            all_results.append({
-                "folder": folder_name, "sl_no": sl_no,
-                **{k: v for k, v in prev.items()
-                   if k not in ("sl_no",)}
-            })
-            continue
+            # Cache-mode mismatch detection: a cached entry that contains
+            # worker_first_iou came from a --enable-critic run. If the
+            # current invocation is in a different mode, the cached IoU
+            # is not comparable — force re-run to avoid silently mixing
+            # critic and no-critic results.
+            cached_had_critic = ("worker_first_iou" in prev)
+            if cached_had_critic != enable_critic:
+                print(f"  [cache mode mismatch — re-running] "
+                      f"cached_had_critic={cached_had_critic} "
+                      f"current={enable_critic}")
+            else:
+                print(f"  [cached] IoU={prev.get('iou', 0):.3f}")
+                all_results.append({
+                    "folder": folder_name, "sl_no": sl_no,
+                    **{k: v for k, v in prev.items()
+                       if k not in ("sl_no",)}
+                })
+                continue
 
         # ── Run the agent ──
         try:
@@ -261,6 +273,8 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                 verbose=True,
                 case_name=folder_name,
                 case_dir=case_dir,
+                enable_critic=enable_critic,
+                critic_max_iters=critic_max_iters,
             )
             dt = time.time() - t0
 
@@ -297,14 +311,34 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
             geojson = result.get("geojson")
             mi = result.get("match_info", {})
 
-            # Compute metrics
+            # Compute metrics on the (final) geojson — this is the
+            # critic_iou when the critic is enabled, or the worker_iou
+            # when it isn't.
             metrics = {}
             if gt_geojson and geojson:
                 metrics = calculate_spatial_metrics(gt_geojson, geojson)
 
             iou = metrics.get("iou", 0)
-            print(f"  IoU={iou:.3f}  inliers={mi.get('n_inliers', 0)}  "
-                  f"t={dt:.1f}s  reason={result.get('agent_reason', '')[:60]}")
+
+            # When critic was enabled, also compute the worker's
+            # first-commit IoU (no-critic baseline) and stash it.
+            worker_first_iou = None
+            worker_first_metrics = None
+            worker_first_gj = result.get("worker_first_geojson")
+            if worker_first_gj is not None and gt_geojson:
+                worker_first_metrics = calculate_spatial_metrics(
+                    gt_geojson, worker_first_gj)
+                worker_first_iou = worker_first_metrics.get("iou")
+
+            if worker_first_iou is not None:
+                delta = (iou or 0) - (worker_first_iou or 0)
+                print(f"  IoU={iou:.3f} (critic) vs {worker_first_iou:.3f} "
+                      f"(worker_first) Δ={delta:+.3f}  "
+                      f"inliers={mi.get('n_inliers', 0)}  t={dt:.1f}s  "
+                      f"reason={result.get('agent_reason', '')[:60]}")
+            else:
+                print(f"  IoU={iou:.3f}  inliers={mi.get('n_inliers', 0)}  "
+                      f"t={dt:.1f}s  reason={result.get('agent_reason', '')[:60]}")
 
             # Save results — cache everything for offline analysis
             case_dir.mkdir(parents=True, exist_ok=True)
@@ -314,7 +348,7 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                 )
 
             # Core metrics (used for cache-hit detection on re-runs)
-            (case_dir / "metrics.json").write_text(json.dumps({
+            metrics_payload = {
                 "sl_no": sl_no,
                 "match_info": mi,
                 "processing_time": dt,
@@ -322,7 +356,19 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                 "agent_reason": result.get("agent_reason"),
                 "agent_stats": result.get("agent_stats", {}),
                 **metrics,
-            }, indent=2, default=str))
+            }
+            # Paired no-critic / with-critic snapshot from a single run
+            # (only present when --enable-critic was set).
+            if worker_first_metrics is not None:
+                metrics_payload["worker_first_iou"] = worker_first_iou
+                metrics_payload["worker_first_metrics"] = worker_first_metrics
+            (case_dir / "metrics.json").write_text(
+                json.dumps(metrics_payload, indent=2, default=str))
+
+            # Persist the worker's first-commit polygon for inspection.
+            if worker_first_gj is not None:
+                (case_dir / "predicted_worker_first.geojson").write_text(
+                    json.dumps(worker_first_gj, indent=2))
 
             # Full message log (every tool call, return, and reasoning text)
             msg_log = result.get("message_log", [])
@@ -498,6 +544,18 @@ if __name__ == "__main__":
     parser.add_argument("--prev-results", default=None,
                         help="Path to previous results dir for --hard-first "
                              "ordering (default: same as output-dir/model)")
+    parser.add_argument("--enable-critic", action="store_true",
+                        help="Run an independent LLM critic after the worker "
+                             "submits. The critic compares all stored "
+                             "match candidates (pairwise) and may direct the "
+                             "worker to switch candidates or re-locate. The "
+                             "worker's first-commit polygon is also captured "
+                             "(snapshot) so metrics.json carries paired "
+                             "no-critic and with-critic IoUs from one run.")
+    parser.add_argument("--critic-max-iters", type=int, default=2,
+                        help="Max critic-rejection iterations per case "
+                             "before forcing accept. Ignored without "
+                             "--enable-critic.")
     args = parser.parse_args()
 
     run_benchmark(
@@ -511,4 +569,6 @@ if __name__ == "__main__":
         force=args.force,
         hard_first=args.hard_first,
         prev_results_dir=args.prev_results,
+        enable_critic=args.enable_critic,
+        critic_max_iters=args.critic_max_iters,
     )

@@ -498,8 +498,17 @@ def build_run_agent_return(
     state: AgentState,
     agent_stats: dict,
     message_log: list,
+    critic_result: Optional[dict] = None,
 ) -> dict:
-    """Assemble the dict that run_agent returns to benchmark_runner."""
+    """Assemble the dict that run_agent returns to benchmark_runner.
+
+    When critic_result is supplied (enable_critic=True path), the returned
+    dict also contains ``worker_first_geojson`` — the polygon at the
+    worker's first commit, BEFORE any critic intervention. The top-level
+    ``geojson`` always reflects the final state (post-critic if critic ran,
+    worker's commit otherwise). This lets downstream score both
+    conditions from a single run.
+    """
     from tools.agent.state import committed_primary_page
     primary_page = committed_primary_page(state)
     primary_img = state.rendered_pages.get(primary_page) if primary_page else None
@@ -509,7 +518,7 @@ def build_run_agent_return(
         sel = primary_img.copy()
         sel[primary_mask > 0] = [0, 255, 0]
         primary_overlay = cv2.addWeighted(primary_img, 0.5, sel, 0.5, 0)
-    return {
+    out: Dict[str, Any] = {
         "success": True,
         "geojson": state.current_result.get("geojson"),
         "match_info": state.current_result.get("match_info", {}),
@@ -525,3 +534,12 @@ def build_run_agent_return(
         "message_log": message_log,
         "selected_overlay": primary_overlay,
     }
+    # Surface worker_first_geojson on BOTH the success path AND the
+    # critic-error path — lets downstream distinguish "critic ran and
+    # produced a paired result" from "critic disabled" without confusing
+    # either with a critic crash mid-run.
+    if critic_result is not None:
+        wf = critic_result.get("worker_first_geojson")
+        if wf is not None:
+            out["worker_first_geojson"] = wf
+    return out

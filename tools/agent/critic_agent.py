@@ -1,0 +1,574 @@
+"""Pairwise LLM critic — independent reviewer of the worker's commit.
+
+The critic runs AFTER the worker submits a BoundaryOutcome. It sees:
+  - a panel stack (one row per stored match_attempt) showing planning map
+    + SAM mask overlay on the left and OS tiles + projected polygon
+    (red) on the right
+  - per-candidate metrics (n_inliers, road_name_agreement,
+    scale_consistency)
+  - which candidate the worker committed
+
+The critic emits a CriticDirective specifying:
+  - chosen_candidate_id : critic's pick (may equal worker's commit)
+  - action              : approve | switch | retry_locate
+  - reasoning           : 2-3 sentences naming concrete visual features
+
+System templates the directive into a fixed user message and re-invokes
+the worker. The worker is opaque to the critic's existence: its system
+prompt is unchanged. Up to ``max_iters`` critic rejections per case.
+
+Two-in-one ablation: the worker's first-commit polygon is the no-critic
+baseline; the post-loop polygon is the with-critic outcome. Both IoUs
+are reported.
+"""
+
+from __future__ import annotations
+
+import time
+from typing import Any, Dict, List, Optional
+
+import cv2
+import numpy as np
+from pydantic import BaseModel, Field
+from pydantic_ai import Agent, BinaryContent
+from typing import Literal
+
+from tools.agent._model import resolve_model
+
+
+# ── Critic output schema ───────────────────────────────────────────────────
+
+
+class CriticDirective(BaseModel):
+    """Pairwise judgement across all stored match_attempts."""
+
+    chosen_candidate_id: int = Field(
+        description="The candidate_id you believe is the best match. This "
+                    "may equal the worker's committed candidate (if you "
+                    "agree) or a different stored candidate (if you would "
+                    "switch). For retry_locate, set to the worker's "
+                    "committed_id (placeholder)."
+    )
+    action: Literal["approve", "switch", "retry_locate"] = Field(
+        description="One of three actions: "
+                    "'approve' — the worker's committed candidate is the "
+                    "best stored option and looks correct visually. "
+                    "'switch' — a different stored candidate is a better "
+                    "fit; specify it in chosen_candidate_id. "
+                    "'retry_locate' — none of the stored candidates appear "
+                    "to be in the right region; the agent should re-locate "
+                    "from a different geocoding signal."
+    )
+    reasoning: str = Field(
+        description="2-3 sentences naming concrete visual features: which "
+                    "named road, settlement shape, building block, or "
+                    "junction you used to judge alignment. Cite per-"
+                    "candidate metrics where relevant (n_inliers, "
+                    "road_name_agreement, scale_consistency). Do NOT say "
+                    "'looks reasonable' or 'I think' — point at features."
+    )
+
+
+# Critic instructions — pairwise framing across candidates.
+CRITIC_INSTRUCTIONS = """\
+You are an independent reviewer of a UK planning-boundary extraction
+pipeline. The agent has matched a planning map to OS map tiles, generated
+candidate match attempts at different locations, projected SAM3 boundary
+masks through those matches, and committed one candidate as its final
+answer. Your job is pairwise comparison across the stored candidates and
+a single directive on whether to accept or redirect.
+
+WHAT YOU SEE
+- A panel stack. Each row is ONE candidate. Within a row:
+  LEFT  = planning map with the SAM mask overlaid in translucent green.
+  RIGHT = OS tile render at the matched window, with the projected
+          polygon outlined in red.
+  Each row is labelled "CANDIDATE {id} [COMMITTED]" — the COMMITTED tag
+  marks the worker's choice. For multi-area-group documents, a candidate
+  may have multiple sub-rows (one per group) plus a union polygon.
+- A metrics block listing per-candidate {n_inliers, road_name_agreement,
+  scale_consistency}.
+- The worker's committed candidate_id is also stated explicitly.
+
+WHAT "GOOD" LOOKS LIKE — for a candidate
+Trace named roads, settlement shapes, or distinctive features between
+the planning map (left) and OS render (right). The boundary line on the
+planning map (any colour / hatch) should sit where the red outlined
+polygon sits in the OS render. Road junctions, building blocks, water
+bodies should line up.
+
+WHAT "BAD" LOOKS LIKE
+- No road / feature correspondence: planning map shows urban streets;
+  OS render shows farmland or a different street pattern.
+- The SAM mask covers something other than the boundary (title block,
+  legend, scale bar, large blob of text).
+- The polygon outline lands well outside the planning map's drawn
+  boundary, or its shape clearly doesn't match.
+
+DECISION (pick exactly one action)
+
+- approve
+    The worker's committed candidate shows clear road/feature
+    correspondence AND the polygon outline aligns with the drawn
+    boundary. Set chosen_candidate_id = committed_id.
+
+- switch
+    A DIFFERENT stored candidate looks visually better (clearer
+    correspondence, better polygon alignment) than the committed one.
+    Set chosen_candidate_id to that candidate's id. Cite the specific
+    visual feature that swayed you.
+
+- retry_locate
+    None of the stored candidates show good correspondence — they all
+    appear to be in the wrong region (no road / feature match, polygons
+    in totally different terrain). The agent will be asked to re-locate
+    from a different geocoding signal (postcode vs place vs road, etc.).
+    Set chosen_candidate_id = committed_id (placeholder).
+
+OUTPUT
+A single CriticDirective. Reasoning MUST cite a concrete observation —
+specific feature you saw matched or mismatched, or a specific metric.
+Never use vague language ('looks fine', 'reasonable').
+"""
+
+
+_critic_agent: Optional[Agent] = None
+_critic_agent_model: Optional[str] = None
+
+
+def _ensure_agent(model_name: str) -> Agent:
+    """Build (or return cached) critic Agent."""
+    global _critic_agent, _critic_agent_model
+    if _critic_agent is not None and _critic_agent_model == model_name:
+        return _critic_agent
+    _critic_agent = Agent[None, CriticDirective](
+        model=resolve_model(model_name),
+        output_type=CriticDirective,
+        instructions=CRITIC_INSTRUCTIONS,
+    )
+    _critic_agent_model = model_name
+    return _critic_agent
+
+
+# ── Panel-building helpers ─────────────────────────────────────────────────
+
+
+def _label_strip(img: np.ndarray, text: str, height: int = 32) -> np.ndarray:
+    bar = np.full((height, img.shape[1], 3), 25, dtype=np.uint8)
+    cv2.putText(bar, text, (8, height - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.55,
+                (255, 255, 255), 1, cv2.LINE_AA)
+    return np.vstack([bar, img])
+
+
+def _build_one_group_panel(map_img: np.ndarray,
+                            mask: Optional[np.ndarray],
+                            tile_info: Optional[Dict[str, Any]],
+                            affine_H: Optional[np.ndarray],
+                            label: str,
+                            target_h: int = 480) -> Optional[np.ndarray]:
+    """Build a single LEFT|RIGHT row for one group of one candidate.
+
+    LEFT: planning map with SAM mask overlay (translucent green).
+    RIGHT: OS tile render with projected polygon outline (red).
+    """
+    if map_img is None or tile_info is None or "image" not in tile_info:
+        return None
+    left = map_img.copy()
+    if isinstance(mask, np.ndarray) and mask.sum() > 0:
+        mb = (mask > 0).astype(np.uint8)
+        if mb.shape != left.shape[:2]:
+            mb = cv2.resize(mb, (left.shape[1], left.shape[0]),
+                            interpolation=cv2.INTER_NEAREST)
+        layer = left.copy()
+        layer[mb > 0] = (0, 255, 0)
+        left = cv2.addWeighted(left, 0.55, layer, 0.45, 0)
+    h_l, w_l = left.shape[:2]
+    left = cv2.resize(left, (max(1, int(w_l * target_h / h_l)), target_h))
+
+    tile_img = tile_info["image"]
+    if tile_img.shape[2] == 3 and tile_info.get("_was_rgb", True):
+        tile_bgr = cv2.cvtColor(tile_img, cv2.COLOR_RGB2BGR)
+    else:
+        tile_bgr = tile_img.copy()
+
+    # Project SAM-mask contour through affine_H onto the OS tile.
+    if isinstance(mask, np.ndarray) and mask.sum() > 0 and affine_H is not None:
+        mb = (mask > 0).astype(np.uint8)
+        if mb.shape != map_img.shape[:2]:
+            mb = cv2.resize(mb, (map_img.shape[1], map_img.shape[0]),
+                            interpolation=cv2.INTER_NEAREST)
+        contours, _ = cv2.findContours(mb, cv2.RETR_EXTERNAL,
+                                       cv2.CHAIN_APPROX_SIMPLE)
+        for cnt in contours:
+            if len(cnt) < 3:
+                continue
+            pts = cnt.reshape(-1, 2).astype(np.float32)
+            pts_h = np.concatenate([pts, np.ones((len(pts), 1),
+                                                  dtype=np.float32)], axis=1)
+            proj = pts_h @ affine_H.T
+            proj_int = np.round(proj).astype(np.int32).reshape(-1, 1, 2)
+            cv2.polylines(tile_bgr, [proj_int], isClosed=True,
+                          color=(0, 0, 255),
+                          thickness=max(2, tile_bgr.shape[0] // 250))
+    h_r, w_r = tile_bgr.shape[:2]
+    right = cv2.resize(tile_bgr,
+                       (max(1, int(w_r * target_h / h_r)), target_h))
+
+    return np.hstack([_label_strip(left, f"{label} — PLANNING + SAM"),
+                      _label_strip(right, f"{label} — OS @ z={tile_info.get('zoom','?')}")])
+
+
+def _build_candidate_panel(state: Any, attempt: Dict[str, Any],
+                            is_committed: bool) -> Optional[np.ndarray]:
+    """Build the visual panel for ONE candidate (possibly multiple groups)."""
+    cid = attempt.get("candidate_id")
+    badge = f"CANDIDATE {cid}" + (" [COMMITTED]" if is_committed else "")
+    rows: List[np.ndarray] = []
+    for g in attempt.get("per_group") or []:
+        page = g.get("page")
+        map_img = state.rendered_pages.get(page) if state.rendered_pages else None
+        mask = (state.sam_masks_by_page or {}).get(page)
+        mi = g.get("match_info") or {}
+        tile_info = g.get("tile_info") or mi.get("tile_info")
+        affine_H = g.get("affine_H")
+        group_id = g.get("area_group", "?")
+        n_inl = int(mi.get("n_inliers") or 0)
+        row_label = f"{badge}  group {group_id} (p{page}, n_inliers={n_inl})"
+        row = _build_one_group_panel(map_img, mask, tile_info, affine_H,
+                                       label=row_label)
+        if row is not None:
+            rows.append(row)
+    if not rows:
+        return None
+    # Pad rows to common width.
+    max_w = max(r.shape[1] for r in rows)
+    padded = []
+    for r in rows:
+        if r.shape[1] < max_w:
+            pad = np.full((r.shape[0], max_w - r.shape[1], 3), 220,
+                          dtype=np.uint8)
+            r = np.hstack([r, pad])
+        padded.append(r)
+        padded.append(np.full((4, max_w, 3), 220, dtype=np.uint8))
+    return np.vstack(padded[:-1])
+
+
+def _stack_candidate_panels(panels: List[np.ndarray]) -> Optional[np.ndarray]:
+    """Vertical stack of per-candidate blocks with spacers."""
+    panels = [p for p in panels if p is not None]
+    if not panels:
+        return None
+    max_w = max(p.shape[1] for p in panels)
+    out = []
+    for p in panels:
+        if p.shape[1] < max_w:
+            pad = np.full((p.shape[0], max_w - p.shape[1], 3), 240,
+                          dtype=np.uint8)
+            p = np.hstack([p, pad])
+        out.append(p)
+        out.append(np.full((10, max_w, 3), 80, dtype=np.uint8))  # darker spacer
+    big = np.vstack(out[:-1])
+    if big.shape[1] > 2000:
+        s = 2000 / big.shape[1]
+        big = cv2.resize(big, (2000, int(big.shape[0] * s)))
+    return big
+
+
+def _format_metrics_text(state: Any,
+                          attempts: List[Dict[str, Any]],
+                          committed_id: int) -> str:
+    """Per-candidate compact metrics block."""
+    lines = ["=== CANDIDATES ==="]
+    lines.append(f"  worker's committed_id: {committed_id}")
+    lines.append("")
+    for a in attempts:
+        cid = a.get("candidate_id")
+        tag = "  [COMMITTED]" if cid == committed_id else ""
+        per_group = a.get("per_group") or []
+        # Aggregate per-group axis numbers — show committed-group(s) only
+        # if multi-group, else single line.
+        for g in per_group:
+            mi = g.get("match_info") or {}
+            rwd = g.get("reward") or {}
+            n_inl = int(mi.get("n_inliers") or 0)
+            rna = rwd.get("road_name_agreement") or {}
+            sc = rwd.get("scale_consistency") or {}
+            road_v = rna.get("score") if isinstance(rna, dict) else None
+            scale_v = sc.get("score") if isinstance(sc, dict) else None
+            road_str = f"{road_v:.2f}" if isinstance(road_v, (int, float)) else "?"
+            scale_str = f"{scale_v:.2f}" if isinstance(scale_v, (int, float)) else "?"
+            lines.append(
+                f"  cand {cid}  group {g.get('area_group','?')}  "
+                f"page {g.get('page','?')}  "
+                f"n_inliers={n_inl}  "
+                f"road_name_agreement={road_str}  "
+                f"scale_consistency={scale_str}{tag}"
+            )
+    return "\n".join(lines)
+
+
+# ── Critic single-call + rehand ────────────────────────────────────────────
+
+
+def _run_critic_once(state: Any, model_name: str) -> tuple:
+    """One critic LLM call.
+
+    Returns (directive, panel, wall_s, in_tokens, out_tokens).
+    """
+    attempts = sorted(state.match_attempts.values(),
+                       key=lambda a: int(a.get("candidate_id") or 0))
+    cr = state.current_result or {}
+    committed_id = cr.get("candidate_id")
+    if committed_id is None and attempts:
+        committed_id = attempts[-1].get("candidate_id")
+
+    # Build per-candidate panel stack.
+    cand_panels = [
+        _build_candidate_panel(state, a, is_committed=(a.get("candidate_id") == committed_id))
+        for a in attempts
+    ]
+    panel = _stack_candidate_panels(cand_panels)
+    metrics_text = _format_metrics_text(state, attempts, committed_id or -1)
+
+    if panel is not None:
+        _, buf = cv2.imencode(".png", panel)
+        user_input = [
+            metrics_text,
+            BinaryContent(data=buf.tobytes(), media_type="image/png"),
+        ]
+    else:
+        user_input = [metrics_text]
+
+    agent = _ensure_agent(model_name)
+    in_tokens = 0
+    out_tokens = 0
+    llm_error: Optional[str] = None
+    t0 = time.time()
+    try:
+        from tools.agent._retry import _run_sync_with_retry
+        result = _run_sync_with_retry(agent, user_input, label="critic")
+        directive = result.output
+        try:
+            usage = result.usage()
+            # Prefer the modern pydantic-ai field names; fall back to the
+            # legacy aliases the rest of the codebase uses elsewhere.
+            in_tokens = int(getattr(usage, "input_tokens", None)
+                            or getattr(usage, "request_tokens", 0) or 0)
+            out_tokens = int(getattr(usage, "output_tokens", None)
+                             or getattr(usage, "response_tokens", 0) or 0)
+        except Exception:
+            pass
+    except Exception as e:
+        # Surface the failure: emit an approve directive (so the loop
+        # exits cleanly) but tag it so downstream can distinguish a
+        # genuine approve from a critic-LLM crash.
+        llm_error = f"{type(e).__name__}: {str(e)[:100]}"
+        directive = CriticDirective(
+            chosen_candidate_id=committed_id or 0,
+            action="approve",
+            reasoning=f"CRITIC_LLM_ERROR (treated as approve): {llm_error}",
+        )
+    wall = time.time() - t0
+    return directive, panel, wall, in_tokens, out_tokens, llm_error
+
+
+def _rehand_to_worker(state: Any,
+                      worker_result: Any,
+                      directive: CriticDirective,
+                      verbose: bool = True) -> Any:
+    """Re-invoke worker with a fixed-template user message based on the
+    critic's directive. Returns the new pydantic-ai result, or the prior
+    result on failure / unknown action.
+    """
+    from tools.agent.worker_agent import _agent
+
+    action = directive.action
+    cr = state.current_result or {}
+    worker_committed_id = cr.get("candidate_id")
+
+    if action == "switch":
+        chosen = directive.chosen_candidate_id
+        if chosen == worker_committed_id:
+            if verbose:
+                print(f"  critic switch: chose committed_id {chosen} — "
+                      f"treating as approve")
+            return worker_result
+        if chosen not in state.match_attempts:
+            if verbose:
+                print(f"  critic switch: id {chosen} not in stored "
+                      f"candidates, skipping")
+            return worker_result
+        # Neutral framing — do NOT reveal a "reviewer" / "critic" to the
+        # worker. The worker stays opaque to the critic's existence.
+        instruction = (
+            f"Reconsider your commit. Candidate {chosen} appears to be a "
+            f"better match than your committed candidate "
+            f"{worker_committed_id} based on visual alignment with the "
+            f"planning map. {directive.reasoning}\n\n"
+            f"Call commit_match({chosen}) and re-submit BoundaryOutcome."
+        )
+
+    elif action == "retry_locate":
+        instruction = (
+            f"Reconsider your commit. None of your stored match "
+            f"candidates appear to align with the boundary drawn on the "
+            f"planning map — the projected polygons sit in the wrong "
+            f"region. {directive.reasoning}\n\n"
+            f"Call propose_centers with a match_context describing what "
+            f"went wrong (in your own words), then match_at on the new "
+            f"candidate, then commit_match on the new candidate's id, "
+            f"then re-submit BoundaryOutcome."
+        )
+
+    else:
+        # 'approve' shouldn't reach here; nothing to rehand.
+        return worker_result
+
+    if verbose:
+        print(f"  critic rehand: re-invoking worker with action={action}")
+    try:
+        history = (worker_result.all_messages()
+                   if worker_result is not None and
+                   hasattr(worker_result, "all_messages") else None)
+        from tools.agent._retry import _run_sync_with_retry
+        sub_result = _run_sync_with_retry(
+            _agent, instruction, deps=state, message_history=history,
+            label="critic-rehand",
+        )
+        # Propagate the new worker outcome into state so downstream sees
+        # the latest accepted/last_output/accept_reason.
+        try:
+            new_outcome = sub_result.output
+            if new_outcome is not None:
+                state.last_output = new_outcome
+                state.accepted = (new_outcome.status in
+                                  ("accepted", "district_lookup"))
+                state.accept_reason = (
+                    f"[{new_outcome.status}] {new_outcome.reasoning[:160]}"
+                )
+        except Exception:
+            pass
+        return sub_result
+    except Exception as e:
+        if verbose:
+            print(f"  critic rehand: worker re-invoke failed: {str(e)[:120]}")
+        return worker_result
+
+
+# ── Outer loop ─────────────────────────────────────────────────────────────
+
+
+def _snapshot_geojson(state: Any) -> Optional[dict]:
+    """Snapshot the current committed geojson.
+
+    Returns a deep copy so a later commit_match (which builds a fresh
+    state.current_result dict but might be refactored to mutate in
+    place) cannot retroactively corrupt the snapshot.
+    """
+    import copy
+    cr = state.current_result or {}
+    gj = cr.get("geojson")
+    return copy.deepcopy(gj) if gj is not None else None
+
+
+def run_critic_loop(
+    state: Any,
+    worker_result: Any,
+    model_name: str,
+    max_iters: int = 2,
+    verbose: bool = True,
+) -> Dict[str, Any]:
+    """Run the LLM critic loop after the worker's first submission.
+
+    Args:
+        state: AgentState with worker's commit + stored match_attempts.
+        worker_result: pydantic-ai result from the worker (for
+            message_history when re-handing).
+        model_name: OpenRouter model id passed through to the critic
+            (keeps worker/critic on the same family for ablation).
+        max_iters: max critic-rejection iterations before forcing accept.
+        verbose: print per-iter status.
+
+    Returns a dict with:
+        - worker_first_geojson : worker's commit BEFORE any critic intervention
+        - critic_final_geojson : geojson AFTER the critic loop
+        - iterations           : list of per-iter records (action, reasoning, ...)
+        - n_rejections         : count of switch/retry_locate actions issued
+        - tokens               : {request, response} totals across critic calls
+        - panel_iter0          : first iteration's panel (np.ndarray) for viz
+    """
+    # Snapshot the worker's first commit BEFORE any critic intervention.
+    worker_first_geojson = _snapshot_geojson(state)
+    if worker_first_geojson is None:
+        if verbose:
+            print("  critic: no geojson committed, skipping")
+        return {
+            "worker_first_geojson": None,
+            "critic_final_geojson": None,
+            "iterations": [],
+            "n_rejections": 0,
+            "tokens": {"request": 0, "response": 0},
+            "panel_iter0": None,
+        }
+
+    iterations: List[Dict[str, Any]] = []
+    total_in = 0
+    total_out = 0
+    panel_iter0: Optional[np.ndarray] = None
+    current_worker_result = worker_result
+
+    for it_idx in range(max_iters):
+        directive, panel, wall, in_t, out_t, llm_error = _run_critic_once(
+            state, model_name)
+        if it_idx == 0:
+            panel_iter0 = panel
+        total_in += in_t
+        total_out += out_t
+
+        if verbose:
+            err_tag = " [LLM_ERROR]" if llm_error else ""
+            print(f"  critic iter{it_idx}: action={directive.action}{err_tag}  "
+                  f"chose={directive.chosen_candidate_id}  "
+                  f"reason={directive.reasoning[:80]!r}  wall={wall:.1f}s")
+
+        iter_entry = {
+            "iter_idx": it_idx,
+            "action": directive.action,
+            "chosen_candidate_id": directive.chosen_candidate_id,
+            "reasoning": directive.reasoning,
+            "wall_s": round(wall, 1),
+            "llm_error": llm_error,  # None on success, error string on crash
+        }
+
+        if directive.action == "approve":
+            iterations.append(iter_entry)
+            break
+
+        # Re-hand to worker.
+        before = _snapshot_geojson(state)
+        current_worker_result = _rehand_to_worker(
+            state, current_worker_result, directive, verbose=verbose
+        )
+        after = _snapshot_geojson(state)
+        iter_entry["geojson_changed"] = before != after
+        iterations.append(iter_entry)
+
+        # If state didn't change despite a rehand, the worker probably
+        # couldn't comply — break to avoid loop on a stuck case.
+        if not iter_entry["geojson_changed"] and directive.action != "approve":
+            if verbose:
+                print(f"  critic rehand: geojson unchanged after rehand, "
+                      f"exiting loop")
+            break
+
+    critic_final_geojson = _snapshot_geojson(state)
+    n_rej = sum(1 for it in iterations if it["action"] != "approve")
+
+    return {
+        "worker_first_geojson": worker_first_geojson,
+        "critic_final_geojson": critic_final_geojson,
+        "iterations": iterations,
+        "n_rejections": n_rej,
+        "tokens": {"request": total_in, "response": total_out},
+        "panel_iter0": panel_iter0,
+    }

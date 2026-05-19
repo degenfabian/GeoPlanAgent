@@ -219,16 +219,19 @@ WORKFLOW
    per page across calls).
 
    Decision rules:
-     • STRONG match: overall_score ≥ 0.80 AND n_inliers ≥ 80 → commit_match.
+     • STRONG match: overall_score ≥ 0.80 AND total_inliers ≥ 80
+       (aggregate across groups) → commit_match.
      • BORDERLINE (anything weaker): try AT LEAST ONE more propose_centers
        candidate before committing. This is MANDATORY even if the first
-       score "looks acceptable" (e.g. 0.65-0.79). The second match often
-       lands at a different zoom and reveals a much better fit.
-     • < 0.40 on the first try → reject; try another center.
-     • After 2+ match_at attempts: commit the highest-n_inliers result.
-       The smart-commit gate enforces an inside-admin-region check
-       against OS BoundaryLine and will redirect you if your pick falls
-       outside the LA polygon — so you don't need to verify this yourself.
+       score is in the 0.65-0.79 range. The second match often lands at
+       a different zoom and reveals a much better fit.
+     • overall_score < 0.40 on the first try → reject; try another center.
+     • After 2+ match_at attempts: commit the candidate with the highest
+       total_inliers. The smart-commit gate then re-ranks by
+       total_inliers × (0.3 if outside the admin_region LA polygon
+       else 1.0), so a higher-inlier-but-outside-LA pick can be
+       redirected to a lower-inlier-but-inside-LA one — you don't need
+       to verify the LA containment yourself.
      • If scale is known and scale_consistency < 0.50 → prefer another
        candidate (affine landed at wrong zoom).
 

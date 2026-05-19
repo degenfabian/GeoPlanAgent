@@ -88,9 +88,17 @@ type.
 
 ## Notes on what isn't here
 
-- **No critic.** The Phase 3 critic loop was deleted in R21-R32 (see git
-  log). The pipeline always produces a polygon; downstream measures IoU
-  on whatever the worker commits.
+- **Optional critic.** An independent LLM critic
+  (`tools/agent/critic_agent.py`) can run after the worker submits, gated
+  by `enable_critic=True` (default False). When enabled, it sees the
+  visual panels for ALL stored match candidates plus per-candidate
+  `n_inliers / road_name_agreement / scale_consistency`, makes a
+  pairwise judgement, and can direct the worker to switch candidate or
+  re-locate (max 2 rejections). Default-off path is bit-identical to a
+  no-critic pipeline; the worker is opaque to the critic during initial
+  exploration. The worker's first-commit polygon is snapshotted so a
+  single run produces paired no-critic / with-critic IoUs for the
+  ablation.
 - **No analytical short-circuit.** Removed in R28.
 - **No OSM / Nominatim runtime calls.** District lookup uses offline OS
   BoundaryLine (R19).

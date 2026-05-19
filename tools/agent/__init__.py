@@ -60,6 +60,8 @@ def run_agent(
     verbose: bool = True,
     case_name: Optional[str] = None,
     case_dir: Optional[Path] = None,
+    enable_critic: bool = False,
+    critic_max_iters: int = 2,
 ) -> Dict[str, Any]:
     """Run reader → worker on one planning PDF.
 
@@ -75,10 +77,20 @@ def run_agent(
             adapter routing). Defaults to the PDF's parent directory.
         case_dir: Where to flush pdf_info.json + partial_state.json on
             crash. Optional.
+        enable_critic: If True, after the worker submits, run an independent
+            LLM critic that compares all stored match_attempts and may
+            instruct the worker to switch or re-locate. The worker's first
+            committed polygon is also captured (snapshot) so the
+            returned dict carries BOTH no-critic and with-critic outcomes
+            from the same run (two-in-one ablation).
+        critic_max_iters: max critic-rejection iterations before forcing
+            accept. Ignored when enable_critic is False.
 
     Returns:
         Dict with keys including geojson, mask, match_info, agent_accepted,
-        agent_reason, agent_stats, message_log.
+        agent_reason, agent_stats, message_log. When enable_critic is
+        True, also includes worker_first_geojson (snapshot) so downstream
+        can score the no-critic baseline.
     """
     from tools.agent._model import resolve_model_name
     model_name = resolve_model_name(model_name)
@@ -119,6 +131,7 @@ def run_agent(
 
     # ── Phase 2: invoke the worker ────────────────────────────────────────
     result = None
+    outcome: Optional[BoundaryOutcome] = None  # may stay None on exception path
     try:
         result = _rt.invoke_worker(state, user_parts, model_name,
                                      max_iterations, verbose)
@@ -145,7 +158,7 @@ def run_agent(
             "agent_stats": partial_stats,
         }
     else:
-        outcome: BoundaryOutcome = result.output
+        outcome = result.output
         state.last_output = outcome
         state.accepted = (outcome.status in ("accepted", "district_lookup"))
         state.accept_reason = f"[{outcome.status}] {outcome.reasoning[:160]}"
@@ -154,6 +167,45 @@ def run_agent(
                   f"inliers={outcome.final_n_inliers} "
                   f"verify={outcome.verify_position_called} "
                   f"rotation_checked={outcome.rotation_checked}")
+
+    # ── Phase 3 (optional): independent critic loop ───────────────────────
+    # We snapshot the worker's first committed polygon BEFORE entering
+    # the critic loop, so that even if the critic crashes mid-loop, the
+    # no-critic baseline is preserved in the return dict (distinguishes
+    # critic-crash from critic-disabled in downstream telemetry).
+    critic_result: Optional[Dict[str, Any]] = None
+    worker_first_geojson_snapshot: Optional[dict] = None
+    can_run_critic = (
+        enable_critic
+        and state.accepted
+        and outcome is not None
+        and outcome.status != "district_lookup"
+    )
+    if can_run_critic:
+        worker_first_geojson_snapshot = state.current_result.get("geojson")
+        try:
+            from tools.agent.critic_agent import run_critic_loop
+            if verbose:
+                print(f"  Phase 3: running LLM critic loop "
+                      f"(max_iters={critic_max_iters})...")
+            critic_result = run_critic_loop(
+                state, result, model_name=model_name,
+                max_iters=critic_max_iters, verbose=verbose,
+            )
+            if verbose:
+                n_rej = critic_result.get("n_rejections", 0)
+                its = critic_result.get("iterations") or [{}]
+                final_action = its[-1].get("action", "?") if its else "n/a"
+                print(f"  Phase 3 done: {n_rej} rejection(s), "
+                      f"final_decision={final_action}")
+        except Exception as e:
+            if verbose:
+                print(f"  Phase 3 critic failed: {type(e).__name__}: {e}")
+                traceback.print_exc()
+            critic_result = {
+                "error": str(e)[:200],
+                "worker_first_geojson": worker_first_geojson_snapshot,
+            }
 
     # ── Cleanup, stats, soft quality gate, return ─────────────────────────
     _rt.cleanup_temp_pages(state)
@@ -174,7 +226,25 @@ def run_agent(
 
     agent_stats = _rt.collect_agent_stats(state, pdf_info, result, extracted_stats)
 
+    # Embed critic telemetry in agent_stats (tokens, iterations, n_rejections).
+    # The actual geojsons are passed separately so build_run_agent_return
+    # can include them at the top level.
+    if critic_result is not None and "error" not in critic_result:
+        agent_stats["critic"] = {
+            "n_rejections": critic_result.get("n_rejections", 0),
+            "iterations": [
+                {k: v for k, v in it.items() if k != "panel"}
+                for it in critic_result.get("iterations") or []
+            ],
+            "tokens": critic_result.get("tokens", {}),
+        }
+    elif critic_result is not None:
+        agent_stats["critic"] = {"error": critic_result.get("error")}
+
     agent_rejected = (state.accept_reason or "").upper().lstrip().startswith("REJECTED")
     _rt.apply_quality_gate(state, agent_rejected, verbose)
 
-    return _rt.build_run_agent_return(state, agent_stats, message_log)
+    return _rt.build_run_agent_return(
+        state, agent_stats, message_log,
+        critic_result=critic_result,
+    )
