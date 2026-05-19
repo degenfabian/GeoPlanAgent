@@ -283,8 +283,9 @@ DIFFERENT signal type. Example:
    inliers; OS tile showed farmland but planning map is dense urban,
    so postcode probably points to council letterhead. Try a road-based
    pick instead.")
-This is the right move BEFORE accepting a 0.4-score commit. Combine with extra_terms when you've spotted a
-specific landmark the locate agent should consider.
+This is the right move BEFORE accepting a 0.4-score commit. Combine
+with extra_terms when you've spotted a specific landmark the locate
+agent should consider.
 
 OTHER:
 • No duplicate tool calls with the same args.
