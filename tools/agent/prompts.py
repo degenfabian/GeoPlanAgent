@@ -50,6 +50,15 @@ additional rules):
               and UNIONS the resulting polygons. This is the
               mechanism for multi-boundary planning documents.
 
+  SCHEDULE-CLASSIFICATION GUARD: pages of the SAME geographic area
+  shown for DIFFERENT permitted-development class restrictions of an
+  Article 4 direction (Schedule 2 classes like Class A / Class E / Class
+  F, Parts 1 / 2, etc.) are the SAME area_group with the SAME
+  area_signature. The underlying physical area is the same; only the
+  legal classification differs. Strip class / part / schedule
+  qualifiers from the underlying name when deciding whether two pages
+  cover the same area.
+
   boundary_clarity: 'clear' requires BOTH (a) the boundary
                     line/hatch/edge is unambiguous to trace AND
                     (b) cartographic detail (streets, labels) is
@@ -171,8 +180,9 @@ DOCUMENT STRUCTURE (you'll see this in the user prompt):
   existing cached SAM3 masks (no recomputation).
 
 INPUT: PDFInfo summary + the top-ranked match page rendered upright. Other
-match pages only enter the conversation as side-effects of match_at(page=N)
-panels or verify_position panels — you cannot inspect them directly.
+match pages only enter the conversation as side-effects of verify_position
+panels — you cannot inspect them directly. match_at itself returns numbers
+only; visual confirmation happens post-commit via verify_position.
 OUTPUT: a BoundaryOutcome. The output_validator enforces these preconditions:
 • 25 ≤ final_n_inliers ≤ 100 AND status="accepted" → must call verify_position()
   and fill visual_check_notes (≥20 chars on feature comparison).
@@ -199,21 +209,17 @@ WORKFLOW
    area_group you want this candidate evaluated against — other groups
    are matched automatically at the same centre (see DOCUMENT STRUCTURE
    above).
-   Each call returns:
-   • a multi-axis reward (overall_score, total_inliers, per_group
-     breakdown), AND
-   • a VISUAL PANEL stack: one row per area_group, each showing the
-     planning page (left) | OS tiles at the matched window (right).
-   LOOK AT THE PANELS — wrong-area matches are visually obvious even
-   when overall_score is moderate (street grid doesn't match);
-   right-area matches show streets that clearly correspond.
+   Each call returns a multi-axis reward only (no panel image):
+   overall_score, total_inliers, plus a per_group breakdown
+   (n_inliers, score, road_name_agreement + verdict, scale_consistency,
+   passed_gate). Visual inspection of the committed polygon happens
+   post-commit via verify_position.
 
    SAM3 segmentation runs automatically on first need per page (cached
    per page across calls).
 
    Decision rules:
-     • STRONG match: overall_score ≥ 0.80 AND n_inliers ≥ 80 AND panel
-       looks right → commit_match immediately.
+     • STRONG match: overall_score ≥ 0.80 AND n_inliers ≥ 80 → commit_match.
      • BORDERLINE (anything weaker): try AT LEAST ONE more propose_centers
        candidate before committing. This is MANDATORY even if the first
        score "looks acceptable" (e.g. 0.65-0.79). The second match often
@@ -223,8 +229,6 @@ WORKFLOW
        The smart-commit gate enforces an inside-admin-region check
        against OS BoundaryLine and will redirect you if your pick falls
        outside the LA polygon — so you don't need to verify this yourself.
-     • Visual mismatch overrides scores: reject even at high overall_score
-       if streets in the red box look NOTHING like the planning map.
      • If scale is known and scale_consistency < 0.50 → prefer another
        candidate (affine landed at wrong zoom).
 
@@ -236,7 +240,8 @@ WORKFLOW
        wrong-area signal — trust n_inliers + scale_consistency instead.
      • scale_consistency near 1.0 means the recovered affine scale agrees
        with the reader's stated map scale; far from 1.0 means the assumed
-       scale was wrong OR this is the wrong area (use the panel to tell).
+       scale was wrong OR this is the wrong area — verify_position
+       (post-commit) will show whether the polygon falls in the right spot.
 
 3. commit_match(candidate_id) — picks the active result AND automatically
    projects the SAM3 mask through the committed affine into a WGS84
@@ -288,7 +293,8 @@ propose_centers(extra_terms=["place name from the map"]) — never type
 coordinates yourself.
 
 RE-CALLING propose_centers WITH FEEDBACK: after a weak match_at (low
-inliers, visual mismatch in the panel), you can call propose_centers
+inliers, low overall_score, road_name_agreement=0.0, or
+scale_consistency < 0.5), you can call propose_centers
 again with match_context="..." describing in plain English what went
 wrong. The locate sub-agent reads it and is told to pick from a
 DIFFERENT signal type. Example:

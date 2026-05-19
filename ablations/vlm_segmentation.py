@@ -130,14 +130,19 @@ def build_agent(instructions: str) -> Agent:
         # mid-response and fail with UnexpectedModelBehavior.
         output_type=NativeOutput(VlmSegmentation),
         retries=3,
-        output_retries=2,
+        # output_retries=0 — validation failures get reported as iou=None
+        # immediately rather than triggering up-to-2 paid retries. On
+        # Gemini 3.1 Pro this drops per-failure cost from ~$0.30 (3 API
+        # calls) to ~$0.10 (1 API call); the original Flash run showed
+        # the retry-rescue rate is only ~3%, so the cost saving dominates.
+        output_retries=0,
         model_settings={
             "temperature": 0,
-            # Cap well above any plausible polygon output. 100-vertex
-            # multi-polygon JSON serialises to ~3-4K tokens; 32K is
-            # comfortable headroom and well within Gemini 3 Flash's
-            # output budget.
-            "max_tokens": 32768,
+            # 100-vertex multi-polygon JSON serialises to ~3-4K tokens.
+            # 8K cap is comfortable for any reasonable boundary while
+            # hard-capping per-call cost — prevents runaway generation
+            # when the model is uncertain about a complex boundary.
+            "max_tokens": 8192,
         },
         instructions=instructions,
     )
@@ -242,6 +247,11 @@ def main() -> None:
                          "errors on large PNGs. Recommended: 95.")
     ap.add_argument("--throttle-s", type=float, default=1.0,
                     help="Seconds to sleep between API calls (rate-limit safety)")
+    ap.add_argument("--resume", action="store_true",
+                    help="Skip cases whose pred_mask already exists in "
+                         "out_dir/pred_masks; compute IoU from disk and "
+                         "include in results.csv. Use to continue an "
+                         "aborted run without re-paying for completed cases.")
     ap.add_argument("--prompt-file", type=str, default=None,
                     help="Path to a text file with a custom prompt (override "
                          "the built-in default — useful for prompt A/B).")
@@ -324,9 +334,37 @@ def main() -> None:
                          "error": "missing files", "notes": ""})
             continue
 
+        # --resume: if a pred_mask already exists on disk, skip the API
+        # call and score from the cached mask. Lets a partial run be
+        # finished without re-paying for completed cases.
+        if args.resume:
+            cached_pred = preds_dir / fname
+            if cached_pred.exists():
+                try:
+                    pred_arr = (np.asarray(Image.open(cached_pred).convert("L")) > 127).astype(np.uint8)
+                    gt_arr = (np.asarray(Image.open(mask_path).convert("L")) > 127).astype(np.uint8)
+                    if pred_arr.shape == gt_arr.shape:
+                        cached_iou = iou_score(pred_arr, gt_arr)
+                        print(f"  [{i+1:>3}/{len(manifest)}] CACHED {case[:30]:<30}  IoU={cached_iou:.4f}")
+                        rows.append({"case": case, "fold": fold, "filename": fname,
+                                     "iou": cached_iou, "n_polygons": 1,
+                                     "call_seconds": "", "error": "",
+                                     "notes": "resumed from existing pred_mask"})
+                        continue
+                    else:
+                        print(f"  [{i+1:>3}/{len(manifest)}] cached mask shape "
+                              f"{pred_arr.shape} != gt {gt_arr.shape}; re-running")
+                except Exception as e:
+                    print(f"  [{i+1:>3}/{len(manifest)}] failed to read cached "
+                          f"mask ({e!s:.60}); re-running")
+
         img = Image.open(img_path).convert("RGB")
+        orig_w, orig_h = img.width, img.height
         # Optionally downscale very large maps to avoid 413 errors at the
-        # provider. Aspect is preserved.
+        # provider. Aspect is preserved. The polygon output is in
+        # normalised [0,1000] coords, so we can rasterize at orig_w/orig_h
+        # below regardless of the resize — keeping IoU at the same
+        # resolution as the GT (and as the non-resized 196 cases).
         if args.max_image_dim is not None:
             longest = max(img.width, img.height)
             if longest > args.max_image_dim:
@@ -356,11 +394,11 @@ def main() -> None:
         gt = np.asarray(Image.open(mask_path).convert("L"))
         gt_bin = (gt > 127).astype(np.uint8)
 
-        if gt_bin.shape != (img.height, img.width):
-            # GT and map should be at identical resolution per the fine-tune
-            # training contract; flag loudly if they aren't.
+        if gt_bin.shape != (orig_h, orig_w):
+            # GT and original map should be at identical resolution per
+            # the fine-tune training contract; flag loudly if they aren't.
             print(f"  [{i+1:>3}] WARN {case}: gt shape {gt_bin.shape} "
-                  f"!= image (h,w)=({img.height},{img.width})")
+                  f"!= original image (h,w)=({orig_h},{orig_w})")
 
         # ── Call the VLM ────────────────────────────────────────────────────
         t_call = time.time()
@@ -404,7 +442,11 @@ def main() -> None:
             continue
 
         # ── Rasterize + IoU ─────────────────────────────────────────────────
-        pred = rasterize_polygons(polys, img.width, img.height)
+        # Rasterize at the ORIGINAL map resolution — polygons are in
+        # normalised [0,1000] coords, so this is independent of any
+        # --max-image-dim resize applied above. Keeps IoU comparable
+        # across resized and non-resized cases.
+        pred = rasterize_polygons(polys, orig_w, orig_h)
         score = iou_score(pred, gt_bin)
 
         # Save pred mask for inspection

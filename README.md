@@ -171,8 +171,9 @@ Tool-calling pydantic-ai agent. Five worker tools:
    centre. For multi-area-group documents one call handles every group
    automatically (per-group MINIMA on each group's primary page, per-page
    SAM3 mask caching, polygons UNIONed). Returns a multi-axis reward
-   (overall_score, n_inliers, road_name_agreement, scale_consistency)
-   plus a visual panel stack.
+   (overall_score, n_inliers, road_name_agreement, scale_consistency) —
+   numbers only; visual confirmation of the committed polygon happens
+   post-commit via `verify_position`.
 3. **`commit_match(candidate_id)`** — picks the best stored match_at
    attempt as the active result and projects the SAM mask through the
    committed affine to GeoJSON. The smart-commit gate combines

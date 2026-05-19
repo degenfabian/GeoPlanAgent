@@ -25,13 +25,12 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import cv2
 import numpy as np
-from pydantic_ai import ModelRetry, RunContext, ToolReturn
+from pydantic_ai import ModelRetry, RunContext
 
 from tools.agent.state import (
     _agent,
     AgentState,
     _dedup_check,
-    _img_to_binary,
 )
 
 
@@ -142,69 +141,6 @@ def _groups_to_match(state: AgentState,
     return out or [(req_group, requested_page)]
 
 
-# ── Visual helpers ───────────────────────────────────────────────────────
-
-def _build_match_at_panel(map_img: np.ndarray,
-                            tile_info: Dict[str, Any],
-                            mi: Dict[str, Any],
-                            label: str = "PLANNING MAP") -> Optional[np.ndarray]:
-    """Visual panel for one group's match attempt."""
-    if map_img is None or not isinstance(tile_info, dict) or "image" not in tile_info:
-        return None
-    target_h = 500
-
-    def _label(img, text):
-        bar = np.full((28, img.shape[1], 3), 30, dtype=np.uint8)
-        cv2.putText(bar, text, (8, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.55,
-                    (255, 255, 255), 1, cv2.LINE_AA)
-        return np.vstack([bar, img])
-
-    h, w = map_img.shape[:2]
-    map_resized = cv2.resize(map_img, (max(1, int(w * target_h / h)), target_h))
-    tile_img = tile_info["image"]
-    if tile_img.shape[2] == 3 and tile_info.get("_was_rgb", True):
-        tile_bgr = cv2.cvtColor(tile_img, cv2.COLOR_RGB2BGR)
-    else:
-        tile_bgr = tile_img.copy()
-    th, tw = tile_bgr.shape[:2]
-    wx, wy = mi.get("window") or (0, 0)
-    sf = mi.get("scale_factor") or 1.0
-    win_w = max(1, int(map_img.shape[1] * sf))
-    win_h = max(1, int(map_img.shape[0] * sf))
-    rect_img = tile_bgr.copy()
-    cv2.rectangle(rect_img, (int(wx), int(wy)),
-                  (int(wx + win_w), int(wy + win_h)),
-                  (0, 0, 255), max(2, th // 200))
-    tile_resized = cv2.resize(rect_img,
-                              (max(1, int(tw * target_h / th)), target_h))
-    left = _label(map_resized, label)
-    right = _label(tile_resized,
-                   f"OS TILES z={mi.get('zoom')} "
-                   f"({(mi.get('center_latlon') or ['?','?'])[0]:.4f},"
-                   f"{(mi.get('center_latlon') or ['?','?'])[1]:.4f}) "
-                   f"— red = matched window")
-    panel = np.hstack([left, right])
-    if panel.shape[1] > 1800:
-        s = 1800 / panel.shape[1]
-        panel = cv2.resize(panel, (1800, int(panel.shape[0] * s)))
-    return panel
-
-
-def _stack_panels(panels: List[np.ndarray]) -> np.ndarray:
-    """Vertically stack per-group panels, padding to a common width."""
-    if not panels:
-        return None
-    max_w = max(p.shape[1] for p in panels)
-    out = []
-    for p in panels:
-        if p.shape[1] < max_w:
-            pad = np.full((p.shape[0], max_w - p.shape[1], 3), 200, dtype=np.uint8)
-            p = np.hstack([p, pad])
-        out.append(p)
-        out.append(np.full((6, max_w, 3), 200, dtype=np.uint8))
-    return np.vstack(out[:-1])
-
-
 # ── match_at ─────────────────────────────────────────────────────────────
 
 @_agent.tool
@@ -216,12 +152,17 @@ def match_at(
     lon: float,
     sigma_m: Optional[float] = None,
     scale_ratio: Optional[float] = None,
-) -> ToolReturn:
+) -> dict:
     """Run MINIMA at (lat, lon); auto-matches every area_group in the doc.
 
     The `page` argument selects which page to use FOR ITS area_group.
     Other area_groups in the document use their primaries automatically.
     The returned candidate's polygon is the UNION of per-group projections.
+
+    This tool returns numbers only — judge the match from the multi-axis
+    reward (overall_score, total_inliers, per_group breakdown including
+    road_name_agreement and scale_consistency). For visual confirmation
+    of the FINAL committed polygon, use verify_position after commit.
 
     Args:
         page: 1-based page number. Must be a category='match' page from
@@ -238,7 +179,7 @@ def match_at(
          "per_group": [{"page", "area_group", "n_inliers", "score",
          "overall_score", "road_name_agreement", "road_name_verdict",
          "scale_consistency", "passed_gate", "weak_retry"}, ...],
-         "budget_remaining": int} + multi-panel viz.
+         "budget_remaining": int}
     """
     state = ctx.deps
     if state.match_at_budget <= 0:
@@ -311,7 +252,6 @@ def match_at(
     groups_pages = _groups_to_match(state, int(page))
 
     per_group: List[Dict[str, Any]] = []
-    panels: List[np.ndarray] = []
     requested_group = None
     for d in (state.pdf_info or {}).get("map_page_details") or []:
         if int(d.get("page", -1)) == int(page) and d.get("category") == "match":
@@ -324,17 +264,8 @@ def match_at(
         single["area_group"] = int(group_id)
         single["page"] = int(group_page)
         per_group.append(single)
-        if single.get("panel") is not None:
-            label = (f"PAGE {group_page} (grp {group_id}"
-                     f"{', requested' if group_id == requested_group else ''})")
-            panel = _build_match_at_panel(
-                state.rendered_pages.get(group_page),
-                single.get("tile_info"), single.get("match_info") or {},
-                label=label,
-            )
-            if panel is not None:
-                panels.append(panel)
-        # Safe even when `_match_single_page` took an error path (no 'panel' key).
+        # Per-group panel image isn't surfaced to the agent (numbers-only
+        # return; visual confirmation happens via verify_position post-commit).
         single.pop("panel", None)
 
     # Aggregate metrics across groups that produced a valid match.
@@ -411,17 +342,7 @@ def match_at(
         "budget_remaining": state.match_at_budget,
     }
 
-    if not panels:
-        return summary
-    big = _stack_panels(panels)
-    text = (f"match_at id={cid}, overall_score={overall_score:.2f}, "
-            f"{len(committed_groups)}/{len(per_group)} groups passed gate. "
-            f"Per-group panels stacked vertically — each shows that group's "
-            f"page (left) vs OS tiles at the matched window (right). "
-            f"For multi-group docs the final polygon is the UNION of all "
-            f"groups that passed.")
-    return ToolReturn(return_value=summary,
-                      content=[text, _img_to_binary(big)])
+    return summary
 
 
 # ── Per-page MINIMA driver (called once per group inside match_at) ──────

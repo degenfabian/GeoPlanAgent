@@ -9,7 +9,7 @@ re-runs them and writes new metrics.json files, the new mtime triggers an emit.
 """
 import json, glob, os, sys, time, statistics
 
-RUN = "results/benchmark_v_R21/gemini-flash"
+RUN = "results/benchmark_v_R20/gemini-flash"
 BASE_RUN = "results/benchmark_v_postrot/gemini-flash"
 TARGET = 208
 

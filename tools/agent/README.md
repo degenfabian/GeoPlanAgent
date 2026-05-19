@@ -50,7 +50,7 @@ registered before `run_agent` is called.
 | Tool | Module | Public surface |
 |---|---|---|
 | `propose_centers` | `locate.py` | `(extra_terms?, match_context?) → {candidate_id, lat, lon, sigma_m, source, evidence}`. Always returns ONE candidate per call. Internally calls `tools.agent.locate_agent.run_locate`. |
-| `match_at` | `match.py` | `(page, name, lat, lon, sigma_m?, scale_ratio?) → ToolReturn` with per-group reward + a stacked visual panel. For multi-area-group documents, internally runs MINIMA at the same centre on every group's primary page and UNIONs the resulting polygons. |
+| `match_at` | `match.py` | `(page, name, lat, lon, sigma_m?, scale_ratio?) → dict` with per-group reward (numbers only — `overall_score`, `total_inliers`, `per_group[]` incl. `road_name_agreement`, `scale_consistency`, `passed_gate`). For multi-area-group documents, internally runs MINIMA at the same centre on every group's primary page and UNIONs the resulting polygons. |
 | `commit_match` | `match.py` | `(candidate_id) → {committed: …}`. Smart-commit gate (`commit_attempt_score`) redirects to a better candidate when the worker has ≥2 stored attempts. Strict gate rejects commits where no group produced a valid affine. |
 | `verify_position` | `verify.py` | `(lat?, lon?) → ToolReturn` — side-by-side panel of SAM mask on planning page + projected polygon on OS tiles. Required by the output validator when `final_n_inliers` is in 25-100. |
 | `lookup_district` | `verify.py` | `(district_name) → {success, geojson?}`. OS BoundaryLine offline lookup; supports `'|'`-separated name alternates. On success the worker submits `status="district_lookup"`. |
