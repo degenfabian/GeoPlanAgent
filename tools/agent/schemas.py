@@ -156,10 +156,11 @@ class PDFInfo(BaseModel):
     is_district_wide: bool = Field(
         default=False,
         description="TRUE if the boundary covers an ENTIRE borough/district/ward/"
-                    "parish/conservation area. Patterns that trigger TRUE: "
-                    "'Land within the X of Y', 'Various sites across X', "
-                    "'The X Conservation Area', 'Land in the Urban District of X'. "
-                    "When unsure, prefer true — downstream falls through if lookup fails."
+                    "parish/conservation area. Common trigger phrases include "
+                    "'Borough Wide Direction', 'District Wide', 'entire area "
+                    "of [admin name]', 'all the land within [admin name]', "
+                    "'Various sites across X', 'throughout the District of X', "
+                    "'Land in the Urban District of X'."
     )
     district_name: Optional[str] = Field(
         default=None,

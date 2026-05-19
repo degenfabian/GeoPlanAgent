@@ -94,7 +94,12 @@ additional rules):
 - grid_refs: OS grid references on map edges (e.g. "TG 210 080", "TR 34 SE").
 
 - is_district_wide: true if the planning boundary covers an entire
-  administrative district, false otherwise.
+  administrative area (borough, district, ward, parish, named
+  conservation area). Common trigger phrases include "Borough Wide
+  Direction", "District Wide", "entire area of [admin name]", "all
+  the land within [admin name]", "Various sites across [admin name]",
+  "throughout the District of [name]". False for specific-site
+  applications.
 - district_name: if is_district_wide, the standard UK administrative
   name with a "UK" suffix. Examples: "Camden, UK", "Royal Borough of
   Kensington and Chelsea, UK", "Broadland District, Norfolk, UK",
