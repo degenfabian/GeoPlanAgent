@@ -19,7 +19,11 @@ Defines:
 
 from __future__ import annotations
 
+import os
+from typing import Literal
+
 from dotenv import load_dotenv
+from pydantic import Field, create_model
 from pydantic_ai import Agent, ModelRetry, RunContext
 
 from tools.agent.prompts import WORKER_SYSTEM_PROMPT
@@ -27,6 +31,30 @@ from tools.agent.schemas import BoundaryOutcome
 from tools.agent.state import AgentState
 
 load_dotenv()
+
+
+# ── Conditional output schema (third leg of the lookup_district ablation) ──
+# When GEOMAP_DISABLE_LOOKUP_DISTRICT=1, build a stripped variant of
+# BoundaryOutcome whose `status` Literal only allows "accepted". The model
+# never sees "district_lookup" as a valid choice in the structured-output
+# JSON schema either. Default behaviour (env unset) uses the canonical
+# BoundaryOutcome bit-identically.
+if os.environ.get("GEOMAP_DISABLE_LOOKUP_DISTRICT") == "1":
+    BoundaryOutcome_active = create_model(
+        "BoundaryOutcome",
+        __base__=BoundaryOutcome,
+        status=(
+            Literal["accepted"],
+            Field(
+                description=(
+                    "accepted = produce GeoJSON from match_at + commit_match. "
+                    "The pipeline always produces a polygon."
+                )
+            ),
+        ),
+    )
+else:
+    BoundaryOutcome_active = BoundaryOutcome
 
 
 def _strip_old_images(messages):
@@ -62,7 +90,7 @@ def _strip_old_images(messages):
 _agent = Agent(
     "test",  # overridden at runtime via model= kwarg
     deps_type=AgentState,
-    output_type=BoundaryOutcome,
+    output_type=BoundaryOutcome_active,
     retries=5,
     output_retries=3,
     history_processors=[_strip_old_images],
@@ -98,7 +126,11 @@ async def validate_boundary_outcome(
     # SAM3 or re-projection. If the agent suspects the wrong district
     # was looked up, the recovery is to call lookup_district again with
     # a different '|'-alternate name.
-    if out.status == "district_lookup":
+    # NOTE: when GEOMAP_DISABLE_LOOKUP_DISTRICT=1 the schema strips
+    # "district_lookup" from the status enum so this branch is
+    # unreachable; defensive `getattr` keeps the validator safe either
+    # way.
+    if getattr(out, "status", None) == "district_lookup":
         if state.current_result.get("geojson") is None:
             raise ModelRetry(
                 "status='district_lookup' requires a successful lookup_district "
@@ -187,7 +219,6 @@ def _strip_lookup_district_mentions(prompt: str) -> str:
 
 @_agent.system_prompt
 def build_system_prompt(ctx: RunContext[AgentState]) -> str:
-    import os
     prompt = WORKER_SYSTEM_PROMPT
     if os.environ.get("GEOMAP_DISABLE_LOOKUP_DISTRICT") == "1":
         prompt = _strip_lookup_district_mentions(prompt)
