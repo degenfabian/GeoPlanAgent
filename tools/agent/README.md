@@ -30,7 +30,8 @@ result = run_agent(
 |---|---|
 | `__init__.py` | Thin `run_agent` orchestrator. Imports the worker-tool modules at module-load time so the `@_agent.tool` decorators fire and every tool is registered before the agent runs. |
 | `reader_agent.py` | Phase 1 pydantic-ai Agent (`output_type=PDFInfo`). Reads the raw PDF + per-page OCR text. |
-| `worker_agent.py` | Phase 2 Agent (`output_type=BoundaryOutcome`). Defines `_agent`, the `_strip_old_images` history processor (keeps token cost flat), and `validate_boundary_outcome` — the output validator that enforces `verify_position` for borderline matches and `lookup_district` success for the district-fallback path. |
+| `worker_agent.py` | Phase 2 Agent (`output_type=BoundaryOutcome`). Defines `_agent`, the `_strip_old_images` history processor (keeps token cost flat), and `validate_boundary_outcome` — the output validator that enforces `lookup_district` success for the district-fallback path and that `status="accepted"` has a committed geojson. Post-commit visual review is delegated to the optional critic (`enable_critic=True`). |
+| `critic_agent.py` | Optional Phase 3 LLM critic (`enable_critic=True` in `run_agent`). Pairwise comparison across all stored match candidates with action ∈ {approve, switch, retry_locate}; opaque to the worker during initial exploration. See module docstring for details. |
 | `locate_agent.py` | Sub-agent invoked from `propose_centers`. Pydantic-ai Agent (`output_type=LocatePick`) with six offline-geocoder `@_locate_agent.tool_plain` tools. `run_locate(pdf_info, map_img_bytes, model_name, match_context?, prior_messages?)` is the callable. |
 | `runtime.py` | Phase-specific helpers used by `run_agent` (`read_pdf_phase`, `prepare_worker_state`, `invoke_worker`, `dump_partial_state`, `extract_message_log`, `collect_agent_stats`, `apply_quality_gate`, `build_run_agent_return`). |
 | `state.py` | `AgentState` — mutable per-case state passed to every worker tool as `RunContext.deps`. Re-exports `_agent`, `_img_to_binary`, `_dedup_check`, `_create_boundary_overlay`, `_draw_geojson_on_tiles`, `_run_sync_with_retry` so the worker-tool modules don't need to reach across the package. Also exposes `primary_match_page(state)` and `committed_primary_page(state)`. |
@@ -52,7 +53,6 @@ registered before `run_agent` is called.
 | `propose_centers` | `locate.py` | `(extra_terms?, match_context?) → {candidate_id, lat, lon, sigma_m, source, evidence}`. Always returns ONE candidate per call. Internally calls `tools.agent.locate_agent.run_locate`. |
 | `match_at` | `match.py` | `(page, name, lat, lon, sigma_m?, scale_ratio?) → dict` with per-group reward (numbers only — `overall_score`, `total_inliers`, `per_group[]` incl. `road_name_agreement`, `scale_consistency`, `passed_gate`). For multi-area-group documents, internally runs MINIMA at the same centre on every group's primary page and UNIONs the resulting polygons. |
 | `commit_match` | `match.py` | `(candidate_id) → {committed: …}`. Smart-commit gate (`commit_attempt_score`) redirects to a better candidate when the worker has ≥2 stored attempts. Strict gate rejects commits where no group produced a valid affine. |
-| `verify_position` | `verify.py` | `(lat?, lon?) → ToolReturn` — side-by-side panel of SAM mask on planning page + projected polygon on OS tiles. Required by the output validator when `final_n_inliers` is in 25-100. |
 | `lookup_district` | `verify.py` | `(district_name) → {success, geojson?}`. OS BoundaryLine offline lookup; supports `'|'`-separated name alternates. On success the worker submits `status="district_lookup"`. |
 | `reader_refine` | `refine.py` | `(question, page_hint?) → {answer, budget_remaining}`. Spawns a fresh Gemini Flash call on the PDF binary plus the cached per-page OCR text block. Budget 3 per case. |
 
@@ -104,19 +104,20 @@ catches partial-generation failures.
 ### `BoundaryOutcome` — worker output
 
 `status` (`"accepted"` or `"district_lookup"`) + `final_n_inliers` +
-`verify_position_called` + `visual_check_notes` + `rotation_checked` +
-`reasoning`. The output validator at `worker_agent.py:validate_boundary_outcome`:
+`rotation_checked` + `reasoning`. The output validator at
+`worker_agent.py:validate_boundary_outcome`:
 
-- For `status="accepted"` with `25 ≤ final_n_inliers ≤ 100`:
-  requires `verify_position_called=True` and `len(visual_check_notes)
-  ≥ 20`. Raises `ModelRetry` otherwise.
+- For `status="accepted"`: requires that a commit_match call has
+  produced a geojson on `state.current_result`.
 - For `status="district_lookup"`: requires that `lookup_district`
   produced a GeoJSON.
-- Overwrites `verify_position_called` / `rotation_checked` /
-  `final_n_inliers` from real state if the model misreports them
-  (the validator doesn't trust the model's flags).
+- Overwrites `rotation_checked` / `final_n_inliers` from real state if
+  the model misreports them (the validator doesn't trust the model's
+  flags).
 
-Rejection was removed from the schema 2026-05-14. The pipeline always
+Post-commit visual review is delegated to the optional independent
+critic (`enable_critic=True`), not the worker. Rejection was removed
+from the schema 2026-05-14. The pipeline always
 emits a polygon.
 
 ## Multi-page + multi-area-group handling

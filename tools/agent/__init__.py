@@ -10,7 +10,7 @@ The pipeline is three LLM agents:
   Phase 2 — Worker. PydanticAI loop with tools registered against
             tools.agent.worker_agent._agent. The canonical loop is:
               propose_centers → match_at(page=X) → commit_match
-              → verify_position (when borderline) → submit BoundaryOutcome.
+              → submit BoundaryOutcome.
             match_at takes the page explicitly. For multi-area_group
             documents one match_at call handles all groups at the same
             centre (per-group MINIMA + per-page SAM3 cache) and unions
@@ -165,7 +165,6 @@ def run_agent(
         if verbose:
             print(f"  Worker outcome: status={outcome.status} "
                   f"inliers={outcome.final_n_inliers} "
-                  f"verify={outcome.verify_position_called} "
                   f"rotation_checked={outcome.rotation_checked}")
 
     # ── Phase 3 (optional): independent critic loop ───────────────────────

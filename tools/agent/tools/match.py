@@ -161,8 +161,7 @@ def match_at(
 
     This tool returns numbers only — judge the match from the multi-axis
     reward (overall_score, total_inliers, per_group breakdown including
-    road_name_agreement and scale_consistency). For visual confirmation
-    of the FINAL committed polygon, use verify_position after commit.
+    road_name_agreement and scale_consistency).
 
     Args:
         page: 1-based page number. Must be a category='match' page from
@@ -590,7 +589,7 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
     geojson = cand.get("geojson")
     # The committed primary is the worker's requested area_group; other
     # groups in per_group represent the auto-matched alternates that were
-    # unioned in. Downstream consumers (benchmark output, verify_position)
+    # unioned in. Downstream consumers (benchmark output, critic_agent)
     # use committed_primary_page(state) to derive the relevant page/mask.
     primary_group = next(
         (g for g in cand.get("per_group") or []

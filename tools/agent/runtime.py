@@ -273,7 +273,6 @@ def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
             for cid, a in (state.match_attempts or {}).items()
         },
         "position_calls": state.position_calls,
-        "verify_position_called": state.verify_position_called,
         "rotation_checked": state.rotation_checked,
         "last_output": (state.last_output.model_dump()
                         if state.last_output is not None else None),
@@ -432,8 +431,6 @@ def collect_agent_stats(
         out = state.last_output
         agent_stats["outcome_status"] = out.status
         agent_stats["outcome_reasoning"] = out.reasoning
-        agent_stats["visual_check_notes"] = out.visual_check_notes
-        agent_stats["verify_position_called"] = out.verify_position_called
         agent_stats["rotation_checked"] = out.rotation_checked
 
     if message_log_extracted:

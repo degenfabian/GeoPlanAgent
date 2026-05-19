@@ -285,14 +285,17 @@ class PDFInfo(BaseModel):
 
 
 class BoundaryOutcome(BaseModel):
-    """Structured output for the worker agent. Includes mandatory checklist
-    fields so the output_validator can enforce that required tools were called.
+    """Structured output for the worker agent.
 
     NOTE: rejection was removed from the schema 2026-05-14. The agent always
-    submits status="accepted" (with concerns captured in visual_check_notes)
-    or status="district_lookup" for the OS BoundaryLine district fallback.
-    Refusing a case is no longer a supported action — the pipeline always
-    produces a polygon, downstream measures IoU on whatever was committed."""
+    submits status="accepted" or status="district_lookup" for the OS
+    BoundaryLine district fallback. Refusing a case is no longer a
+    supported action — the pipeline always produces a polygon,
+    downstream measures IoU on whatever was committed.
+
+    Post-commit visual review is no longer the worker's responsibility.
+    The optional independent critic (enable_critic=True) handles that
+    role using pairwise comparison across stored match candidates."""
     status: Literal["accepted", "district_lookup"] = Field(
         description="accepted = produce GeoJSON from match_at + commit_match; "
                     "district_lookup = boundary from OS BoundaryLine district fallback."
@@ -300,20 +303,6 @@ class BoundaryOutcome(BaseModel):
     final_n_inliers: int = Field(
         default=0,
         description="n_inliers from the committed match_at attempt (0 if none)."
-    )
-    verify_position_called: bool = Field(
-        default=False,
-        description="Did you call verify_position for this result? "
-                    "MUST be true if status='accepted' AND final_n_inliers "
-                    "is in 25-100 band. Not required for status='district_lookup'."
-    )
-    visual_check_notes: str = Field(
-        default="",
-        description="If you called verify_position, describe whether OS tile features "
-                    "(roads, buildings, settlement shape) matched the planning map. "
-                    "If features looked weak or mismatched, still submit accepted "
-                    "and note your concerns here. Required (≥20 chars) when "
-                    "status='accepted' AND final_n_inliers is 25-100."
     )
     rotation_checked: bool = Field(
         default=False,

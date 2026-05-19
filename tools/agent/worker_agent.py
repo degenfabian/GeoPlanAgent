@@ -10,9 +10,10 @@ Defines:
   - _strip_old_images — history processor that drops binary images from
     older messages to keep token cost flat
   - validate_boundary_outcome — output validator enforcing that
-    verify_position was called for borderline status='accepted' commits
-    (25 ≤ n_inliers ≤ 100) and that lookup_district produced a geojson
-    for status='district_lookup'
+    status='accepted' has a committed geojson, and that
+    status='district_lookup' produced a geojson via lookup_district.
+    Post-commit visual review is delegated to the optional critic
+    (enable_critic=True), so the worker no longer self-verifies.
   - build_system_prompt — registers WORKER_SYSTEM_PROMPT
 """
 
@@ -77,8 +78,9 @@ async def validate_boundary_outcome(
     """Enforce that required tool calls happened before accepting an outcome.
 
     Pydantic-AI raises ModelRetry on failure and the agent has to submit
-    again after filling the gap. This is what makes verify_position
-    actually mandatory rather than suggested.
+    again after filling the gap. Post-commit visual review is no longer
+    the worker's responsibility — the optional independent critic
+    (enable_critic=True) handles that role.
     """
     state = ctx.deps
     state.last_output = out
@@ -86,21 +88,16 @@ async def validate_boundary_outcome(
     mi = state.current_result.get("match_info") or {}
     final_inl = mi.get("n_inliers", 0) or 0
 
-    # The model sometimes hallucinates that it called verify_position. Override
-    # the schema fields with real state.
-    if out.verify_position_called != state.verify_position_called:
-        out.verify_position_called = state.verify_position_called
     if out.rotation_checked != state.rotation_checked:
         out.rotation_checked = state.rotation_checked
     if out.final_n_inliers != final_inl:
         out.final_n_inliers = final_inl
 
-    # district_lookup requires only that lookup_district succeeded. verify_position
-    # adds no value here: the polygon comes from OS BoundaryLine and cannot be
-    # refined via SAM3 or re-projection. If the agent suspects the wrong district
-    # was looked up, the recovery is to call lookup_district again with a
-    # different '|'-alternate name, not to render a tile at z=17 that only
-    # shows a fragment of the polygon.
+    # district_lookup requires only that lookup_district succeeded.
+    # The polygon comes from OS BoundaryLine and cannot be refined via
+    # SAM3 or re-projection. If the agent suspects the wrong district
+    # was looked up, the recovery is to call lookup_district again with
+    # a different '|'-alternate name.
     if out.status == "district_lookup":
         if state.current_result.get("geojson") is None:
             raise ModelRetry(
@@ -116,31 +113,10 @@ async def validate_boundary_outcome(
         raise ModelRetry(
             "Cannot accept: no successful match_at + commit_match has produced "
             "a result. Run positioning to completion (propose_centers → "
-            "match_at → commit_match → extract_boundary → project_boundary). "
-            "Even if all match_at scores are low, commit the highest-scoring "
-            "one anyway and proceed — the pipeline always produces a polygon."
+            "match_at → commit_match). Even if all match_at scores are low, "
+            "commit the highest-scoring one anyway and proceed — the pipeline "
+            "always produces a polygon."
         )
-
-    # Borderline positioning (25-100 inliers) must be manually verified.
-    if 25 <= final_inl <= 100:
-        if not state.verify_position_called:
-            raise ModelRetry(
-                f"Positioning produced {final_inl} inliers (borderline band 25-100). "
-                f"You MUST call verify_position to visually compare the OS tile "
-                f"against the planning map before accepting. Call verify_position "
-                f"now, compare the road/feature patterns, then resubmit with "
-                f"verify_position_called=True and visual_check_notes describing "
-                f"the comparison. If features do NOT match, still submit with "
-                f"status='accepted' — note the mismatch in visual_check_notes. "
-                f"The pipeline always produces a polygon."
-            )
-        if len(out.visual_check_notes.strip()) < 20:
-            raise ModelRetry(
-                f"verify_position was called but visual_check_notes is too short "
-                f"(len={len(out.visual_check_notes.strip())}). Describe in at "
-                f"least 20 characters whether the OS tile features match the "
-                f"planning map (road patterns, settlement shape, named roads)."
-            )
 
     return out
 

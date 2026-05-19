@@ -71,7 +71,6 @@ class AgentState:
 
         # Structured-output validator tracking
         self.pdf_info: Dict[str, Any] = {}  # populated from reader phase
-        self.verify_position_called: bool = False
         self.rotation_checked: bool = False
         self.last_output: Optional["BoundaryOutcome"] = None
 
