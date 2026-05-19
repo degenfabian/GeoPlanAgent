@@ -337,14 +337,33 @@ def _run_critic_once(state: Any, model_name: str,
     panel = _stack_candidate_panels(cand_panels)
     metrics_text = _format_metrics_text(state, attempts, committed_id or -1)
 
+    # On follow-up iterations the message_history already contains the
+    # critic's prior directive; an explicit header makes the meta-state
+    # unambiguous so the model doesn't have to infer "this is a re-look"
+    # from the conversation structure alone.
+    if message_history is not None:
+        header = (
+            "FOLLOW-UP REVIEW. This is a subsequent iteration of your "
+            "pairwise judgement on the same case. Your earlier directive "
+            "is in the conversation above; the worker has responded "
+            "(switched candidate, re-located, or attempted to). The "
+            "panels and metrics below reflect the CURRENT state. "
+            "Decide whether the response addressed your prior directive "
+            "and whether the now-committed candidate is correct, or "
+            "whether a further switch / retry_locate is warranted."
+        )
+        text_block = header + "\n\n" + metrics_text
+    else:
+        text_block = metrics_text
+
     if panel is not None:
         _, buf = cv2.imencode(".png", panel)
         user_input = [
-            metrics_text,
+            text_block,
             BinaryContent(data=buf.tobytes(), media_type="image/png"),
         ]
     else:
-        user_input = [metrics_text]
+        user_input = [text_block]
 
     agent = _ensure_agent(model_name)
     in_tokens = 0
