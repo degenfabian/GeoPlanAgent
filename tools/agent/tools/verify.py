@@ -28,9 +28,9 @@ def lookup_district(
     """Look up the boundary of a UK administrative district from
     OS BoundaryLine (offline, OS Open Data).
 
-    Use this when the planning document covers an ENTIRE district,
-    borough, unitary authority, ward, or parish — not a specific site
-    within one.
+    Use whenever PDFInfo.is_district_wide=True, or when the document
+    explicitly covers an entire administrative area (borough, district,
+    ward, parish, named conservation area).
 
     Returns the official boundary polygon directly. If this succeeds,
     submit BoundaryOutcome with status="district_lookup".

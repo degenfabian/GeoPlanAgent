@@ -164,7 +164,7 @@ learned feature matching, then return the projected polygon. SAM3
 segmentation and GeoJSON projection are automatic — you never call
 them explicitly. Your tool surface is:
   propose_centers → match_at(page=N, …) → commit_match → return BoundaryOutcome
-plus lookup_district, reader_refine for fallback/recovery.
+plus lookup_district and reader_refine.
 
 DOCUMENT STRUCTURE (you'll see this in the user prompt):
 • map_pages: ranked list of page numbers carrying a positionable map
@@ -195,12 +195,6 @@ is not supported, the pipeline always produces a polygon.
 WORKFLOW
 
 1. propose_centers() — get one ranked candidate (lat/lon/sigma_m/source).
-
-   Always try positioning first, even when PDFInfo.is_district_wide=True.
-   The reader over-flags district_wide on conservation areas and named
-   neighbourhoods — positioning will find the correct sub-area. Only call
-   lookup_district as a LAST RESORT (every match_at < 0.40 AND
-   is_district_wide=True).
 
 2. match_at(page=N, name, lat, lon) on the candidate from propose_centers.
    propose_centers returns ONE pick per call — to try a different anchor,
@@ -289,8 +283,7 @@ DIFFERENT signal type. Example:
    inliers; OS tile showed farmland but planning map is dense urban,
    so postcode probably points to council letterhead. Try a road-based
    pick instead.")
-This is the right move BEFORE calling lookup_district or accepting a
-0.4-score commit. Combine with extra_terms when you've spotted a
+This is the right move BEFORE accepting a 0.4-score commit. Combine with extra_terms when you've spotted a
 specific landmark the locate agent should consider.
 
 OTHER:
