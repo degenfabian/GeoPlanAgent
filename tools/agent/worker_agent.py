@@ -19,6 +19,8 @@ Defines:
 
 from __future__ import annotations
 
+import os
+
 from dotenv import load_dotenv
 from pydantic_ai import Agent, ModelRetry, RunContext
 
@@ -27,6 +29,50 @@ from tools.agent.schemas import BoundaryOutcome
 from tools.agent.state import AgentState
 
 load_dotenv()
+
+
+def _strip_reader_refine_mentions(prompt: str) -> str:
+    """Remove every mention of reader_refine from the worker prompt —
+    used for the ablation where the tool is unregistered
+    (GEOMAP_DISABLE_READER_REFINE=1). Three targeted string replacements;
+    each MUST match the canonical prompt text verbatim, so a prompt edit
+    upstream will break this helper and force an update.
+    """
+    REPLACEMENTS = [
+        # 1. Tool-surface line
+        ("plus lookup_district and reader_refine.",
+         "plus lookup_district."),
+        # 2. WORKFLOW step 4 — district_name confirmation parenthetical
+        ("call lookup_district again with a\n"
+         "   different '|'-alternate name (or call reader_refine to confirm the\n"
+         "   right district name) before submitting status=\"district_lookup\".",
+         "call lookup_district again with a\n"
+         "   different '|'-alternate name before submitting "
+         "status=\"district_lookup\"."),
+        # 3. OTHER section — reader_refine bullet
+        ("• reader_refine(question, page_hint=None): ask the source PDF a focused\n"
+         "  question when PDFInfo is missing something concrete and the answer is\n"
+         "  in the document. Examples: \"what's the printed scale text on page 4?\",\n"
+         "  \"are there any postcodes anywhere in the document?\", \"does page 3 have\n"
+         "  a north arrow and what direction?\". Budget 3 per case. Do NOT use it\n"
+         "  for geocoding or to locate places.\n",
+         ""),
+    ]
+    out = prompt
+    n_replaced = 0
+    for src, dst in REPLACEMENTS:
+        if src in out:
+            out = out.replace(src, dst)
+            n_replaced += 1
+    if n_replaced != len(REPLACEMENTS):
+        import warnings
+        warnings.warn(
+            f"_strip_reader_refine_mentions matched {n_replaced}/"
+            f"{len(REPLACEMENTS)} replacements — prompt may have changed "
+            f"upstream. Update the helper before trusting the ablation.",
+            stacklevel=2,
+        )
+    return out
 
 
 def _strip_old_images(messages):
@@ -123,4 +169,7 @@ async def validate_boundary_outcome(
 
 @_agent.system_prompt
 def build_system_prompt(ctx: RunContext[AgentState]) -> str:
-    return WORKER_SYSTEM_PROMPT
+    prompt = WORKER_SYSTEM_PROMPT
+    if os.environ.get("GEOMAP_DISABLE_READER_REFINE") == "1":
+        prompt = _strip_reader_refine_mentions(prompt)
+    return prompt

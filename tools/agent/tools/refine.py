@@ -11,6 +11,7 @@ keep cost predictable.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -21,6 +22,17 @@ from tools.agent._model import resolve_model
 from tools.agent.state import _agent, AgentState
 from tools.io.text_extraction import (extract_text_per_page,
                                        format_for_reader_prompt)
+
+
+def _maybe_register_reader_refine(fn):
+    """Conditional @_agent.tool registration. When
+    GEOMAP_DISABLE_READER_REFINE=1, the function is NOT registered with
+    the worker agent — the tool is invisible to the model. Clean for
+    ablation.
+    """
+    if os.environ.get("GEOMAP_DISABLE_READER_REFINE") == "1":
+        return fn
+    return _agent.tool(fn)
 
 
 REFINE_BUDGET_PER_CASE = 3
@@ -67,7 +79,7 @@ def _ensure_refine_agent(model_name: str) -> Agent:
     return _refine_agent
 
 
-@_agent.tool
+@_maybe_register_reader_refine
 def reader_refine(
     ctx: RunContext[AgentState],
     question: str,
