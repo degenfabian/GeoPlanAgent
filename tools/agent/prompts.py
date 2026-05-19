@@ -93,17 +93,27 @@ additional rules):
 
 - grid_refs: OS grid references on map edges (e.g. "TG 210 080", "TR 34 SE").
 
-- is_district_wide: true if the planning boundary covers an entire
-  administrative district, false otherwise.
-- district_name: if is_district_wide, the standard UK administrative
-  name with a "UK" suffix. Examples: "Camden, UK", "Royal Borough of
-  Kensington and Chelsea, UK", "Broadland District, Norfolk, UK",
-  "Rossendale Borough, UK". Provide "|"-separated alternates if
-  ambiguous (e.g. "City of Westminster, UK | Westminster, UK"). The
-  downstream lookup uses OS BoundaryLine and normalises common variants
-  ("London Borough of X" → "X", trailing "Borough"/"District"/"Council"
-  stripped), so don't overthink the exact form — be specific enough to
-  disambiguate.
+- is_district_wide: true ONLY when the document EXPLICITLY states the
+  application covers an entire administrative area. Trigger language:
+  "Land throughout the District of X", "Various sites across X",
+  "Article 4 Direction covering the whole of X", "The entire area of
+  X", "All sites within the X borough". FALSE for specific-site
+  applications even if a district name appears in the body text.
+  Counter-examples (set FALSE despite the district name being
+  mentioned): "Site at <address>, X District", "Land north of <road>,
+  X", "Application for works at <building>, X Borough", "Within the X
+  Conservation Area" (work IN a CA, not the CA itself). When the
+  application is for a specific parcel, field, house, road, or single
+  building, this is FALSE regardless of which district is mentioned.
+- district_name: MUST be null when is_district_wide=false. When true,
+  provide the standard UK administrative name with a "UK" suffix.
+  Examples: "Camden, UK", "Royal Borough of Kensington and Chelsea,
+  UK", "Broadland District, Norfolk, UK", "Rossendale Borough, UK".
+  Provide "|"-separated alternates if ambiguous (e.g. "City of
+  Westminster, UK | Westminster, UK"). Downstream lookup uses OS
+  BoundaryLine and normalises common variants ("London Borough of X" →
+  "X", trailing "Borough"/"District"/"Council" stripped), so don't
+  overthink the exact form — be specific enough to disambiguate.
 
 - site_address: the SITE address (location of the boundary). Prefer
   "Site Address", "Location", or "Land at..." fields. IGNORE council/agent/
@@ -159,7 +169,9 @@ learned feature matching, then return the projected polygon. SAM3
 segmentation and GeoJSON projection are automatic — you never call
 them explicitly. Your tool surface is:
   propose_centers → match_at(page=N, …) → commit_match → return BoundaryOutcome
-plus lookup_district, reader_refine for fallback/recovery.
+plus lookup_district (ONLY for documents that explicitly cover an entire
+admin area — NOT a positioning-failure fallback) and reader_refine
+(re-ask the source PDF a focused question).
 
 DOCUMENT STRUCTURE (you'll see this in the user prompt):
 • map_pages: ranked list of page numbers carrying a positionable map
@@ -191,11 +203,19 @@ WORKFLOW
 
 1. propose_centers() — get one ranked candidate (lat/lon/sigma_m/source).
 
-   Always try positioning first, even when PDFInfo.is_district_wide=True.
-   The reader over-flags district_wide on conservation areas and named
-   neighbourhoods — positioning will find the correct sub-area. Only call
-   lookup_district as a LAST RESORT (every match_at < 0.40 AND
-   is_district_wide=True).
+   Call lookup_district ONLY when the document text EXPLICITLY states
+   the application covers an ENTIRE district / borough / ward / parish
+   — phrases like "entire area of X", "land throughout the District of
+   X", "all sites within the X borough", "Article 4 across the whole
+   of X". Read site_address and the body context yourself; the
+   PDFInfo.is_district_wide flag is a hint, not a license. For
+   SITE-SPECIFIC applications (a parcel, field, road, building, named
+   site), NEVER call lookup_district even when positioning is failing
+   or scoring below 0.40 — committing the highest-scoring match_at
+   result is the correct outcome, even if IoU will be low. The
+   "Despite multiple attempts to locate the specific site..." reasoning
+   is a RED FLAG that you're about to misuse the tool: stop and commit
+   the best match_at instead.
 
 2. match_at(page=N, name, lat, lon) on the candidate from propose_centers.
    propose_centers returns ONE pick per call — to try a different anchor,
@@ -257,13 +277,18 @@ WORKFLOW
    again with a different id to change your mind (projection re-runs).
 
 4. Return BoundaryOutcome with status="accepted" (or
-   status="district_lookup" if you took the lookup_district path).
-   The pipeline always produces a polygon — downstream measures IoU on
-   whatever you commit, so don't refuse a case. If you suspect the
-   wrong district was looked up, call lookup_district again with a
-   different '|'-alternate name (or call reader_refine to confirm the
-   right district name) before submitting status="district_lookup".
-   rotation_checked is auto-overwritten from state — leave at default.
+   status="district_lookup" ONLY if you took the lookup_district path
+   for a case where the document explicitly covers an entire
+   administrative area). The pipeline always produces a polygon —
+   downstream measures IoU on whatever you commit, so don't refuse a
+   case. If you suspect the wrong district was looked up, call
+   lookup_district again with a different '|'-alternate name (or call
+   reader_refine to confirm the right district name) before submitting
+   status="district_lookup". If you find yourself reaching for
+   status="district_lookup" because positioning failed on a specific
+   site, that's the misuse pattern — submit status="accepted" with the
+   best match_at result instead. rotation_checked is auto-overwritten
+   from state — leave at default.
 
 BUDGET: max 5 match_at calls per case. Focus on top-specificity candidates
 first. If all 5 score below 0.40, commit the highest-scoring one anyway
@@ -284,9 +309,13 @@ DIFFERENT signal type. Example:
    inliers; OS tile showed farmland but planning map is dense urban,
    so postcode probably points to council letterhead. Try a road-based
    pick instead.")
-This is the right move BEFORE calling lookup_district or accepting a
-0.4-score commit. Combine with extra_terms when you've spotted a
-specific landmark the locate agent should consider.
+This is the right move BEFORE accepting a 0.4-score commit. (Note:
+lookup_district is NOT a positioning-failure fallback — only invoke
+it when the document text explicitly says "entire area of X" / "land
+throughout the District of X". For site-specific cases, commit the
+best match_at result regardless of score.) Combine with extra_terms
+when you've spotted a specific landmark the locate agent should
+consider.
 
 OTHER:
 • No duplicate tool calls with the same args.
