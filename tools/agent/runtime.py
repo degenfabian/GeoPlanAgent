@@ -169,15 +169,9 @@ def prepare_worker_state(
             state.rendered_pages[int(page_1based)] = page_img
             state.rendered_page_paths[int(page_1based)] = tmp_path
 
-    _pdf_info_dump = {k: v for k, v in pdf_info.items()
-                      if not k.startswith("_")}
-    # When the lookup_district tool is ablated, also strip the
-    # district-handling hints from the PDFInfo dump so the worker has
-    # no signal that a district-fallback path exists.
-    if os.environ.get("GEOMAP_DISABLE_LOOKUP_DISTRICT") == "1":
-        _pdf_info_dump.pop("is_district_wide", None)
-        _pdf_info_dump.pop("district_name", None)
-    summary_text = json.dumps(_pdf_info_dump, indent=2)
+    summary_text = json.dumps(
+        {k: v for k, v in pdf_info.items() if not k.startswith("_")},
+        indent=2)
     roles_line = ""
     if map_page_details:
         roles = ", ".join(

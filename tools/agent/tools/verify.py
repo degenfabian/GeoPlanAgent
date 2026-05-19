@@ -13,8 +13,6 @@ lookup with no visual component.
 
 from __future__ import annotations
 
-import os
-
 from pydantic_ai import RunContext
 
 from tools.agent.state import _agent, AgentState, _dedup_check
@@ -22,18 +20,7 @@ from tools.agent.state import _agent, AgentState, _dedup_check
 
 # ── Tool: lookup_district ────────────────────────────────────────────────
 
-def _maybe_register_lookup_district(fn):
-    """Conditional @_agent.tool registration. When
-    GEOMAP_DISABLE_LOOKUP_DISTRICT=1, the function is NOT registered with
-    the worker agent — the tool is invisible to the model, no
-    ModelRetry path. Clean for ablation.
-    """
-    if os.environ.get("GEOMAP_DISABLE_LOOKUP_DISTRICT") == "1":
-        return fn
-    return _agent.tool(fn)
-
-
-@_maybe_register_lookup_district
+@_agent.tool
 def lookup_district(
     ctx: RunContext[AgentState],
     district_name: str,
