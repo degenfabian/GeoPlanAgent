@@ -155,30 +155,18 @@ class PDFInfo(BaseModel):
     )
     is_district_wide: bool = Field(
         default=False,
-        description="TRUE only when the document EXPLICITLY states the "
-                    "application covers an ENTIRE administrative area. "
-                    "Trigger phrases: 'Land throughout the District of X', "
-                    "'Various sites across X', 'All land within the X "
-                    "borough', 'Article 4 Direction covering the whole of "
-                    "X', 'The entire area of X'. FALSE for specific-site "
-                    "applications even if a district name appears in the "
-                    "text. Counter-examples: 'Site at <address>, X "
-                    "District' → FALSE; 'Land north of <road>, X' → FALSE; "
-                    "'Work within the X Conservation Area' → FALSE (work "
-                    "IN a CA is not the CA itself). When the application "
-                    "is for a specific parcel, field, house, road, or "
-                    "single building, this is FALSE regardless of which "
-                    "district is mentioned."
+        description="TRUE if the boundary covers an ENTIRE borough/district/ward/"
+                    "parish/conservation area. Patterns that trigger TRUE: "
+                    "'Land within the X of Y', 'Various sites across X', "
+                    "'The X Conservation Area', 'Land in the Urban District of X'. "
+                    "When unsure, prefer true — downstream falls through if lookup fails."
     )
     district_name: Optional[str] = Field(
         default=None,
-        description="MUST be None when is_district_wide=False. When True, "
-                    "provide the UK administrative name with 'UK' suffix "
-                    "and '|' alternates if ambiguous (e.g. 'Dover "
-                    "District, Kent, UK | Dover, Kent, UK'). Downstream "
-                    "lookup uses OS BoundaryLine and normalises common "
-                    "variants ('London Borough of X' → 'X', trailing "
-                    "'Borough/District/Council' stripped)."
+        description="If is_district_wide, the UK administrative name with 'UK' "
+                    "suffix. Provide '|' alternates if ambiguous (e.g. "
+                    "'Dover District, Kent, UK | Dover, Kent, UK'). Downstream "
+                    "lookup uses OS BoundaryLine and normalises common variants."
     )
     # ── Fields for the dedicated locate stage (added 2026-04-24) ─────────
     # These mirror things that downstream regex parsers currently extract
@@ -309,13 +297,8 @@ class BoundaryOutcome(BaseModel):
     The optional independent critic (enable_critic=True) handles that
     role using pairwise comparison across stored match candidates."""
     status: Literal["accepted", "district_lookup"] = Field(
-        description="accepted = produce GeoJSON from match_at + commit_match "
-                    "(the default path for all site-specific applications). "
-                    "district_lookup = boundary from OS BoundaryLine for "
-                    "documents that EXPLICITLY cover an entire administrative "
-                    "area (NOT a positioning fallback; never use as a "
-                    "last-resort when match_at scores are low — commit the "
-                    "best match_at result instead)."
+        description="accepted = produce GeoJSON from match_at + commit_match; "
+                    "district_lookup = boundary from OS BoundaryLine district fallback."
     )
     final_n_inliers: int = Field(
         default=0,

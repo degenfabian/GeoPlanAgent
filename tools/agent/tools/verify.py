@@ -28,21 +28,12 @@ def lookup_district(
     """Look up the boundary of a UK administrative district from
     OS BoundaryLine (offline, OS Open Data).
 
-    PRECONDITION: only use when the document EXPLICITLY states the
-    application covers an ENTIRE administrative area — phrases like
-    "the entire area of X", "land throughout the District of X",
-    "Article 4 across the whole of X", "Various sites across X".
+    Use this when the planning document covers an ENTIRE district,
+    borough, unitary authority, ward, or parish — not a specific site
+    within one.
 
-    NEVER use as a positioning fallback. If positioning is failing on
-    a specific site (parcel, field, road, building), committing the
-    best match_at result is the correct outcome — DO NOT invoke this
-    tool to "rescue" the case. Reasoning like "despite multiple
-    attempts to locate the specific site, I'll use the district"
-    indicates misuse: the district polygon will be wrong for any
-    site-specific application even when the address mentions an
-    administrative area.
-
-    On success, submit BoundaryOutcome with status="district_lookup".
+    Returns the official boundary polygon directly. If this succeeds,
+    submit BoundaryOutcome with status="district_lookup".
 
     Naming conventions (be specific to avoid ambiguous matches; the
     downstream resolver normalises "London Borough of X" → "X" and
