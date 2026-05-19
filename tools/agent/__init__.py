@@ -181,7 +181,13 @@ def run_agent(
         and outcome.status != "district_lookup"
     )
     if can_run_critic:
-        worker_first_geojson_snapshot = state.current_result.get("geojson")
+        # Deep-copy so a future refactor that mutates state.current_result
+        # in place (rather than rebinding the dict each commit_match)
+        # cannot retroactively corrupt the no-critic baseline used on
+        # the critic-error path.
+        import copy as _copy
+        worker_first_geojson_snapshot = _copy.deepcopy(
+            state.current_result.get("geojson"))
         try:
             from tools.agent.critic_agent import run_critic_loop
             if verbose:
@@ -213,11 +219,11 @@ def run_agent(
             and case_dir is not None):
         try:
             import cv2 as _cv2
+            case_dir.mkdir(parents=True, exist_ok=True)
             for _i, _p in enumerate(critic_result.get("panels_by_iter") or []):
                 if _p is None:
                     continue
                 _path = case_dir / f"critic_panel_iter{_i}.png"
-                case_dir.mkdir(parents=True, exist_ok=True)
                 _cv2.imwrite(str(_path), _p)
         except Exception as _e:
             if verbose:
