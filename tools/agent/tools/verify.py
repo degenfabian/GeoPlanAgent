@@ -13,7 +13,9 @@ lookup with no visual component.
 
 from __future__ import annotations
 
-from pydantic_ai import RunContext
+import os
+
+from pydantic_ai import ModelRetry, RunContext
 
 from tools.agent.state import _agent, AgentState, _dedup_check
 
@@ -54,6 +56,20 @@ def lookup_district(
         {"success": false, "error": str} — name not in OS BoundaryLine
     """
     state = ctx.deps
+
+    # Ablation gate: when GEOMAP_DISABLE_LOOKUP_DISTRICT=1, immediately
+    # reject the call so the worker is forced to commit a match_at
+    # result via the positioning path. Lets us measure the tool's net
+    # contribution by re-running just the 9 cases where it fired.
+    if os.environ.get("GEOMAP_DISABLE_LOOKUP_DISTRICT") == "1":
+        raise ModelRetry(
+            "lookup_district is disabled in this ablation run. Do NOT call "
+            "this tool. Instead, commit the best match_at attempt via "
+            "commit_match (the smart-commit gate will pick the right one) "
+            "and submit BoundaryOutcome with status='accepted'. The "
+            "pipeline always produces a polygon — never refuse."
+        )
+
     _dedup_check(state, "lookup_district", {"district_name": district_name})
 
     from tools.geo.grid_ref import lookup_district_boundary
