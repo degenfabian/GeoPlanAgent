@@ -221,10 +221,12 @@ WORKFLOW
    Decision rules:
      • STRONG match: overall_score ≥ 0.80 AND total_inliers ≥ 80
        (aggregate across groups) → commit_match.
-     • BORDERLINE (anything weaker): try AT LEAST ONE more propose_centers
-       candidate before committing. This is MANDATORY even if the first
-       score is in the 0.65-0.79 range. The second match often lands at
-       a different zoom and reveals a much better fit.
+     • BORDERLINE (anything below STRONG): try AT LEAST ONE more
+       propose_centers candidate before committing — this is MANDATORY
+       even when the first attempt looks acceptable but doesn't clear
+       the STRONG threshold (e.g. overall_score ≈ 0.7). The second
+       match often lands at a different zoom and reveals a much better
+       fit.
      • overall_score < 0.40 on the first try → reject; try another center.
      • After 2+ match_at attempts: commit the candidate with the highest
        total_inliers. The smart-commit gate then re-ranks by
