@@ -223,12 +223,15 @@ WORKFLOW
        match often lands at a different zoom and reveals a much better
        fit.
      • overall_score < 0.40 on the first try → reject; try another center.
-     • After 2+ match_at attempts: commit the candidate with the highest
-       total_inliers. The smart-commit gate then re-ranks by
-       total_inliers × (0.3 if outside the admin_region LA polygon
-       else 1.0), so a higher-inlier-but-outside-LA pick can be
-       redirected to a lower-inlier-but-inside-LA one — you don't need
-       to verify the LA containment yourself.
+     • After 2+ match_at attempts: pick the candidate with the highest
+       total_inliers and call commit_match on it. commit_match runs a
+       deterministic re-rank against all stored attempts, with a
+       70%-penalty applied to candidates whose centre falls OUTSIDE
+       the reader's admin_region polygon (per OS BoundaryLine). If
+       your pick fails this re-rank, commit_match commits a different
+       stored attempt instead and returns the redirected id — so you
+       don't need to verify LA containment yourself; just pick on
+       inliers and let the call correct you.
      • If scale is known and scale_consistency < 0.50 → prefer another
        candidate (affine landed at wrong zoom).
 
@@ -243,13 +246,15 @@ WORKFLOW
        scale was wrong OR this is the wrong area — prefer another
        candidate if there is one.
 
-3. commit_match(candidate_id) — picks the active result AND automatically
-   projects the SAM3 mask through the committed affine into a WGS84
-   GeoJSON polygon. The smart-commit gate combines n_inliers with a
-   heavy penalty for matches landing outside the admin_region's LA
-   polygon; if you try to commit a worse candidate the tool will
-   redirect you. You may call commit_match again to change your mind
-   (the projection re-runs each time).
+3. commit_match(candidate_id) — promotes one stored match_at attempt
+   to the active result AND automatically projects the SAM3 mask
+   through its affine into a WGS84 GeoJSON polygon. Before promoting,
+   it runs a deterministic re-rank across ALL stored attempts using
+   total_inliers with a 70%-penalty applied to candidates whose centre
+   falls OUTSIDE the admin_region polygon; if your pick fails the
+   re-rank against another stored attempt, it commits that attempt
+   instead and returns the redirected id. You may call commit_match
+   again with a different id to change your mind (projection re-runs).
 
 4. Return BoundaryOutcome with status="accepted" (or
    status="district_lookup" if you took the lookup_district path).

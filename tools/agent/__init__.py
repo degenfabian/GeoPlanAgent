@@ -206,6 +206,23 @@ def run_agent(
                 "worker_first_geojson": worker_first_geojson_snapshot,
             }
 
+    # Write critic-panel PNGs to disk for post-hoc debugging. One file
+    # per iteration: critic_panel_iter0.png, critic_panel_iter1.png, …
+    if (critic_result is not None
+            and "error" not in critic_result
+            and case_dir is not None):
+        try:
+            import cv2 as _cv2
+            for _i, _p in enumerate(critic_result.get("panels_by_iter") or []):
+                if _p is None:
+                    continue
+                _path = case_dir / f"critic_panel_iter{_i}.png"
+                case_dir.mkdir(parents=True, exist_ok=True)
+                _cv2.imwrite(str(_path), _p)
+        except Exception as _e:
+            if verbose:
+                print(f"  Warning: failed to save critic panels: {_e}")
+
     # ── Cleanup, stats, soft quality gate, return ─────────────────────────
     _rt.cleanup_temp_pages(state)
 

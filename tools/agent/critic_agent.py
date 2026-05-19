@@ -310,10 +310,17 @@ def _format_metrics_text(state: Any,
 # ── Critic single-call + rehand ────────────────────────────────────────────
 
 
-def _run_critic_once(state: Any, model_name: str) -> tuple:
+def _run_critic_once(state: Any, model_name: str,
+                      message_history: Optional[list] = None) -> tuple:
     """One critic LLM call.
 
-    Returns (directive, panel, wall_s, in_tokens, out_tokens).
+    If ``message_history`` is provided, the critic sees its own prior
+    iteration(s) — lets iter 2 reason about whether the worker's
+    response to iter 1's directive actually helped.
+
+    Returns (directive, panel, wall_s, in_tokens, out_tokens, llm_error,
+    new_history). new_history is the updated message list the caller
+    can pass into the next iteration; None on LLM error.
     """
     attempts = sorted(state.match_attempts.values(),
                        key=lambda a: int(a.get("candidate_id") or 0))
@@ -343,11 +350,19 @@ def _run_critic_once(state: Any, model_name: str) -> tuple:
     in_tokens = 0
     out_tokens = 0
     llm_error: Optional[str] = None
+    new_history: Optional[list] = None
     t0 = time.time()
     try:
         from tools.agent._retry import _run_sync_with_retry
-        result = _run_sync_with_retry(agent, user_input, label="critic")
+        result = _run_sync_with_retry(
+            agent, user_input, label="critic",
+            message_history=message_history,
+        )
         directive = result.output
+        try:
+            new_history = result.all_messages()
+        except Exception:
+            new_history = None
         try:
             usage = result.usage()
             # Prefer the modern pydantic-ai field names; fall back to the
@@ -369,7 +384,7 @@ def _run_critic_once(state: Any, model_name: str) -> tuple:
             reasoning=f"CRITIC_LLM_ERROR (treated as approve): {llm_error}",
         )
     wall = time.time() - t0
-    return directive, panel, wall, in_tokens, out_tokens, llm_error
+    return directive, panel, wall, in_tokens, out_tokens, llm_error, new_history
 
 
 def _rehand_to_worker(state: Any,
@@ -514,14 +529,25 @@ def run_critic_loop(
     iterations: List[Dict[str, Any]] = []
     total_in = 0
     total_out = 0
-    panel_iter0: Optional[np.ndarray] = None
+    panels_by_iter: List[Optional[np.ndarray]] = []
     current_worker_result = worker_result
+    # Critic's own message history across iterations — lets iter 2
+    # reason about whether iter 1's directive was followed and helped.
+    # Each iteration's user_input still rebuilds the current panels +
+    # metrics from state, so the critic always sees current candidates;
+    # the history just adds its own prior reasoning to that context.
+    critic_message_history: Optional[list] = None
 
     for it_idx in range(max_iters):
-        directive, panel, wall, in_t, out_t, llm_error = _run_critic_once(
-            state, model_name)
-        if it_idx == 0:
-            panel_iter0 = panel
+        directive, panel, wall, in_t, out_t, llm_error, new_history = (
+            _run_critic_once(state, model_name,
+                              message_history=critic_message_history)
+        )
+        # Update history for next iter (only if the call succeeded; on
+        # LLM error new_history is None and we keep prior history).
+        if new_history is not None:
+            critic_message_history = new_history
+        panels_by_iter.append(panel)
         total_in += in_t
         total_out += out_t
 
@@ -570,7 +596,9 @@ def run_critic_loop(
         "iterations": iterations,
         "n_rejections": n_rej,
         "tokens": {"request": total_in, "response": total_out},
-        "panel_iter0": panel_iter0,
+        # All panels the critic saw, one per iteration. Caller writes
+        # them to disk for post-hoc debugging.
+        "panels_by_iter": panels_by_iter,
         # The latest worker result — carries the full conversation
         # including all critic-triggered rehand sub-turns. Use this for
         # message_log extraction so the on-disk log includes critic
