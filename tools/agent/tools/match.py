@@ -176,8 +176,8 @@ def match_at(
         {"success": True, "candidate_id": int, "total_inliers": int,
          "n_groups": int, "n_groups_committed": int,
          "per_group": [{"page", "area_group", "n_inliers",
-         "road_name_agreement", "road_name_verdict", "scale_consistency",
-         "passed_gate"}, ...],
+         "road_name_agreement", "road_name_verdict",
+         "scale_consistency"}, ...],
          "budget_remaining": int}
     """
     state = ctx.deps
@@ -319,7 +319,6 @@ def match_at(
                     g.get("reward"), "road_name_agreement", "verdict"),
                 "scale_consistency": _axis_field(
                     g.get("reward"), "scale_consistency", "score"),
-                "passed_gate": id(g) in committed_ids,
             }
             for g in per_group
         ],

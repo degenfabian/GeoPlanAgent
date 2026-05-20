@@ -205,8 +205,8 @@ WORKFLOW
    are matched automatically at the same centre (see DOCUMENT STRUCTURE
    above).
    Each call returns total_inliers and a per_group breakdown
-   (n_inliers, road_name_agreement + verdict, scale_consistency,
-   passed_gate). Judge candidate quality from these numbers.
+   (n_inliers, road_name_agreement + verdict, scale_consistency).
+   Judge candidate quality from these numbers.
 
    SAM3 segmentation runs automatically on first need per page (cached
    per page across calls).
