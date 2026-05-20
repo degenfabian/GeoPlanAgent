@@ -20,7 +20,6 @@ number, so re-calling match_at on a page that's been segmented is fast
 
 from __future__ import annotations
 
-import os
 import tempfile
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -160,9 +159,9 @@ def match_at(
     Other area_groups in the document use their primaries automatically.
     The returned candidate's polygon is the UNION of per-group projections.
 
-    This tool returns numbers only — judge the match from the multi-axis
-    reward (overall_score, total_inliers, per_group breakdown including
-    road_name_agreement and scale_consistency).
+    This tool returns numbers only — judge the match from total_inliers
+    and the per_group breakdown (n_inliers, scale_consistency,
+    road_name_agreement + verdict).
 
     Args:
         page: 1-based page number. Must be a category='match' page from
@@ -174,11 +173,11 @@ def match_at(
         scale_ratio: Map scale denominator (default: parsed from PDFInfo.scale).
 
     Returns:
-        {"success": True, "candidate_id": int, "overall_score": float,
-         "total_inliers": int, "n_groups": int, "n_groups_committed": int,
-         "per_group": [{"page", "area_group", "n_inliers", "score",
-         "overall_score", "road_name_agreement", "road_name_verdict",
-         "scale_consistency", "passed_gate", "weak_retry"}, ...],
+        {"success": True, "candidate_id": int, "total_inliers": int,
+         "n_groups": int, "n_groups_committed": int,
+         "per_group": [{"page", "area_group", "n_inliers",
+         "road_name_agreement", "road_name_verdict", "scale_consistency",
+         "passed_gate"}, ...],
          "budget_remaining": int}
     """
     state = ctx.deps
@@ -315,7 +314,6 @@ def match_at(
     summary = {
         "success": True,
         "candidate_id": cid,
-        "overall_score": float(overall_score),
         "total_inliers": int(total_inliers),
         "n_groups": len(per_group),
         "n_groups_committed": len(committed_groups),
@@ -323,8 +321,6 @@ def match_at(
             {
                 "page": g["page"], "area_group": g["area_group"],
                 "n_inliers": int((g.get("match_info") or {}).get("n_inliers") or 0),
-                "score": float((g.get("match_info") or {}).get("score") or 0.0),
-                "overall_score": float(g.get("overall_score") or 0.0),
                 "road_name_agreement": _axis_field(
                     g.get("reward"), "road_name_agreement", "score"),
                 "road_name_verdict": _axis_field(
@@ -332,7 +328,6 @@ def match_at(
                 "scale_consistency": _axis_field(
                     g.get("reward"), "scale_consistency", "score"),
                 "passed_gate": id(g) in committed_ids,
-                "weak_retry": g.get("weak_retry"),
             }
             for g in per_group
         ],
@@ -393,57 +388,6 @@ def _match_single_page(state: AgentState, page: int, name: str,
 
     mi, reward = _evaluate(result)
 
-    # 2× σ retry on weak first attempt. Telemetry on whether the retry
-    # fired + whether it strictly improved overall_score is persisted in
-    # the return dict so post-benchmark analysis can compute rescue rate.
-    weak_retry = {
-        "fired": False,
-        "kept": False,
-        "original_n_inliers": int((mi or {}).get("n_inliers") or 0),
-        "original_overall_score": float(reward.overall_score) if reward is not None else 0.0,
-        "retry_n_inliers": None,
-        "retry_overall_score": None,
-        "retry_sigma_m": None,
-    }
-    # GEOMAP_DISABLE_WEAK_RETRY=1 → never fire the 2× σ auto-retry
-    # (ablation). The weak_retry telemetry dict stays in the return
-    # so downstream consumers don't crash, just reports fired=False.
-    if os.environ.get("GEOMAP_DISABLE_WEAK_RETRY") == "1":
-        weak = False
-    else:
-        weak = (int((mi or {}).get("n_inliers") or 0) < 25
-                or float(reward.overall_score) < 0.4)
-    if weak:
-        weak_retry["fired"] = True
-        weak_retry["retry_sigma_m"] = float(sigma_m * 2.0)
-        try:
-            retry_result = _run_minima(sigma_m * 2.0)
-        except Exception:
-            retry_result = None
-        if retry_result and retry_result.get("affine_H") is not None:
-            retry_mi, retry_reward = _evaluate(retry_result)
-            weak_retry["retry_n_inliers"] = int((retry_mi or {}).get("n_inliers") or 0)
-            weak_retry["retry_overall_score"] = (
-                float(retry_reward.overall_score) if retry_reward is not None else 0.0)
-            if (retry_reward is not None
-                    and retry_reward.overall_score > reward.overall_score):
-                weak_retry["kept"] = True
-                print(f"    [weak-retry] page {page}: "
-                      f"score {weak_retry['original_overall_score']:.2f} → "
-                      f"{weak_retry['retry_overall_score']:.2f}, "
-                      f"n_inliers {weak_retry['original_n_inliers']} → "
-                      f"{weak_retry['retry_n_inliers']}, σ "
-                      f"{int(sigma_m)} → {int(sigma_m * 2.0)}m")
-                result = retry_result
-                mi = retry_mi
-                reward = retry_reward
-            else:
-                print(f"    [weak-retry] page {page}: not kept "
-                      f"(score {weak_retry['original_overall_score']:.2f} ≥ "
-                      f"{weak_retry['retry_overall_score']:.2f})")
-        else:
-            print(f"    [weak-retry] page {page}: retry returned no usable match")
-
     affine_H = result.get("affine_H")
     tile_info = result.get("tile_info")
     geojson = result.get("geojson")
@@ -456,7 +400,6 @@ def _match_single_page(state: AgentState, page: int, name: str,
         "reward": reward.to_dict() if reward is not None else None,
         "overall_score": float(reward.overall_score) if reward is not None else 0.0,
         "mask_frac": mask_frac,
-        "weak_retry": weak_retry,
     }
 
 
@@ -631,7 +574,6 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
             "candidate_id": candidate_id,
             "name": cand["name"],
             "total_inliers": int(cand.get("total_inliers") or 0),
-            "overall_score": cand["overall_score"],
             "n_groups_committed": n_committed,
             "n_polygons": n_polys,
         }

@@ -204,24 +204,23 @@ WORKFLOW
    area_group you want this candidate evaluated against — other groups
    are matched automatically at the same centre (see DOCUMENT STRUCTURE
    above).
-   Each call returns a multi-axis reward only (no panel image):
-   overall_score, total_inliers, plus a per_group breakdown
-   (n_inliers, score, road_name_agreement + verdict, scale_consistency,
+   Each call returns total_inliers and a per_group breakdown
+   (n_inliers, road_name_agreement + verdict, scale_consistency,
    passed_gate). Judge candidate quality from these numbers.
 
    SAM3 segmentation runs automatically on first need per page (cached
    per page across calls).
 
    Decision rules:
-     • STRONG match: overall_score ≥ 0.80 AND total_inliers ≥ 80
-       (aggregate across groups) → commit_match.
+     • STRONG match: total_inliers ≥ 50 AND scale_consistency ≥ 0.8
+       → commit_match.
      • BORDERLINE (anything below STRONG): try AT LEAST ONE more
        propose_centers candidate before committing — this is MANDATORY
-       even when the first attempt looks acceptable but doesn't clear
-       the STRONG threshold (e.g. overall_score ≈ 0.7). The second
-       match often lands at a different zoom and reveals a much better
-       fit.
-     • overall_score < 0.40 on the first try → reject; try another center.
+       even when the first attempt looks decent (e.g. ~30 inliers).
+       The second match often lands at a different zoom and reveals a
+       much better fit.
+     • scale_consistency < 0.5 → affine landed at wrong zoom; prefer
+       another candidate (try propose_centers again).
      • After 2+ match_at attempts: pick the candidate with the highest
        total_inliers and call commit_match on it. commit_match runs a
        deterministic re-rank against all stored attempts, with a
@@ -231,21 +230,24 @@ WORKFLOW
        stored attempt instead and returns the redirected id — so you
        don't need to verify LA containment yourself; just pick on
        inliers and let the call correct you.
-     • If scale is known and scale_consistency < 0.50 → prefer another
-       candidate (affine landed at wrong zoom).
 
-   Reading the multi-axis reward:
-     • road_name_agreement = 0.0 means OS has roads at this location but
-       NONE match the reader's road names — possible wrong-area signal.
-       But be careful: if n_inliers is strong (≥80) and scale_consistency
-       is reasonable, trust the inlier count over this signal.
-     • road_name_agreement = 0.5 with verdict "no OS roads within radius"
-       means sparse OS cartography (typical rural villages); it is NOT a
-       wrong-area signal — trust n_inliers + scale_consistency instead.
-     • scale_consistency near 1.0 means the recovered affine scale agrees
-       with the reader's stated map scale; far from 1.0 means the assumed
-       scale was wrong OR this is the wrong area — prefer another
-       candidate if there is one.
+   Reading the per-axis signals:
+     • n_inliers is the primary signal. ≥ 50 means the match is almost
+       always correct (~95% of historical commits at that threshold
+       reach IoU ≥ 0.5). < 25 is too weak to commit.
+     • scale_consistency near 1.0 means the recovered affine scale
+       agrees with the reader's stated map scale; far from 1.0 means
+       the assumed scale was wrong OR this is the wrong area — prefer
+       another candidate if there is one.
+     • road_name_agreement = 0.0 means OS has roads at this location
+       but NONE match the reader's road names — possible wrong-area
+       signal. But be careful: if n_inliers is strong (≥ 80) and
+       scale_consistency is reasonable, trust the inlier count over
+       this signal.
+     • road_name_agreement = 0.5 with verdict "no OS roads within
+       radius" means sparse OS cartography (typical rural villages);
+       it is NOT a wrong-area signal — trust n_inliers +
+       scale_consistency instead.
 
 3. commit_match(candidate_id) — promotes one stored match_at attempt
    to the active result AND automatically projects the SAM3 mask
@@ -267,8 +269,9 @@ WORKFLOW
    rotation_checked is auto-overwritten from state — leave at default.
 
 BUDGET: max 5 match_at calls per case. Focus on top-specificity candidates
-first. If all 5 score below 0.40, commit the highest-scoring one anyway
-via commit_match — the pipeline always produces a polygon, never refuse.
+first. If all 5 attempts are weak (best total_inliers < 25), commit the
+highest-inlier one anyway via commit_match — the pipeline always produces
+a polygon, never refuse.
 
 NO INVENTED COORDINATES: every match_at (lat, lon) must come from
 propose_centers. To add a missing place call
@@ -276,16 +279,16 @@ propose_centers(extra_terms=["place name from the map"]) — never type
 coordinates yourself.
 
 RE-CALLING propose_centers WITH FEEDBACK: after a weak match_at (low
-inliers, low overall_score, road_name_agreement=0.0, or
-scale_consistency < 0.5), you can call propose_centers
-again with match_context="..." describing in plain English what went
-wrong. The locate sub-agent reads it and is told to pick from a
-DIFFERENT signal type. Example:
+total_inliers, scale_consistency < 0.5, or road_name_agreement=0.0
+combined with weak inliers), you can call propose_centers again with
+match_context="..." describing in plain English what went wrong. The
+locate sub-agent reads it and is told to pick from a DIFFERENT signal
+type. Example:
    propose_centers(match_context="Prior pick at (51.51, -2.63) had 12
    inliers; OS tile showed farmland but planning map is dense urban,
    so postcode probably points to council letterhead. Try a road-based
    pick instead.")
-This is the right move BEFORE accepting a 0.4-score commit. Combine
+This is the right move BEFORE accepting a low-inlier commit. Combine
 with extra_terms when you've spotted a specific landmark the locate
 agent should consider.
 
