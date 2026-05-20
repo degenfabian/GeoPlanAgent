@@ -300,7 +300,7 @@ OTHER:
   "are there any postcodes anywhere in the document?", "does page 3 have
   a north arrow and what direction?". Budget 3 per case. Do NOT use it
   for geocoding or to locate places.
-• If stuck, commit the highest-scoring match_at result and return
+• If stuck, commit the highest-total_inliers match_at result and return
   BoundaryOutcome. The pipeline does NOT support refusing a case —
   always emit a polygon."""
 
