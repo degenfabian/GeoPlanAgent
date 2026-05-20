@@ -1,7 +1,7 @@
-"""Multi-axis consistency reward for positioning candidates.
+"""Per-axis consistency reward for positioning candidates.
 
 A single match attempt produces an affine_H + tile_info + match_info.
-This module evaluates that attempt along several independent consistency
+This module evaluates that attempt along three independent consistency
 axes — no ground truth, no learned model — and returns both numeric
 scores and textual verdicts the LLM agent can reason over.
 
@@ -12,17 +12,12 @@ Axes (each returns a score in [0, 1] plus a 1-line verdict):
                         (avg_scale ≈ 1.0 means the assumed scale was right)
   road_name_agreement   do reader-extracted road names actually appear in
                         the OS road network at the matched window?
-  keypoint_spread       are inlier keypoints spread across the map or
-                        clumped in one corner? (clumped = local match)
 
-Aggregate:
-  overall_score        weighted geometric mean (penalises any axis
-                        being terrible)
-
-Format:
-  format_for_agent(reward) → multi-line text for the LLM's next prompt.
-                              Each line states the axis, score, verdict,
-                              and one piece of supporting evidence.
+No composite/aggregate score: empirical analysis (2026-05-20) showed
+inlier-count alone is a sharp predictor at the n_inliers=50 threshold,
+and per-axis rules outperform any composite. keypoint_spread + the
+geometric-mean overall_score were removed when nothing in code used
+them for decisions.
 """
 
 from __future__ import annotations
@@ -46,18 +41,14 @@ class AxisResult:
 @dataclass
 class RewardResult:
     axes: Dict[str, AxisResult]
-    overall_score: float         # in [0, 1]
-    summary: str                 # multi-line text for the agent prompt
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "overall_score": self.overall_score,
             "axes": {
                 name: {"score": ax.score, "verdict": ax.verdict,
                        "evidence": ax.evidence}
                 for name, ax in self.axes.items()
             },
-            "summary": self.summary,
         }
 
 
@@ -211,101 +202,19 @@ def axis_road_name_agreement(
                   "matched_roads": matched, "radius_m": radius_m})
 
 
-def axis_keypoint_spread(
-    inlier_pts_in_map: Optional[np.ndarray],
-    map_shape_hw: Optional[Tuple[int, int]],
-) -> AxisResult:
-    """Are the inlier keypoints spread across the map area, or clumped?
-
-    Computes bbox-of-inliers / map-bbox area ratio. Spread across most
-    of the map → the affine fits the WHOLE map. Clumped in one corner
-    → the affine fits just that corner; the rest of the map may be
-    misaligned.
-
-    Pass mkpts0 (the keypoints in MAP image coordinates) restricted to
-    inliers, plus the map's (h, w).
-    """
-    if (inlier_pts_in_map is None or len(inlier_pts_in_map) < 3
-            or map_shape_hw is None):
-        return AxisResult(score=0.5, verdict="insufficient data (no signal)",
-                           evidence={})
-    h, w = map_shape_hw
-    pts = np.asarray(inlier_pts_in_map, dtype=np.float32).reshape(-1, 2)
-    if pts.size == 0 or h <= 0 or w <= 0:
-        return AxisResult(score=0.5, verdict="insufficient data (no signal)",
-                           evidence={})
-    x_min, y_min = pts.min(axis=0)
-    x_max, y_max = pts.max(axis=0)
-    bbox_area = max(1.0, (x_max - x_min) * (y_max - y_min))
-    map_area = float(h) * float(w)
-    ratio = float(bbox_area / map_area)
-    ratio = max(0.0, min(1.0, ratio))
-    score = math.sqrt(ratio)  # gentler — 0.25 ratio → 0.5 score
-
-    if ratio >= 0.60:
-        v = f"well spread (covers {ratio*100:.0f}% of map area)"
-    elif ratio >= 0.30:
-        v = f"moderately spread (covers {ratio*100:.0f}% of map area)"
-    elif ratio >= 0.10:
-        v = f"clumped (only {ratio*100:.0f}% of map area)"
-    else:
-        v = (f"highly clumped (only {ratio*100:.0f}% of map area — "
-             f"likely a local match, not a whole-map alignment)")
-
-    return AxisResult(score=score, verdict=v,
-                       evidence={"bbox_to_map_ratio": ratio})
-
-
-# ── Aggregator ──────────────────────────────────────────────────────────────
-
-# Weights for the geometric-mean aggregate. Each axis is raised to its
-# weight; the weights sum to 1.0. A geometric mean penalises any axis
-# being very low much more than an arithmetic mean would, which is what
-# we want — a candidate with 1900 inliers but zero road agreement is
-# suspect, not "great."
-DEFAULT_WEIGHTS: Dict[str, float] = {
-    "inlier_strength":     0.35,
-    "scale_consistency":   0.25,
-    "road_name_agreement": 0.30,
-    "keypoint_spread":     0.10,
-}
-
-
-def aggregate(axes: Dict[str, AxisResult],
-              weights: Optional[Dict[str, float]] = None) -> float:
-    weights = weights or DEFAULT_WEIGHTS
-    eps = 1e-3  # avoid log(0)
-    log_sum = 0.0
-    w_sum = 0.0
-    for name, w in weights.items():
-        if name not in axes:
-            continue
-        s = max(eps, min(1.0, axes[name].score))
-        log_sum += w * math.log(s)
-        w_sum += w
-    if w_sum <= 0:
-        return 0.0
-    return float(math.exp(log_sum / w_sum))
-
-
 # ── Top-level entry point ───────────────────────────────────────────────────
 
 def compute_match_reward(
     *,
     match_info: Dict[str, Any],
     pdf_info: Dict[str, Any],
-    inlier_pts_in_map: Optional[np.ndarray] = None,
-    map_shape_hw: Optional[Tuple[int, int]] = None,
 ) -> RewardResult:
-    """Compute the multi-axis consistency reward for a single match.
+    """Compute the per-axis consistency reward for a single match.
 
     Args:
         match_info: dict from sliding_window_position with at least
             n_inliers, score, aspect, avg_scale, center_latlon, zoom.
         pdf_info: PDFInfo dict from the reader (scale, road_names, etc.).
-        inlier_pts_in_map: optional (N,2) array of inlier keypoint
-            coordinates in MAP-image space (for keypoint-spread axis).
-        map_shape_hw: optional (h, w) of the map image.
     """
     n_inliers = int(match_info.get("n_inliers", 0) or 0)
     ransac_score = float(match_info.get("score", 0.0) or 0.0)
@@ -328,52 +237,4 @@ def compute_match_reward(
         axes["road_name_agreement"] = AxisResult(
             score=0.5, verdict="no center_latlon (no signal)", evidence={})
 
-    axes["keypoint_spread"] = axis_keypoint_spread(
-        inlier_pts_in_map, map_shape_hw)
-
-    overall = aggregate(axes)
-    return RewardResult(axes=axes, overall_score=overall,
-                          summary=format_for_agent(axes, overall))
-
-
-# ── Formatting for the agent's prompt ──────────────────────────────────────
-
-def format_for_agent(axes: Dict[str, AxisResult], overall: float) -> str:
-    """Render the reward as a structured block of text for the LLM's
-    next prompt. Each axis: name, score, 1-line verdict.
-    """
-    lines = [f"Match-quality evaluation (overall score: {overall:.2f} / 1.00)"]
-    order = ["inlier_strength", "scale_consistency", "road_name_agreement",
-              "keypoint_spread"]
-    for name in order:
-        if name not in axes:
-            continue
-        ax = axes[name]
-        lines.append(f"  • {name:<22} {ax.score:>4.2f}  {ax.verdict}")
-
-    # Decision hints
-    hints: List[str] = []
-    inl = axes.get("inlier_strength")
-    sc = axes.get("scale_consistency")
-    rn = axes.get("road_name_agreement")
-    sp = axes.get("keypoint_spread")
-    if inl and inl.score < 0.4 and sc and sc.score < 0.5:
-        hints.append("Both inlier count AND scale are weak — reject this candidate.")
-    if rn and rn.score == 0.0:
-        hints.append("Zero road-name agreement: OS roads exist at this "
-                     "location but none match the reader's — strong "
-                     "wrong-area signal; reject unless other axes are "
-                     "unusually strong.")
-    if inl and inl.score >= 0.75 and sc and sc.score >= 0.7 and rn and rn.score >= 0.5:
-        hints.append("Strong inliers AND consistent scale AND reasonable road "
-                     "agreement — this is a high-confidence accept.")
-    if sp and sp.score < 0.3 and inl and inl.score >= 0.75:
-        hints.append("Inliers are high but clumped — verify visually before "
-                     "accepting; the affine may fit only one quadrant.")
-    if hints:
-        lines.append("")
-        lines.append("Decision hints:")
-        for h in hints:
-            lines.append(f"  - {h}")
-
-    return "\n".join(lines)
+    return RewardResult(axes=axes)

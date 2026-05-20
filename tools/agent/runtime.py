@@ -267,7 +267,7 @@ def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
             cid: {
                 "name": a.get("name"),
                 "lat": a.get("lat"), "lon": a.get("lon"),
-                "overall_score": a.get("overall_score"),
+                "total_inliers": a.get("total_inliers"),
                 "n_inliers": (a.get("match_info") or {}).get("n_inliers"),
             }
             for cid, a in (state.match_attempts or {}).items()

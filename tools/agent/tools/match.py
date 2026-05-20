@@ -270,13 +270,6 @@ def match_at(
              and not g.get("error")]
     total_inliers = sum(int((g.get("match_info") or {}).get("n_inliers") or 0)
                         for g in valid)
-    # Weighted-mean overall_score, weighted by per-group n_inliers.
-    overall_score = 0.0
-    if valid:
-        weights = [max(1, int((g.get("match_info") or {}).get("n_inliers") or 1))
-                   for g in valid]
-        scores = [float(g.get("overall_score") or 0.0) for g in valid]
-        overall_score = float(np.average(scores, weights=weights))
 
     # Union per-group GeoJSONs that passed the per-group commit gate.
     # Track committed entries by object identity rather than equality —
@@ -303,7 +296,6 @@ def match_at(
         "committed_groups_idx": [i for i, g in enumerate(per_group)
                                   if id(g) in committed_ids],
         "geojson": unioned_geojson,
-        "overall_score": float(overall_score),
         "total_inliers": int(total_inliers),
         "n_groups": len(per_group),
         "n_groups_committed": len(committed_groups),
@@ -344,8 +336,8 @@ def _match_single_page(state: AgentState, page: int, name: str,
                         scale_ratio: Optional[int],
                         matched_candidate: Optional[dict]) -> Dict[str, Any]:
     """Render+segment+MINIMA on a single page at (lat, lon). Returns a dict
-    with affine_H / tile_info / match_info / geojson / mask_frac /
-    overall_score / reward; or error."""
+    with affine_H / tile_info / match_info / geojson / mask_frac / reward;
+    or error."""
     map_img, map_crop_path = _get_or_render_page(state, page)
     if map_img is None or map_crop_path is None:
         return {"error": f"render failed for page {page}"}
@@ -398,7 +390,6 @@ def _match_single_page(state: AgentState, page: int, name: str,
         "affine_H": affine_H, "tile_info": tile_info,
         "match_info": mi, "geojson": geojson,
         "reward": reward.to_dict() if reward is not None else None,
-        "overall_score": float(reward.overall_score) if reward is not None else 0.0,
         "mask_frac": mask_frac,
     }
 
