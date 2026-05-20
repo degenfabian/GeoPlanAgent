@@ -236,11 +236,9 @@ WORKFLOW
 
    Reading the multi-axis reward:
      • road_name_agreement = 0.0 means OS has roads at this location but
-       NONE match the reader's road names — possible wrong-area signal,
-       but be careful: PDF road names often come from the council/agent
-       letterhead rather than the actual site. If n_inliers is strong
-       (≥80) and scale_consistency is reasonable, trust the inlier count
-       over this signal.
+       NONE match the reader's road names — possible wrong-area signal.
+       If n_inliers is strong (≥80) and scale_consistency is reasonable,
+       trust the inlier count over this signal.
      • road_name_agreement = 0.5 with verdict "no OS roads within radius"
        means sparse OS cartography (typical rural villages); it is NOT a
        wrong-area signal — trust n_inliers + scale_consistency instead.
