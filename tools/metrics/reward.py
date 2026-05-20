@@ -194,7 +194,8 @@ def axis_road_name_agreement(
         v = f"weak agreement ({n_matched}/{n_total} reader roads found)"
     else:
         v = (f"OS roads present here but ZERO of {n_total} reader roads "
-             f"match — strong wrong-area signal")
+             f"match — possible wrong-area signal (trust strong inliers "
+             f"over this)")
 
     return AxisResult(
         score=score, verdict=v,

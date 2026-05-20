@@ -30,10 +30,9 @@ def lookup_district(
 
     Use whenever PDFInfo.is_district_wide=True, or when the document
     explicitly covers an entire administrative area (borough, district,
-    ward, parish, named conservation area).
-
-    Returns the official boundary polygon directly. If this succeeds,
-    submit BoundaryOutcome with status="district_lookup".
+    ward, parish, named conservation area). On success, the district
+    polygon is committed to internal state and you should submit
+    BoundaryOutcome with status="district_lookup" next.
 
     Naming conventions (be specific to avoid ambiguous matches; the
     downstream resolver normalises "London Borough of X" → "X" and
