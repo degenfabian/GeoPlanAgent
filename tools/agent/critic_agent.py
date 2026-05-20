@@ -108,6 +108,20 @@ WHAT "BAD" LOOKS LIKE
 - The polygon outline lands well outside the planning map's drawn
   boundary, or its shape clearly doesn't match.
 
+INTERPRETING THE METRICS
+- n_inliers ≥ 50 is a strong signal that the affine is correct;
+  < 25 is too weak to trust.
+- scale_consistency near 1.0 means the recovered map scale matches
+  the document's stated scale. < 0.5 hints at a possibly poor match,
+  but if n_inliers is strong (≥ 80) the match can still be right.
+- road_name_agreement = 0.0 means OS roads at this location exist
+  but don't match the reader's road names — possible wrong-area
+  signal. But be careful: if n_inliers is strong (≥ 80) and
+  scale_consistency is reasonable, trust the inlier count over this
+  signal.
+- These numbers are supporting evidence — the visual panels are the
+  primary signal for your decision.
+
 DECISION (pick exactly one action)
 
 - approve
