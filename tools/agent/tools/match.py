@@ -366,7 +366,6 @@ def _match_single_page(state: AgentState, page: int, name: str,
         mi_local = res.get("match_info") or {}
         rw = compute_match_reward(
             match_info=mi_local, pdf_info=state.pdf_info,
-            inlier_pts_in_map=None, map_shape_hw=tuple(map_img.shape[:2]),
         )
         return mi_local, rw
 
