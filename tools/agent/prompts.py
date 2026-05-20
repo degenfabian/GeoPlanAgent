@@ -219,8 +219,9 @@ WORKFLOW
        even when the first attempt looks decent (e.g. ~30 inliers).
        The second match often lands at a different zoom and reveals a
        much better fit.
-     • scale_consistency < 0.5 → affine landed at wrong zoom; prefer
-       another candidate (try propose_centers again).
+     • scale_consistency < 0.5 → poor match. If n_inliers is strong
+       (≥ 80) trust the inliers and commit; if inliers are also weak
+       (< 50), call propose_centers again.
      • After 2+ match_at attempts: pick the candidate with the highest
        total_inliers and call commit_match on it. commit_match runs a
        deterministic re-rank against all stored attempts, with a
