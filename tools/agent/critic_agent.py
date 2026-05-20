@@ -79,18 +79,25 @@ answer. Your job is pairwise comparison across the stored candidates and
 a single directive on whether to accept or redirect.
 
 WHAT YOU SEE
-- A panel stack. Each row is ONE candidate. Within a row:
-  LEFT  = planning map with the SAM mask overlaid in translucent green.
-  RIGHT = OS tile render at the matched window, with the projected
-          polygon outlined in red.
-  Each row is labelled "CANDIDATE {id} [COMMITTED]" — the COMMITTED tag
-  marks the worker's choice.
+- ONE image per candidate (sent as separate images so each renders at
+  full resolution rather than getting downscaled inside a tall stack).
+  Each image is LEFT|RIGHT:
+    LEFT  = planning map with the SAM mask overlaid in translucent green.
+            Label shows "CANDIDATE {id} [COMMITTED] group {g} (p{page},
+            n_inliers={N})" — the COMMITTED tag marks the worker's choice.
+    RIGHT = OS tile render at the matched window, with the projected
+            polygon outlined in red. Label shows the tile zoom level.
+- Only the TOP-3 candidates by total_inliers are shown, plus the worker's
+  committed candidate if it falls outside the top-3 (so you always see
+  the worker's pick alongside the strongest alternatives). A note at the
+  top of the metrics block tells you how many total candidates exist and
+  how many are shown.
 - area_groups: a single planning document can cover MULTIPLE separate
   geographic areas (e.g., a multi-site Article 4 direction). When this
-  happens, you'll see per-area sub-rows in the panel and per-area lines
-  in the metrics block.
+  happens, ONE candidate image contains stacked sub-rows (one per area-
+  group) and the metrics block has one line per (candidate, area-group).
 - A metrics block listing per-candidate {n_inliers, road_name_agreement,
-  scale_consistency}.
+  scale_consistency} for the SHOWN candidates.
 - The worker's committed candidate_id is also stated explicitly.
 
 WHAT "GOOD" LOOKS LIKE — for a candidate
@@ -231,8 +238,8 @@ def _build_one_group_panel(map_img: np.ndarray,
     right = cv2.resize(tile_bgr,
                        (max(1, int(w_r * target_h / h_r)), target_h))
 
-    return np.hstack([_label_strip(left, f"{label} — PLANNING + SAM"),
-                      _label_strip(right, f"{label} — OS @ z={tile_info.get('zoom','?')}")])
+    return np.hstack([_label_strip(left, label),
+                      _label_strip(right, f"OS @ z={tile_info.get('zoom','?')}")])
 
 
 def _build_candidate_panel(state: Any, attempt: Dict[str, Any],
@@ -350,13 +357,44 @@ def _run_critic_once(state: Any, model_name: str,
     if committed_id is None and attempts:
         committed_id = attempts[-1].get("candidate_id")
 
-    # Build per-candidate panel stack.
-    cand_panels = [
-        _build_candidate_panel(state, a, is_committed=(a.get("candidate_id") == committed_id))
-        for a in attempts
-    ]
-    panel = _stack_candidate_panels(cand_panels)
-    metrics_text = _format_metrics_text(state, attempts, committed_id or -1)
+    # Pick top-3 candidates by total_inliers. Always include the
+    # worker's committed candidate (so the critic can decide whether
+    # the worker's pick was good vs. a stronger stored alternative),
+    # even if its inlier count puts it outside the top-3 by raw inliers.
+    total_n_attempts = len(attempts)
+    by_inliers = sorted(attempts,
+                         key=lambda a: -int(a.get("total_inliers") or 0))
+    shown = list(by_inliers[:3])
+    shown_ids = {a.get("candidate_id") for a in shown}
+    if committed_id is not None and committed_id not in shown_ids:
+        committed_attempt = next(
+            (a for a in attempts if a.get("candidate_id") == committed_id),
+            None)
+        if committed_attempt is not None:
+            shown.append(committed_attempt)
+    # Display order: by candidate_id (stable across iterations).
+    shown.sort(key=lambda a: int(a.get("candidate_id") or 0))
+
+    # Build ONE panel per shown candidate (sent as separate images, so
+    # the VLM sees each candidate at full resolution rather than
+    # downscaled inside a tall vertical stack).
+    cand_panels_with_id = []
+    for a in shown:
+        p = _build_candidate_panel(
+            state, a,
+            is_committed=(a.get("candidate_id") == committed_id))
+        if p is not None:
+            cand_panels_with_id.append((a.get("candidate_id"), p))
+
+    # Aggregated stack — for disk save only, not sent to the LLM.
+    panel = _stack_candidate_panels([p for _, p in cand_panels_with_id])
+
+    metrics_text = _format_metrics_text(state, shown, committed_id or -1)
+    selection_note = (
+        f"Showing top-{len(shown)} of {total_n_attempts} stored candidates "
+        f"(ranked by total_inliers; the worker's committed candidate is "
+        f"always included). Each candidate is sent as a separate image."
+    )
 
     # On follow-up iterations the message_history already contains the
     # critic's prior directive; an explicit header makes the meta-state
@@ -373,18 +411,16 @@ def _run_critic_once(state: Any, model_name: str,
             "and whether the now-committed candidate is correct, or "
             "whether a further switch / retry_locate is warranted."
         )
-        text_block = header + "\n\n" + metrics_text
+        text_block = header + "\n\n" + selection_note + "\n\n" + metrics_text
     else:
-        text_block = metrics_text
+        text_block = selection_note + "\n\n" + metrics_text
 
-    if panel is not None:
-        _, buf = cv2.imencode(".png", panel)
-        user_input = [
-            text_block,
-            BinaryContent(data=buf.tobytes(), media_type="image/png"),
-        ]
-    else:
-        user_input = [text_block]
+    # Multi-image input: one BinaryContent per shown candidate.
+    user_input: List[Any] = [text_block]
+    for cid, p in cand_panels_with_id:
+        _, buf = cv2.imencode(".png", p)
+        user_input.append(
+            BinaryContent(data=buf.tobytes(), media_type="image/png"))
 
     agent = _ensure_agent(model_name)
     in_tokens = 0
