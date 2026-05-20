@@ -50,8 +50,10 @@ def lookup_district(
             tried in order until one resolves.
 
     Returns:
-        {"success": true, "geojson": <GeoJSON Feature>, ...} — boundary
-        {"success": false, "error": str} — name not in OS BoundaryLine
+        {"success": true, "matched_variant": str, "instruction": str}
+            — district polygon committed to internal state; submit
+            BoundaryOutcome(status="district_lookup") next.
+        {"success": false, "error": str} — name not in OS BoundaryLine.
     """
     state = ctx.deps
     _dedup_check(state, "lookup_district", {"district_name": district_name})

@@ -463,7 +463,9 @@ def _run_critic_once(state: Any, model_name: str,
         # genuine approve from a critic-LLM crash.
         llm_error = f"{type(e).__name__}: {str(e)[:100]}"
         directive = CriticDirective(
-            chosen_candidate_id=committed_id or 0,
+            # Explicit-None check matches the fix at the metrics-text
+            # site; candidate_id=0 is a valid value.
+            chosen_candidate_id=(committed_id if committed_id is not None else 0),
             action="approve",
             reasoning=f"CRITIC_LLM_ERROR (treated as approve): {llm_error}",
         )

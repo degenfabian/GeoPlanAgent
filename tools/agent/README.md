@@ -51,10 +51,9 @@ registered before `run_agent` is called.
 | Tool | Module | Public surface |
 |---|---|---|
 | `propose_centers` | `locate.py` | `(extra_terms?, match_context?) → {candidate_id, lat, lon, sigma_m, source, evidence}`. Always returns ONE candidate per call. Internally calls `tools.agent.locate_agent.run_locate`. |
-| `match_at` | `match.py` | `(page, name, lat, lon, sigma_m?, scale_ratio?) → dict` with per-group reward (numbers only — `overall_score`, `total_inliers`, `per_group[]` incl. `road_name_agreement`, `scale_consistency`, `passed_gate`). For multi-area-group documents, internally runs MINIMA at the same centre on every group's primary page and UNIONs the resulting polygons. |
-| `commit_match` | `match.py` | `(candidate_id) → {committed: …}`. Smart-commit gate (`commit_attempt_score`) redirects to a better candidate when the worker has ≥2 stored attempts. Strict gate rejects commits where no group produced a valid affine. |
-| `lookup_district` | `verify.py` | `(district_name) → {success, geojson?}`. OS BoundaryLine offline lookup; supports `'|'`-separated name alternates. On success the worker submits `status="district_lookup"`. |
-| `reader_refine` | `refine.py` | `(question, page_hint?) → {answer, budget_remaining}`. Spawns a fresh Gemini Flash call on the PDF binary plus the cached per-page OCR text block. Budget 3 per case. |
+| `match_at` | `match.py` | `(page, name, lat, lon, sigma_m?, scale_ratio?) → dict` with per-group reward (numbers only — `total_inliers`, `per_group[]` incl. `n_inliers`, `road_name_agreement`, `road_name_verdict`, `scale_consistency`). For multi-area-group documents, internally runs MINIMA at the same centre on every group's primary page and UNIONs the resulting polygons. |
+| `commit_match` | `match.py` | `(candidate_id) → {committed: …}`. Smart-commit gate (`commit_attempt_score` = `total_inliers` × inside-LA-weighted) redirects to a better candidate when the worker has ≥2 stored attempts. Strict gate rejects commits where no group produced a valid affine. |
+| `lookup_district` | `verify.py` | `(district_name) → {success, matched_variant?, instruction?}`. OS BoundaryLine offline lookup; supports `'|'`-separated name alternates. On success, the district polygon is committed to internal state and the worker submits `status="district_lookup"`. |
 
 ## Locate sub-agent
 

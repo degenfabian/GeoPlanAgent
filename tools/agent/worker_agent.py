@@ -1,7 +1,7 @@
 """Phase 2 worker: PydanticAI Agent with all tools registered.
 
 The worker `_agent` is decorated by the tool modules under
-tools.agent.tools.{locate,match,verify,refine} at import time via
+tools.agent.tools.{locate,match,verify} at import time via
 @_agent.tool — so this module must be importable BEFORE those tool
 modules.
 
