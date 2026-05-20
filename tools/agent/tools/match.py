@@ -20,6 +20,7 @@ number, so re-calling match_at on a page that's been segmented is fast
 
 from __future__ import annotations
 
+import os
 import tempfile
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -404,8 +405,14 @@ def _match_single_page(state: AgentState, page: int, name: str,
         "retry_overall_score": None,
         "retry_sigma_m": None,
     }
-    weak = (int((mi or {}).get("n_inliers") or 0) < 25
-            or float(reward.overall_score) < 0.4)
+    # GEOMAP_DISABLE_WEAK_RETRY=1 → never fire the 2× σ auto-retry
+    # (ablation). The weak_retry telemetry dict stays in the return
+    # so downstream consumers don't crash, just reports fired=False.
+    if os.environ.get("GEOMAP_DISABLE_WEAK_RETRY") == "1":
+        weak = False
+    else:
+        weak = (int((mi or {}).get("n_inliers") or 0) < 25
+                or float(reward.overall_score) < 0.4)
     if weak:
         weak_retry["fired"] = True
         weak_retry["retry_sigma_m"] = float(sigma_m * 2.0)
