@@ -212,8 +212,11 @@ def run_agent(
                 "worker_first_geojson": worker_first_geojson_snapshot,
             }
 
-    # Write critic-panel PNGs to disk for post-hoc debugging. One file
-    # per iteration: critic_panel_iter0.png, critic_panel_iter1.png, …
+    # Write critic-panel PNGs to disk for post-hoc debugging.
+    #   critic_panel_iter{N}.png            — stacked overview of all
+    #                                         shown candidates per iter
+    #   critic_panel_iter{N}_cand{id}.png   — the per-candidate images
+    #                                         the LLM actually saw
     if (critic_result is not None
             and "error" not in critic_result
             and case_dir is not None):
@@ -225,6 +228,14 @@ def run_agent(
                     continue
                 _path = case_dir / f"critic_panel_iter{_i}.png"
                 _cv2.imwrite(str(_path), _p)
+            # Per-candidate images — these are exactly what the LLM saw.
+            for _i, _cands in enumerate(
+                    critic_result.get("per_cand_panels_by_iter") or []):
+                for _cid, _cp in _cands or []:
+                    if _cp is None:
+                        continue
+                    _path = case_dir / f"critic_panel_iter{_i}_cand{_cid}.png"
+                    _cv2.imwrite(str(_path), _cp)
         except Exception as _e:
             if verbose:
                 print(f"  Warning: failed to save critic panels: {_e}")
