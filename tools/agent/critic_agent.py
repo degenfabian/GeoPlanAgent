@@ -106,9 +106,15 @@ WHAT YOU SEE
   geographic areas (e.g., a multi-site Article 4 direction). When this
   happens, ONE candidate image contains stacked sub-rows (one per area-
   group) and the metrics block has one line per (candidate, area-group).
-- A metrics block listing per-candidate {n_inliers, road_name_agreement,
-  scale_consistency} for the SHOWN candidates.
-- The worker's committed candidate_id is also stated explicitly.
+- A metrics block accompanying the images, with one line per
+  (candidate, area_group). Each line is:
+    "cand {id}  group {g}  page {p}  n_inliers={N}  "
+    "road_name_agreement={r}  scale_consistency={s}  [COMMITTED]?"
+  The "cand", "group", "page" fields match the corresponding panel-
+  label identifiers, so you can map every metrics row back to its
+  image. The [COMMITTED] tag appears on the worker's committed row.
+- The worker's committed candidate_id is also stated explicitly at
+  the top of the metrics block.
 
 WHAT "GOOD" LOOKS LIKE — for a candidate
 Trace named roads, settlement shapes, or distinctive features between
