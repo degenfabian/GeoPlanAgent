@@ -84,8 +84,11 @@ WHAT YOU SEE
   RIGHT = OS tile render at the matched window, with the projected
           polygon outlined in red.
   Each row is labelled "CANDIDATE {id} [COMMITTED]" — the COMMITTED tag
-  marks the worker's choice. For multi-area-group documents, a candidate
-  may have multiple sub-rows (one per group) plus a union polygon.
+  marks the worker's choice.
+- area_groups: a single planning document can cover MULTIPLE separate
+  geographic areas (e.g., a multi-site Article 4 direction). When this
+  happens, you'll see per-area sub-rows in the panel and per-area lines
+  in the metrics block.
 - A metrics block listing per-candidate {n_inliers, road_name_agreement,
   scale_consistency}.
 - The worker's committed candidate_id is also stated explicitly.
