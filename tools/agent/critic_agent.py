@@ -81,12 +81,15 @@ a single directive on whether to accept or redirect.
 WHAT YOU SEE
 - ONE image per candidate (sent as separate images so each renders at
   full resolution rather than getting downscaled inside a tall stack).
-  Each image is LEFT|RIGHT:
+  Each image is LEFT|RIGHT, with information split across two labels
+  so neither gets truncated:
     LEFT  = planning map with the SAM mask overlaid in translucent green.
-            Label shows "CANDIDATE {id} [COMMITTED] group {g} (p{page},
-            n_inliers={N})" — the COMMITTED tag marks the worker's choice.
+            Label shows "CAND {id} [COMMITTED] grp {g} p{page}" — the
+            COMMITTED tag marks the worker's choice.
     RIGHT = OS tile render at the matched window, with the projected
-            polygon outlined in red. Label shows the tile zoom level.
+            polygon outlined in red. Label shows "OS @ z={zoom}
+            n_inliers={N}" — the tile zoom level and the per-group
+            inlier count for THIS row.
 - Only the TOP-3 candidates by total_inliers are shown, plus the worker's
   committed candidate if it falls outside the top-3 (so you always see
   the worker's pick alongside the strongest alternatives). A note at the
@@ -188,12 +191,18 @@ def _build_one_group_panel(map_img: np.ndarray,
                             mask: Optional[np.ndarray],
                             tile_info: Optional[Dict[str, Any]],
                             affine_H: Optional[np.ndarray],
-                            label: str,
+                            left_label: str,
+                            right_label: str,
                             target_h: int = 480) -> Optional[np.ndarray]:
     """Build a single LEFT|RIGHT row for one group of one candidate.
 
     LEFT: planning map with SAM mask overlay (translucent green).
     RIGHT: OS tile render with projected polygon outline (red).
+
+    Labels are passed in separately (LEFT identifies the candidate,
+    RIGHT reports per-match metrics) so neither label has to fit the
+    full info — cv2.putText doesn't auto-wrap, so cramming all info
+    into a single label gets it truncated at the image boundary.
     """
     if map_img is None or tile_info is None or "image" not in tile_info:
         return None
@@ -238,15 +247,15 @@ def _build_one_group_panel(map_img: np.ndarray,
     right = cv2.resize(tile_bgr,
                        (max(1, int(w_r * target_h / h_r)), target_h))
 
-    return np.hstack([_label_strip(left, label),
-                      _label_strip(right, f"OS @ z={tile_info.get('zoom','?')}")])
+    return np.hstack([_label_strip(left, left_label),
+                      _label_strip(right, right_label)])
 
 
 def _build_candidate_panel(state: Any, attempt: Dict[str, Any],
                             is_committed: bool) -> Optional[np.ndarray]:
     """Build the visual panel for ONE candidate (possibly multiple groups)."""
     cid = attempt.get("candidate_id")
-    badge = f"CANDIDATE {cid}" + (" [COMMITTED]" if is_committed else "")
+    badge = f"CAND {cid}" + (" [COMMITTED]" if is_committed else "")
     rows: List[np.ndarray] = []
     for g in attempt.get("per_group") or []:
         page = g.get("page")
@@ -257,9 +266,16 @@ def _build_candidate_panel(state: Any, attempt: Dict[str, Any],
         affine_H = g.get("affine_H")
         group_id = g.get("area_group", "?")
         n_inl = int(mi.get("n_inliers") or 0)
-        row_label = f"{badge}  group {group_id} (p{page}, n_inliers={n_inl})"
+        zoom = (tile_info or {}).get("zoom", "?")
+        # Split the label so each side stays narrow enough to render
+        # without truncation:
+        #   LEFT  = identifier  (which candidate / which area_group / page)
+        #   RIGHT = result      (zoom of OS render + inliers)
+        left_label = f"{badge}  grp {group_id}  p{page}"
+        right_label = f"OS @ z={zoom}  n_inliers={n_inl}"
         row = _build_one_group_panel(map_img, mask, tile_info, affine_H,
-                                       label=row_label)
+                                       left_label=left_label,
+                                       right_label=right_label)
         if row is not None:
             rows.append(row)
     if not rows:
