@@ -291,8 +291,12 @@ def _format_metrics_text(state: Any,
             mi = g.get("match_info") or {}
             rwd = g.get("reward") or {}
             n_inl = int(mi.get("n_inliers") or 0)
-            rna = rwd.get("road_name_agreement") or {}
-            sc = rwd.get("scale_consistency") or {}
+            # reward.to_dict() returns {"axes": {...}}; the per-axis dicts
+            # live one level down. Reading them at the top level (old bug)
+            # silently returned empty {} → "?" in the metrics block.
+            axes = rwd.get("axes") or {}
+            rna = axes.get("road_name_agreement") or {}
+            sc = axes.get("scale_consistency") or {}
             road_v = rna.get("score") if isinstance(rna, dict) else None
             scale_v = sc.get("score") if isinstance(sc, dict) else None
             road_str = f"{road_v:.2f}" if isinstance(road_v, (int, float)) else "?"
