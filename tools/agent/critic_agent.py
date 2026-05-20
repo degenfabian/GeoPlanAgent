@@ -81,15 +81,22 @@ a single directive on whether to accept or redirect.
 WHAT YOU SEE
 - ONE image per candidate (sent as separate images so each renders at
   full resolution rather than getting downscaled inside a tall stack).
-  Each image is LEFT|RIGHT, with information split across two labels
-  so neither gets truncated:
+  Each image is LEFT|RIGHT, with labels acting purely as identifiers
+  (numeric metrics live in the text block — see "INTERPRETING THE
+  METRICS" below):
     LEFT  = planning map with the SAM mask overlaid in translucent green.
-            Label shows "CAND {id} [COMMITTED] grp {g} p{page}" — the
-            COMMITTED tag marks the worker's choice.
+            Label: "CANDIDATE {id} [COMMITTED] group {g} page {p}".
+            The COMMITTED tag marks the worker's choice.
+            "page" = the 1-based PDF page this row's match was run on.
+            "group" = area_group index (see area_groups note below).
     RIGHT = OS tile render at the matched window, with the projected
-            polygon outlined in red. Label shows "OS @ z={zoom}
-            n_inliers={N}" — the tile zoom level and the per-group
-            inlier count for THIS row.
+            polygon outlined in red. Label: "OS tile @ zoom={z}".
+            "OS" = Ordnance Survey, the UK national mapping agency
+            whose vector + raster tiles the agent matches against.
+            "zoom" = web-mercator tile zoom level (z17 ≈ 0.6m/px,
+            z18 ≈ 0.3m/px, z19 ≈ 0.15m/px) — different candidates
+            may have matched at different zooms, so each panel
+            reports its own.
 - Only the TOP-3 candidates by total_inliers are shown, plus the worker's
   committed candidate if it falls outside the top-3 (so you always see
   the worker's pick alongside the strongest alternatives). A note at the
@@ -181,8 +188,19 @@ def _ensure_agent(model_name: str) -> Agent:
 
 
 def _label_strip(img: np.ndarray, text: str, height: int = 32) -> np.ndarray:
+    """Render a black label strip above `img`, auto-shrinking the font
+    so the text fits the image width (cv2.putText doesn't auto-wrap;
+    fixed font sizes truncate at the panel boundary when the planning
+    map ends up narrower than the label needs)."""
     bar = np.full((height, img.shape[1], 3), 25, dtype=np.uint8)
-    cv2.putText(bar, text, (8, height - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.55,
+    available_w = max(20, img.shape[1] - 16)  # 8px margin each side
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    scale = 0.55
+    (text_w, _), _ = cv2.getTextSize(text, font, scale, 1)
+    while text_w > available_w and scale > 0.3:
+        scale -= 0.05
+        (text_w, _), _ = cv2.getTextSize(text, font, scale, 1)
+    cv2.putText(bar, text, (8, height - 10), font, scale,
                 (255, 255, 255), 1, cv2.LINE_AA)
     return np.vstack([bar, img])
 
@@ -255,7 +273,7 @@ def _build_candidate_panel(state: Any, attempt: Dict[str, Any],
                             is_committed: bool) -> Optional[np.ndarray]:
     """Build the visual panel for ONE candidate (possibly multiple groups)."""
     cid = attempt.get("candidate_id")
-    badge = f"CAND {cid}" + (" [COMMITTED]" if is_committed else "")
+    badge = f"CANDIDATE {cid}" + (" [COMMITTED]" if is_committed else "")
     rows: List[np.ndarray] = []
     for g in attempt.get("per_group") or []:
         page = g.get("page")
@@ -265,14 +283,17 @@ def _build_candidate_panel(state: Any, attempt: Dict[str, Any],
         tile_info = g.get("tile_info") or mi.get("tile_info")
         affine_H = g.get("affine_H")
         group_id = g.get("area_group", "?")
-        n_inl = int(mi.get("n_inliers") or 0)
         zoom = (tile_info or {}).get("zoom", "?")
-        # Split the label so each side stays narrow enough to render
-        # without truncation:
-        #   LEFT  = identifier  (which candidate / which area_group / page)
-        #   RIGHT = result      (zoom of OS render + inliers)
-        left_label = f"{badge}  grp {group_id}  p{page}"
-        right_label = f"OS @ z={zoom}  n_inliers={n_inl}"
+        # Labels split LEFT|RIGHT so neither truncates:
+        #   LEFT  = identifier of THIS image (which candidate / area_group /
+        #           PDF page).
+        #   RIGHT = zoom of the OS-tile crop in this image (the only
+        #           per-image property of the OS render side; numeric
+        #           metrics like n_inliers / road_name_agreement /
+        #           scale_consistency live in the text-block, not on the
+        #           panel label).
+        left_label = f"{badge}  group {group_id}  page {page}"
+        right_label = f"OS tile @ zoom={zoom}"
         row = _build_one_group_panel(map_img, mask, tile_info, affine_H,
                                        left_label=left_label,
                                        right_label=right_label)
