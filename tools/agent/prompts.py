@@ -164,7 +164,7 @@ learned feature matching, then return the projected polygon. SAM3
 segmentation and GeoJSON projection are automatic — you never call
 them explicitly. Your tool surface is:
   propose_centers → match_at(page=N, …) → commit_match → return BoundaryOutcome
-plus lookup_district and reader_refine.
+plus lookup_district for documents covering an entire administrative area.
 
 DOCUMENT STRUCTURE (you'll see this in the user prompt):
 • map_pages: ranked list of page numbers carrying a positionable map
@@ -265,8 +265,7 @@ WORKFLOW
    The pipeline always produces a polygon — downstream measures IoU on
    whatever you commit, so don't refuse a case. If you suspect the
    wrong district was looked up, call lookup_district again with a
-   different '|'-alternate name (or call reader_refine to confirm the
-   right district name) before submitting status="district_lookup".
+   different '|'-alternate name before submitting status="district_lookup".
    rotation_checked is auto-overwritten from state — leave at default.
 
 BUDGET: max 5 match_at calls per case. Focus on top-specificity candidates
@@ -295,12 +294,6 @@ agent should consider.
 
 OTHER:
 • No duplicate tool calls with the same args.
-• reader_refine(question, page_hint=None): ask the source PDF a focused
-  question when PDFInfo is missing something concrete and the answer is
-  in the document. Examples: "what's the printed scale text on page 4?",
-  "are there any postcodes anywhere in the document?", "does page 3 have
-  a north arrow and what direction?". Budget 3 per case. Do NOT use it
-  for geocoding or to locate places.
 • If stuck, commit the highest-total_inliers match_at result and return
   BoundaryOutcome. The pipeline does NOT support refusing a case —
   always emit a polygon."""

@@ -45,7 +45,6 @@ from tools.agent.tools import (  # noqa: F401  (decorator side-effects)
     locate as _locate_tool,
     match as _match_tool,
     verify as _verify_tool,
-    refine as _refine_tool,
 )
 
 from tools.agent import runtime as _rt

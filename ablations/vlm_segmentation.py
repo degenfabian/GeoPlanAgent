@@ -120,7 +120,7 @@ WHAT TO IGNORE
 
 # ── Pydantic-ai agent ──────────────────────────────────────────────────────
 
-def build_agent(instructions: str) -> Agent:
+def build_agent(instructions: str, temperature: float = 0.0) -> Agent:
     return Agent(
         "test",  # model is overridden per-call
         # NativeOutput → pydantic-ai uses Gemini's native response_format /
@@ -137,11 +137,16 @@ def build_agent(instructions: str) -> Agent:
         # the retry-rescue rate is only ~3%, so the cost saving dominates.
         output_retries=0,
         model_settings={
-            "temperature": 0,
+            "temperature": temperature,
             # 100-vertex multi-polygon JSON serialises to ~3-4K tokens.
-            # 8K cap is comfortable for any reasonable boundary while
-            # hard-capping per-call cost — prevents runaway generation
-            # when the model is uncertain about a complex boundary.
+            # 8K cap is comfortable for any reasonable boundary on Flash.
+            # NB: Gemini 3.1 Pro is a reasoning model and counts thinking
+            # tokens against this cap; we briefly tried 32K to rescue 30
+            # Pro schema-validation failures, but the "recovered" cases
+            # all turned out to emit out-of-range pixel coords (>1000),
+            # not the in-spec [0,1000] convention, and rasterized to
+            # near-zero IoU. We reverted to 8K and report Pro on the
+            # parseable subset (see paper §abl-vlm-direct-protocol).
             "max_tokens": 8192,
         },
         instructions=instructions,
@@ -202,6 +207,49 @@ def summarise(name: str, xs: List[float]) -> dict:
     }
 
 
+def _write_outputs(rows: List[dict], out_dir, args, elapsed: float,
+                   note: str = "") -> None:
+    """Idempotent rewrite of results.csv + summary.json from in-memory rows.
+
+    Safe to call repeatedly mid-loop: rewrites both files in full each time
+    so the on-disk state always matches `rows` exactly. Used both for the
+    periodic checkpoint inside the main loop (so a Ctrl-C never loses
+    work) and for the final end-of-run write.
+    """
+    valid = [r["iou"] for r in rows if r["iou"] is not None]
+    fails = sum(1 for r in rows if r["iou"] is None)
+    summary_all = summarise("VLM-direct pixel IoU (all)", valid)
+
+    csv_path = out_dir / "results.csv"
+    with csv_path.open("w") as f:
+        f.write("case,fold,filename,iou,n_polygons,call_seconds,error,notes\n")
+        for r in rows:
+            f.write(
+                f"{r['case']},{r.get('fold')},{r['filename']},"
+                f"{r.get('iou','') if r.get('iou') is not None else ''},"
+                f"{r.get('n_polygons','')},"
+                f"{r.get('call_seconds','')},"
+                f"\"{(r.get('error') or '').replace(chr(34),chr(39))[:100]}\","
+                f"\"{(r.get('notes') or '').replace(chr(34),chr(39))[:120]}\"\n"
+            )
+    json_path = out_dir / "summary.json"
+    json_path.write_text(json.dumps({
+        "model": args.model,
+        "prompt_file": args.prompt_file,
+        "temperature": getattr(args, "temperature", 0.0),
+        "n_cases": len(rows),
+        "n_failures": fails,
+        "elapsed_seconds": round(elapsed, 1),
+        "summary": summary_all,
+        "checkpoint_note": note,
+    }, indent=2))
+    if note and note != "final":
+        print(f"  [save] {note}: {len(rows)} rows, {fails} failures, "
+              f"mean IoU {summary_all.get('mean', 0):.4f} → {csv_path.name}")
+    else:
+        print(f"\nWrote:\n  {csv_path}\n  {json_path}")
+
+
 def print_summary(s: dict) -> None:
     print(f"\n{s['name']} (N={s['n']})")
     if s['n'] == 0:
@@ -247,6 +295,15 @@ def main() -> None:
                          "errors on large PNGs. Recommended: 95.")
     ap.add_argument("--throttle-s", type=float, default=1.0,
                     help="Seconds to sleep between API calls (rate-limit safety)")
+    ap.add_argument("--temperature", type=float, default=0.0,
+                    help="Sampling temperature (default: 0.0). Google's Gemini "
+                         "3 docs warn thinking models (e.g. gemini-pro) may "
+                         "loop at temperature <1.0; pass --temperature 1.0 to "
+                         "test that mitigation. Non-deterministic at >0.")
+    ap.add_argument("--save-every", type=int, default=5,
+                    help="Rewrite results.csv + summary.json every N cases (in "
+                         "addition to the end-of-run write). Ensures Ctrl-C "
+                         "never loses already-paid-for work. Default: 5.")
     ap.add_argument("--resume", action="store_true",
                     help="Skip cases whose pred_mask already exists in "
                          "out_dir/pred_masks; compute IoU from disk and "
@@ -314,8 +371,10 @@ def main() -> None:
         return
 
     # ── Build agent ─────────────────────────────────────────────────────────
-    agent = build_agent(instructions)
+    agent = build_agent(instructions, temperature=args.temperature)
     model = resolve_model(args.model)
+    print(f"agent: model={args.model}  temperature={args.temperature}  "
+          f"save_every={args.save_every}")
 
     rows = []
     t0 = time.time()
@@ -463,17 +522,21 @@ def main() -> None:
               f"IoU={score:.4f}  polys={len(polys)}  "
               f"({dt_call:.1f}s)")
 
+        # Periodic save so a Ctrl-C never loses already-paid-for work.
+        if args.save_every > 0 and (i + 1) % args.save_every == 0:
+            _write_outputs(rows, out_dir, args, time.time() - t0,
+                           note=f"checkpoint after case {i + 1}/{len(manifest)}")
+
         time.sleep(args.throttle_s)
 
     elapsed = time.time() - t0
     print(f"\nTotal wall time: {elapsed:.0f}s")
 
-    # ── Aggregate ───────────────────────────────────────────────────────────
+    # ── Aggregate (final) ──────────────────────────────────────────────────
     valid = [r["iou"] for r in rows if r["iou"] is not None]
     fails = sum(1 for r in rows if r["iou"] is None)
-
     print("\n" + "=" * 60)
-    print(f"AGGREGATE — model={args.model}")
+    print(f"AGGREGATE — model={args.model}  temperature={args.temperature}")
     if args.prompt_file:
         print(f"prompt-file: {args.prompt_file}")
     print(f"failures: {fails}/{len(rows)}")
@@ -490,28 +553,7 @@ def main() -> None:
                 s = summarise(f"fold {f_id}", fxs)
                 print_summary(s)
 
-    # ── Save CSV + JSON ─────────────────────────────────────────────────────
-    csv_path = out_dir / "results.csv"
-    with csv_path.open("w") as f:
-        f.write("case,fold,filename,iou,n_polygons,call_seconds,error,notes\n")
-        for r in rows:
-            f.write(
-                f"{r['case']},{r.get('fold')},{r['filename']},"
-                f"{r.get('iou','')},{r.get('n_polygons','')},"
-                f"{r.get('call_seconds','')},"
-                f"\"{(r.get('error') or '').replace(chr(34),chr(39))[:100]}\","
-                f"\"{(r.get('notes') or '').replace(chr(34),chr(39))[:120]}\"\n"
-            )
-    json_path = out_dir / "summary.json"
-    json_path.write_text(json.dumps({
-        "model": args.model,
-        "prompt_file": args.prompt_file,
-        "n_cases": len(rows),
-        "n_failures": fails,
-        "elapsed_seconds": round(elapsed, 1),
-        "summary": summary_all,
-    }, indent=2))
-    print(f"\nWrote:\n  {csv_path}\n  {json_path}")
+    _write_outputs(rows, out_dir, args, elapsed, note="final")
     print(f"Pred masks in: {preds_dir}")
 
 

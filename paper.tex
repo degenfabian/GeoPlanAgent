@@ -116,47 +116,53 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-The dataset captures five decades of UK planning control evolution through multimodal document-boundary pairs with structured metadata.... The dataset is available here - [link TBA]
 \end{abstract}
 
 \section{Introduction}
 \label{section:intro}
-The manual, time-consuming review of planning proposals introduces substantial delays, with cascading negative impacts on a city’s economic resilience, social equity, and long-term adaptability \cite{weinstein2024UKgov}.
-Human planners often struggle to verify compliance with complex regulations comprehensively, a challenge that can be accelerated by multimodal AI.
-In this paper, we examine the ability of leading multimodal AI systems, such as Gemini, GPT, and Claude, to process planning proposals.
-Central to our work is the development of GeoPlanAgent, a multimodal benchmark to evaluate two essential stages of processing planning proposals with multimodal AI: the digitisation of planning proposals and automated validation against planning regulations.
-In these stages, multimodal AI needs to summarise the key idea of the planning proposal, use tools to enhance multimodal understanding, and search for relevant regulations or acts for reference.
 
-The core components of the benchmark will include data inputs with ground truth, an output data schema, and scoring functions, potentially incorporating other tools as well.
-The tools available for this paper include OpenCV for image manipulation, LoFTR for keypoint detection, and the Google Maps API for geo-coding and satellite imagery retrieval.
-The paper anticipates using performance metrics such as:
-\begin{itemize}
-    \item Text accuracy (aiming for 100\% extraction of expected text with a target of 95\% accuracy). 
-    \item Date precision (94\% of dates extracted accurately with a target of 80-95\%). 
-    \item Shape accuracy (90\% accurate shapes with a target of 0.8 IoU). 
-    \item Location accuracy (82\% within 10\% of shape diameter for precise location, and 94\% within 50\% for general location, with respective target values).
-\end{itemize}
+The review of planning proposals is a manual and time-consuming process, and the delays it introduces have cascading consequences for a city's economic resilience, social equity, and long-term adaptability \cite{weinstein2024UKgov}. A central difficulty is that human planners must verify compliance with a large and intricate body of regulation, and doing so comprehensively for every proposal is rarely feasible under realistic time constraints. Recent progress in multimodal artificial intelligence offers a promising route to alleviating this bottleneck, since planning documents combine regulatory text, cartographic imagery, and structured metadata within a single artefact.
+ 
+In this paper, we examine the ability of contemporary multimodal AI systems, including Gemini, GPT, and Claude, to process UK planning proposals. To support this investigation, we develop \textbf{GeoPlanAgent}, a multimodal benchmark designed to evaluate two essential stages of automated planning-document processing: the digitisation of planning proposals and their automated validation against planning regulations. Completing these stages requires a model to summarise the central intent of a proposal, to invoke external tools that augment its multimodal understanding, and to retrieve the regulations or statutory acts relevant to a given case.
+ 
+The benchmark comprises data inputs paired with ground-truth annotations, an output data schema, and a set of scoring functions, and it may be extended with additional tools as required. The tooling used in this work includes OpenCV for image manipulation, LoFTR for keypoint detection, and the Google Maps API for geocoding and satellite imagery retrieval. 
+ 
+The contributions of this paper are twofold. First, we construct a dataset for evaluating the ability of AI agents to automatically digitise planning records. Second, we benchmark existing multimodal models on this dataset and address their observed weaknesses with a purpose-built agentic system.
 
+% \textbf{GeoPlanAgent:} We developed GeoMapAgent, an agentic framework compatible with leading multimodal AI systems, to improve the processing and planning of proposals.
+% GeoMapAgent enables multimodal AI to adaptively select tools, make complex decisions, and reflect on its mistakes to deliver reliable reviews of planning proposals end-to-end with no human intervention.
 
-\textbf{GeoPlanAgent:} We developed GeoMapAgent, an agentic framework compatible with leading multimodal AI systems, to improve the processing and planning of proposals.
-GeoMapAgent enables multimodal AI to adaptively select tools, make complex decisions, and reflect on its mistakes to deliver reliable reviews of planning proposals end-to-end with no human intervention.
-
-Our contributions are as follows:
-1. We built a dataset to test AI agents to automatically digitise planning records. 2. We benchmark against existing models and address their weaknesses with our own agentic model.
+Our contributions are as follows: 1) We built a dataset to test AI agents to automatically digitise planning records. 2) We benchmark against existing models and address their weaknesses with our agentic model.
 
 \section{Ralated Work}
-There is limited work specifically on this application; however, some notable work is \cite{qian2025earthvisionlanguagebenchmarkprobing}.
+\paragraph{Multimodal document understanding.}
+GeoPlanAgent draws on work in visual document understanding, where models must read document images, exploit layout, and answer grounded questions. DocVQA established document-image question answering, while LayoutLMv3 and Donut represent layout-aware and OCR-free approaches to document understanding \citep{mathew2021docvqa,huang2022layoutlmv3,kim2022donut}. These works are relevant because Article~4 Direction records contain text, layout, signatures, and embedded maps. However, they target generic document tasks rather than linking statutory language to an externally verifiable geographic boundary.
 
-{https://blog.google/around-the-globe/google-europe/united-kingdom/uk-government-harnesses-gemini-to-support-faster-planning-decisions/}
+\paragraph{Geospatial vision-language reasoning.}
+Geospatial VQA and remote-sensing VLMs address spatial reasoning more directly. RSVQA introduced VQA over remote-sensing images using OpenStreetMap-derived questions, and later work such as EarthVQA and GeoChat extends this line to relational reasoning and grounded geospatial dialogue \citep{lobry2020rsvqa,wang2024earthvqa,kuckreja2024geochat}. EarthWhere further evaluates open-world geolocation with multimodal models \citep{qian2025earthwhere}. These benchmarks test important spatial capabilities, but mainly focus on aerial, satellite, street-level, or natural imagery. Planning records instead require joint reasoning over PDFs, cartographic symbols, authority metadata, legal text, and GeoJSON boundaries.
+
+\paragraph{Map digitisation and georeferencing.}
+Our task is also related to map digitisation and georeferencing. MapReader provides tools for analysing large map collections through patch classification and text spotting, while recent historical-map vectorisation benchmarks show that converting scanned maps into usable vector geometries remains difficult \citep{wood2024mapreader,chen2024historicalmapvectorization}. This work motivates the boundary-extraction component of our benchmark, but planning review additionally requires checking whether the recovered geometry is consistent with the legal description and policy record.
+
+\paragraph{Planning, legal, and regulatory AI.}
+Planning and legal AI benchmarks evaluate regulatory knowledge and legal reasoning. UrbanPlanBench tests LLMs on urban-planning concepts and regulations, while LexGLUE and LegalBench provide broader legal-language benchmarks \citep{zheng2025urbanplanbench,chalkidis2022lexglue,guha2023legalbench}. These benchmarks are useful comparators for regulatory validation, but they do not require models to connect a planning document's legal language to a map boundary, location, and external geospatial record.
+
+\paragraph{Tool-augmented agents and UK planning records.}
+Tool-augmented methods such as retrieval-augmented generation, ReAct, and Toolformer are relevant because planning-record digitisation often requires OCR, retrieval, geocoding, segmentation, and map alignment rather than single-pass prediction \citep{lewis2020rag,yao2023react,schick2023toolformer}. In the UK context, the government's Extract initiative and related Google descriptions show growing institutional interest in converting planning PDFs and maps into structured data \citep{govuk2025extract,colebourn2025extract,google2025extract}. However, these initiatives are not presented as reusable academic benchmarks with released proposal-document inputs, ground-truth GeoJSON boundaries, output schemas, and scoring functions.
+
+In summary, prior work covers important parts of the problem, but no existing benchmark jointly evaluates planning-record digitisation and regulatory validation over multimodal planning documents, external geospatial tools, and ground-truth boundary geometries.
+
+
+
 
 \section{Dataset}
-Our dataset comprises 270 Article~4 Direction documents paired with corresponding GeoJSON boundary data, representing the most comprehensive publicly available collection of UK planning control documents assembled to date. Spanning 52 years (1973-2025) and covering multiple local planning authorities across England, the dataset provides multimodal regulatory text, cartographic information, and extensive metadata annotations for machine learning, policy analysis, and geographic information system (GIS) applications.
+Our dataset comprises 210 Article~4 Direction documents paired with corresponding GeoJSON boundary data, representing the most comprehensive publicly available collection of UK planning control documents assembled to date. Spanning 52 years (1973-2025) and covering multiple local planning authorities across England, the dataset provides multimodal regulatory text, cartographic information, and extensive metadata annotations for machine learning, policy analysis, and geographic information system (GIS) applications.
 
 
 
 
 \subsection{Data Collection Methodology}
-We collected the dataset from the UK planning authority \cite{}. We applied a six-stage processing workflow with quality control checkpoints at each transition as follows:
+We collected the dataset from the UK planning authority \cite{} \placeholder. We applied a six-stage processing workflow with quality control checkpoints at each transition as follows:
 \begin{enumerate}[leftmargin=*]
     \item \textbf{Document Acquisition:} Systematic collection from authorised source.
     \item \textbf{Quality Assessment:} Visual inspection, completeness check, authenticity verification.
@@ -213,34 +219,22 @@ Each entry consists of three integrated components linking regulatory text to ge
 The schema balances comprehensive documentation with practical usability across 13 core fields.
 
 \subsubsection{Unique Identification Fields}
-Unique identification enables document tracking, pdf-GeoJSON linking, and referential integrity.
-
-\begin{table}[h]
-\centering
-\caption{Identification Metadata Fields}
-\begin{tabular}{@{}lll@{}}
-\toprule
-\textbf{Field} & \textbf{Description} & \textbf{Example} \\ \midrule
-Sl no & Sequential (1--270) & 1, 2, 3 \\
-Unique ID & Folder identifier & \texttt{1947-...} \\
-geojson ID & Path to GeoJSON & \texttt{..78.geojson} \\ \bottomrule
-\end{tabular}
-\end{table}
+Unique identification enables document tracking, pdf-GeoJSON linking, and referential integrity. Table \ref{Unique_Identification}
 
 \subsubsection{Geographic Metadata}
 Geographic fields capture administrative context and physical location for spatial analysis.
 
-\begin{table*}[h]
-\centering
-\caption{Geographic Metadata Fields}
-\begin{tabular}{@{}lll@{}}
-\toprule
-\textbf{Field} & \textbf{Description} & \textbf{Example} \\ \midrule
-County & Administrative area & Kent, London (Westminster) \\
-Exact Location & Site description & ``Land at Golgotha, Shepherdswell'' \\
-Boundary Shape & Geometry type & Irregular polygon, Rectangular \\ \bottomrule
-\end{tabular}
-\end{table*}
+% \begin{table*}[h]
+% \centering
+% \caption{Geographic Metadata Fields}
+% \begin{tabular}{@{}lll@{}}
+% \toprule
+% \textbf{Field} & \textbf{Description} & \textbf{Example} \\ \midrule
+% County & Administrative area & Kent, London (Westminster) \\
+% Exact Location & Site description & ``Land at Golgotha, Shepherdswell'' \\
+% Boundary Shape & Geometry type & Irregular polygon, Rectangular \\ \bottomrule
+% \end{tabular}
+% \end{table*}
 
 \textbf{Boundary Shape Classification:} Classification supports automated extraction research and indicates planning complexity.
 
@@ -250,18 +244,18 @@ Categories are Rectangular, Quadrilateral, Triangular, Irregular polygon, L-shap
 
 Quality metadata enables fitness-for-purpose filtering for different research applications.
 
-\begin{table*}
-\centering
-\caption{Data Characteristics}
-\begin{tabular}{@{}llll@{}}
-\toprule
-\textbf{Field} & \textbf{Values} & \textbf{Distribution} \\ \midrule
-Document Date & DD Month YYYY & 1973--2025 \\
-Document Colour & White, Yellow, other & 68\%, 30\%, 2\% \\
-Document Quality & good, bad & 75\%, 25\% \\
-Shape Complexity & easy, medium, hard & 50\%, 30\%, 20\% \\ \bottomrule
-\end{tabular}
-\end{table*}
+% \begin{table*}
+% \centering
+% \caption{Data Characteristics}
+% \begin{tabular}{@{}llll@{}}
+% \toprule
+% \textbf{Field} & \textbf{Values} & \textbf{Distribution} \\ \midrule
+% Document Date & DD Month YYYY & 1973--2025 \\
+% Document Colour & White, Yellow, other & 68\%, 30\%, 2\% \\
+% Document Quality & good, bad & 75\%, 25\% \\
+% Shape Complexity & easy, medium, hard & 50\%, 30\%, 20\% \\ \bottomrule
+% \end{tabular}
+% \end{table*}
 
 \textbf{Quality criteria:} ``good'' = clear text, legible maps, minimal degradation, high resolution; ``bad'' = poor scans, faded text, unclear boundaries, low resolution.
 
@@ -435,7 +429,7 @@ The six components that the agent orchestrates are: (i) a Gemini~3~Flash Reader 
 \section{Results}
 \label{section:results}
 
-We evaluate GeoPlanAgent on the entire 270-case dataset described in Section~3, less the small set of duplicate folders manually flagged during quality control. Inference uses Gemini~3~Flash as the default LLM for the Reader, Worker, and Locate sub-agent; SAM~3 segmentation routes per case to the LoRA adapter from the fold that did not see that case during training (\Cref{subsection:sam3-finetune}). Each case is allowed a soft cap of 12 worker turns (\texttt{--max-iterations 12} on the benchmark runner; the code default is 8) and at most 5 \texttt{match\_at} attempts; the per-case wall-clock is dominated by tile rendering on cold cache and by MINIMA inference on warm cache. We report Intersection-over-Union (IoU) and the precision/recall/F1 triple from Section~\ref{subsection:summarize} on the predicted vs. ground-truth GeoJSON, plus the centroid positioning error in metres and the per-case API cost in USD.
+We evaluate GeoPlanAgent on the entire 210-case dataset described in Section~3, less the small set of duplicate folders manually flagged during quality control. Inference uses Gemini~3~Flash as the default LLM for the Reader, Worker, and Locate sub-agent; SAM~3 segmentation routes per case to the LoRA adapter from the fold that did not see that case during training (\Cref{subsection:sam3-finetune}). Each case is allowed a soft cap of 12 worker turns (\texttt{--max-iterations 12} on the benchmark runner; the code default is 8) and at most 5 \texttt{match\_at} attempts; the per-case wall-clock is dominated by tile rendering on cold cache and by MINIMA inference on warm cache. We report Intersection-over-Union (IoU) and the precision/recall/F1 triple from Section~\ref{subsection:summarize} on the predicted vs. ground-truth GeoJSON, plus the centroid positioning error in metres and the per-case API cost in USD.
 
 \subsection{Headline Results}
 \label{subsection:headline}
@@ -449,11 +443,8 @@ We evaluate GeoPlanAgent on the entire 270-case dataset described in Section~3, 
 \toprule
 & \textbf{N} & \textbf{IoU mean} & \textbf{IoU median} & \textbf{$\geq$0.5} & \textbf{$\geq$0.8} & \textbf{F1} & \textbf{Pos. err. (m)} & \textbf{Cost (\$/case)} \\ \midrule
 GeoPlanAgent & 208 & \placeholder & \placeholder & \placeholder & \placeholder & \placeholder & \placeholder & \placeholder \\
-\midrule
-MHCLG Extract (public)~\cite{mhclg_extract} & 270 & --- & --- & --- & 0.82\textsuperscript{$\dagger$} & --- & --- & --- \\
-\bottomrule
 \end{tabular}
-\caption{Headline benchmark results. Cells marked \placeholder will be filled from the current full-benchmark run (\texttt{results/benchmark\_v\_R21/}) once it completes. \textsuperscript{$\dagger$}The MHCLG Extract figure of 82\% reflects ``shape accuracy at IoU $\geq 0.8$'' on a partially-overlapping document set; direct comparability is limited by their use of a different scoring protocol, but we cite it as the publicly-reported automation baseline.}
+\caption{Headline benchmark results. Cells marked \placeholder will be filled from the current full-benchmark run (\texttt{results/benchmark\_v\_R21/}) once it completes. }
 \label{tab:main-result}
 \end{table*}
 
@@ -503,7 +494,7 @@ We organise the ablation study around three questions: (i) does the LoRA fine-tu
 \subsection{Fine-Tune Contribution}
 \label{subsection:abl-finetune}
 
-Three rows on the same pixel-IoU axis against the held-out per-fold validation masks. The first is the SAM~3 LoRA from \Cref{subsection:sam3-finetune}, with each test case scored by the adapter trained on the four folds that did not see it. The second is base SAM~3 (no LoRA) with the best-performing text prompt selected by a small held-out prompt search (see \Cref{subsection:abl-vanilla-sam-prompt-search}). The third is Gemini~3~Flash asked directly to trace the boundary as a polygon, rasterised to a pixel mask using Gemini's native $[y, x] \in [0, 1000]$ output convention (see \Cref{subsection:abl-vlm-direct-protocol} for the full prompt and the failure-mode safety-net).
+Three rows on the same pixel-IoU axis against the human-traced boundary masks. The first is the SAM~3 LoRA from \Cref{subsection:sam3-finetune}, with each test case scored by the adapter trained on the four folds that did not see it. The second is base SAM~3 (no LoRA) with the best-performing text prompt selected by a five-prompt sweep (see \Cref{subsection:abl-vanilla-sam-prompt-search}). The third is Gemini~3~Flash asked directly to trace the boundary as a polygon, rasterised to a pixel mask using Gemini's native $[y, x] \in [0, 1000]$ output convention (see \Cref{subsection:abl-vlm-direct-protocol} for the full prompt and the failure-mode safety-net).
 
 \begin{table}[h]
 \centering
@@ -511,13 +502,47 @@ Three rows on the same pixel-IoU axis against the held-out per-fold validation m
 \begin{tabular}{@{}lccc@{}}
 \toprule
 \textbf{Method} & \textbf{N} & \textbf{Mean pixel IoU} & \textbf{$\geq$0.8} \\ \midrule
-VLM-direct (Gemini~3~Flash) & 211 & \placeholder & \placeholder \\
-Vanilla SAM~3 (best prompt) & 211 & \placeholder & \placeholder \\
-SAM~3 + LoRA (ours)         & 211 & 0.892 & \placeholder \\ \bottomrule
+VLM-direct (Gemini~3~Flash)    & 211 & 0.515 & 27.5\% \\
+VLM-direct (Gemini~3.1~Pro)    & 211 & 0.630 & 40.8\% \\
+Vanilla SAM~3 (best prompt)    & 211 & 0.611 & 51.2\% \\
+SAM~3 + LoRA (ours)            & 211 & \textbf{0.892} & \textbf{91.0\%} \\ \bottomrule
 \end{tabular}
-\caption{Boundary segmentation only, scored against the hand-annotated map-image masks. All three rows are evaluated on the same 211 annotated images (some multi-page documents contribute more than one annotated map page, which is why the segmentation pool is 211 even though the headline benchmark of \S\ref{section:results} runs on 208 documents). ``SAM~3 + LoRA (ours)'' is the 5-fold cross-validated mean; the other two rows do not require training.}
+\caption{Boundary segmentation only, scored against the hand-annotated map-image masks. All rows are evaluated against the same 211 annotated images (some multi-page documents contribute more than one annotated map page, which is why the segmentation pool is 211 even though the headline benchmark of \S\ref{section:results} runs on 208 documents). Both VLMs are run at $\texttt{temperature}=1.0$, which is Google's recommended setting for the reasoning-tuned 3.1~Pro variant and which we apply uniformly to Flash for symmetry; rationale and the diagnostic of the deterministic $T{=}0$ failure mode on Pro are in \Cref{subsection:abl-vlm-direct-protocol}. ``SAM~3 + LoRA (ours)'' is the 5-fold cross-validated mean from \Cref{tab:sam3-cv} (CUDA training-time validation, cv\_summary.json); its IoU~$\geq$~0.8 band rate is recomputed from a per-case re-run of the same checkpoints under the matched bf16-autocast loop on MPS (\texttt{scripts/eval\_sam\_kfold\_v2.py}), which reproduces the cv\_summary means to within $\pm 0.02$. The VLM and Vanilla SAM rows do not require training and have no per-hardware variance.}
 \label{tab:abl-finetune}
 \end{table}
+
+\subsubsection{Vanilla SAM~3 Prompt Search}
+\label{subsection:abl-vanilla-sam-prompt-search}
+
+Base SAM~3~\cite{meta2025sam3} is a promptable segmentation model; without LoRA fine-tuning, its output depends strongly on which English phrase is supplied as the segmentation query. We evaluated five pre-registered candidate prompts on the full 211-case annotated pool: ``planning boundary'' (the LoRA-trained anchor), ``article 4 site boundary'' (UK-specific phrasing), ``highlighted marked area'', ``site boundary'', and ``application site''. Prompts are discrete, pre-registered hyperparameters with no learned component, so a subset-search-plus-held-out-eval split would add no statistical protection over reporting all five prompts on the full pool. The inference call is identical to the production path\textemdash same processor, same \texttt{post\_process\_semantic\_segmentation} output, same thin-outline flood-fill post-processing\textemdash so the comparison isolates the effect of the prompt and the LoRA weights.
+
+\Cref{tab:abl-sam-prompt-search} gives mean, median, and the deployment-relevant IoU bands per prompt. ``highlighted marked area'' wins on mean IoU and is the row used in \Cref{tab:abl-finetune}; the LoRA-trained anchor ``planning boundary'' is a close second on mean but the joint best on median and on the IoU~$\geq$~0.8 band rate, because its failure mode is sparser (a few catastrophic zero-IoU cases dragging the mean rather than a long tail of medium-quality masks). The two UK-jargon candidates (``article 4 site boundary'' and ``application site'') collapse to near-zero: base CLIP has no useful prior over those phrasings, and ``application site'' in particular fires the ``application form'' visual concept onto title blocks rather than the drawn polygon. The 0.40 gap between the best prompt (0.611) and the LoRA fine-tune (0.892) is the direct measure of the fine-tune contribution.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Prompt} & \textbf{Mean} & \textbf{Median} & \textbf{$\geq$0.5} & \textbf{$\geq$0.8} \\ \midrule
+``highlighted marked area''  & \textbf{0.611} & 0.808 & 64.0\% & 51.2\% \\
+``planning boundary''        & 0.582 & \textbf{0.886} & 60.2\% & \textbf{52.6\%} \\
+``site boundary''            & 0.492 & 0.525 & 50.2\% & 44.1\% \\
+``article 4 site boundary''  & 0.222 & 0.080 & 16.6\% & 14.7\% \\
+``application site''         & 0.108 & 0.082 &  0.5\% &  0.0\% \\ \bottomrule
+\end{tabular}
+\caption{Vanilla SAM~3 (no LoRA) prompt search on the full 211 annotated maps. All five prompts hit identical 0/211 inference failures; differences are pure prompt sensitivity. ``highlighted marked area'' wins on mean IoU and is used as the row in \Cref{tab:abl-finetune}; ``planning boundary''\textemdash the prompt the LoRA was trained on\textemdash is the joint best on the deployment-relevant IoU~$\geq$~0.8 band. The UK-domain phrasings ``article 4 site boundary'' and ``application site'' collapse because base CLIP has no useful prior over them.}
+\label{tab:abl-sam-prompt-search}
+\end{table}
+
+\subsubsection{VLM-Direct Protocol}
+\label{subsection:abl-vlm-direct-protocol}
+
+The VLM-direct rows of \Cref{tab:abl-finetune} are single-shot Gemini inferences per case: no SAM~3, no MINIMA, no agent loop, no positioning. Each model receives the rendered map image as a multimodal part together with a fixed system prompt that describes the task (``locate the drawn boundary and trace it as a polygon'') and enumerates the boundary styles the model should recognise (solid lines in any colour, dashed, dotted, hatched, semi-transparent fill, opaque fill, outline overlaid on an OS-style or aerial map background). The schema enforces output as 0+ polygons, each an ordered list of $(y, x)$ integer vertices in $[0, 1000]$\textemdash Gemini's native bounding-box / segmentation convention~\cite{google2025gemini3}. We rasterise the returned polygons to a binary mask at the source image's native resolution, scaling $x$ by $W/1000$ and $y$ by $H/1000$ separately (anisotropic for non-square pages), then compute pixel IoU against the same hand-traced boundary masks that the SAM~3 LoRA was trained on. Decoding uses temperature~$1.0$ (rationale below) and a hard cap of 8192 output tokens; the schema is enforced via \texttt{NativeOutput} (Gemini's native JSON-schema mode) rather than the default tool-call framing, which we found necessary to keep complex multi-vertex polygons from being truncated mid-response. Input images are sent JPEG-encoded at quality~$90$ to keep request payloads under the provider's size limit. Under this protocol both VLMs achieve $0/211$ schema-validation failures.
+
+\paragraph{Choice of $T{=}1.0$.}
+We initially ran both VLMs at $\texttt{temperature}=0$, matching the rest of our pipeline (where Flash at $T{=}0$ is used in the Reader, Worker, and Locate sub-agents for reproducibility). Flash produced schema-valid output on all 211 cases at $T{=}0$; Pro, however, failed pydantic validation on 30 of 211. We diagnosed two representative failures by patching the script to capture the raw text the model returned before validation. In both cases Pro entered a \emph{degenerate-generation loop}: on a simple 4-vertex GT case (\texttt{CPA4(1a)}) it emitted a 45-degree diagonal staircase pattern (alternating $(y{+}6, x{+}0)$ and $(y{+}0, x{+}7)$ steps) for $2{,}366$ vertices, the first $181$ of which stayed inside the prompted $[0, 1000]$ range and the remainder marched out to $(7446, 8649)$ before the token cap killed the response; on a 27-vertex case (\texttt{A4D14}) it traced a plausible initial boundary for a dozen vertices, then locked onto the single vertex $[451, 1000]$ at the right edge of the coordinate convention and repeated it $\approx 2{,}400$ times until truncation. Both failures were deterministic at $T{=}0$ and recurred identically on re-run; raising $\texttt{max\_tokens}$ from $8192$ to $32768$ did not rescue them because the loops emit garbage faster than any reasonable cap can absorb. Google's Gemini~3 developer guide~\cite{google2025gemini3} explicitly warns that ``Changing the temperature (setting it below 1.0) may lead to unexpected behavior, such as looping or degraded performance,'' which matches the observed pathology. We therefore re-ran \emph{both} VLMs at $T{=}1.0$ (Google's recommended setting for thinking models, applied uniformly to both VLMs to keep the comparison symmetric).
+
+At $T{=}1.0$ the repetition-collapse failure mode vanished entirely on Pro and Flash retained its 0/211 failure rate. The same diagnostic case (\texttt{CPA4(1a)}) that previously emitted $2{,}366$ garbage vertices in $240$\,s instead produced a sensible 22-vertex polygon in $5.3$\,s with IoU $0.694$. On-task IoU improved modestly for Flash (mean $0.479 \to 0.515$, $\geq$$0.8$ band essentially unchanged) and substantially for Pro relative to its prior zero-filled reading (mean $0.476 \to 0.630$, $\geq$$0.8$ band $36.0\% \to 40.8\%$). The $T{=}1.0$ numbers in \Cref{tab:abl-finetune} are the clean readings we report. Even at this best-documented setting Pro's mean IoU ($0.630$) trails the LoRA fine-tune ($0.892$) by $0.26$ and its IoU~$\geq$~$0.8$ rate ($40.8\%$) trails by $50.2$ percentage points; Flash trails by $0.38$ and $63.5$ percentage points respectively. The headline of \Cref{tab:abl-finetune}\textemdash that domain fine-tuning dominates frontier-scale VLM segmentation on this task\textemdash holds at the recommended decoding settings for both VLMs, including at roughly an order of magnitude higher cost per call for Pro than Flash.
 
 \subsection{Per-Fold SAM~3 LoRA Cross-Validation}
 \label{subsection:abl-sam3-cv}
@@ -586,6 +611,21 @@ SAM~3 fine-tuning was performed on CUDA with bf16 mixed precision; validation (t
 \bibliography{custom}
 
 \appendix
+
+\section{Dataset Details}
+
+\begin{table}[h]
+\centering
+\caption{Identification Metadata Fields}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Field} & \textbf{Description} & \textbf{Example} \\ \midrule
+Sl no & Sequential (1--210) & 1, 2, 3 \\
+Unique ID & Folder identifier & \texttt{1947-...} \\
+geojson ID & Path to GeoJSON & \texttt{..78.geojson} \\ \bottomrule
+\end{tabular}
+\label{Unique_Identification}
+\end{table}
 
 \section{Implementation Details}
 \label{sec:impl-appendix}
