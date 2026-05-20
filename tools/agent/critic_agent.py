@@ -132,16 +132,21 @@ WHAT "BAD" LOOKS LIKE
   boundary, or its shape clearly doesn't match.
 
 INTERPRETING THE METRICS
-- n_inliers ≥ 50 is a strong signal that the affine is correct;
-  < 25 is too weak to trust.
-- scale_consistency near 1.0 means the recovered map scale matches
-  the document's stated scale. < 0.5 hints at a possibly poor match,
-  but if n_inliers is strong (≥ 80) the match can still be right.
+- n_inliers is reported PER (candidate, area_group) row. n_inliers
+  ≥ 50 is a strong signal that the affine is correct for THAT row;
+  < 25 is too weak to trust. For multi-area-group documents, the
+  candidate's overall strength is roughly the sum of per-row inliers
+  (this is what determined the top-3 selection above), but you
+  should still judge each row's correspondence visually.
+- scale_consistency ≥ 0.8 means the recovered map scale matches the
+  document's stated scale (strong); < 0.5 hints at a possibly poor
+  match, but if n_inliers is strong (≥ 80) the match can still be
+  right.
 - road_name_agreement = 0.0 means OS roads at this location exist
   but don't match the reader's road names — possible wrong-area
   signal. But be careful: if n_inliers is strong (≥ 80) and
-  scale_consistency is reasonable, trust the inlier count over this
-  signal.
+  scale_consistency is reasonable (≥ 0.5), trust the inlier count
+  over this signal.
 - These numbers are supporting evidence — the visual panels are the
   primary signal for your decision.
 
