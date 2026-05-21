@@ -289,8 +289,10 @@ def mask_to_geojson_affine(mask, affine_H, tile_info, simplify_px=0.0):
 
     all_polys = []
     for contour in contours:
-        if cv2.contourArea(contour) < 100:
-            continue
+        # Any contour the mask cleanup left intact is projected. The
+        # previous "< 100 pixels" floor was an arbitrary noise filter
+        # already covered by _keep_dominant_components above; keeping
+        # both was redundant.
         if simplify_px > 0:
             contour = cv2.approxPolyDP(contour, simplify_px, True)
         coords = []
