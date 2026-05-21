@@ -50,15 +50,14 @@ package. Per `match_at` call (for each area_group):
 
 ## RANSAC affine (`estimate_affine`)
 
-- **4-DOF similarity** by default — rotation + uniform scale + translation.
-- **6-DOF full-affine fallback** kicks in only when (a) inlier count
-  improves by ≥ `GATE_RATIO_6DOF` (1.3×), (b) the recovered scale is
-  in `[SCALE_6DOF_MIN, SCALE_6DOF_MAX]` (0.3 to 3.0), AND (c) the
-  shear/determinant sanity check passes. This is what stops the
-  affine from collapsing to a degenerate skew on a sparse-keypoint
-  match.
-- Optional **Delaunay-consistency filter** (`tools/delaunay_filter.py`)
-  prunes inlier triangulation outliers before the final fit.
+- **4-DOF similarity only** — rotation + uniform scale + translation
+  via `cv2.estimateAffinePartial2D`.
+- (2026-05-21) The 6-DOF full-affine fallback was removed after a
+  25-case ablation showed it nets to -0.01 mean IoU and rescues only
+  ~2 cases at the cost of code complexity.
+- (2026-05-21) The optional Delaunay-consistency post-filter was
+  removed after a 15-case ablation showed it provided zero mean
+  benefit and was actively hurting the highest-inlier stress case.
 
 ## Sigma / source-priority registry (`source_priorities.py`)
 
@@ -72,26 +71,6 @@ Each geocoded candidate carries a `source` prefix (e.g.
 | `source_priority(name)` | Lower = preferred. Postcodes / code_point rank 0; admin / parish rank 9. Used when capping candidate count. |
 | `effective_sigma(provided, source)` | `max(provided, default-for-source)` so a worker-supplied σ never goes below the source's empirical floor. |
 | `candidate_passes_la_filter(source, lat, lon, admin_region)` | Lazy-imports `tools.verification_checks._resolve_la` and checks LA-polygon containment. Used by `tools.scoring.commit_attempt_score` to apply the smart-commit `OUTSIDE_LA_PENALTY=0.3`. |
-
-## Road-name verification (`road_verify.py`)
-
-Used by `sliding_window_position` to break ties between candidates that
-have similar inlier counts but plausibly different anchor locations.
-Two cross-checks:
-
-- **Road-name verifier** — queries OS Zoomstack for road names near
-  each candidate's predicted centre, fuzzy-matches against the
-  reader's `road_names`. The override of the metric-best candidate is
-  conservative: requires ≥60% road-name overlap AND ≥2× the metric-
-  best ratio AND ≥70% of the metric-best score.
-- **Directional verifier** — when the reader extracted a directional
-  modifier ("south of East Langdon village"), candidates on the
-  opposite side of the geocoded anchor receive a metric penalty.
-
-The road-name index that the locate sub-agent's `road` / `intersect`
-tools use is a separate JSON file (`tools/oml_road_index.json`,
-`tools/oml_road_geom_subset.json`) regenerated from OS OpenMap Local
-via `tools/build_oml_road_index.py`.
 
 ## Output of `sliding_window_position`
 
@@ -108,7 +87,5 @@ A dict with:
 
 | Constant | Home | Value | Purpose |
 |---|---|---|---|
-| `GATE_RATIO_6DOF` | `_core.py` | 1.3 | 6-DOF affine inlier-improvement gate |
-| `SCALE_6DOF_MIN/MAX` | `_core.py` | 0.3 / 3.0 | 6-DOF scale sanity band |
 | `WINDOW_STRIDE_TARGET` | `_core.py` | 100 | Sliding-window stride target (px) |
 | `OUTSIDE_LA_PENALTY` | `tools/scoring.py` | 0.3 | Smart-commit penalty (applied via `candidate_passes_la_filter`) |

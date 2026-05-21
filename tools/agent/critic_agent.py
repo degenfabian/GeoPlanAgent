@@ -97,11 +97,14 @@ WHAT YOU SEE
             z18 ≈ 0.3m/px, z19 ≈ 0.15m/px) — different candidates
             may have matched at different zooms, so each panel
             reports its own.
-- Only the TOP-3 candidates by total_inliers are shown, plus the worker's
-  committed candidate if it falls outside the top-3 (so you always see
-  the worker's pick alongside the strongest alternatives). A note at the
-  top of the metrics block tells you how many total candidates exist and
-  how many are shown.
+- Only the TOP-3 candidates by BEST per-area_group n_inliers are shown,
+  plus the worker's committed candidate if it falls outside the top-3
+  (so you always see the worker's pick alongside the strongest
+  alternatives). Ranking by best per-group, not summed total_inliers,
+  prevents a multi-group attempt with several weak groups from
+  outranking a candidate with one genuinely strong group. A note at
+  the top of the metrics block tells you how many total candidates
+  exist and how many are shown.
 - area_groups: a single planning document can cover MULTIPLE separate
   geographic areas (e.g., a multi-site Article 4 direction). When this
   happens, ONE candidate image contains stacked sub-rows (one per area-
@@ -301,8 +304,8 @@ def _build_candidate_panel(state: Any, attempt: Dict[str, Any],
         #   RIGHT = zoom of the OS-tile crop in this image (the only
         #           per-image property of the OS render side; numeric
         #           metrics like n_inliers / road_name_agreement /
-        #           scale_consistency live in the text-block, not on the
-        #           panel label).
+        #           scale_consistency live in the text-block, not on
+        #           the panel label).
         left_label = f"{badge}  group {group_id}  page {page}"
         right_label = f"OS tile @ zoom={zoom}"
         row = _build_one_group_panel(map_img, mask, tile_info, affine_H,
@@ -370,14 +373,17 @@ def _format_metrics_text(state: Any,
             rna = axes.get("road_name_agreement") or {}
             sc = axes.get("scale_consistency") or {}
             road_v = rna.get("score") if isinstance(rna, dict) else None
+            road_verdict = (rna.get("verdict") if isinstance(rna, dict)
+                            else None) or ""
             scale_v = sc.get("score") if isinstance(sc, dict) else None
             road_str = f"{road_v:.2f}" if isinstance(road_v, (int, float)) else "?"
             scale_str = f"{scale_v:.2f}" if isinstance(scale_v, (int, float)) else "?"
+            verdict_str = f" ({road_verdict})" if road_verdict else ""
             lines.append(
                 f"  cand {cid}  group {g.get('area_group','?')}  "
                 f"page {g.get('page','?')}  "
                 f"n_inliers={n_inl}  "
-                f"road_name_agreement={road_str}  "
+                f"road_name_agreement={road_str}{verdict_str}  "
                 f"scale_consistency={scale_str}{tag}"
             )
     return "\n".join(lines)
@@ -408,13 +414,38 @@ def _run_critic_once(state: Any, model_name: str,
     if committed_id is None and attempts:
         committed_id = attempts[-1].get("candidate_id")
 
-    # Pick top-3 candidates by total_inliers. Always include the
-    # worker's committed candidate (so the critic can decide whether
-    # the worker's pick was good vs. a stronger stored alternative),
-    # even if its inlier count puts it outside the top-3 by raw inliers.
+    # Pick top-3 candidates by the BEST per-group inlier count
+    # (strongest single area_group). This favours a strong single-
+    # group attempt over a weak multi-group attempt whose
+    # total_inliers happens to be higher just because it summed over
+    # more groups — total_inliers was biasing the panel away from
+    # genuinely-strong single-group candidates on multi-area_group
+    # documents.
+    #
+    # Tie-break by candidate_id to make the ordering reproducible
+    # across runs of the same case (Python's sort is stable, but the
+    # iteration order of state.match_attempts.values() is only stable
+    # while the underlying dict is unchanged — adding an explicit
+    # secondary key removes that fragility).
+    def _best_group_inliers(a: Dict[str, Any]) -> int:
+        per = a.get("per_group") or []
+        best = 0
+        for g in per:
+            mi = g.get("match_info") or {}
+            n = int(mi.get("n_inliers") or 0)
+            if n > best:
+                best = n
+        if not per:
+            # Legacy / partial state: fall back to total_inliers.
+            best = int(a.get("total_inliers") or 0)
+        return best
+
     total_n_attempts = len(attempts)
-    by_inliers = sorted(attempts,
-                         key=lambda a: -int(a.get("total_inliers") or 0))
+    by_inliers = sorted(
+        attempts,
+        key=lambda a: (-_best_group_inliers(a),
+                       int(a.get("candidate_id") or 0)),
+    )
     shown = list(by_inliers[:3])
     shown_ids = {a.get("candidate_id") for a in shown}
     if committed_id is not None and committed_id not in shown_ids:
@@ -448,8 +479,11 @@ def _run_critic_once(state: Any, model_name: str,
         committed_id if committed_id is not None else -1)
     selection_note = (
         f"Showing top-{len(shown)} of {total_n_attempts} stored candidates "
-        f"(ranked by total_inliers; the worker's committed candidate is "
-        f"always included). Each candidate is sent as a separate image."
+        f"(ranked by the BEST per-area_group n_inliers — i.e. strongest "
+        f"single-group match — so multi-group attempts can't outweigh a "
+        f"genuinely-strong single-group candidate just by summing over "
+        f"more groups; the worker's committed candidate is always "
+        f"included). Each candidate is sent as a separate image."
     )
 
     # On follow-up iterations the message_history already contains the
@@ -522,13 +556,120 @@ def _run_critic_once(state: Any, model_name: str,
             out_tokens, llm_error, new_history)
 
 
+def _direct_switch_commit(state: Any,
+                           worker_result: Any,
+                           chosen_id: int,
+                           directive_reasoning: str,
+                           verbose: bool = True) -> Any:
+    """Commit ``chosen_id`` directly into state — no worker LLM call.
+
+    The critic has already decided which candidate to commit; the
+    candidate is already in ``state.match_attempts`` (it was put there
+    by an earlier ``match_at`` call). An LLM re-invocation here would
+    just be a middleman that types out ``commit_match(N)`` — wasted
+    cost, deterministic risk (the worker could rationalise around the
+    pick), and it pulls the smart-commit gate into a fight the critic
+    has already won.
+
+    Mutates ``state.current_result`` / ``state.last_output`` /
+    ``state.accepted`` / ``state.accept_reason`` to mirror what a
+    successful ``commit_match`` would have produced. Returns the
+    ORIGINAL ``worker_result`` unchanged — the critic loop breaks on
+    ``switch``, so we never need fresh worker messages downstream.
+    """
+    cand = state.match_attempts.get(int(chosen_id))
+    if cand is None:
+        if verbose:
+            print(f"  direct_switch: id {chosen_id} not in match_attempts")
+        return worker_result
+
+    # Strict gate: refuse to commit a candidate that produced no
+    # valid affine for any group — mirrors commit_match's check at
+    # match.py around the n_groups_committed==0 path. The critic
+    # *should* never pick such a candidate (it has no tile_info /
+    # rendered panel), but guard against it: a candidate with no
+    # geojson would silently null-out state.current_result["geojson"]
+    # and crash downstream IoU scoring.
+    n_committed = int(cand.get("n_groups_committed") or 0)
+    if n_committed == 0 or cand.get("geojson") is None:
+        if verbose:
+            print(f"  direct_switch: id {chosen_id} has no usable affine / "
+                  f"geojson (n_groups_committed={n_committed}); skipping")
+        return worker_result
+
+    # Mirror commit_match's state.current_result assembly exactly so
+    # downstream consumers (build_run_agent_return, extract_message_log,
+    # …) see the same shape they always see.
+    primary_group = next(
+        (g for g in (cand.get("per_group") or [])
+         if g.get("area_group") == cand.get("requested_group")),
+        (cand.get("per_group") or [{}])[0],
+    )
+    state.current_result = {
+        "affine_H": primary_group.get("affine_H"),
+        "tile_info": primary_group.get("tile_info"),
+        "match_info": primary_group.get("match_info"),
+        "geojson": cand.get("geojson"),
+        "candidate_id": int(chosen_id),
+        "reward": primary_group.get("reward"),
+        "per_group": cand.get("per_group"),
+        "requested_group": cand.get("requested_group"),
+        "requested_page": cand.get("requested_page"),
+        "n_groups_committed": n_committed,
+        "total_inliers": int(cand.get("total_inliers") or 0),
+    }
+    # Mirror commit_match's position_calls increment so agent_stats
+    # accurately reflects total commits, including critic-driven
+    # switches. Without this, the metric undercounts commits whenever
+    # the critic flips the worker's pick.
+    state.position_calls += 1
+
+    # Synthesise a BoundaryOutcome for downstream consumers that read
+    # ``state.last_output``. Preserve the prior status when available
+    # — district_lookup outcomes never reach the critic, so this is
+    # almost always "accepted", but we keep the carry-forward to be
+    # safe against schema changes.
+    from tools.agent.schemas import BoundaryOutcome
+    prev = getattr(state, "last_output", None)
+    prev_status = prev.status if prev is not None else "accepted"
+    new_reasoning = (
+        f"[critic-switch to candidate {chosen_id}] "
+        f"{(directive_reasoning or '')[:900]}"
+    )
+    state.last_output = BoundaryOutcome(
+        status=prev_status,
+        final_n_inliers=int(cand.get("total_inliers") or 0),
+        rotation_checked=state.rotation_checked,
+        reasoning=new_reasoning,
+    )
+    state.accepted = prev_status in ("accepted", "district_lookup")
+    state.accept_reason = f"[{prev_status}] {new_reasoning[:160]}"
+
+    if verbose:
+        print(f"  direct_switch: committed candidate {chosen_id} "
+              f"(total_inliers={state.current_result['total_inliers']}) "
+              f"without worker re-invoke")
+    return worker_result
+
+
 def _rehand_to_worker(state: Any,
                       worker_result: Any,
                       directive: CriticDirective,
                       verbose: bool = True) -> Any:
-    """Re-invoke worker with a fixed-template user message based on the
-    critic's directive. Returns the new pydantic-ai result, or the prior
-    result on failure / unknown action.
+    """Apply the critic's directive to state.
+
+    Two paths, with very different cost profiles:
+
+    * ``switch``       → handled entirely in Python by
+      ``_direct_switch_commit``. No LLM call. The critic already chose
+      the candidate; we just copy it into state. The smart-commit gate
+      is bypassed structurally (it lives inside ``commit_match`` and
+      we don't call ``commit_match``).
+    * ``retry_locate`` → worker IS re-invoked: it has to call
+      ``propose_centers`` + ``match_at`` on a NEW location, which
+      requires LLM reasoning about why the previous locate was wrong.
+
+    Returns ``(worker_result, rehand_error_or_None)``.
     """
     from tools.agent.worker_agent import _agent
 
@@ -536,29 +677,43 @@ def _rehand_to_worker(state: Any,
     cr = state.current_result or {}
     worker_committed_id = cr.get("candidate_id")
 
+    rehand_error: Optional[str] = None
     if action == "switch":
         chosen = directive.chosen_candidate_id
         if chosen == worker_committed_id:
             if verbose:
                 print(f"  critic switch: chose committed_id {chosen} — "
                       f"treating as approve")
-            return worker_result
+            return worker_result, None
         if chosen not in state.match_attempts:
             if verbose:
                 print(f"  critic switch: id {chosen} not in stored "
                       f"candidates, skipping")
-            return worker_result
-        # Neutral framing — do NOT reveal a "reviewer" / "critic" to the
-        # worker. The worker stays opaque to the critic's existence.
-        instruction = (
-            f"Reconsider your commit. Candidate {chosen} appears to be a "
-            f"better match than your committed candidate "
-            f"{worker_committed_id} based on visual alignment with the "
-            f"planning map. {directive.reasoning}\n\n"
-            f"Call commit_match({chosen}) and re-submit BoundaryOutcome."
+            return worker_result, None
+        new_result = _direct_switch_commit(
+            state, worker_result, chosen,
+            directive.reasoning or "", verbose=verbose,
         )
+        return new_result, None
 
     elif action == "retry_locate":
+        # Refill the worker's match_at budget and partial-clear the
+        # dedup set so the rehand can actually call propose_centers +
+        # match_at again. Without this, a worker that exhausted its
+        # 5-call budget during the first pass crashes on its next
+        # match_at, the exception is swallowed below, and the critic's
+        # intended fix is lost with no on-disk trace.
+        state.match_at_budget = max(state.match_at_budget, 0) + 2
+        state.recent_calls = set()
+        # The critic just said "all current candidates are wrong".
+        # When the worker calls commit_match on a new candidate, the
+        # smart-commit gate would otherwise compare its inlier count
+        # against the OLD (rejected-by-critic) candidates and could
+        # reroute back to one of them. The one-shot bypass keeps the
+        # critic's verdict in force for the new commit. The flag is
+        # NOT in the worker's tool schema — only critic-side code can
+        # set it.
+        state.bypass_smart_commit_one_shot = True
         instruction = (
             f"Reconsider your commit. None of your stored match "
             f"candidates appear to align with the boundary drawn on the "
@@ -572,7 +727,7 @@ def _rehand_to_worker(state: Any,
 
     else:
         # 'approve' shouldn't reach here; nothing to rehand.
-        return worker_result
+        return worker_result, None
 
     if verbose:
         print(f"  critic rehand: re-invoking worker with action={action}")
@@ -598,11 +753,23 @@ def _rehand_to_worker(state: Any,
                 )
         except Exception:
             pass
-        return sub_result
+        # Always reset the bypass flag at the end of the rehand. The
+        # worker may have completed WITHOUT calling commit_match (e.g.
+        # status=district_lookup, or just resubmitting BoundaryOutcome
+        # from the existing committed state). In that case
+        # ``commit_match`` never consumed the flag, and a subsequent
+        # commit on a later critic iteration would bypass the gate
+        # unintentionally.
+        state.bypass_smart_commit_one_shot = False
+        return sub_result, None
     except Exception as e:
+        rehand_error = f"{type(e).__name__}: {str(e)[:160]}"
+        # Same reset on the exception path — rehand may have raised
+        # before commit_match was ever called.
+        state.bypass_smart_commit_one_shot = False
         if verbose:
-            print(f"  critic rehand: worker re-invoke failed: {str(e)[:120]}")
-        return worker_result
+            print(f"  critic rehand: worker re-invoke failed: {rehand_error}")
+        return worker_result, rehand_error
 
 
 # ── Outer loop ─────────────────────────────────────────────────────────────
@@ -709,17 +876,29 @@ def run_critic_loop(
             iterations.append(iter_entry)
             break
 
-        # Re-hand to worker.
+        # Apply the directive to state (switch = direct Python commit,
+        # no worker LLM; retry_locate = worker re-invoked).
         before = _snapshot_geojson(state)
-        current_worker_result = _rehand_to_worker(
+        current_worker_result, rehand_error = _rehand_to_worker(
             state, current_worker_result, directive, verbose=verbose
         )
         after = _snapshot_geojson(state)
         iter_entry["geojson_changed"] = before != after
+        if rehand_error is not None:
+            iter_entry["rehand_error"] = rehand_error
         iterations.append(iter_entry)
 
-        # If state didn't change despite a rehand, the worker probably
-        # couldn't comply — break to avoid loop on a stuck case.
+        # ``switch`` is one-and-done. The critic already chose the
+        # candidate; re-asking on iter 1 would just show the SAME
+        # panels with only the 'committed' marker moved to the new
+        # candidate — rubber-stamp noise that costs another LLM call.
+        # Only ``retry_locate`` produces NEW candidates worth a fresh
+        # look on iter 1.
+        if directive.action == "switch":
+            break
+
+        # If a retry_locate rehand didn't change state, the worker
+        # couldn't comply — break to avoid spinning on a stuck case.
         if not iter_entry["geojson_changed"] and directive.action != "approve":
             if verbose:
                 print(f"  critic rehand: geojson unchanged after rehand, "
@@ -727,7 +906,14 @@ def run_critic_loop(
             break
 
     critic_final_geojson = _snapshot_geojson(state)
-    n_rej = sum(1 for it in iterations if it["action"] != "approve")
+    # A genuine rejection is any iteration where the critic asked us
+    # to change state. The crashed-LLM path synthesises a directive
+    # with action="approve" + llm_error set; we must NOT count those
+    # as approvals, otherwise a run where 100% of critic calls
+    # crashed would report n_rejections=0 (= 100% agreement), which
+    # is the opposite of reality.
+    n_rej = sum(1 for it in iterations
+                 if it["action"] != "approve" or it.get("llm_error"))
 
     return {
         "worker_first_geojson": worker_first_geojson,

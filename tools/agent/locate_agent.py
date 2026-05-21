@@ -106,7 +106,8 @@ PROTOCOL (every case):
 
 3. **LETTERHEAD CHECK postcodes:** for each postcode in pdf_info.postcodes,
    if it's NOT in site_address, treat as POSSIBLE letterhead. Run la_check
-   to verify it's inside admin_region; if it's >5 km from admin_region, drop.
+   to verify it's inside admin_region; if it falls outside admin_region,
+   drop unless no other signal is available.
 
 4. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal
    types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to
@@ -118,8 +119,9 @@ PROTOCOL (every case):
    - Single ambiguous (road name, common place) → σ=800-1500m, 'med'
    - LA-only fallback → σ from tool, 'low'
 
-6. **VALIDATE with la_check.** Final pick must be inside admin_region polygon
-   OR within 5 km of its boundary. Set la_check_passed accordingly.
+6. **VALIDATE with la_check.** Final pick should be inside the admin_region
+   polygon. Set la_check_passed accordingly (False is OK when admin_region
+   is unknown or every candidate falls outside).
 
 7. **Emit the LocatePick to terminate.** Once you have your pick, output
    the LocatePick directly as your final response — do NOT make further
@@ -187,8 +189,15 @@ def grid_ref(gr: str) -> dict:
         {"success": bool, "lat": float, "lon": float} or error.
     """
     try:
-        from tools.geo.grid_ref import os_grid_ref_to_latlon
-        pt = os_grid_ref_to_latlon(gr)
+        from tools.geo.grid_ref import (
+            os_grid_ref_to_latlon, parse_easting_northing,
+        )
+        # Try the pure-numeric easting/northing format first — the
+        # docstring promises support for it (e.g. "485700 148600") and
+        # the reader can emit raw E/N strings extracted from "528942 E
+        # 184544 N" patterns. ``os_grid_ref_to_latlon`` requires the
+        # two-letter prefix so it returns None on those.
+        pt = parse_easting_northing(gr) or os_grid_ref_to_latlon(gr)
         if not pt:
             return {"success": False,
                     "error": f"Could not parse grid_ref '{gr}'"}
@@ -221,12 +230,20 @@ def place(query: str, la: Optional[str] = None, limit: int = 5) -> dict:
         hits = hits[:limit]
         out = []
         for h in hits:
+            # Use explicit-None fallbacks for lat/lon — the `or` chain
+            # treats coordinate 0 as falsy, so lon=0.0 (Greenwich
+            # meridian, which crosses real UK places: Royal Observatory,
+            # parts of Greenwich/Bexley/Lewisham) would silently fall
+            # through to the always-None LATITUDE/LONGITUDE alias and
+            # return lon=None to the LLM.
+            lat_v = h.get("lat") if "lat" in h else h.get("LATITUDE")
+            lon_v = h.get("lon") if "lon" in h else h.get("LONGITUDE")
             out.append({
                 "name": h.get("name") or h.get("NAME1"),
                 "type": (h.get("local_type") or h.get("LOCAL_TYPE")
                           or h.get("TYPE") or h.get("type")),
-                "lat": h.get("lat") or h.get("LATITUDE"),
-                "lon": h.get("lon") or h.get("LONGITUDE"),
+                "lat": lat_v,
+                "lon": lon_v,
                 "admin_district": (h.get("admin_district")
                                     or h.get("DISTRICT_BOROUGH")),
                 "county": (h.get("county") or h.get("COUNTY_UNITARY")
@@ -409,10 +426,27 @@ def la_check(lat: float, lon: float, la: str) -> dict:
                     "error": f"No polygon for LA '{la}'"}
         p = Point(lon, lat)
         inside = poly.contains(p)
-        if inside: d_km = 0.0
+        if inside:
+            d_km = 0.0
         else:
-            d_deg = p.distance(poly.boundary)
-            d_km = d_deg * 111.0
+            # Find the nearest point on the LA boundary, then haversine
+            # to get true ground distance in km. The previous code used
+            # `d_deg * 111` which treats lon-degrees as 111 km — that
+            # over-states E-W distances by ~60% at UK lats (real
+            # 1°-lon ≈ 68 km at 52°N) and the la_check tool's "is this
+            # anchor near the LA" verdict was warped by it. Haversine
+            # handles the cos(lat) factor correctly regardless of
+            # bearing.
+            import math
+            from shapely.ops import nearest_points
+            _, q = nearest_points(p, poly.boundary)
+            lat1, lon1 = math.radians(lat), math.radians(lon)
+            lat2, lon2 = math.radians(q.y), math.radians(q.x)
+            dlat = lat2 - lat1
+            dlon = lon2 - lon1
+            a = (math.sin(dlat / 2) ** 2
+                 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2)
+            d_km = 6371.0 * 2 * math.asin(min(1.0, math.sqrt(a)))
         centroid = poly.centroid
         return {"success": True, "lat": lat, "lon": lon, "la": la,
                 "inside_la": inside,
@@ -443,7 +477,15 @@ def _emergency_la_centroid_pick(pdf_info: dict, reason: str) -> LocatePick:
     if poly is not None:
         c = poly.centroid
         minx, miny, maxx, maxy = poly.bounds
-        radius_m = int(max(maxx - minx, maxy - miny) * 111_000 / 2)
+        # Convert degree extent to a metres-radius. 1°lat ≈ 111 km but
+        # 1°lon ≈ 111·cos(lat) km — at UK lats that's ~68 km, so using
+        # 111 unconditionally over-states E-W extent by ~60% and
+        # inflates the search σ. Use lat-aware conversion per axis.
+        import math
+        cos_lat = math.cos(math.radians(c.y))
+        dx_m = (maxx - minx) * 111_000.0 * cos_lat  # lon extent
+        dy_m = (maxy - miny) * 111_000.0            # lat extent
+        radius_m = int(max(dx_m, dy_m) / 2)
         sigma = max(2000, min(radius_m, 50_000))
         return LocatePick(
             top_lat=float(c.y), top_lon=float(c.x),

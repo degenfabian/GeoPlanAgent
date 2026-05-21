@@ -77,8 +77,6 @@ type.
 
 | Constant | Home | Value | Note |
 |---|---|---|---|
-| `GATE_RATIO_6DOF` | `tools/matching/_core.py` | 1.3 | 6-DOF affine fallback inlier-improvement threshold |
-| `SCALE_6DOF_MIN/MAX` | `tools/matching/_core.py` | 0.3 / 3.0 | 6-DOF affine scale-sanity band |
 | `WINDOW_STRIDE_TARGET` | `tools/matching/_core.py` | 100 | Sliding-window stride target (px) |
 | `OUTSIDE_LA_PENALTY` | `tools/scoring.py` | 0.3 | Smart-commit penalty for picks outside the LA polygon |
 | `REFINE_BUDGET_PER_CASE` | `tools/agent/tools/refine.py` | 3 | Cap on `reader_refine` calls per case |
@@ -91,7 +89,7 @@ type.
   (`tools/agent/critic_agent.py`) can run after the worker submits, gated
   by `enable_critic=True` (default False). When enabled, it sees the
   visual panels for ALL stored match candidates plus per-candidate
-  `n_inliers / road_name_agreement / scale_consistency`, makes a
+  `n_inliers / scale_consistency`, makes a
   pairwise judgement, and can direct the worker to switch candidate or
   re-locate (max 2 rejections). Default-off path is bit-identical to a
   no-critic pipeline; the worker is opaque to the critic during initial

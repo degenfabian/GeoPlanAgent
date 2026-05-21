@@ -348,15 +348,16 @@ def _match_single_page(state: AgentState, page: int, name: str,
     from tools.matching import sliding_window_position, mask_to_geojson_affine
     from tools.metrics.reward import compute_match_reward
 
+    road_names = (state.pdf_info or {}).get("road_names") or []
+
     def _run_minima(sigma_used):
         return sliding_window_position(
             matcher=state.minima_matcher, map_img=map_img,
             sam3_mask=mask, centers=[(name, lat, lon, sigma_used)],
             scale_ratio=scale_ratio, dpi=state.dpi,
             rotations=None,
-            road_names=state.pdf_info.get("road_names") or [],
+            road_names=road_names,
             grayscale=False, return_candidates=False,
-            directional_modifier=state.pdf_info.get("directional_modifier"),
         )
 
     def _evaluate(res):
@@ -466,11 +467,42 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
     # Smart-commit: prefer the candidate with the most total inliers
     # across groups, weighted by inside-LA filter on the requested page's
     # match. Skips when the worker has tried <2 candidates.
-    if len(state.match_attempts) >= 2:
+    #
+    # The critic can override this gate by setting
+    # ``state.bypass_smart_commit_one_shot = True`` before re-invoking
+    # the worker. We READ the flag here but do NOT consume it yet — the
+    # consume happens at the end of the function, only after a
+    # successful commit. Otherwise a retry_locate rehand where the
+    # first commit_match raises ModelRetry (e.g. strict gate trips on
+    # n_groups_committed==0) would burn the override, and a SUBSEQUENT
+    # commit_match in the same rehand would run the gate against the
+    # critic-rejected candidates and could redirect back to one of
+    # them. The outer rehand wrapper in critic_agent always resets the
+    # flag at the end as a backstop. The flag is NOT exposed as a
+    # ``commit_match`` parameter — the worker has no way to set it
+    # from its tool schema; only critic-side code can flip it.
+    bypass = bool(getattr(state, "bypass_smart_commit_one_shot", False))
+    if not bypass and len(state.match_attempts) >= 2:
         from tools.matching import candidate_passes_la_filter
-        from tools.scoring import commit_attempt_score
+        from tools.scoring import (
+            commit_attempt_score,
+            quadrant_coverage_from_inlier_points,
+        )
         admin_region = (state.pdf_info or {}).get("admin_region") if state.pdf_info else None
 
+        # Cross-candidate smart-commit scoring combines four signals,
+        # each already computed for every stored candidate elsewhere in
+        # the pipeline:
+        #   * raw inlier count (RANSAC strength)
+        #   * inside-admin_region check (catches wrong-LA picks)
+        #   * quadrant coverage   (inliers spread across map quadrants;
+        #     resolves ties between candidates with similar inlier counts)
+        #   * scale_consistency   (1 / max(s,1/s)^2; demotes candidates
+        #     whose recovered affine had to stretch the map to align —
+        #     a sign the matcher was clever in a wrong window)
+        # The signals were previously computed per-window inside
+        # sliding_window_position but discarded at the cross-candidate
+        # ranking step; this combined score lifts them up.
         def _attempt_score(c):
             # Use total inliers across all groups for multi-group candidates.
             try:
@@ -490,7 +522,49 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
                     )
                 except Exception:
                     inside_la = True
-            return commit_attempt_score(n, inside_la)
+            base = commit_attempt_score(n, inside_la)
+
+            # Quadrant factor: best (max) per_group quadrant coverage,
+            # normalised to [0, 1]. For multi-area docs this is generous;
+            # for single-area it just reads the one value.
+            best_q = 0
+            for g in c.get("per_group") or []:
+                mi = g.get("match_info") or {}
+                q = mi.get("_quadrant_cov")
+                if q is None:
+                    pts = mi.get("_inlier_pts_map")
+                    shape = mi.get("_rot_map_shape")
+                    if pts and shape and len(shape) >= 2:
+                        # _rot_map_shape is (H, W) numpy convention.
+                        h, w = int(shape[0]), int(shape[1])
+                        try:
+                            q = quadrant_coverage_from_inlier_points(
+                                pts, w, h)
+                        except Exception:
+                            q = None
+                if q is not None and int(q) > best_q:
+                    best_q = int(q)
+            if best_q == 0:
+                best_q = 4  # neutral when no signal
+            base *= (best_q / 4.0)
+
+            # Scale-consistency factor: worst (min) per_group score —
+            # for multi-area docs one badly-scaled group sinks the
+            # candidate (conservative); for single-area it just reads
+            # the one value.
+            worst_sc = None
+            for g in c.get("per_group") or []:
+                rwd = g.get("reward") or {}
+                axes = rwd.get("axes") or {}
+                sc = axes.get("scale_consistency") or {}
+                s = sc.get("score") if isinstance(sc, dict) else None
+                if isinstance(s, (int, float)):
+                    if worst_sc is None or s < worst_sc:
+                        worst_sc = float(s)
+            if worst_sc is None:
+                worst_sc = 1.0  # neutral when no signal
+            base *= worst_sc
+            return base
 
         best_id = None
         best_score = _attempt_score(cand)
@@ -546,8 +620,19 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
         "requested_group": cand.get("requested_group"),
         "requested_page": cand.get("requested_page"),
         "n_groups_committed": n_committed,
+        # Total inliers SUMMED across all groups in this candidate.
+        # The worker's output_validator reads this for multi-group
+        # docs — primary-group inliers alone underreports a strong
+        # union from 3 groups.
+        "total_inliers": int(cand.get("total_inliers") or 0),
     }
     state.position_calls += 1
+    # Now that the commit has succeeded, consume the one-shot bypass.
+    # Moving the consume here (rather than at function entry) means a
+    # ModelRetry-causing call doesn't burn the override — the next
+    # commit_match in the same rehand still benefits from the bypass.
+    if bypass:
+        state.bypass_smart_commit_one_shot = False
 
     n_polys = 0
     if isinstance(geojson, dict):

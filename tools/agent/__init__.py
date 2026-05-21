@@ -3,9 +3,9 @@
 The pipeline is three LLM agents:
 
   Phase 1 — Reader. One-shot pydantic-ai call (output_type=PDFInfo) over
-            the raw PDF + per-page text from fitz/OCR. Each map_page is
-            tagged with category (match/discard), area_group, and
-            boundary clarity/zoom. Pre-rendered for every match page.
+            the raw PDF. Each map_page is tagged with category
+            (match/discard), area_group, and boundary clarity/zoom.
+            Pre-rendered for every match page.
 
   Phase 2 — Worker. PydanticAI loop with tools registered against
             tools.agent.worker_agent._agent. The canonical loop is:
@@ -283,9 +283,6 @@ def run_agent(
         }
     elif critic_result is not None:
         agent_stats["critic"] = {"error": critic_result.get("error")}
-
-    agent_rejected = (state.accept_reason or "").upper().lstrip().startswith("REJECTED")
-    _rt.apply_quality_gate(state, agent_rejected, verbose)
 
     return _rt.build_run_agent_return(
         state, agent_stats, message_log,

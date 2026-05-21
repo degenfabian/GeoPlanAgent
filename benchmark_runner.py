@@ -172,6 +172,12 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
         else:
             prev_results_dir = Path(prev_results_dir)
 
+        # A previous run can have metrics.json with no `iou` key (the
+        # run crashed mid-case and only `error` was written). Default
+        # such cases to -1.0 so the sort_key buckets them as "hard"
+        # (i.e. retry FIRST), not as good cases (i.e. retry LAST). The
+        # bare-except fallback uses the same sentinel for the same
+        # reason.
         prev_ious = {}
         if prev_results_dir.exists():
             for case_dir in prev_results_dir.iterdir():
@@ -179,9 +185,9 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                 if mf.exists():
                     try:
                         m = json.loads(mf.read_text())
-                        prev_ious[case_dir.name] = m.get("iou", 1.0)
+                        prev_ious[case_dir.name] = m.get("iou", -1.0)
                     except Exception:
-                        prev_ious[case_dir.name] = 1.0
+                        prev_ious[case_dir.name] = -1.0
 
         def _sort_key(row):
             folder = str(row["Unique ID (Folder_Name)"])
@@ -195,10 +201,10 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
         ).sort_values("_sort_key").drop(columns=["_sort_key"])
 
         n_hard = sum(1 for f in dataset["Unique ID (Folder_Name)"]
-                     if prev_ious.get(str(f), 1.0) < 0.5)
+                     if prev_ious.get(str(f), -1.0) < 0.5)
         n_unseen = sum(1 for f in dataset["Unique ID (Folder_Name)"]
                        if str(f) not in prev_ious)
-        print(f"Hard-first ordering: {n_hard} hard cases (IoU<0.5), "
+        print(f"Hard-first ordering: {n_hard} hard cases (IoU<0.5 or crashed), "
               f"{n_unseen} unseen, {len(dataset) - n_hard - n_unseen} good")
 
     print(f"Running: {len(dataset)} cases\n")
@@ -340,7 +346,15 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                 print(f"  IoU={iou:.3f}  inliers={mi.get('n_inliers', 0)}  "
                       f"t={dt:.1f}s  reason={result.get('agent_reason', '')[:60]}")
 
-            # Save results — cache everything for offline analysis
+            # Save results — cache everything for offline analysis.
+            # CRITICAL invariant: append to ``all_results`` immediately
+            # after writing metrics.json, BEFORE any side-effect writes
+            # (cv2.imwrite, np.save, save_visualizations, ...). Otherwise
+            # a failure in one of those calls causes the outer except
+            # block to record the case as a crash in this run's summary,
+            # while a subsequent cached re-run loads metrics.json and
+            # counts the case as a polygon — same on-disk data,
+            # different headline numbers.
             case_dir.mkdir(parents=True, exist_ok=True)
             if geojson:
                 (case_dir / "predicted.geojson").write_text(
@@ -365,47 +379,68 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
             (case_dir / "metrics.json").write_text(
                 json.dumps(metrics_payload, indent=2, default=str))
 
-            # Persist the worker's first-commit polygon for inspection.
-            if worker_first_gj is not None:
-                (case_dir / "predicted_worker_first.geojson").write_text(
-                    json.dumps(worker_first_gj, indent=2))
+            # Record the result NOW — before any optional side-effect
+            # writes that could raise and otherwise tag this case as a
+            # crash. The on-disk metrics.json is the source of truth.
+            # Mirror metrics.json's full payload (minus sl_no) so the
+            # fresh-run per_case entry has the SAME schema as the
+            # cache-hit path's entry — otherwise summary.json["per_case"]
+            # is sparse for fresh runs and complete for cached runs,
+            # which breaks downstream analyses that read e.g.
+            # ``worker_first_iou`` from per_case.
+            all_results.append({
+                "folder": folder_name, "sl_no": sl_no,
+                **{k: v for k, v in metrics_payload.items() if k != "sl_no"},
+            })
 
-            # Full message log (every tool call, return, and reasoning text)
+            # Optional side-effect writes. Each is wrapped in its own
+            # try/except so one failed write (e.g. an unwritable mask
+            # because cv2 hit a corrupted page, or a viz timeout) does
+            # NOT discard the IoU we already recorded above.
+            def _safe(label, fn):
+                try:
+                    fn()
+                except Exception as _e:
+                    print(f"  warn: {label} failed: {str(_e)[:120]}")
+
+            if worker_first_gj is not None:
+                _safe("write predicted_worker_first.geojson", lambda:
+                    (case_dir / "predicted_worker_first.geojson").write_text(
+                        json.dumps(worker_first_gj, indent=2)))
+
             msg_log = result.get("message_log", [])
             if msg_log:
-                (case_dir / "message_log.json").write_text(
-                    json.dumps(msg_log, indent=2, default=str)
-                )
+                _safe("write message_log.json", lambda:
+                    (case_dir / "message_log.json").write_text(
+                        json.dumps(msg_log, indent=2, default=str)))
 
-            # Reader phase extraction (what the LLM read from the PDF)
             pdf_info = result.get("agent_stats", {}).get("pdf_info")
             if pdf_info:
-                (case_dir / "pdf_info.json").write_text(
-                    json.dumps(pdf_info, indent=2, default=str)
-                )
+                _safe("write pdf_info.json", lambda:
+                    (case_dir / "pdf_info.json").write_text(
+                        json.dumps(pdf_info, indent=2, default=str)))
 
-            # Boundary mask (binary, for re-projection experiments)
             mask = result.get("mask")
             if mask is not None:
-                cv2.imwrite(str(case_dir / "boundary_mask.png"), mask)
+                _safe("write boundary_mask.png", lambda:
+                    cv2.imwrite(str(case_dir / "boundary_mask.png"), mask))
 
-            # Affine transform (for re-projection without re-running MINIMA)
             affine_H = result.get("affine_H")
             if affine_H is not None:
-                np.save(str(case_dir / "affine_H.npy"), affine_H)
+                _safe("write affine_H.npy", lambda:
+                    np.save(str(case_dir / "affine_H.npy"), affine_H))
 
-            # Tile info metadata (zoom, tx/ty_min for coordinate conversion)
             tile_meta = result.get("tile_info_meta", {})
             if tile_meta:
-                (case_dir / "tile_info.json").write_text(
-                    json.dumps(tile_meta, indent=2, default=str)
-                )
+                _safe("write tile_info.json", lambda:
+                    (case_dir / "tile_info.json").write_text(
+                        json.dumps(tile_meta, indent=2, default=str)))
 
-            # Final selected boundary overlay
             selected_overlay = result.get("selected_overlay")
             if selected_overlay is not None:
-                cv2.imwrite(str(case_dir / "selected_boundary.png"),
-                            selected_overlay)
+                _safe("write selected_boundary.png", lambda:
+                    cv2.imwrite(str(case_dir / "selected_boundary.png"),
+                                  selected_overlay))
 
             # Visualization (with timeout). The agent cleans up map_img
             # before returning, so only comparison viz runs here.
@@ -418,14 +453,11 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                 )
             except TimeoutError:
                 print("  Viz timed out")
+            except Exception as _e:
+                print(f"  warn: viz failed: {str(_e)[:120]}")
             finally:
                 signal.alarm(0)
                 signal.signal(signal.SIGALRM, old_handler)
-
-            all_results.append({
-                "folder": folder_name, "sl_no": sl_no,
-                "processing_time": dt, **metrics,
-            })
 
         except Exception as e:
             traceback.print_exc()

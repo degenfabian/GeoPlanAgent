@@ -211,6 +211,22 @@ def _fold_for_case(case_name: str, n_folds: int = 5) -> int:
     return int(h, 16) % n_folds
 
 
+def _resolve_fold(case_name: str, fold_assignment: dict, available_folds) -> int:
+    """Resolve the k-fold index for ``case_name``. Used by both
+    ``_model_for_case`` and ``predict_rotation_with_confidence`` —
+    the previous open-coded duplicates disagreed on fold-0 handling
+    (one used ``is None`` checks, the other an ``or`` chain that
+    treats fold 0 as falsy)."""
+    fold = fold_assignment.get(case_name)
+    if fold is None:
+        fold = fold_assignment.get(_normalise_case_name(case_name))
+    if fold is None:
+        fold = _fold_for_case(case_name)
+    if fold not in available_folds:
+        fold = min(available_folds)
+    return int(fold)
+
+
 def _model_for_case(case_name: Optional[str]) -> tuple[torch.nn.Module, dict]:
     """Pick the right model for `case_name`. Routing order:
        1. k-fold state (preferred when available + case_name given)
@@ -221,18 +237,9 @@ def _model_for_case(case_name: Optional[str]) -> tuple[torch.nn.Module, dict]:
     if case_name is not None:
         kf = _load_kfold_state()
         if kf is not None:
-            fa = kf["fold_assignment"]
-            fold = fa.get(case_name)
-            if fold is None:
-                fold = fa.get(_normalise_case_name(case_name))
-            if fold is None:
-                fold = _fold_for_case(case_name)
-            avail = kf["available_folds"]
-            if fold not in avail:
-                # Fall back to the lowest available fold — same fallback
-                # SAM3's set_fold_for_case uses.
-                fold = min(avail)
-            return kf["models"][int(fold)], kf
+            fold = _resolve_fold(case_name, kf["fold_assignment"],
+                                  kf["available_folds"])
+            return kf["models"][fold], kf
     # Legacy path
     st = _load_state()
     return st["models"][None], st
@@ -287,11 +294,8 @@ def predict_rotation_with_confidence(
     transform = state["transform"]
     fold = None
     if state["kind"] == "kfold" and case_name is not None:
-        fa = state["fold_assignment"]
-        fold = fa.get(case_name) or fa.get(_normalise_case_name(case_name)) \
-            or _fold_for_case(case_name)
-        if fold not in state["available_folds"]:
-            fold = min(state["available_folds"])
+        fold = _resolve_fold(case_name, state["fold_assignment"],
+                              state["available_folds"])
 
     base = _preprocess(map_bgr, transform).unsqueeze(0).to(device)  # (1, 3, H, W)
 

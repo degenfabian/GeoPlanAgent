@@ -23,10 +23,18 @@ them for decisions.
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
+
+# A reader-provided scale is signaled by a real "1:N" / "1/N" pattern in
+# the extracted text — not by the absence of a few stop-words. The old
+# substring check "not in reader_scale_text.lower()" mis-classified valid
+# scales like "1:2500 (note: ...)" or "1:2500 cannot be guaranteed" as
+# "no reader scale" because "not" appears as a substring.
+_SCALE_PATTERN_RE = re.compile(r"\b1\s*[:/]\s*\d")
 
 
 # ── Axis primitives ─────────────────────────────────────────────────────────
@@ -55,23 +63,18 @@ class RewardResult:
 # ── Axis implementations ────────────────────────────────────────────────────
 
 def axis_inlier_strength(n_inliers: int, score: float = 0.0) -> AxisResult:
-    """Inlier-count quality, bucketed.
+    """Inlier-count quality as a smooth monotonic ramp.
 
     n_inliers is from RANSAC after MINIMA matching. Higher = more
-    correspondences support the chosen affine. Score is the sum of
-    matcher confidences over inliers (already in match_info).
+    correspondences support the chosen affine. We use a parameter-free
+    saturation function ``s = n / (n + 100)`` — a smooth ramp from 0 to
+    1 with half-max at 100 inliers (the empirically validated decision
+    threshold) and no buckets. Replaces the previous 25/100/300/800
+    cutoff scheme which had no principled basis for the bucket edges.
     """
     n = int(n_inliers or 0)
-    if n < 25:
-        s, v = 0.10, "very weak (<25 inliers — unreliable affine)"
-    elif n < 100:
-        s, v = 0.40, "borderline (25-100 inliers — needs verification)"
-    elif n < 300:
-        s, v = 0.75, "decent (100-300 inliers)"
-    elif n < 800:
-        s, v = 0.90, "strong (300-800 inliers)"
-    else:
-        s, v = 1.00, "very strong (800+ inliers)"
+    s = n / (n + 100.0) if n > 0 else 0.0
+    v = f"inlier_strength={s:.2f} (n_inliers={n})"
     return AxisResult(score=s, verdict=v,
                        evidence={"n_inliers": n, "ransac_score": float(score)})
 
@@ -86,11 +89,15 @@ def axis_scale_consistency(
     the assumed scale was wrong AND/OR MINIMA found a coincidental match
     at a different scale.
 
-    When the reader did NOT provide a scale, positioning.py iterates
-    through a coarse list of common scales [1:1250, 1:2500, 1:5000,
-    1:10000, ...] and picks the best. avg_scale up to ~2.0 in that case
-    just means the actual scale lies between two grid points — it's NOT
-    a mismatch signal. We weaken the penalty accordingly.
+    Score is the squared symmetric reciprocal
+    ``1 / max(avg_scale, 1/avg_scale) ** 2`` — parameter-light (a single
+    exponent ``p=2`` controls the slope, defensible as "quadratic
+    deviation penalty"), returns 1.0 at identity, smoothly decays as the
+    recovered scale departs from 1.0 in either direction, and treats
+    "stretched 31% more" and "compressed by 24%" as equally suspicious.
+    The squaring restores the steep-near-identity slope of the previous
+    bucketed formula (which had 4+ arbitrary cutoffs) without the
+    discontinuous bucket edges.
     """
     s = float(avg_scale or 0.0)
     if s <= 0:
@@ -98,36 +105,17 @@ def axis_scale_consistency(
                            evidence={"avg_scale": s})
 
     reader_provided = bool(
-        reader_scale_text and "not" not in str(reader_scale_text).lower())
-    deviation = abs(s - 1.0)
+        reader_scale_text
+        and _SCALE_PATTERN_RE.search(str(reader_scale_text)))
+    deformation = max(s, 1.0 / s)  # ≥ 1.0; equals 1.0 at identity
+    score = 1.0 / (deformation ** 2)
 
     if reader_provided:
-        # Reader gave a scale — deviation IS the signal.
-        score = max(0.0, 1.0 - deviation / 0.5)
-        if deviation < 0.10:
-            v = (f"consistent (avg_scale={s:.2f}, "
-                 f"reader said {reader_scale_text!r})")
-        elif deviation < 0.25:
-            v = (f"mild deviation (avg_scale={s:.2f}, off by "
-                 f"{deviation*100:.0f}% from reader's {reader_scale_text!r})")
-        elif deviation < 0.50:
-            v = (f"significant deviation (avg_scale={s:.2f} — reader said "
-                 f"{reader_scale_text!r}, recovered scale disagrees)")
-        else:
-            v = (f"scale mismatch (avg_scale={s:.2f} — reader's "
-                 f"{reader_scale_text!r} appears wrong, OR this is the wrong area)")
+        v = (f"scale_consistency={score:.2f} (avg_scale={s:.3f}, "
+             f"reader said {reader_scale_text!r})")
     else:
-        # No reader scale; common-scales fallback was used. Tolerate up to 2x.
-        score = max(0.0, 1.0 - max(0.0, deviation - 1.0) / 1.0)
-        if deviation < 1.0:
-            v = (f"plausible (avg_scale={s:.2f}, no reader scale — "
-                 f"common-scale fallback in expected range)")
-        elif deviation < 2.0:
-            v = (f"large recovered scale (avg_scale={s:.2f}, no reader scale "
-                 f"— could be between common-scale grid points)")
-        else:
-            v = (f"extreme recovered scale (avg_scale={s:.2f}) — "
-                 f"likely a wrong match")
+        v = (f"scale_consistency={score:.2f} (avg_scale={s:.3f}, "
+             f"no reader scale)")
 
     return AxisResult(score=score, verdict=v,
                        evidence={"avg_scale": s,
@@ -158,7 +146,6 @@ def axis_road_name_agreement(
             score=0.5, verdict="no road names extracted by reader (no signal)",
             evidence={"reader_roads": [], "matched_roads": []})
 
-    # Reuse positioning.py's helpers — they're already there.
     try:
         from tools.matching import _query_gpkg_road_names, _fuzzy_road_match
     except Exception:
@@ -169,9 +156,6 @@ def axis_road_name_agreement(
 
     nearby = _query_gpkg_road_names(chosen_lat, chosen_lon, radius_m=radius_m)
     if not nearby:
-        # Sparse OS cartography (rural villages often render no road labels
-        # at z15). Geometry might be perfectly correct — we just can't test
-        # road agreement here. Neutral, NOT a wrong-area signal.
         return AxisResult(
             score=0.5,
             verdict=("no OS roads within radius — sparse cartography "
@@ -215,7 +199,7 @@ def compute_match_reward(
     Args:
         match_info: dict from sliding_window_position with at least
             n_inliers, score, aspect, avg_scale, center_latlon, zoom.
-        pdf_info: PDFInfo dict from the reader (scale, road_names, etc.).
+        pdf_info: PDFInfo dict from the reader (scale, road_names, …).
     """
     n_inliers = int(match_info.get("n_inliers", 0) or 0)
     ransac_score = float(match_info.get("score", 0.0) or 0.0)
@@ -228,7 +212,6 @@ def compute_match_reward(
             avg_scale, reader_scale_text=pdf_info.get("scale")),
     }
 
-    # Road-name axis needs a chosen lat/lon.
     if center_ll and len(center_ll) == 2:
         axes["road_name_agreement"] = axis_road_name_agreement(
             float(center_ll[0]), float(center_ll[1]),

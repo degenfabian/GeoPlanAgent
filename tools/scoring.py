@@ -13,8 +13,7 @@ live LLM-locate sub-agent picks one center directly).
 
 from __future__ import annotations
 
-import math
-from typing import Optional, Tuple
+from typing import Tuple
 
 
 # ─── Stage 1: sliding-window match score ───────────────────────────────────
@@ -22,29 +21,18 @@ from typing import Optional, Tuple
 def composite_window_score(
     vanilla_metric: float,
     quadrant_coverage: int,
-    km_to_anchor: float,
 ) -> float:
-    """v19 composite score for a single MINIMA window.
+    """Composite score for a single MINIMA window.
 
-    Combines three orthogonal factors:
+    Combines two factors:
 
     * ``vanilla_metric``     — RANSAC inlier-confidence sum (the v13 metric).
     * ``quadrant_coverage``  — 0..4 count of map quadrants with ≥1 inlier
       (spatial spread; punishes one-corner matches).
-    * ``km_to_anchor``       — softmax-like penalty on the predicted centre's
-      distance from the geocoded anchor.
-
-    On the 211-case overnight sweep at PB=1, MC=5: +5 cases at IoU ≥ 0.8
-    vs the v13 raw-metric ranking (125 → 130). Honest "untuned" version —
-    a variant with extra softening factors (0.5+0.5·Q/4, km/2) gains +2
-    more cases on this dataset but at risk of overfit.
     """
     if quadrant_coverage < 0:
         quadrant_coverage = 4  # neutral when missing
-    if km_to_anchor < 0:
-        km_to_anchor = 0.0
-    return float(vanilla_metric) * (quadrant_coverage / 4.0) \
-        * (1.0 / (1.0 + km_to_anchor))
+    return float(vanilla_metric) * (quadrant_coverage / 4.0)
 
 
 def quadrant_coverage_from_inlier_points(
@@ -74,26 +62,6 @@ def quadrant_coverage_from_inlier_points(
         return 4
 
 
-def haversine_km(
-    anchor_latlon: Optional[Tuple[float, float]],
-    pred_latlon: Optional[Tuple[float, float]],
-) -> float:
-    """Great-circle distance in km, used as the km_to_anchor factor."""
-    if not anchor_latlon or not pred_latlon:
-        return 0.0
-    try:
-        lat1, lon1 = anchor_latlon
-        lat2, lon2 = pred_latlon
-        R = 6371.0
-        phi1, phi2 = math.radians(lat1), math.radians(lat2)
-        dphi = math.radians(lat2 - lat1)
-        dlam = math.radians(lon2 - lon1)
-        a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2) ** 2
-        return 2 * R * math.asin(math.sqrt(a))
-    except Exception:
-        return 0.0
-
-
 # ─── Stage 2: smart-commit gate score ──────────────────────────────────────
 
 # Penalty multiplier when a candidate centre falls outside the named LA
@@ -115,4 +83,5 @@ def commit_attempt_score(n_inliers: int, inside_la: bool) -> float:
     """
     if n_inliers < 0:
         return -1.0
-    return float(n_inliers) * (1.0 if inside_la else OUTSIDE_LA_PENALTY)
+    penalty = 1.0 if inside_la else OUTSIDE_LA_PENALTY
+    return float(n_inliers) * penalty

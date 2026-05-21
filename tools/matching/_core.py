@@ -8,8 +8,8 @@ Production pipeline for georeferencing planning maps:
      - Fetch OS OpenData tile grid
      - Slide map across tile canvas
      - Run MINIMA feature matching at each window
-     - Estimate affine via RANSAC
-     - Score: n_inliers x aspect (GT-free metric)
+     - Estimate affine via RANSAC (4-DOF similarity)
+     - Score: n_inliers, re-ranked by quadrant coverage
   4. Best scoring match -> build affine -> convert mask to GeoJSON
 """
 
@@ -43,14 +43,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # can be re-derived from them. See per-constant comments for the specific
 # regression / case the value was calibrated against.
 
-# 6-DOF affine acceptance gates (estimate_affine). Loosened 2026-05-08
-# (case 12:00126 / A4KTRa1): the prior 2.0 ratio + tight [0.7, 1.3] scale
-# window rejected v13's 494-inlier 6-DOF wins, forcing fallback to 4-DOF
-# fits with ~18 inliers. det>0 + shear<0.15 + aspect>=0.85 still guard
-# against mirror-flip and shear-rotation drift on hand-drawn plans.
-GATE_RATIO_6DOF = 1.3
-SCALE_6DOF_MIN = 0.3
-SCALE_6DOF_MAX = 3.0
+# (2026-05-21) 6-DOF affine fallback removed entirely after a 25-case
+# ablation showed it nets to -0.01 mean IoU and rescues only ~2 cases
+# (Ar4.15, Art4D04) at the cost of code complexity. The 4-DOF
+# similarity transform is the geometrically correct prior for
+# map-to-map matching anyway — shear is an artifact of photography or
+# photocopying, not of real-world geometry.
 
 # Sliding-window stride target: ~100 windows per (center, zoom, rotation).
 # Same coverage density independent of rotation; conditional rotation is
@@ -122,80 +120,38 @@ def run_minima(matcher, map_img, tile_img, grayscale=False):
 
 
 def estimate_affine(mkpts0, mkpts1, mconf=None, reproj_thresh=10.0):
-    """Estimate similarity transform (rotation + uniform scale + translation)
-    via RANSAC.
+    """Estimate a 4-DOF similarity transform (rotation + uniform scale +
+    translation) via RANSAC.
 
-    Uses estimateAffinePartial2D (4-DOF: rotation, uniform scale, tx, ty)
-    by default. When that yields too few inliers AND a 6-DOF full affine
-    fits the data clearly better (≥2× more inliers) AND the resulting
-    transform is geometrically sane (aspect ≥0.85, scale ∈[0.7, 1.3]),
-    we accept the 6-DOF fit. This rescues hand-drawn / photocopied /
-    photographed planning maps with mild shear that 4-DOF rejects.
+    (2026-05-21) The 6-DOF fallback was removed after a 25-case
+    ablation showed it nets to -0.01 mean IoU. The 4-DOF similarity is
+    the geometrically correct prior for map-to-map matching; shear
+    only shows up as an artifact of photography/photocopying and the
+    rescue cases (~2 cases on the 208-case eval) don't justify the
+    code complexity.
 
-    Validated 2026-05-06 (Phase ZU): 2 stuck cases unlocked from IoU=0
-    to 0.41-0.55, 0 regressions across 20 low-IoU cases tested.
+    (2026-05-21) The Delaunay-consistency refit used to live here too,
+    deleted in the same pass — it provided zero mean benefit and was
+    actively hurting the highest-inlier stress case.
 
     Returns (H, n_inliers, score, inlier_mask). H is shape (2, 3).
     """
     if len(mkpts0) < 4:
         return None, 0, 0.0, None
 
-    # Single-seed vanilla RANSAC at the configured threshold.
     try:
         cv2.setRNGSeed(42)
     except Exception:
         pass
-    H4, mask4 = cv2.estimateAffinePartial2D(
+    H, inlier_mask = cv2.estimateAffinePartial2D(
         mkpts0, mkpts1, method=cv2.RANSAC,
         ransacReprojThreshold=reproj_thresh,
     )
-    n4 = int(mask4.sum()) if (H4 is not None and mask4 is not None) else 0
-
-    # 6-DOF full affine fallback (only commits if clearly better and sane)
-    H6, mask6 = cv2.estimateAffine2D(
-        mkpts0, mkpts1, method=cv2.RANSAC,
-        ransacReprojThreshold=reproj_thresh,
-    )
-    n6 = int(mask6.sum()) if (H6 is not None and mask6 is not None) else 0
-
-    H, n_inliers, inlier_mask = H4, n4, mask4
-    if H6 is not None and n6 >= GATE_RATIO_6DOF * max(1, n4):
-        # Geometric sanity check on 6-DOF fit. Reject reflections (det<0)
-        # and large shear (off-diagonal asymmetry > 0.15) — prevents
-        # mirror-flip and shear-rotation drift on hand-drawn plans.
-        a, b = H6[0, 0], H6[0, 1]; c, d = H6[1, 0], H6[1, 1]
-        sx = math.sqrt(a*a + c*c); sy = math.sqrt(b*b + d*d)
-        if sx > 0 and sy > 0:
-            aspect_6 = min(sx, sy) / max(sx, sy)
-            avg_scale_6 = (sx + sy) / 2
-            det = a * d - b * c
-            shear_asymmetry = abs(b - (-c))
-            if (aspect_6 >= 0.85 and SCALE_6DOF_MIN <= avg_scale_6 <= SCALE_6DOF_MAX
-                    and det > 0 and shear_asymmetry < 0.15):
-                H, n_inliers, inlier_mask = H6, n6, mask6
-
-    if H is None:
+    if H is None or inlier_mask is None:
         return None, 0, 0.0, None
+    n_inliers = int(inlier_mask.sum())
 
-    # Delaunay-consistency filter (Vaienti et al. 2025): drops inliers that fall
-    # in geometrically inconsistent triangles. Additive — if the filter
-    # eliminates too many points or fails, keep the original fit.
-    if inlier_mask is not None:
-        try:
-            from tools.delaunay_filter import delaunay_consistency_filter
-            H_f, kept_mask, n_kept = delaunay_consistency_filter(
-                mkpts0, mkpts1, inlier_mask,
-                area_ratio_band=(0.5, 2.0), reproj_thresh=reproj_thresh,
-                min_inliers_after=max(8, n_inliers // 3),
-            )
-            if H_f is not None and kept_mask is not None and n_kept >= max(8, n_inliers // 3):
-                H = H_f
-                n_inliers = n_kept
-                inlier_mask = kept_mask.astype(np.uint8).reshape(-1, 1)
-        except Exception:
-            pass
-
-    if mconf is not None and inlier_mask is not None and n_inliers > 0:
+    if mconf is not None and n_inliers > 0:
         inlier_flags = inlier_mask.ravel().astype(bool)
         score = float(np.sum(mconf[inlier_flags]))
     else:
@@ -293,14 +249,17 @@ from tools.extraction.mask_ops import (
 )
 
 
-def mask_to_geojson_affine(mask, affine_H, tile_info, simplify_px=3.0):
+def mask_to_geojson_affine(mask, affine_H, tile_info, simplify_px=0.0):
     """Convert SAM3 mask to GeoJSON Feature using affine transform.
 
     Args:
         mask: Binary boundary mask (uint8).
         affine_H: 2x3 affine matrix mapping mask pixels to tile canvas pixels.
         tile_info: Dict with zoom, tx_min, ty_min from fetch_os_opendata_grid.
-        simplify_px: Douglas-Peucker epsilon in pixels (3.0 = clean segments).
+        simplify_px: Douglas-Peucker epsilon in pixels. Default 0.0 means
+            no simplification — the polygon retains every contour vertex.
+            The previous 3.0 default was an arbitrary "clean segments"
+            smoothing that had no principled basis.
 
     Returns GeoJSON Feature dict, or None if no valid contours.
     """
@@ -332,7 +291,8 @@ def mask_to_geojson_affine(mask, affine_H, tile_info, simplify_px=3.0):
     for contour in contours:
         if cv2.contourArea(contour) < 100:
             continue
-        contour = cv2.approxPolyDP(contour, simplify_px, True)
+        if simplify_px > 0:
+            contour = cv2.approxPolyDP(contour, simplify_px, True)
         coords = []
         for pt in contour:
             px, py = float(pt[0][0]), float(pt[0][1])
@@ -371,18 +331,8 @@ def _build_scale_H(affine_H, wx, wy, sf):
     return scale_H
 
 
-# ── Road-name + directional verification (moved to road_verify.py) ───────────
-
-from tools.matching.road_verify import (
-    _query_gpkg_road_names,
-    _fuzzy_road_match,
-    _verify_candidates_with_road_names,
-    _parse_directional_bearing,
-    _bearing_deg,
-    _angular_diff_deg,
-    _DIRECTION_PATTERNS_ANCHORED,
-    _DIRECTION_ANYWHERE,
-)
+# Road-name verification helper (directional verifier remains ripped).
+from tools.matching.road_verify import _verify_candidates_with_road_names
 
 
 # ── Main entry point ─────────────────────────────────────────────────────────
@@ -401,7 +351,6 @@ def sliding_window_position(
     return_candidates=False,
     pdf_path=None,
     map_pages=None,
-    directional_modifier=None,
 ):
     """Position a map on OS tiles using sliding-window MINIMA matching.
 
@@ -515,25 +464,20 @@ def sliding_window_position(
         # already upright. There is no per-window rotation search at match time.
         rotations = [0]
 
-    # Early termination: once we find an excellent match, skip remaining
-    # centers/zooms to save time. Calibrated against the 211-case sweep:
-    # thr=75 gives 35% anchor-visit reduction with -1 case at IoU≥0.8.
-    EARLY_STOP_METRIC = 75.0
+    # No early termination — the EARLY_STOP_METRIC=75.0 threshold was
+    # a tuning knob calibrated to a single sweep with no principled basis.
+    # Running all (centre, zoom) configurations is slower but removes a
+    # magic-constant cutoff.
 
-    # Sort centers by sigma (tightest first) so the early-stop threshold
-    # fires on the most-confident anchors first.
+    # Sort centers by sigma (tightest first) so the most-confident
+    # anchors are explored first.
     centers = sorted(centers, key=lambda x: x[3] if x[3] is not None else 9e9)
     if centers:
         print(f"  Centers sorted by sigma: {centers[0][0]}(σ={centers[0][3]}) "
               f"→ {centers[-1][0]}(σ={centers[-1][3]})")
 
-    early_stopped = False
     for cname, clat, clon, sigma in centers:
-        if early_stopped:
-            break
         for zoom, cur_mpp in zoom_mpp_configs:
-            if early_stopped:
-                break
             tmpp = _tile_mpp_at(clat, zoom)
 
             resized_map, sf = resize_map_to_match_zoom(map_img, cur_mpp, zoom, clat)
@@ -630,31 +574,18 @@ def sliding_window_position(
                         if affine_H is None or n_inliers < 5:
                             continue
 
-                        # Aspect ratio from affine decomposition
+                        # avg_scale is the geometric mean of the affine's
+                        # column norms. With 4-DOF similarity (the only
+                        # path now) sx == sy and avg_scale equals the
+                        # uniform scale factor. Kept around because the
+                        # scale_consistency reward axis reads it.
                         a, b = affine_H[0, 0], affine_H[0, 1]
                         c_a, d = affine_H[1, 0], affine_H[1, 1]
                         sx = math.sqrt(a * a + c_a * c_a)
                         sy = math.sqrt(b * b + d * d)
-                        aspect = min(sx, sy) / max(sx, sy) if sx > 0 and sy > 0 else 0
                         avg_scale_now = (sx + sy) / 2
 
-                        # Penalize geometrically-inconsistent matches: after
-                        # resize_map_to_match_zoom, map and tile share mpp, so
-                        # the affine's intrinsic scale (sx, sy) should be ~1.0.
-                        # An avg_scale of 1.67 (e.g. case A4KTRa1) means MINIMA
-                        # found 54 spuriously-consistent inliers spanning a
-                        # region 67% bigger than expected — the predicted
-                        # polygon will land in the wrong place at the wrong size.
-                        # We DON'T hard-reject (some cases like A4Ba1 with high
-                        # n_inliers but avg_scale=1.56 actually still get partial
-                        # IoU on the real region). Instead heavily penalize:
-                        # avg_scale=1.0 → 1.0, 1.2 → 0.6, 1.4 → 0.2, 1.6+ → 0.1.
-                        avg_scale_penalty = max(0.1, 1.0 - 2.0 * abs(avg_scale_now - 1.0))
-
-                        # Scoring: n_inliers * aspect, with rotation and scale penalties
-                        rot_penalty = 1.0 if rot_angle == 0 else 1.1
-                        scale_penalty = max(0.5, 1.0 - abs(sf - 1.0) * 0.5)
-                        metric = (n_inliers / rot_penalty) * aspect * scale_penalty * avg_scale_penalty
+                        metric = float(n_inliers)
                         if metric > best_metric:
                             best_metric = metric
 
@@ -690,7 +621,6 @@ def sliding_window_position(
                                     "rotation": rot_angle,
                                     "n_inliers": n_inliers,
                                     "score": round(score, 2),
-                                    "aspect": round(aspect, 4),
                                     "scale_factor": round(sf, 3),
                                     "avg_scale": round(avg_scale, 4),
                                     "window": (wx, wy),
@@ -715,12 +645,6 @@ def sliding_window_position(
                 print(f"    z{zoom}:{cname}: {n_windows}w, "
                       f"best={best_metric:.1f}", flush=True)
 
-            # Early termination: skip remaining centers/zooms if we have
-            # an excellent match (saves significant time on easy cases)
-            if best_metric >= EARLY_STOP_METRIC:
-                print(f"    Early stop: metric {best_metric:.1f} >= {EARLY_STOP_METRIC}")
-                early_stopped = True
-
     # Flatten per-(center, zoom) buckets and take the global top-N.
     # This is the "diversity-capped top-K" — at most PER_BUCKET (2) entries
     # from any one (center, zoom) sweep survive into post-verification.
@@ -739,13 +663,14 @@ def sliding_window_position(
     # Sort candidates best-first by raw metric
     ranked = sorted(top_candidates, key=lambda x: -x[0])
 
-    # Composite rescoring: pick by V × Q/4 × 1/(1+km) instead of raw vanilla.
+    # Composite rescoring: pick by V × Q/4 instead of raw vanilla.
     # See tools.scoring.composite_window_score for the formula and history.
+    # The km_to_anchor factor was dropped 2026-05-21 after the ablation
+    # showed it contributed zero mean Δ across the distance-stress sample.
     if ranked:
         from tools.scoring import (
             composite_window_score,
             quadrant_coverage_from_inlier_points,
-            haversine_km,
         )
         rescored = []
         for metric, seq, cand in ranked:
@@ -754,72 +679,28 @@ def sliding_window_position(
                 mi.get("_inlier_pts_map") or [],
                 mi.get("_rot_map_shape"),
             )
-            km = haversine_km(mi.get("anchor_latlon"), mi.get("center_latlon"))
-            composite_score = composite_window_score(metric, q, km)
+            composite_score = composite_window_score(metric, q)
             cand["_vanilla_metric"] = metric
             cand["_composite_score"] = composite_score
             cand["_quadrant_cov"] = q
-            cand["_km_to_anchor"] = km
             rescored.append((composite_score, seq, cand))
         rescored.sort(key=lambda x: -x[0])
         ranked = rescored
         if ranked:
             top = ranked[0][2]
             print(f"  Composite rerank: top score={ranked[0][0]:.2f} "
-                  f"(V={top.get('_vanilla_metric',0):.2f} Q={top.get('_quadrant_cov',0)} "
-                  f"km={top.get('_km_to_anchor',0):.2f})")
+                  f"(V={top.get('_vanilla_metric',0):.2f} "
+                  f"Q={top.get('_quadrant_cov',0)})")
 
-    # Env-gated directional verifier (R2). When the reader extracted a
-    # `directional_modifier` like "south of village", we expect the
-    # MINIMA-predicted center to lie on that side of the geocoder anchor.
-    # Candidates falling on the wrong side get a metric penalty (×0.5).
-    # No-op when the modifier is missing, unparseable, or the candidate
-    # lacks anchor/predicted coordinates.
-    # Directional verifier: when the reader extracted a directional_modifier
-    # ("south of village", etc.) and a candidate lands on the wrong bearing
-    # from its source anchor, penalize its metric ×0.5.
-    if ranked and directional_modifier:
-        expected_brg = _parse_directional_bearing(directional_modifier)
-        if expected_brg is not None:
-            n_penalized = 0
-            verified = []
-            for metric, seq, cand in ranked:
-                mi = cand.get("match_info") or {}
-                anchor = mi.get("anchor_latlon")
-                pred = mi.get("center_latlon")
-                penalty = 1.0
-                ang_diff = None
-                if (anchor and pred and len(anchor) == 2 and len(pred) == 2):
-                    actual_brg = _bearing_deg(
-                        anchor[0], anchor[1], pred[0], pred[1])
-                    ang_diff = _angular_diff_deg(actual_brg, expected_brg)
-                    # |diff| > 90° means MINIMA placed the site on the
-                    # opposite side from what the reader stated. Demote.
-                    if ang_diff > 90.0:
-                        penalty = 0.5
-                        n_penalized += 1
-                new_metric = metric * penalty
-                cand["_pre_directional_metric"] = metric
-                cand["_directional_penalty"] = penalty
-                cand["_directional_diff_deg"] = (
-                    round(ang_diff, 1) if ang_diff is not None else None)
-                cand["_metric"] = new_metric
-                verified.append((new_metric, seq, cand))
-            verified.sort(key=lambda x: -x[0])
-            ranked = verified
-            if n_penalized > 0:
-                print(f"  Directional verifier ({directional_modifier!r} → "
-                      f"{expected_brg:.0f}°): "
-                      f"penalized {n_penalized}/{len(verified)} candidates")
-
-    # Road name verification: if road names available, prefer candidates
-    # where nearby OSM roads match the LLM-extracted road names
+    # Road-name verifier: if the reader extracted road names, prefer the
+    # candidate whose nearby OSM road names overlap with them. Only fires
+    # under the triple-gated override (≥60% match AND ≥2× top ratio AND
+    # ≥70% top metric). Catches wrong-LA picks where MINIMA finds a
+    # high-inlier window in the wrong town. Directional verifier remains
+    # ripped — only road-name verification is wired here.
     best_result = None
     if road_names and len(road_names) >= 1:
-        best_result = _verify_candidates_with_road_names(
-            ranked, road_names)
-
-    # Fallback: use best-scoring candidate
+        best_result = _verify_candidates_with_road_names(ranked, road_names)
     if best_result is None:
         _, _, best_result = ranked[0]
 

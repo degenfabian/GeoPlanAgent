@@ -87,6 +87,20 @@ class AgentState:
         # before being forced to commit.
         self.match_at_budget: int = 5
 
+        # Critic-only override. When True, the NEXT ``commit_match`` call
+        # bypasses the smart-commit gate (which would otherwise reroute
+        # the worker to the highest-total_inliers candidate). Set by
+        # ``critic_agent._rehand_to_worker`` on a ``retry_locate``
+        # directive — the worker is about to call commit_match on a
+        # freshly-found candidate, and the gate would otherwise compare
+        # it against the OLD candidates the critic just rejected as
+        # mis-located and reroute back to one of them. The ``switch``
+        # path bypasses the gate structurally (it commits in Python and
+        # never calls ``commit_match``), so this flag is unused there.
+        # NOT exposed as a ``commit_match`` parameter — only critic-
+        # side code can flip it; the worker has no way to set it.
+        self.bypass_smart_commit_one_shot: bool = False
+
 
 # ── Page-of-interest helpers ─────────────────────────────────────────────
 

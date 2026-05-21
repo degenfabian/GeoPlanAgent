@@ -58,7 +58,26 @@ def parse_easting_northing(text: str) -> Optional[Tuple[float, float]]:
     if not m:
         return None
     east, north = int(m.group(1)), int(m.group(2))
-    lon, lat = _OSGB_TO_WGS84.transform(east, north)
+    # Plausible-BNG range check FIRST — the lat/lon bbox guard alone
+    # does not catch all bogus matches: e.g. BNG(1234, 5678) lands at
+    # (49.82°N, 7.55°W), which IS inside the inflated UK bbox (the
+    # bbox spans down to 49°N to include Channel Isles / Scilly
+    # approaches). Real GB BNG eastings are ~60_000-700_000 and
+    # northings ~5_000-1_280_000 — a 4-digit easting like 1234 is
+    # off the GB mainland entirely. Without this guard, a regex hit
+    # on stray text like "ref P1234 E 5678 N" anchors a high-
+    # confidence locate candidate in the Celtic Sea.
+    if not (60_000 <= east <= 700_000 and 5_000 <= north <= 1_280_000):
+        return None
+    try:
+        lon, lat = _OSGB_TO_WGS84.transform(east, north)
+    except Exception:
+        return None
+    # Defence-in-depth: reject anything outside the UK lat/lon bbox
+    # too. Matches the guard in os_grid_ref_to_latlon and
+    # os_grid_ref_to_latlon_coarse.
+    if not (49.0 <= lat <= 61.0 and -8.5 <= lon <= 2.0):
+        return None
     return float(lat), float(lon)
 
 
@@ -166,17 +185,18 @@ def os_grid_ref_to_latlon(grid_ref: str) -> Optional[Tuple[float, float]]:
     if total_digits < 4:
         return None
 
-    # Handle asymmetric digit counts by padding shorter to match longer
-    max_len = max(len(east_digits), len(north_digits))
-    east_digits = east_digits.ljust(max_len, "0")
-    north_digits = north_digits.ljust(max_len, "0")
-
-    # Pad to 5 digits (1m resolution). The first padding char is "5" so the
-    # resolved metres land at the CENTROID of the precision-defined tile,
-    # not its SW corner. Without this, a 4-digit ref like "TR 2048" (1km
-    # tile) resolves to the SW corner — up to 1414m from a GT elsewhere
-    # in the tile. Centroid bounds worst-case error at the half-diagonal
-    # (~707m) and gives ~250-400m for typical GT-in-tile.
+    # Pad each axis to 5 digits (1m resolution) INDEPENDENTLY. The first
+    # padding char is "5" so the resolved metres land at the CENTROID of
+    # the precision-defined tile, not its SW corner. Without this, a
+    # 4-digit ref like "TR 2048" (1km tile) resolves to the SW corner —
+    # up to 1414m from a GT elsewhere in the tile. Centroid bounds
+    # worst-case error at the half-diagonal (~707m) and gives ~250-400m
+    # for typical GT-in-tile.
+    #
+    # We must NOT first equalise digit-counts across axes (e.g. ljust
+    # north="48" to "480" before centroid-pad): that misinterprets a
+    # 2-digit north as a 3-digit north, shifting the centroid by ~450m
+    # on the shorter axis for asymmetric refs like "TR 206 48".
     def _centroid_pad(d: str) -> str:
         if len(d) >= 5:
             return d

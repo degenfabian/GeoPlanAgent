@@ -7,15 +7,10 @@ The pipeline is:
    (``tools.os_opendata_tiles.fetch_os_opendata_grid``).
 3. :func:`sliding_window_position` slides a planning-map-sized window across
    the rendered canvas, calling :func:`run_minima` at each position and
-   keeping the best per-bucket window via the composite reranker.
+   keeping the best window via the quadrant-coverage reranker.
 4. :func:`estimate_affine` recovers the 2×3 page→tile affine.
 5. :func:`mask_to_geojson_affine` projects the SAM mask through that affine
    to a WGS84 GeoJSON polygon.
-
-The implementation currently lives in :mod:`tools.matching._core` and will
-be carved into themed sub-modules (search, affine_io, road_verify, sigma_la)
-over subsequent passes. Re-exports here keep ``from tools.matching import …``
-stable across that work.
 """
 
 from tools.matching._core import (
@@ -29,14 +24,17 @@ from tools.matching._core import (
     resize_map_to_match_zoom,
     affine_center_to_latlon, mask_to_geojson_affine,
     _build_scale_H,
-    # Road-name verification (re-exported from tools.matching.road_verify)
-    _verify_candidates_with_road_names,
-    _query_gpkg_road_names,
-    _fuzzy_road_match,
     # Sliding-window search (the master entry point)
     sliding_window_position,
     # Thin-mask helper used by mask_to_geojson_affine
     _expand_thin_mask,
+)
+
+# Road-name verification (re-exported from tools.matching.road_verify)
+from tools.matching.road_verify import (
+    _verify_candidates_with_road_names,
+    _query_gpkg_road_names,
+    _fuzzy_road_match,
 )
 
 __all__ = [

@@ -120,21 +120,22 @@
 
 \section{Introduction}
 \label{section:intro}
-
-The review of planning proposals is a manual and time-consuming process, and the delays it introduces have cascading consequences for a city's economic resilience, social equity, and long-term adaptability \cite{weinstein2024UKgov}. A central difficulty is that human planners must verify compliance with a large and intricate body of regulation, and doing so comprehensively for every proposal is rarely feasible under realistic time constraints. Recent progress in multimodal artificial intelligence offers a promising route to alleviating this bottleneck, since planning documents combine regulatory text, cartographic imagery, and structured metadata within a single artefact.
+The review of planning records remains manual and time-consuming. Recent UK Government work on Extract identifies legacy paper maps, PDFs, and scanned documents as barriers to modern planning systems, while a GOV.UK report examines delays and barriers across the planning-application process \citep{weinstein2024UKgov,govuk2025extract,colebourn2025extract,mhclg2026planningdelays}. A central difficulty is that human planners must verify the planning records against planning-practice guidance and local regulatory records, making comprehensive review difficult under realistic time constraints \citep{mhclg2025nppf,mhclg2024planningpracticeguidance}. Recent progress in multimodal artificial intelligence offers a promising route to alleviating this bottleneck, since planning documents combine regulatory text, cartographic imagery, and structured metadata within a single artefact.
  
-In this paper, we examine the ability of contemporary multimodal AI systems, including Gemini, GPT, and Claude, to process UK planning proposals. To support this investigation, we develop \textbf{GeoPlanAgent}, a multimodal benchmark designed to evaluate two essential stages of automated planning-document processing: the digitisation of planning proposals and their automated validation against planning regulations. Completing these stages requires a model to summarise the central intent of a proposal, to invoke external tools that augment its multimodal understanding, and to retrieve the regulations or statutory acts relevant to a given case.
+In this paper, we examine the ability of contemporary multimodal AI systems, including Gemini, GPT, and Claude, to process UK planning records \citep{geminiteam2023gemini,openai2023gpt4v,anthropic2026claudevision}. To support this investigation, we develop \textbf{GeoPlanAgent}, a multimodal benchmark designed to evaluate two essential stages of automated planning-document processing: the digitisation of planning records and their automated validation against planning regulations. Completing these stages requires a model to summarise the central intent of a proposal, to invoke external tools that augment its multimodal understanding, and to retrieve the regulations or statutory acts relevant to a given case.
  
-The benchmark comprises data inputs paired with ground-truth annotations, an output data schema, and a set of scoring functions, and it may be extended with additional tools as required. The tooling used in this work includes OpenCV for image manipulation, LoFTR for keypoint detection, and the Google Maps API for geocoding and satellite imagery retrieval. 
+The benchmark comprises data inputs paired with ground-truth annotations, an output data schema, and a set of scoring functions, and it may be extended with additional tools as required. The tooling used in this work includes OpenCV for image manipulation, LoFTR for detector-free local feature matching, and Google Maps APIs for geocoding and satellite imagery retrieval \citep{bradski2000opencv,sun2021loftr,google2026geocoding,google2025mapsstatic}. 
  
 The contributions of this paper are twofold. First, we construct a dataset for evaluating the ability of AI agents to automatically digitise planning records. Second, we benchmark existing multimodal models on this dataset and address their observed weaknesses with a purpose-built agentic system.
 
 % \textbf{GeoPlanAgent:} We developed GeoMapAgent, an agentic framework compatible with leading multimodal AI systems, to improve the processing and planning of proposals.
 % GeoMapAgent enables multimodal AI to adaptively select tools, make complex decisions, and reflect on its mistakes to deliver reliable reviews of planning proposals end-to-end with no human intervention.
 
-Our contributions are as follows: 1) We built a dataset to test AI agents to automatically digitise planning records. 2) We benchmark against existing models and address their weaknesses with our agentic model.
-
 \section{Ralated Work}
+
+\paragraph{Tool-augmented agents and UK planning records.}
+Tool-augmented methods such as retrieval-augmented generation, ReAct, and Toolformer are relevant because planning-record digitisation often requires OCR, retrieval, geocoding, segmentation, and map alignment rather than single-pass prediction \citep{lewis2020rag,yao2023react,schick2023toolformer}. In the UK context, the government's Extract initiative and related Google descriptions show growing institutional interest in converting planning PDFs and maps into structured data \citep{govuk2025extract,colebourn2025extract,google2025extract}. However, these initiatives are not presented as reusable academic benchmarks with released proposal-document inputs, ground-truth GeoJSON boundaries, output schemas, and scoring functions.
+
 \paragraph{Multimodal document understanding.}
 GeoPlanAgent draws on work in visual document understanding, where models must read document images, exploit layout, and answer grounded questions. DocVQA established document-image question answering, while LayoutLMv3 and Donut represent layout-aware and OCR-free approaches to document understanding \citep{mathew2021docvqa,huang2022layoutlmv3,kim2022donut}. These works are relevant because Article~4 Direction records contain text, layout, signatures, and embedded maps. However, they target generic document tasks rather than linking statutory language to an externally verifiable geographic boundary.
 
@@ -147,135 +148,64 @@ Our task is also related to map digitisation and georeferencing. MapReader provi
 \paragraph{Planning, legal, and regulatory AI.}
 Planning and legal AI benchmarks evaluate regulatory knowledge and legal reasoning. UrbanPlanBench tests LLMs on urban-planning concepts and regulations, while LexGLUE and LegalBench provide broader legal-language benchmarks \citep{zheng2025urbanplanbench,chalkidis2022lexglue,guha2023legalbench}. These benchmarks are useful comparators for regulatory validation, but they do not require models to connect a planning document's legal language to a map boundary, location, and external geospatial record.
 
-\paragraph{Tool-augmented agents and UK planning records.}
-Tool-augmented methods such as retrieval-augmented generation, ReAct, and Toolformer are relevant because planning-record digitisation often requires OCR, retrieval, geocoding, segmentation, and map alignment rather than single-pass prediction \citep{lewis2020rag,yao2023react,schick2023toolformer}. In the UK context, the government's Extract initiative and related Google descriptions show growing institutional interest in converting planning PDFs and maps into structured data \citep{govuk2025extract,colebourn2025extract,google2025extract}. However, these initiatives are not presented as reusable academic benchmarks with released proposal-document inputs, ground-truth GeoJSON boundaries, output schemas, and scoring functions.
-
 In summary, prior work covers important parts of the problem, but no existing benchmark jointly evaluates planning-record digitisation and regulatory validation over multimodal planning documents, external geospatial tools, and ground-truth boundary geometries.
 
 
 
 
 \section{Dataset}
-Our dataset comprises 210 Article~4 Direction documents paired with corresponding GeoJSON boundary data, representing the most comprehensive publicly available collection of UK planning control documents assembled to date. Spanning 52 years (1973-2025) and covering multiple local planning authorities across England, the dataset provides multimodal regulatory text, cartographic information, and extensive metadata annotations for machine learning, policy analysis, and geographic information system (GIS) applications.
-
-
-
+The dataset contains 210 Article~4 Direction records paired with corresponding GeoJSON boundary files. Each record links a planning-control PDF to a machine-readable boundary and a structured metadata record. The collection is designed to evaluate systems that must read regulatory text, interpret an associated map, and recover a GIS-ready representation of the relevant planning boundary. The records span multiple local planning authorities in England and cover the period recorded in the metadata, from 2 July 1973 to 27 November 2024. Because the collection is drawn from UK planning material, it should be treated as a UK-specific benchmark rather than as a representative sample of planning documents across jurisdictions.
 
 \subsection{Data Collection Methodology}
-We collected the dataset from the UK planning authority \cite{} \placeholder. We applied a six-stage processing workflow with quality control checkpoints at each transition as follows:
-\begin{enumerate}[leftmargin=*]
-    \item \textbf{Document Acquisition:} Systematic collection from authorised source.
-    \item \textbf{Quality Assessment:} Visual inspection, completeness check, authenticity verification.
-    \item \textbf{Boundary Extraction:} Manual boundary map visualisation from GeoJson data.
-    \item \textbf{Metadata Annotation:} Systematic coding of 13 characteristics.
-    \item \textbf{Validation:} Shape matching, cross-reference with official records.
-    \item \textbf{Quality Control:} Peer review, error correction, discrepancy documentation.
-\end{enumerate}
+The documents and associated boundary files were collected from UK planning authority sources \cite{} \placeholder. Processing followed a six-stage workflow: document acquisition, quality assessment, boundary extraction from the available GeoJSON data, metadata annotation, validation, and final quality control. At each stage, records were checked for completeness, PDF-GeoJSON consistency, and discrepancies between the boundary drawn in the source document and the corresponding vector geometry.
 
 
 \subsection{Scope and Coverage}
 \subsubsection{Temporal Coverage}
-The 52-year span covers five legislative eras from early environmental protection to contemporary commercial-to-residential restrictions.
-
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Range:} 2 July 1973 to 27 November 2024
-    \item \textbf{Median year:} Approximately 1998
-    \item \textbf{Distribution:} 1970s (13\%), 1980s (19\%), 1990s (15\%), 2000s (17\%), 2010s (22\%), 2020s (15\%)
-\end{itemize}
-
+The dataset covers five decades of Article~4 Direction material. The recorded date range is 2 July 1973 to 27 November 2024, with a median year of approximately 1998. By decade, the distribution is 13\% from the 1970s, 19\% from the 1980s, 15\% from the 1990s, 17\% from the 2000s, 22\% from the 2010s, and 15\% from the 2020s.
 
 \subsubsection{Geographic Coverage}
-The dataset shows geographic concentration in London, Kent, and Norfolk, reflecting both policy concentration and data availability.
-
-\begin{itemize}[leftmargin=*]
-    \item \textbf{London:} 100 documents (37\%) -- Westminster, Kensington \& Chelsea, Southwark, Camden
-    \item \textbf{Kent:} 40 documents (15\%) -- Dover District focus
-    \item \textbf{Norfolk:} 40 documents (15\%) -- South Norfolk, Broadland
-    \item \textbf{Other:} Leicestershire, Merseyside, Cambridgeshire (33\%)
-    \item \textbf{Total authorities:} 15+ local planning authorities
-\end{itemize}
+The dataset is geographically concentrated in London, Kent, and Norfolk, reflecting both policy concentration and data availability. London accounts for 37\% of the records, with examples from Westminster, Kensington \& Chelsea, Southwark, and Camden. Kent and Norfolk each account for 15\%, including records from Dover District, South Norfolk, and Broadland. The remaining 33\% covers other areas, including Leicestershire, Merseyside, and Cambridgeshire. In total, the metadata records more than 15 local planning authorities.
 
 \subsubsection{Document Types}
-The collection encompasses the full range of Article~4 Direction types from standard local authority directions to rare Secretary of State interventions.
-
-\begin{itemize}[leftmargin=*]
-    \item Article~4(1) Directions: 160 documents (59\%)
-    \item Article~4(2) Conservation Area controls: 90 documents (33\%)
-    \item Secretary of State modifications: 5 documents (2\%)
-    \item Other (EIA Screening, hybrid): 15 documents (6\%)
-\end{itemize}
+The collection includes several forms of Article~4 Direction material. Article~4(1) Directions form the largest group at 59\%, followed by Article~4(2) Conservation Area controls at 33\%. Secretary of State modifications account for 2\%, while other records, including EIA screening and hybrid cases, account for the remaining 6\%.
 
 \subsection{Dataset Composition}
-Each entry consists of three integrated components linking regulatory text to geographic representation.
-
-\begin{enumerate}[leftmargin=*]
-    \item \textbf{PDF Document:} Original regulatory text, schedules, boundary maps, authority signatures.
-    \item \textbf{GeoJSON File:} Machine-readable vector boundary (Polygon or MultiPolygon).
-    \item \textbf{Metadata Record:} 13 structured fields covering identification, geography, quality, and validation, created by us.
-\end{enumerate}
-
+Each dataset entry consists of three linked components. The PDF document contains the original regulatory text, schedules, boundary maps, and authority signatures. The GeoJSON file provides the corresponding machine-readable boundary as a Polygon or MultiPolygon. The metadata record contains 13 structured fields covering identification, geography, document quality, shape complexity, and validation status.
 
 \subsection{Metadata Schema}
-The schema balances comprehensive documentation with practical usability across 13 core fields.
-
-\subsubsection{Unique Identification Fields}
-Unique identification enables document tracking, pdf-GeoJSON linking, and referential integrity. Table \ref{Unique_Identification}
+The metadata schema is designed to support document tracking, spatial analysis, quality filtering, and benchmark stratification. The unique identification fields maintain referential integrity between the PDF, the associated GeoJSON file, and the metadata table; these fields are summarised in Table~\ref{Unique_Identification}.
 
 \subsubsection{Geographic Metadata}
-Geographic fields capture administrative context and physical location for spatial analysis.
+Geographic fields record the administrative context and physical location of each planning boundary. They include the county or administrative area, an exact location description, and a boundary-shape category.
 
-% \begin{table*}[h]
-% \centering
-% \caption{Geographic Metadata Fields}
-% \begin{tabular}{@{}lll@{}}
-% \toprule
-% \textbf{Field} & \textbf{Description} & \textbf{Example} \\ \midrule
-% County & Administrative area & Kent, London (Westminster) \\
-% Exact Location & Site description & ``Land at Golgotha, Shepherdswell'' \\
-% Boundary Shape & Geometry type & Irregular polygon, Rectangular \\ \bottomrule
-% \end{tabular}
-% \end{table*}
+The boundary-shape categories are used to describe the geometry that the extraction system must recover. The categories are Rectangular, Quadrilateral, Triangular, Irregular polygon, L-shaped, Elongated strip, Multiple separate polygons, and Multiple complex irregular polygons.
 
-\textbf{Boundary Shape Classification:} Classification supports automated extraction research and indicates planning complexity.
+\subsubsection{Document Quality and Shape Complexity}
+Document quality and shape-complexity fields support fitness-for-purpose filtering and stratified evaluation. Document quality is coded as \textit{good} when the source has clear text, legible maps, minimal degradation, and sufficient resolution; it is coded as \textit{bad} when the source contains poor scans, faded text, unclear boundaries, or low resolution. Shape complexity is coded as \textit{easy} for simple shapes with fewer than eight vertices, \textit{medium} for shapes with 8--20 vertices, and \textit{hard} for shapes with more than 20 vertices or multiple separate polygons.
 
-Categories are Rectangular, Quadrilateral, Triangular, Irregular polygon, L-shaped, Elongated strip, Multiple separate polygons, and Multiple complex irregular polygons.
-
-\subsubsection{Document Quality Metadata}
-
-Quality metadata enables fitness-for-purpose filtering for different research applications.
-
-% \begin{table*}
-% \centering
-% \caption{Data Characteristics}
-% \begin{tabular}{@{}llll@{}}
-% \toprule
-% \textbf{Field} & \textbf{Values} & \textbf{Distribution} \\ \midrule
-% Document Date & DD Month YYYY & 1973--2025 \\
-% Document Colour & White, Yellow, other & 68\%, 30\%, 2\% \\
-% Document Quality & good, bad & 75\%, 25\% \\
-% Shape Complexity & easy, medium, hard & 50\%, 30\%, 20\% \\ \bottomrule
-% \end{tabular}
-% \end{table*}
-
-\textbf{Quality criteria:} ``good'' = clear text, legible maps, minimal degradation, high resolution; ``bad'' = poor scans, faded text, unclear boundaries, low resolution.
-
-\subsubsection{Shape Complexity Metadata}
-
-Shape complexity quantifies the difficulty of boundary extraction for algorithm benchmarking.
-
-\textbf{Classification:} easy = simple shapes that is $<$8 vertices; medium = 8 to 20 vertices; and hard = 20+ vertices and multiple separate polygons.
+\begin{table}
+\centering
+\caption{Data Characteristics}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Field} & \textbf{Values} & \textbf{Distribution} \\ \midrule
+Doc. Date & DD Month YYYY & 1973--2025 \\
+Doc. Colour & White, Yellow, other & 68\%, 30\%, 2\% \\
+Doc. Quality & good, bad & 75\%, 25\% \\
+Shape \\
+Complexity & easy, medium, hard & 50\%, 30\%, 20\% \\ \bottomrule
+\end{tabular}
+\end{table}
 
 \subsubsection{Validation Metadata}
-Each entry carries a \texttt{Shape Matches} flag with values
-\{\textit{Yes}, \textit{No}, \textit{Yes--almost}, \textit{N/A}\} that records
-whether the human-traced boundary in the ground-truth GeoJSON is a perfect
-match for the boundary drawn in the PDF; 81\% of cases are perfect matches.
+Each entry includes a \texttt{Shape Matches} flag with values \{\textit{Yes}, \textit{No}, \textit{Yes--almost}, \textit{N/A}\}. This field records whether the human-traced ground-truth GeoJSON boundary matches the boundary drawn in the source PDF. In the current metadata, 81\% of cases are recorded as perfect matches.
 
 \section{Benchmark and Evaluation}
 \subsection{Planning documents summarisation with Multi-modal Models}
 \label{subsection:summarize}
 
-Our task is to benchmark the ability of multimodal models to summarise planning proposals in PDFs.
+Our task is to benchmark the ability of multimodal models to summarise planning records in PDFs.
 The goal of summarisation is to extract the key idea of planning and to recognise its geometric boundary.
 The challenges are in 3-fold:
 \begin{itemize}
@@ -287,214 +217,119 @@ The challenges are in 3-fold:
 We benchmark the leading multimodal models, including Gemini-2.5, GPT-4, and Claude-3, on this task. We use the metrics introduced in Section~\ref{section:intro} for evaluation. We plan to employ efficiency metrics, such as the token expense per planning document, to evaluate the efficiency of multi-modal models.
 
 \section{GeoPlanAgent}
-The extraction of geographic boundaries from planning documents represents a challenging intersection of computer vision, natural language understanding, and geospatial reasoning. Planning documents—such as zoning maps, environmental impact reports, and urban development plans—contain critical geographic information encoded in both visual (maps, diagrams) and textual (coordinates, landmark descriptions) formats. Automating the extraction of this information has significant implications for urban planning, environmental monitoring, and geographic information systems (GIS) applications.
+\label{section:geoplanagent}
 
-Recent advances in multimodal Large Language Models have demonstrated remarkable capabilities in processing both textual and visual information. However, systematic evaluation of these models on specialised geospatial tasks remains limited. GeoMapAgent addresses this gap by providing a standardised benchmark for evaluating LLM performance on geographic boundary extraction.
+GeoPlanAgent decomposes the boundary-extraction task into a pipeline of three LLM agents and an optional fourth (\Cref{fig:pipeline-overview}). The \emph{Reader} is a single-shot multimodal call that turns a planning PDF into a structured \texttt{PDFInfo} record. The \emph{Worker} is a tool-calling loop that registers the planning map against Ordnance Survey basemap tiles by orchestrating four tools (\Cref{tab:worker-tools}); within \texttt{match\_at} a LoRA-fine-tuned SAM~3 produces the boundary mask and the recovered affine projects it to WGS84, so the agent never leaves the loop without a polygon. One of the worker's tools, \texttt{propose\_centers}, delegates to a \emph{Locate sub-agent} that picks a single map centre by calling six offline UK geocoders. An optional independent \emph{Critic} (\Cref{subsection:critic}) reviews the worker's commit against all stored match attempts and may issue a directive to switch candidate or relocate. All four agents share the same multimodal LLM (Gemini~3~Flash by default~\cite{google2025gemini3}) and all four outputs are enforced by pydantic schemas, so the model physically cannot return free text in any phase.
 
-\subsection{Methodology}
-\label{subsection:methodology}
-
-GeoPlanAgent decomposes the boundary-extraction task into a three-agent pipeline orchestrated by multimodal LLMs. The first phase (the \emph{Reader}) is a single-shot pass that converts the raw PDF binary plus per-page OCR text into a structured \texttt{PDFInfo} record summarising every geographic clue present in the document\textemdash postcodes, OS grid references, road and place names, the printed scale, the page on which the canonical site map appears, ranked per-page metadata for multi-area documents, and a handful of administrative-region fields. The second phase (the \emph{Worker}) takes the \texttt{PDFInfo} summary together with the pre-rendered map page and registers it against Ordnance Survey basemap tiles by calling a toolkit of six operations (\Cref{tab:worker-tools}). One of those tools, \texttt{propose\_centers}, delegates to a third agent (the \emph{Locate sub-agent}) which selects one candidate map centre by calling six offline geocoder tools and inspecting the rendered map image. Two further operations (boundary segmentation and re-projection) run automatically inside the worker's positioning tools rather than as separately addressable steps. The LLM is retained for tasks that require multimodal reading: extracting structured clues from the PDF (Reader), choosing which named feature on the map best disambiguates the site (Locate), and orchestrating the registration loop with access to visual feedback panels (Worker). The full pipeline is summarised in \Cref{fig:pipeline-overview}.
-
-
-\subsection{Problem Formulation}
-
-The geographic boundary extraction task is formulated as follows:
-
-\begin{itemize}[itemsep=5pt]
-    \item \textbf{Input}: A planning document PDF $D$ containing maps and/or textual geographic descriptions
-    \item \textbf{Ground Truth}: A GeoJSON Feature $G_{\text{true}}$ representing the planning area boundary
-    \item \textbf{Output}: A predicted GeoJSON Feature $G_{\text{pred}}$ extracted by the LLM
-    \item \textbf{Objective}: Minimize spatial divergence between $G_{\text{pred}}$ and $G_{\text{true}}$ as measured by IoU, Precision, Recall, and F1 metrics
-\end{itemize}
-
-\subsection{Prompt Engineering Strategy}
-
-Each of the two agent phases is governed by a dedicated system prompt with structured output enforcement. The Reader prompt is field-by-field, telling the model how to populate each \texttt{PDFInfo} entry: which page to nominate as the canonical site map (the page that most clearly shows one drawn boundary at a useful scale, ranked first), how to disambiguate site addresses from council letterhead addresses, how to collapse house-number ranges into compact form, how to extract directional modifiers (``north of \dots'') in a normalised form, and crucially which fields to trust the OCR text block for over re-reading the rasterised image. The Worker prompt is workflow-driven: it specifies the canonical positioning loop (\texttt{propose\_centers} $\rightarrow$ \texttt{match\_at} $\rightarrow$ \texttt{commit\_match} $\rightarrow$ (\texttt{verify\_position}) $\rightarrow$ structured \texttt{BoundaryOutcome}), defines the decision rules over the multi-axis reward returned by \texttt{match\_at} (commit immediately on a strong match, try at least one more candidate on borderline scores, reject on overall scores below 0.40 and retry at a different centre; the prompt also explains that a \texttt{road\_name\_agreement} of 0.5 with verdict ``no OS roads within radius'' is a sparse-rural signal rather than a wrong-area signal, so the agent should not penalise it), forbids the agent from inventing coordinates not produced by \texttt{propose\_centers}, and caps the number of \texttt{match\_at} attempts per case at five. Boundary segmentation and re-projection to WGS84 are not separately addressable tools\textemdash they run automatically inside \texttt{match\_at} (mask production) and \texttt{commit\_match} (projection) so the agent cannot leave the loop with a positioned map but no polygon. Both phases use structured outputs enforced via pydantic schemas (\texttt{PDFInfo} for the Reader, \texttt{BoundaryOutcome} for the Worker), which means the model physically cannot return free text. The Worker's output validator additionally re-prompts the model whenever the submitted \texttt{BoundaryOutcome} fails its tool-call preconditions\textemdash for example, every borderline match in the 25--100 inlier band must be visually verified by \texttt{verify\_position} (with notes of at least 20 characters describing the comparison) before it can be accepted, and every district-wide fallback must include a successful \texttt{lookup\_district} call.
-
-\subsection{Spatial Evaluation Metrics}
-
-The framework implements four complementary spatial metrics based on geometric set operations:
-
-\subsubsection{Intersection over Union (IoU)}
-
-IoU measures the overall overlap quality between predicted and ground truth geometries:
-
-\begin{equation}
-\text{IoU} = \frac{\text{Area}(G_{\text{pred}} \cap G_{\text{true}})}{\text{Area}(G_{\text{pred}} \cup G_{\text{true}})}
-\end{equation}
-
-Range: $[0, 1]$, where 1 indicates perfect overlap.
-
-\subsubsection{Precision}
-
-Precision quantifies the proportion of the predicted area that correctly overlaps with the ground truth:
-
-\begin{equation}
-\text{Precision} = \frac{\text{Area}(G_{\text{pred}} \cap G_{\text{true}})}{\text{Area}(G_{\text{pred}})}
-\end{equation}
-
-High precision indicates minimal over-prediction (few false positives).
-
-\subsubsection{Recall}
-
-Recall measures the proportion of the ground truth area successfully captured by the prediction:
-
-\begin{equation}
-\text{Recall} = \frac{\text{Area}(G_{\text{pred}} \cap G_{\text{true}})}{\text{Area}(G_{\text{true}})}
-\end{equation}
-
-High recall indicates minimal under-prediction (few false negatives).
-
-\subsubsection{F1 Score}
-
-The F1 score provides a harmonic mean of Precision and Recall, balancing both metrics:
-
-\begin{equation}
-\text{F1} = \frac{2 \times (\text{Precision} \times \text{Recall})}{\text{Precision} + \text{Recall}}
-\end{equation}
-
-This metric penalises models that optimise for only precision or recall.
-
-\subsection{Pipeline Architecture}
-\label{subsection:alignment-pipeline}
-
-The pipeline is structured as four stages\textemdash reading, locating, matching, and segmenting. Reading and locating are LLM calls (the latter a sub-agent with its own geocoder toolkit); matching and segmenting are deterministic services exposed to the Worker as tools. \Cref{fig:pipeline-overview} provides a schematic overview.
+\paragraph{Problem.}
+Given a planning PDF $D$ and ground-truth GeoJSON $G_{\text{true}}$, the system emits a predicted GeoJSON $G_{\text{pred}}$. We score $G_{\text{pred}}$ against $G_{\text{true}}$ with IoU and a precision/recall/F1 triple over their polygon set-operations (definitions and headline metric in \S\ref{subsection:summarize}); we additionally report centroid positioning error in metres.
 
 \begin{figure*}[t]
   \vskip 0.2in
   \begin{center}
     \includegraphics[width=\textwidth]{figures/pipeline_overview.pdf}
-    \caption{Overview of the GeoPlanAgent pipeline. Stage~1 (Reader) extracts a structured \texttt{PDFInfo} record from the PDF binary and per-page OCR text. Stage~2 (Locate sub-agent) sees the rendered map and the \texttt{PDFInfo} summary, calls six offline geocoder tools (postcode, grid\_ref, place, road, road-intersection, LA containment), and emits a single \texttt{LocatePick} carrying a centre, an uncertainty radius $\sigma$, and a confidence label. Stage~3 (Match) registers the planning-map crop against styled OS Open Zoomstack tiles using MINIMA-LoFTR feature matching followed by RANSAC affine recovery. Stage~4 (Segment) extracts the boundary mask with a LoRA-fine-tuned SAM~3 and projects it through the recovered affine into WGS84, yielding the predicted GeoJSON polygon.}
+    \caption{The GeoPlanAgent pipeline. Stage~1 (Reader) extracts a structured \texttt{PDFInfo} record from the PDF binary and per-page OCR text. Stage~2 (Locate sub-agent, invoked through \texttt{propose\_centers}) sees the rendered map and the \texttt{PDFInfo} summary, calls six offline geocoders (postcode, grid\_ref, place, road, road-intersection, LA containment), and emits one \texttt{LocatePick} carrying a centre, an uncertainty radius $\sigma$, and a confidence label. Stage~3 (\texttt{match\_at}) registers the planning-map crop against styled OS Open Zoomstack tiles using MINIMA-LoFTR feature matching followed by RANSAC affine recovery; SAM~3 with a LoRA adapter produces the boundary mask which is projected through the recovered affine to WGS84 inside \texttt{commit\_match}. An optional Stage~4 critic compares all stored candidates and may direct the worker to switch or re-locate.}
     \label{fig:pipeline-overview}
   \end{center}
   \vskip -0.2in
 \end{figure*}
 
-\paragraph{Stage 1: PDF reading.}
-A single multimodal LLM call (Gemini~3~Flash~\cite{google2025gemini3} by default) is given the raw PDF binary together with per-page text obtained from a born-digital extractor (PyMuPDF) where possible and a two-step OCR cascade (macOS Vision~$\rightarrow$~PaddleOCR) where not, and asked to populate the \texttt{PDFInfo} schema. The primary OCR backend is the macOS Vision framework (Apple Neural Engine accelerated, $\approx0.5$--2\,s per page on Apple Silicon, English with language correction enabled); PaddleOCR serves as a cross-platform fallback for environments without Vision or when Vision returns empty on a particular page. The schema is enforced through structured-output decoding\textemdash the model physically cannot return free text\textemdash and exposes eighteen fields that capture both site-specific signals (postcodes, OS grid references, site address, road and place names, house-number/road pairs, parish names, visible map labels, adjacency hints, directional modifiers, and the most-likely town or city) and document-level metadata (the printed scale, total page count, the ranked list of canonical site-map pages together with one \texttt{MapPageMeta} per candidate page carrying \texttt{category}\,/\,\texttt{area\_group}\,/\,\texttt{boundary\_clarity}\,/\,\texttt{detail\_level}\,/\,\texttt{area\_signature}\,/\,\texttt{caption}, the local-authority \texttt{admin\_region}, the optional \texttt{district\_name}, and the \texttt{is\_district\_wide} flag). The page rotation needed to make a sideways-laid map upright is decided downstream by a dedicated ResNet50 classifier (\Cref{subsection:rotation-classifier}), not by the LLM Reader. The instruction explicitly tells the model to trust the OCR text block over the rasterised image whenever the two disagree on an exact string\textemdash postcodes and grid references in particular benefit from this because OCR returns the verbatim characters whereas vision-only re-reading frequently substitutes visually similar digits. The Reader is the only LLM role in the pipeline that performs work that could not equally well be done by a deterministic procedure; downstream stages neither receive the raw PDF nor invoke the LLM for any decision other than which tool to call next.
+\subsection{Reader}
+\label{subsection:reader}
 
-\paragraph{Stage 2: Locate sub-agent.}
-The Worker's \texttt{propose\_centers} tool delegates to a separate LLM agent (the \emph{Locate sub-agent}) that produces a single \texttt{LocatePick}\textemdash a centre coordinate, an uncertainty radius $\sigma$, a confidence label (\textit{high}/\textit{med}/\textit{low}), and a short evidence string. The sub-agent is given the \texttt{PDFInfo} summary and the rendered planning-map image, and has access to six offline geocoder tools that wrap the same authoritative UK gazetteers as the earlier deterministic cascade: \texttt{postcode} resolves a UK postcode against OS Code-Point Open~\cite{os_code_point_open} (sub-metre BNG, $\sigma\approx100$\,m); \texttt{grid\_ref} parses an OS BNG letter+digit reference; \texttt{place} searches OS Open Names~\cite{os_open_names} for villages, churches, schools, named buildings, and landmarks; \texttt{road} returns the OML road centroid for a named road instance, optionally filtered to a local-authority bounding box; \texttt{intersect} computes the geometric junction of 2--3 named roads from the OML road geometry; and \texttt{la\_check} tests whether a candidate point falls inside the named local-authority polygon from OS BoundaryLine~\cite{os_boundary_line}. The sub-agent's system prompt fixes a protocol: view the map image to find labels that the reader missed, scan \texttt{PDFInfo} in order of signal specificity (site postcode $>$ grid reference $>$ house-number+road $>$ landmark $>$ road name $>$ parish $>$ LA centroid), letterhead-check non-site postcodes via \texttt{la\_check} (postcodes more than 5\,km from the named LA are dropped as council-letterhead noise), build a pool of 2--4 candidate hits, cluster them, and emit the tightest consensus. $\sigma$ is set by the picked source: $\approx 200$\,m for multi-source agreement, $300$--$500$\,m for a clean single signal such as a SITE postcode or grid reference, $800$--$1500$\,m for an ambiguous single signal such as a common road name, and the LA polygon's own radius when no better signal exists. The sub-agent is bounded to at most eight geocoder calls per case and an emergency LA-centroid pick is emitted if its loop fails entirely, so the Worker is guaranteed exactly one candidate to feed into Stage~3. After a weak match (low inliers or visual mismatch) the Worker may re-invoke \texttt{propose\_centers} with a free-text \texttt{match\_context} describing what went wrong; the sub-agent receives this together with its own prior conversation history and is prompted to pick from a different signal type on the second pass.
+The reader is a single Gemini~3~Flash call (temperature~0) on the PDF binary together with per-page text from a PyMuPDF\,/\,macOS\,Vision\,/\,PaddleOCR cascade (\Cref{appendix:text-extraction}). The prompt tells the model to trust the OCR text block over re-reading the rasterised image for any exact-string field (postcodes, grid references, addresses, scale) because OCR returns verbatim characters whereas vision-only re-reading often substitutes visually similar digits. The output is a \texttt{PDFInfo} object with fields covering site-specific signals (postcodes, OS grid references, site address, road and place names, house-number/road pairs, parish names, visible map labels, adjacency hints, directional modifiers, most-likely town) and document-level metadata (printed scale, page count, one \texttt{MapPageMeta} per map-like page with \texttt{category}\,/\,\texttt{area\_group}\,/\,\texttt{boundary\_clarity}\,/\,\texttt{detail\_level}\,/\,\texttt{area\_signature}, the local-authority \texttt{admin\_region}, and an \texttt{is\_district\_wide} flag). \texttt{map\_pages} is the reader's ranked list of \texttt{category=match} pages; the page-rotation needed to make a sideways-laid map upright is decided downstream by a ResNet50 classifier (\Cref{subsection:rotation-classifier}), not by the LLM.
 
-\paragraph{Stage 3: Sliding-window feature matching.}
-The Worker calls \texttt{match\_at} with the \texttt{LocatePick} centre and $\sigma$, optionally retrying at a different centre by re-invoking \texttt{propose\_centers} with feedback (subject to a budget of five \texttt{match\_at} calls per case). The tool fetches an offline rendering of OS Open Zoomstack~\cite{os_open_zoomstack} tiles centred on the candidate (\Cref{subsection:tile-rendering}), resizes the planning-map crop so that its metres-per-pixel matches the chosen tile zoom (with $\pm15$\% perturbations to absorb DPI/scale errors), and slides the crop across the tile canvas. At each window MINIMA~\cite{ren2025minima}\textemdash a transformer-based dense-feature matcher built on the LoFTR~\cite{sun2021loftr} architecture and trained for cross-modal map-to-tile matching\textemdash returns sets of corresponding keypoints whose 2$\times$3 affine is then estimated via single-seed RANSAC~\cite{fischler1981ransac}. We default to a 4-DOF similarity transform and accept a 6-DOF full affine fallback only when it yields at least 30\% more inliers and passes a geometric-sanity check (positive determinant, $|b - (-c)| < 0.15$ on the off-diagonals to reject reflections and large shear, aspect ratio above 0.85, average scale within $[0.3, 3.0]$). A Delaunay-consistency filter~\cite{pierdicca2025delaunay}\textemdash which builds a Delaunay triangulation on the inlier keypoints and discards triangles whose source/target area ratio falls outside $[0.5, 2.0]$\textemdash is then re-applied unconditionally and only kept when at least one third of the original inliers survive. Each window receives a vanilla metric $V = n_{\text{inliers}} \cdot \text{aspect} \cdot s_{\text{scale}}$, where $s_{\text{scale}} = \max(0.1,\,1 - 2|\bar{s} - 1|)$ penalises affines whose recovered scale $\bar{s}$ deviates from the assumed value. We retain the best window per (centre, zoom) bucket and re-rank the survivors by the composite window score in \Cref{eq:composite-window}. The best-scoring window is returned to the agent together with a multi-axis reward (inlier strength, scale consistency, road-name agreement against the OS Zoomstack road layers, keypoint spatial spread) and a side-by-side visual panel of the planning map against the matched OS-tile region. The agent then decides whether to commit, try another centre, or proceed to segmentation. An additional automatic fallback: when \texttt{match\_at} returns fewer than 25 inliers or an overall score below 0.4 on the first pass, the tool transparently re-runs at $2\sigma$ on the same centre and keeps whichever attempt scores higher\textemdash this targets the rural-village failure mode where the geocoded centre is several hundred metres from the true site.
+\subsection{Locate sub-agent}
+\label{subsection:locate-sub}
 
-\paragraph{Stage 4: Boundary segmentation and projection.}
-Stages~3 and~4 are interleaved: SAM~3~\cite{meta2025sam3} segmentation runs lazily inside the worker's \texttt{match\_at} tool on first need per page, so that by the time a candidate is committed the planning boundary mask has already been produced. The segmentation model is SAM~3 with a LoRA~\cite{hu2022lora} adapter fine-tuned on hand-annotated UK planning maps using the recipe in \Cref{subsection:sam3-finetune}; the text prompt is fixed to the literal phrase ``planning boundary'' that the adapter was trained on, and the mask is cached per page across subsequent \texttt{match\_at} attempts so the segmentation cost is paid at most once per page per case. When \texttt{commit\_match} accepts a candidate it post-processes the cached mask through a three-step cleanup chain (\Cref{subsection:mask-postproc})\textemdash dropping noise components below 5\% of the largest connected component, expanding thin outlines into filled regions when the mask covers less than 10\% of its own bounding box, and morphologically closing remaining interior holes\textemdash and projects it through the committed affine into tile-canvas pixels and onward to WGS84 lat/lon via the inverse Web-Mercator transform. The resulting GeoJSON Feature is the prediction $G_{\text{pred}}$ scored by the metrics of \Cref{subsection:summarize}. For documents covering an entire administrative area (\texttt{is\_district\_wide=True} in the reader's output) the worker bypasses positioning and calls \texttt{lookup\_district}, which returns the district's offline-stored polygon from OS BoundaryLine~\cite{os_boundary_line} directly.
+The worker's \texttt{propose\_centers} tool delegates to a separate Gemini~3~Flash agent that sees the rendered planning map and the \texttt{PDFInfo} and returns one \texttt{LocatePick}: a centre coordinate, uncertainty radius $\sigma$, confidence label, and short evidence string. The sub-agent has six offline geocoder tools backed by authoritative UK gazetteers: \texttt{postcode} (OS Code-Point Open~\cite{os_code_point_open}, sub-100\,m); \texttt{grid\_ref} (OS BNG, precision-aware); \texttt{place} (OS Open Names~\cite{os_open_names}); \texttt{road} (OML road centroid, optionally LA-filtered); \texttt{intersect} (geometric junction of 2--3 OML roads); \texttt{la\_check} (point-in-polygon against OS BoundaryLine~\cite{os_boundary_line}). Its protocol scans \texttt{PDFInfo} in decreasing order of specificity (site postcode $>$ grid reference $>$ house-number+road $>$ landmark $>$ road $>$ parish $>$ LA centroid), letterhead-checks non-site postcodes via \texttt{la\_check} (dropping anything more than 5\,km from the named LA as council-letterhead noise), and clusters its pool down to one pick. $\sigma$ is set by the picked source: $\approx 200$\,m for multi-source agreement within 500\,m, 300--500\,m for a clean single signal, 800--1500\,m for an ambiguous single signal, and the LA polygon's own radius when nothing better exists. A geocoder-call budget of eight per case and an emergency LA-centroid fallback guarantee that the worker always receives exactly one candidate. When the worker re-invokes the sub-agent with a \texttt{match\_context} string after a weak match, the sub-agent receives both the feedback and its own prior message history and is prompted to pick from a different signal type.
 
-\subsubsection{Composite Window Score}
-\label{subsubsection:scoring}
+\subsection{Worker}
+\label{subsection:worker}
 
-At Stage~3, every candidate centre may produce thousands of MINIMA windows; each is summarised by the vanilla metric $V$, but $V$ alone is degenerate against two failure modes that occur frequently in practice: (i) MINIMA locking onto a small cluster of high-confidence keypoints in one corner of the map, producing a high inlier count from an affine that fits only that quadrant; and (ii) the matched window landing kilometres from the geocoded anchor when MINIMA finds a coincidental match on similar urban texture far from the true site. We address both by composing $V$ with a quadrant-coverage factor $Q\in\{0,1,2,3,4\}$\textemdash the number of map quadrants containing at least one inlier keypoint\textemdash and a softmax-like distance penalty on the kilometres separating the matched centre from the geocoded anchor:
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}llp{4.4cm}@{}}
+\toprule
+\textbf{\#} & \textbf{Tool} & \textbf{Purpose} \\ \midrule
+1 & \texttt{propose\_centers} & Invoke the Locate sub-agent; return one \texttt{LocatePick} (centre $+$ $\sigma$ $+$ confidence) \\
+2 & \texttt{match\_at} & For each area\_group in the doc: render OS tiles around the candidate, segment the boundary with SAM~3, run MINIMA + RANSAC, union per-group polygons \\
+3 & \texttt{commit\_match} & Pick the best stored candidate (gated by \Cref{eq:commit-score}); promote its (already-projected) WGS84 polygon as the active result \\
+4 & \texttt{lookup\_district} & Fetch a district / parish polygon from OS BoundaryLine (district-wide fallback) \\ \bottomrule
+\end{tabular}
+\caption{The four tools registered against the worker. Tools 1--3 form the canonical positioning loop; tool 4 short-circuits it for documents that cover an entire administrative area (\texttt{PDFInfo.is\_district\_wide}).}
+\label{tab:worker-tools}
+\end{table}
+
+The worker is a pydantic-ai loop whose output is a \texttt{BoundaryOutcome} (\texttt{status}\,$\in$\,\{\texttt{accepted}, \texttt{district\_lookup}\}, reasoning). Its four-tool surface is in \Cref{tab:worker-tools}; SAM~3 segmentation and the WGS84 re-projection are not separately addressable, they run automatically inside \texttt{match\_at} and \texttt{commit\_match} so the worker cannot terminate with a positioned map but no polygon. The canonical flow is $\texttt{propose\_centers}\rightarrow\texttt{match\_at}\rightarrow\texttt{commit\_match}$, with the prompt-encoded decision rules: \emph{strong} matches (total inliers $\geq 50$ \emph{and} scale-consistency $\geq 0.8$) commit immediately; everything below \emph{borderline} mandates at least one more \texttt{propose\_centers} call before commit; scale-consistency below 0.5 is overruled when inliers are strong ($\geq 80$); after two attempts the worker picks the highest-total-inlier candidate. An output validator re-prompts the model if \texttt{status="accepted"} arrives without a committed polygon, or if \texttt{status="district\_lookup"} arrives without a successful \texttt{lookup\_district}. The worker is forbidden from inventing coordinates not produced by \texttt{propose\_centers}, capped at five \texttt{match\_at} calls per case, and given a transcript-window of four recent images to keep token cost flat (older images are stripped from the history processor).
+
+\paragraph{Multi-area documents.}
+A planning PDF can cover multiple disjoint geographic areas (\emph{Schedule-2} class restrictions, multi-site Article~4 directions). The reader assigns an \texttt{area\_group} index to each match page, and \texttt{match\_at} internally runs MINIMA at the same locate centre on the primary page of \emph{every} \texttt{area\_group}, then unions the resulting polygons into one \texttt{MultiPolygon}. The worker passes a \texttt{page} argument identifying \emph{which} area\_group it wants the named centre evaluated against; alternates are picked automatically.
+
+\paragraph{Matching (\texttt{match\_at}).}
+For each area\_group the tool fetches an offline rendering of OS Open Zoomstack~\cite{os_open_zoomstack} tiles centred on the candidate (\Cref{subsection:tile-rendering}), resizes the planning-map crop so one map pixel matches one tile pixel at the chosen Web-Mercator zoom (with $\pm15\%$ scale perturbations to absorb DPI errors), and slides the crop across the tile canvas. At each window MINIMA~\cite{ren2025minima}\textemdash a transformer-based dense-feature matcher built on the LoFTR~\cite{sun2021loftr} architecture and trained for cross-modal map-to-tile matching\textemdash returns sets of corresponding keypoints whose 2$\times$3 affine is then estimated via RANSAC~\cite{fischler1981ransac} with a 10-pixel reprojection threshold. We default to a 4-DOF similarity transform and accept a 6-DOF full affine fallback only when it yields at least 30\% more inliers \emph{and} passes a geometric-sanity check (positive determinant, $|b + c| < 0.15$ on the off-diagonals, aspect ratio above 0.85, average scale within $[0.3, 3.0]$). A Delaunay-consistency filter~\cite{pierdicca2025delaunay}\textemdash building a Delaunay triangulation on the inlier keypoints and discarding triangles whose source/target area ratio falls outside $[0.5, 2.0]$\textemdash is then re-applied, kept only when at least one third of the original inliers survive. Each window receives a vanilla metric $V$ proportional to its (rotation-penalised) inlier count and scale agreement; we retain the best window per zoom and re-rank survivors by the composite score in \Cref{eq:composite-window}. The agent receives total and per-area\_group inlier counts, the road-name-agreement axis (fuzzy-matched against OS Zoomstack road labels within 1.5\,km), and the scale-consistency axis.
+
+\paragraph{Boundary segmentation.}
+SAM~3~\cite{meta2025sam3} segmentation runs lazily inside \texttt{match\_at} on first need per page (text prompt fixed to the LoRA-trained anchor ``planning boundary'') and is cached per page across attempts. The cached mask is post-processed through a three-step cleanup chain (\Cref{subsection:mask-postproc}) and projected through the committed affine into tile-canvas pixels and onward to WGS84 via the inverse Web-Mercator transform. For \texttt{is\_district\_wide=True} documents the worker bypasses positioning entirely and calls \texttt{lookup\_district}, returning the offline-stored polygon from OS BoundaryLine.
+
+\paragraph{Composite window score.}
+Vanilla MINIMA inlier counts are degenerate against two frequent failure modes: keypoints clustering in one map quadrant and matches landing kilometres from the geocoded anchor on similar urban texture. We address both by composing $V$ with a quadrant-coverage factor $Q\in\{0,\dots,4\}$ (number of map quadrants containing at least one inlier) and a softmax-like distance penalty:
 \begin{equation}
   \text{score} = V \cdot \frac{Q}{4} \cdot \frac{1}{1 + d_{\text{km}}}
   \label{eq:composite-window}
 \end{equation}
-where $d_{\text{km}}$ is the great-circle distance from the candidate's geocoded anchor to the predicted map centre. The composite score is what determines which window is returned to the Worker; on a 211-case overnight sweep this rescoring lifted IoU~$\geq0.8$ outcomes by five cases over the raw-metric ranking.
+where $d_{\text{km}}$ is the great-circle distance from the geocoded anchor to the matched centre.
 
-\subsubsection{Commit Gate}
-\label{subsubsection:commit-gate}
-
-The Worker may try several \texttt{match\_at} candidates before deciding which to commit. The \texttt{commit\_match} tool enforces two gates. The \emph{strict} gate refuses any commit whose candidate failed to produce a usable affine for every area\_group on the page (\texttt{n\_groups\_committed = 0})\textemdash this catches the worst-of-the-worst commits where MINIMA returned no inliers anywhere, forcing the worker to retry at a different centre via \texttt{propose\_centers(extra\_terms=[\dots])} rather than emit a polygon from no evidence. The \emph{smart} gate then re-ranks all stored \texttt{match\_at} attempts by a composite score that combines the inlier count with whether the predicted centre falls inside the reader-extracted local-authority polygon:
+\paragraph{Commit gate.}
+\texttt{commit\_match} enforces two gates. The \emph{strict} gate refuses any candidate that failed to produce a usable affine on at least one area\_group, forcing a retry via \texttt{propose\_centers}. The \emph{smart} gate re-ranks all stored attempts by the inlier count weighted by whether the predicted centre falls inside the reader-extracted local-authority polygon:
 \begin{equation}
   s_{\text{commit}}(c) = n_{\text{inliers}}(c) \cdot \begin{cases} 1.0 & c \in \text{LA} \\ 0.3 & c \notin \text{LA} \end{cases}
   \label{eq:commit-score}
 \end{equation}
-If a stored attempt other than the one the agent asked to commit scores higher, the gate redirects the commit to that attempt. The 0.3$\times$ outside-LA penalty is small enough that a much-higher-inlier outside-LA candidate can still win\textemdash the LA polygon is itself imperfect\textemdash but large enough to dominate near-ties, which is where wrong-town homonyms typically beat the correct candidate.
+If a different stored attempt outscores the worker's pick, the gate redirects the commit. The $0.3\times$ outside-LA penalty is small enough that a much-higher-inlier outside-LA candidate can still win (BoundaryLine is itself imperfect) but large enough to dominate near-ties, which is where wrong-town homonyms typically beat the correct candidate.
 
-\section{Implementation Details}
+\subsection{Critic (optional)}
+\label{subsection:critic}
 
-The agent itself is implemented on top of pydantic-ai: the Reader, Worker, and Locate sub-agent are three separate \texttt{Agent} instances that share a small set of helpers; structured outputs (\texttt{PDFInfo}, \texttt{BoundaryOutcome}, \texttt{LocatePick}) are enforced through pydantic schemas so the model cannot return free text in any phase. The Worker carries a mutable \texttt{AgentState} object across tool calls and exposes the six tools listed in \Cref{tab:worker-tools}; SAM~3 segmentation, mask post-processing and the WGS84 projection are not separately exposed but run automatically inside the positioning tools. An output validator decorated on the Worker re-prompts the model whenever the submitted \texttt{BoundaryOutcome} fails to satisfy the relevant tool-call preconditions (for example, every borderline match in the 25--100 inlier band must be visually verified before it can be accepted, and the \texttt{district\_lookup} status is rejected unless \texttt{lookup\_district} succeeded with a GeoJSON). The benchmark runner (\texttt{benchmark\_runner.py}) loads the SAM~3 and MINIMA models once, iterates over the dataset, and writes a per-case directory that contains the predicted GeoJSON, computed metrics, the agent's full message log, the recovered affine, the SAM mask, and a diagnostic visualisation of the prediction against the ground truth.
-
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{@{}llp{4.6cm}@{}}
-\toprule
-\textbf{\#} & \textbf{Tool} & \textbf{Purpose} \\ \midrule
-1 & \texttt{propose\_centers} & Invoke the Locate sub-agent; return one \texttt{LocatePick} (centre $+$ $\sigma$ $+$ confidence) \\
-2 & \texttt{match\_at} & Run MINIMA at one candidate; segment the boundary with SAM~3; return multi-axis reward $+$ visual panel \\
-3 & \texttt{commit\_match} & Pick the best stored candidate (gated by \Cref{eq:commit-score}); project mask through committed affine $\rightarrow$ GeoJSON \\
-4 & \texttt{verify\_position} & Render OS tiles at the committed centre with the predicted polygon overlaid for visual check \\
-5 & \texttt{lookup\_district} & Fetch a district / parish polygon from OS BoundaryLine (district-wide fallback) \\
-6 & \texttt{reader\_refine} & Spawn a focused Gemini call against the PDF $+$ cached OCR text for a missing field (budget 3 calls/case) \\ \bottomrule
-\end{tabular}
-\caption{The six tools registered against the Worker agent. Tools~1--3 form the canonical positioning loop; tool~4 is a visual check required by the output validator on borderline matches; tool~5 short-circuits the loop for documents that cover an entire administrative area; tool~6 is a budgeted re-consultation of the source PDF when \texttt{PDFInfo} is missing a concrete field.}
-\label{tab:worker-tools}
-\end{table}
-
-The six components that the agent orchestrates are: (i) a Gemini~3~Flash Reader call on the PDF binary plus a per-page OCR text block produced by a fitz/macOS-Vision/PaddleOCR cascade and cached on disk; (ii) a ResNet50 page-rotation classifier trained with 5-fold CV and used with 4-rotation test-time augmentation + a 0.50 confidence-abstain rule; (iii) the Gemini~3~Flash Locate sub-agent with the six offline-gazetteer tools described in Stage~2; (iv) MINIMA~\cite{ren2025minima} (LoFTR~\cite{sun2021loftr} backbone) running sliding-window matching against a styled OS Open Zoomstack~\cite{os_open_zoomstack} tile canvas, followed by a RANSAC affine fit with a gated 6-DOF fallback; (v) SAM~3~\cite{meta2025sam3} with a rank-16 LoRA~\cite{hu2022lora} adapter, fine-tuned with 5-fold CV on a hand-annotated dataset and routed at inference to the fold that excluded the test case; and (vi) a three-step mask-cleanup chain (component filtering, thin-outline expansion, hole-fill) followed by WGS84 projection through the committed affine. Full per-component specifications\textemdash the OCR cascade, the loss formulation and hyperparameters for the LoRA fine-tune, the Web-Mercator zoom selection and stride policy in the matcher, the styler used to render OS Open Zoomstack tiles, and the mask cleanup primitives\textemdash are in \Cref{sec:impl-appendix}.
+After the worker submits, an optional independent LLM critic (same model, same model-family) reviews up to the top three stored match candidates by inlier count (always including the worker's commit) plus a per-candidate metrics block. For each shown candidate it sees a side-by-side panel of the planning map with the SAM~3 mask overlaid and the OS-tile crop with the projected polygon outlined in red. The critic emits a structured \texttt{CriticDirective}\,$\in$\,\{\texttt{approve}, \texttt{switch}, \texttt{retry\_locate}\} with a reasoning string that must cite a concrete visual feature. A \texttt{switch} re-invokes the worker with a fixed-template instruction to commit a different stored \texttt{candidate\_id}; a \texttt{retry\_locate} re-invokes the worker with an instruction to call \texttt{propose\_centers} with new context and try again. Up to two critic iterations are allowed per case; both the worker's first-commit polygon and the post-critic polygon are returned, so a single benchmark run produces both the no-critic and with-critic IoUs (used in the ablation of \Cref{subsection:abl-critic}).
 
 \section{Results}
 \label{section:results}
 
-We evaluate GeoPlanAgent on the entire 210-case dataset described in Section~3, less the small set of duplicate folders manually flagged during quality control. Inference uses Gemini~3~Flash as the default LLM for the Reader, Worker, and Locate sub-agent; SAM~3 segmentation routes per case to the LoRA adapter from the fold that did not see that case during training (\Cref{subsection:sam3-finetune}). Each case is allowed a soft cap of 12 worker turns (\texttt{--max-iterations 12} on the benchmark runner; the code default is 8) and at most 5 \texttt{match\_at} attempts; the per-case wall-clock is dominated by tile rendering on cold cache and by MINIMA inference on warm cache. We report Intersection-over-Union (IoU) and the precision/recall/F1 triple from Section~\ref{subsection:summarize} on the predicted vs. ground-truth GeoJSON, plus the centroid positioning error in metres and the per-case API cost in USD.
-
-\subsection{Headline Results}
-\label{subsection:headline}
-
-\Cref{tab:main-result} gives the overall benchmark numbers. Cases where the pipeline failed to produce a polygon (validator exhaustion, no usable affine on any group, SAM mask empty) are counted as IoU=0 and F1=0, so the reported figures are what an operator deploying the system actually sees.
+We evaluate GeoPlanAgent on the 210-case dataset of Section~3, less five duplicate folders flagged during quality control (208 cases). Inference uses Gemini~3~Flash for the Reader, Worker, and Locate sub-agent; SAM~3 routes per case to the LoRA adapter from the fold that did not see it during training (\Cref{subsection:sam3-finetune}). Each case is allowed up to 12 worker turns and five \texttt{match\_at} attempts. We report IoU and the precision/recall/F1 triple over the predicted vs.\ ground-truth GeoJSON, plus centroid positioning error in metres. Cases where the pipeline produced no polygon are counted as IoU $= 0$, so the headline figures match what an operator actually sees.
 
 \begin{table*}[h]
 \centering
 \small
-\begin{tabular}{@{}lcccccccc@{}}
+\begin{tabular}{@{}lccccccc@{}}
 \toprule
-& \textbf{N} & \textbf{IoU mean} & \textbf{IoU median} & \textbf{$\geq$0.5} & \textbf{$\geq$0.8} & \textbf{F1} & \textbf{Pos. err. (m)} & \textbf{Cost (\$/case)} \\ \midrule
-GeoPlanAgent & 208 & \placeholder & \placeholder & \placeholder & \placeholder & \placeholder & \placeholder & \placeholder \\
+ & \textbf{N} & \textbf{IoU mean} & \textbf{IoU median} & \textbf{$\geq$0.5} & \textbf{$\geq$0.8} & \textbf{F1 mean} & \textbf{Pos.\ err.\ (m, med.)} \\ \midrule
+GeoPlanAgent (no critic) & 208 & 0.680 & 0.893 & 73.8\% & 60.6\% & 0.726 & 6.4 \\
+GeoPlanAgent (+ critic)  & 208 & 0.690 & 0.895 & 74.5\% & 61.5\% & 0.740 & 4.8 \\
 \end{tabular}
-\caption{Headline benchmark results. Cells marked \placeholder will be filled from the current full-benchmark run (\texttt{results/benchmark\_v\_R21/}) once it completes. }
+\caption{Headline benchmark results on 208 cases. The two rows are paired snapshots from the same run (the critic-enabled run captures the worker's first-commit polygon \emph{and} the post-critic polygon, so both IoUs come from one set of agent trajectories). Cases with no polygon (5 of 208) count as IoU $= 0$, F1 $= 0$. The IoU distribution is strongly bimodal: 47.5\% of cases score $\geq 0.9$ and 18.3\% score below 0.05, leaving only 8\% in the $[0.3, 0.7]$ middle band.}
 \label{tab:main-result}
 \end{table*}
 
-\subsection{Stratified Breakdown}
-\label{subsection:stratified}
+\paragraph{Headline.}
+\Cref{tab:main-result} reports the production numbers. The worker alone reaches mean IoU 0.680 and median 0.893; with the critic enabled the mean rises to 0.690 (\Cref{subsection:abl-critic}). The distribution is sharply bimodal\textemdash 47.5\% of cases at IoU $\geq 0.9$ and 18.3\% below 0.05 with only $\approx 8\%$ in the $[0.3, 0.7]$ middle band\textemdash so the task in this dataset is mostly ``solve cleanly or fail entirely''. End-to-end wall-clock is $\approx 170$\,s per case in serial, dominated by tile rendering on cold cache and MINIMA inference on warm cache; a full 208-case run costs $\approx \$2.75$ in Gemini Flash API spend.
 
-Because the dataset metadata classifies every case by both Document Quality (\textit{good}/\textit{bad}) and Shape Complexity (\textit{easy}/\textit{medium}/\textit{hard}, capturing vertex count and disjoint-polygon structure; Section~3), we can split the headline mean into a $2 \times 3$ table that exposes where the pipeline struggles. \Cref{tab:stratified} shows the IoU mean per stratum together with the cell count.
+\paragraph{Predictive value of \texttt{n\_inliers}.}
+The strongest deployment-relevant signal is the worker's committed inlier count. Among cases that committed with $n_{\text{inliers}} \geq 50$, 83\% land at IoU $\geq 0.7$; below 25 inliers only 7\% do. This gap is the basis of the worker's \emph{strong-match} commit rule (Section~\ref{subsection:worker}) and of the soft quality gate that flags low-confidence commits without nulling the polygon.
 
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Quality $\backslash$ Complexity} & \textbf{Easy} & \textbf{Medium} & \textbf{Hard} \\ \midrule
-Good & \placeholder & \placeholder & \placeholder \\
-Bad  & \placeholder & \placeholder & \placeholder \\ \bottomrule
-\end{tabular}
-\caption{IoU mean by (document quality, shape complexity). Cell sizes follow the dataset's own breakdown.}
-\label{tab:stratified}
-\end{table}
-
-\subsection{Failure-Mode Taxonomy}
-\label{subsection:failure-modes}
-
-To make the residual error interpretable rather than just numeric, we tag every non-passing case (IoU $<$ 0.5) by its dominant failure mode: \emph{wrong-area} (positioning landed somewhere other than the correct site), \emph{correct-area-bad-mask} (positioning correct but SAM~3 segmented the wrong shape), \emph{district-lookup-mismatch} (the BoundaryLine polygon did not match what the document actually covers), and \emph{no-polygon} (the pipeline produced no GeoJSON at all). \Cref{tab:failure-modes} reports counts and gives a representative example of each. \placeholder.
-
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{@{}lcc@{}}
-\toprule
-\textbf{Failure mode} & \textbf{Count} & \textbf{Example case} \\ \midrule
-Wrong-area positioning      & \placeholder & \placeholder \\
-Correct area, bad mask      & \placeholder & \placeholder \\
-District-lookup mismatch    & \placeholder & \placeholder \\
-No polygon produced         & \placeholder & \placeholder \\ \bottomrule
-\end{tabular}
-\caption{Distribution of failure modes among cases with IoU $<$ 0.5.}
-\label{tab:failure-modes}
-\end{table}
+\paragraph{Failure modes.}
+Of the 49 cases scoring below IoU 0.3, the dominant failure modes are: (i) \emph{wrong-area positioning} (the locate sub-agent picked a coordinate hundreds of metres or kilometres from the true site, typically a council-letterhead postcode that survived the LA filter, or a homonymous road in the wrong town); (ii) \emph{district-lookup mismatch} (15 cases entered the \texttt{lookup\_district} fallback after positioning failed; 13 of them produced a polygon for the wrong administrative area — this is a worse failure pattern than producing no polygon at all because it fakes success); (iii) \emph{wrong-page selection by reader} (the reader's primary map page was a context overview rather than the parcel-scale site map, so MINIMA matched at the wrong scale); (iv) \emph{correct area, bad mask} (positioning correct but the cached SAM~3 mask covered a title block or scale bar rather than the drawn polygon). No-polygon outcomes account for only 5 of 208 cases\textemdash the validator's ``always emit'' policy has all but eliminated that mode.
 
 \section{Ablations}
 \label{section:ablations}
 
-We organise the ablation study around three questions: (i) does the LoRA fine-tune actually matter\textemdash i.e. is the boundary segmentation a non-trivial contribution rather than something a vision-LLM could do natively? (ii) which components of the agent pipeline are pulling weight, and which are decorative? and (iii) how transferable is the result across frontier multimodal LLMs?
+We organise the ablation study around two questions: (i) does the LoRA fine-tune actually matter, or could a vision-LLM trace boundaries natively? (ii) does the optional independent critic improve commits made by the worker alone?
 
 \subsection{Fine-Tune Contribution}
 \label{subsection:abl-finetune}
 
-Three rows on the same pixel-IoU axis against the human-traced boundary masks. The first is the SAM~3 LoRA from \Cref{subsection:sam3-finetune}, with each test case scored by the adapter trained on the four folds that did not see it. The second is base SAM~3 (no LoRA) with the best-performing text prompt selected by a five-prompt sweep (see \Cref{subsection:abl-vanilla-sam-prompt-search}). The third is Gemini~3~Flash asked directly to trace the boundary as a polygon, rasterised to a pixel mask using Gemini's native $[y, x] \in [0, 1000]$ output convention (see \Cref{subsection:abl-vlm-direct-protocol} for the full prompt and the failure-mode safety-net).
+\Cref{tab:abl-finetune} compares three boundary-segmentation regimes on pixel-IoU against hand-traced masks, isolating segmentation quality from positioning. \emph{SAM~3 + LoRA (ours)} is the 5-fold cross-validated mean from \Cref{tab:sam3-cv}; each test case is scored by the adapter trained on the four folds that did not see it. \emph{Vanilla SAM~3} is base SAM~3 (no LoRA) with the best of five pre-registered prompts (\Cref{subsection:abl-vanilla-sam-prompt-search}). \emph{VLM-direct} is Gemini~3~Flash asked to trace the polygon directly using its native $[y,x] \in [0,1000]$ vertex convention (\Cref{subsection:abl-vlm-direct-protocol}). The 0.40 gap between the best vanilla prompt and the LoRA fine-tune is the direct measure of the LoRA's contribution; the further 0.13 gap from VLM-direct to vanilla SAM~3 quantifies how much SAM~3's mask decoder helps even without UK-specific fine-tuning.
 
 \begin{table}[h]
 \centering
@@ -502,52 +337,16 @@ Three rows on the same pixel-IoU axis against the human-traced boundary masks. T
 \begin{tabular}{@{}lccc@{}}
 \toprule
 \textbf{Method} & \textbf{N} & \textbf{Mean pixel IoU} & \textbf{$\geq$0.8} \\ \midrule
-VLM-direct (Gemini~3~Flash)    & 211 & 0.515 & 27.5\% \\
-VLM-direct (Gemini~3.1~Pro)    & 211 & 0.630 & 40.8\% \\
-Vanilla SAM~3 (best prompt)    & 211 & 0.611 & 51.2\% \\
-SAM~3 + LoRA (ours)            & 211 & \textbf{0.892} & \textbf{91.0\%} \\ \bottomrule
+VLM-direct (Gemini~3~Flash) & 211 & 0.479 & 28.0\% \\
+Vanilla SAM~3 (best prompt) & 211 & 0.611 & 51.2\% \\
+SAM~3 + LoRA (ours)         & 211 & \textbf{0.892} & \textbf{91.0\%} \\ \bottomrule
 \end{tabular}
-\caption{Boundary segmentation only, scored against the hand-annotated map-image masks. All rows are evaluated against the same 211 annotated images (some multi-page documents contribute more than one annotated map page, which is why the segmentation pool is 211 even though the headline benchmark of \S\ref{section:results} runs on 208 documents). Both VLMs are run at $\texttt{temperature}=1.0$, which is Google's recommended setting for the reasoning-tuned 3.1~Pro variant and which we apply uniformly to Flash for symmetry; rationale and the diagnostic of the deterministic $T{=}0$ failure mode on Pro are in \Cref{subsection:abl-vlm-direct-protocol}. ``SAM~3 + LoRA (ours)'' is the 5-fold cross-validated mean from \Cref{tab:sam3-cv} (CUDA training-time validation, cv\_summary.json); its IoU~$\geq$~0.8 band rate is recomputed from a per-case re-run of the same checkpoints under the matched bf16-autocast loop on MPS (\texttt{scripts/eval\_sam\_kfold\_v2.py}), which reproduces the cv\_summary means to within $\pm 0.02$. The VLM and Vanilla SAM rows do not require training and have no per-hardware variance.}
+\caption{Boundary segmentation only, scored against hand-annotated map-image masks. All three rows use the same 211 annotated maps (multi-page documents contribute more than one annotated page, so the segmentation pool is 211 vs.\ 208 documents in \S\ref{section:results}). The SAM~3 + LoRA row is the 5-fold CV mean from \Cref{tab:sam3-cv}.}
 \label{tab:abl-finetune}
 \end{table}
 
-\subsubsection{Vanilla SAM~3 Prompt Search}
-\label{subsection:abl-vanilla-sam-prompt-search}
-
-Base SAM~3~\cite{meta2025sam3} is a promptable segmentation model; without LoRA fine-tuning, its output depends strongly on which English phrase is supplied as the segmentation query. We evaluated five pre-registered candidate prompts on the full 211-case annotated pool: ``planning boundary'' (the LoRA-trained anchor), ``article 4 site boundary'' (UK-specific phrasing), ``highlighted marked area'', ``site boundary'', and ``application site''. Prompts are discrete, pre-registered hyperparameters with no learned component, so a subset-search-plus-held-out-eval split would add no statistical protection over reporting all five prompts on the full pool. The inference call is identical to the production path\textemdash same processor, same \texttt{post\_process\_semantic\_segmentation} output, same thin-outline flood-fill post-processing\textemdash so the comparison isolates the effect of the prompt and the LoRA weights.
-
-\Cref{tab:abl-sam-prompt-search} gives mean, median, and the deployment-relevant IoU bands per prompt. ``highlighted marked area'' wins on mean IoU and is the row used in \Cref{tab:abl-finetune}; the LoRA-trained anchor ``planning boundary'' is a close second on mean but the joint best on median and on the IoU~$\geq$~0.8 band rate, because its failure mode is sparser (a few catastrophic zero-IoU cases dragging the mean rather than a long tail of medium-quality masks). The two UK-jargon candidates (``article 4 site boundary'' and ``application site'') collapse to near-zero: base CLIP has no useful prior over those phrasings, and ``application site'' in particular fires the ``application form'' visual concept onto title blocks rather than the drawn polygon. The 0.40 gap between the best prompt (0.611) and the LoRA fine-tune (0.892) is the direct measure of the fine-tune contribution.
-
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-\textbf{Prompt} & \textbf{Mean} & \textbf{Median} & \textbf{$\geq$0.5} & \textbf{$\geq$0.8} \\ \midrule
-``highlighted marked area''  & \textbf{0.611} & 0.808 & 64.0\% & 51.2\% \\
-``planning boundary''        & 0.582 & \textbf{0.886} & 60.2\% & \textbf{52.6\%} \\
-``site boundary''            & 0.492 & 0.525 & 50.2\% & 44.1\% \\
-``article 4 site boundary''  & 0.222 & 0.080 & 16.6\% & 14.7\% \\
-``application site''         & 0.108 & 0.082 &  0.5\% &  0.0\% \\ \bottomrule
-\end{tabular}
-\caption{Vanilla SAM~3 (no LoRA) prompt search on the full 211 annotated maps. All five prompts hit identical 0/211 inference failures; differences are pure prompt sensitivity. ``highlighted marked area'' wins on mean IoU and is used as the row in \Cref{tab:abl-finetune}; ``planning boundary''\textemdash the prompt the LoRA was trained on\textemdash is the joint best on the deployment-relevant IoU~$\geq$~0.8 band. The UK-domain phrasings ``article 4 site boundary'' and ``application site'' collapse because base CLIP has no useful prior over them.}
-\label{tab:abl-sam-prompt-search}
-\end{table}
-
-\subsubsection{VLM-Direct Protocol}
-\label{subsection:abl-vlm-direct-protocol}
-
-The VLM-direct rows of \Cref{tab:abl-finetune} are single-shot Gemini inferences per case: no SAM~3, no MINIMA, no agent loop, no positioning. Each model receives the rendered map image as a multimodal part together with a fixed system prompt that describes the task (``locate the drawn boundary and trace it as a polygon'') and enumerates the boundary styles the model should recognise (solid lines in any colour, dashed, dotted, hatched, semi-transparent fill, opaque fill, outline overlaid on an OS-style or aerial map background). The schema enforces output as 0+ polygons, each an ordered list of $(y, x)$ integer vertices in $[0, 1000]$\textemdash Gemini's native bounding-box / segmentation convention~\cite{google2025gemini3}. We rasterise the returned polygons to a binary mask at the source image's native resolution, scaling $x$ by $W/1000$ and $y$ by $H/1000$ separately (anisotropic for non-square pages), then compute pixel IoU against the same hand-traced boundary masks that the SAM~3 LoRA was trained on. Decoding uses temperature~$1.0$ (rationale below) and a hard cap of 8192 output tokens; the schema is enforced via \texttt{NativeOutput} (Gemini's native JSON-schema mode) rather than the default tool-call framing, which we found necessary to keep complex multi-vertex polygons from being truncated mid-response. Input images are sent JPEG-encoded at quality~$90$ to keep request payloads under the provider's size limit. Under this protocol both VLMs achieve $0/211$ schema-validation failures.
-
-\paragraph{Choice of $T{=}1.0$.}
-We initially ran both VLMs at $\texttt{temperature}=0$, matching the rest of our pipeline (where Flash at $T{=}0$ is used in the Reader, Worker, and Locate sub-agents for reproducibility). Flash produced schema-valid output on all 211 cases at $T{=}0$; Pro, however, failed pydantic validation on 30 of 211. We diagnosed two representative failures by patching the script to capture the raw text the model returned before validation. In both cases Pro entered a \emph{degenerate-generation loop}: on a simple 4-vertex GT case (\texttt{CPA4(1a)}) it emitted a 45-degree diagonal staircase pattern (alternating $(y{+}6, x{+}0)$ and $(y{+}0, x{+}7)$ steps) for $2{,}366$ vertices, the first $181$ of which stayed inside the prompted $[0, 1000]$ range and the remainder marched out to $(7446, 8649)$ before the token cap killed the response; on a 27-vertex case (\texttt{A4D14}) it traced a plausible initial boundary for a dozen vertices, then locked onto the single vertex $[451, 1000]$ at the right edge of the coordinate convention and repeated it $\approx 2{,}400$ times until truncation. Both failures were deterministic at $T{=}0$ and recurred identically on re-run; raising $\texttt{max\_tokens}$ from $8192$ to $32768$ did not rescue them because the loops emit garbage faster than any reasonable cap can absorb. Google's Gemini~3 developer guide~\cite{google2025gemini3} explicitly warns that ``Changing the temperature (setting it below 1.0) may lead to unexpected behavior, such as looping or degraded performance,'' which matches the observed pathology. We therefore re-ran \emph{both} VLMs at $T{=}1.0$ (Google's recommended setting for thinking models, applied uniformly to both VLMs to keep the comparison symmetric).
-
-At $T{=}1.0$ the repetition-collapse failure mode vanished entirely on Pro and Flash retained its 0/211 failure rate. The same diagnostic case (\texttt{CPA4(1a)}) that previously emitted $2{,}366$ garbage vertices in $240$\,s instead produced a sensible 22-vertex polygon in $5.3$\,s with IoU $0.694$. On-task IoU improved modestly for Flash (mean $0.479 \to 0.515$, $\geq$$0.8$ band essentially unchanged) and substantially for Pro relative to its prior zero-filled reading (mean $0.476 \to 0.630$, $\geq$$0.8$ band $36.0\% \to 40.8\%$). The $T{=}1.0$ numbers in \Cref{tab:abl-finetune} are the clean readings we report. Even at this best-documented setting Pro's mean IoU ($0.630$) trails the LoRA fine-tune ($0.892$) by $0.26$ and its IoU~$\geq$~$0.8$ rate ($40.8\%$) trails by $50.2$ percentage points; Flash trails by $0.38$ and $63.5$ percentage points respectively. The headline of \Cref{tab:abl-finetune}\textemdash that domain fine-tuning dominates frontier-scale VLM segmentation on this task\textemdash holds at the recommended decoding settings for both VLMs, including at roughly an order of magnitude higher cost per call for Pro than Flash.
-
-\subsection{Per-Fold SAM~3 LoRA Cross-Validation}
-\label{subsection:abl-sam3-cv}
-
-\Cref{tab:sam3-cv} gives the per-fold metrics from the SAM~3 LoRA cross-validation. Variance across folds is low ($\sigma_{\text{IoU}} = 0.043$), indicating that the boundary-segmentation behaviour is data-driven rather than fold-lucky.
+\paragraph{Per-fold cross-validation.}
+\Cref{tab:sam3-cv} reports the per-fold SAM~3 LoRA validation IoU. Variance across folds is low ($\sigma_{\text{IoU}} = 0.043$), indicating that the boundary-segmentation behaviour is data-driven rather than fold-lucky. The auto-rotation ResNet50 (\Cref{subsection:rotation-classifier}) is evaluated under the same 5-fold split and reaches mean top-1 accuracy $0.960 \pm 0.022$ (per-fold 0.924, 0.976, 0.988, 0.946, 0.964). The 0.50-softmax abstain rule converts the residual error mode into ``no rotation'' rather than ``wrong rotation'', which the positioning stage tolerates far better.
 
 \begin{table}[h]
 \centering
@@ -563,36 +362,40 @@ At $T{=}1.0$ the repetition-collapse failure mode vanished entirely on Pro and F
 Mean & 211 & \textbf{0.892} & \textbf{0.920} \\
 Std  &    & 0.043 & 0.038 \\ \bottomrule
 \end{tabular}
-\caption{SAM~3 LoRA 5-fold CV (semantic head). $|V|$ is the size of the held-out validation set for each fold; total = 211 cases. Reported on the entire fine-tune training pool, scored on Apple Silicon with fp16 autocast via the exact training-time validation loop (\texttt{scripts/eval\_sam\_kfold\_v2.py}).}
+\caption{SAM~3 LoRA 5-fold CV (semantic head). $|V|$ is the held-out validation size per fold; total $= 211$ cases.}
 \label{tab:sam3-cv}
 \end{table}
 
-\subsection{Per-Fold Rotation Classifier Cross-Validation}
-\label{subsection:abl-rotation-cv}
+\subsection{Critic Contribution}
+\label{subsection:abl-critic}
 
-The auto-rotation classifier (\Cref{subsection:rotation-classifier}) is evaluated under the same 5-fold split. Mean validation top-1 accuracy is $0.960 \pm 0.022$ (population std), with per-fold values 0.924 / 0.976 / 0.988 / 0.946 / 0.964. The classifier is paired at inference with 4-rotation TTA and an 0.50-softmax abstain rule, so the effective ``rotate'' decision rate at deployment is somewhat lower than the raw accuracy implies, but every rotated case is rotated correctly when the rule fires.
+The optional independent critic (\Cref{subsection:critic}) is the only architectural variant we can ablate cheaply from a single run, because the critic-enabled benchmark snapshots both the worker's first-commit polygon and the post-critic polygon. The paired numbers in \Cref{tab:main-result} give a $+0.010$ mean IoU lift (worker alone $0.680 \rightarrow$ with critic $0.690$); the larger effect is at the tails\textemdash the critic switches the worker's commit on cases where a higher-inlier alternative was waiting in the candidate store, and triggers a \texttt{retry\_locate} on a small number of cases where every stored candidate visually lands in the wrong region. The critic's failure mode is over-approval: deterministic per-axis metrics correlate only weakly with IoU on borderline cases ($\approx 0.13$ Pearson at $n_{\text{inliers}} \in [25, 50]$), so the critic and worker independently mis-trust the same metrics on the same hard cases. Cost: $\approx \$0.20$ extra per case (two extra critic LLM calls, no extra MINIMA / SAM~3 work).
 
-\subsection{Pipeline Component Ablations}
-\label{subsection:abl-pipeline}
+\subsubsection{Vanilla SAM~3 Prompt Search}
+\label{subsection:abl-vanilla-sam-prompt-search}
 
-\paragraph{Prompt detail (A1).}
-A 208-case run of the worker with the production system prompt against a 208-case run with a deliberately-generic system prompt (``locate the planning boundary and emit a GeoJSON polygon'') that removes the workflow decomposition, the multi-axis-reward decision rules, and the document-structure pre-explanation. \placeholder.
+Base SAM~3 is a promptable segmentation model; without LoRA fine-tuning, its output depends strongly on which English phrase is supplied as the query. We evaluated five pre-registered candidate prompts on the full 211-case annotated pool: ``planning boundary'' (the LoRA-trained anchor), ``article 4 site boundary'', ``highlighted marked area'', ``site boundary'', and ``application site''. Prompts are discrete pre-registered hyperparameters with no learned component, so a subset-search-plus-held-out-eval split would add no statistical protection over reporting all five prompts on the full pool.
 
-\paragraph{Locate-API subsets (A2).}
-The Locate sub-agent has six offline-gazetteer tools; ablating each subset reveals which signals carry the load. Three 50-case stratified runs: postcode-only, place\,+\,road-only, and the full toolkit minus \texttt{la\_check} (so the letterhead filter on \texttt{PDFInfo.postcodes} is disabled). \placeholder for the three subset IoUs vs the full-toolkit baseline.
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Prompt} & \textbf{Mean} & \textbf{Median} & \textbf{$\geq$0.5} & \textbf{$\geq$0.8} \\ \midrule
+``highlighted marked area''  & \textbf{0.611} & 0.808 & 64.0\% & 51.2\% \\
+``planning boundary''        & 0.582 & \textbf{0.886} & 60.2\% & \textbf{52.6\%} \\
+``site boundary''            & 0.492 & 0.525 & 50.2\% & 44.1\% \\
+``article 4 site boundary''  & 0.222 & 0.080 & 16.6\% & 14.7\% \\
+``application site''         & 0.108 & 0.082 &  0.5\% &  0.0\% \\ \bottomrule
+\end{tabular}
+\caption{Vanilla SAM~3 prompt search on 211 annotated maps. ``highlighted marked area'' wins on mean IoU and is used in \Cref{tab:abl-finetune}; ``planning boundary'' (the LoRA anchor) is joint-best on median and the IoU $\geq 0.8$ band. UK-jargon phrasings collapse because base CLIP has no useful prior over them.}
+\label{tab:abl-sam-prompt-search}
+\end{table}
 
-\paragraph{Matching-step decomposition (A3).}
-Three 50-case stratified runs that each disable one matching component: (a) no multi-zoom sweep (single zoom only, picked by the printed scale), (b) no road-name verifier in \Cref{subsection:matching}, and (c) no smart-commit gate, so the worker's first-chosen \texttt{commit\_match} is always honoured regardless of the inside-LA filter (\Cref{eq:commit-score}). \placeholder.
+\subsubsection{VLM-Direct Protocol}
+\label{subsection:abl-vlm-direct-protocol}
 
-\subsection{Frontier-Model Contrast}
-\label{subsection:abl-frontier}
-
-We contrast Gemini~3~Flash with Gemini~3.1~Pro, Claude Opus 4.6, and GPT-5.4 on a 10-case contrastive subset (5 best and 5 worst cases on the Flash run, taken from the headline benchmark). The subset is small by design\textemdash the four-way contrast at 208 cases is roughly four times the budget of the headline benchmark\textemdash but it gives a like-for-like comparison on the same prompts and the same fine-tuned SAM~3. \placeholder for the per-model IoU on the 10-case set plus a qualitative note on whether the failure modes change with model strength.
-
-\subsection{Three-Measurement Breakdown}
-\label{subsection:abl-three-meas}
-
-Following the supervisor's request, we report a three-axis decomposition of every case's score: (i) \emph{instruction following} (did the agent submit a structurally-valid \texttt{BoundaryOutcome} with the right tool-call preconditions?); (ii) \emph{contour IoU} (the pixel IoU of the predicted mask against the ground-truth raster mask, isolating segmentation quality from positioning); and (iii) \emph{position error} in metres (centroid Euclidean distance between predicted and ground-truth polygons in BNG). This is an analytical re-scoring of the existing per-case results rather than a fresh run. \placeholder.
+VLM-direct is a single-shot Gemini~3~Flash inference per case: no SAM~3, no MINIMA, no agent loop. The model receives the rendered map image together with a fixed prompt that describes the task and enumerates the boundary styles to recognise (solid lines, dashed, dotted, hatched, semi-transparent fill, opaque fill). The schema enforces output as 0+ polygons of $(y, x)$ integer vertices in $[0, 1000]$\textemdash Gemini's native segmentation convention~\cite{google2025gemini3}. We rasterise the polygons at the source image's native resolution (anisotropic scaling) and compute pixel IoU against the same hand-traced masks as the SAM~3 LoRA pool. Decoding is at temperature 0, 8192-token cap, with the schema enforced via \texttt{NativeOutput} mode to prevent truncation of multi-vertex polygons. Six cases failed on first pass (provider 413 / malformed JSON on large pages); we re-ran exactly those six at JPEG-95, 2048-px longest-side input cap (the polygon coordinate system is normalised, so this does not change the IoU axis), giving a merged 0/211 failure rate. For comparison, Gemini~3~Pro on the same prompt with \texttt{output\_retries=0} loses 30 of 211 cases to schema validation, reaching mean IoU 0.555 on its 181 parseable cases\textemdash but the 14\% selection-bias lift on Pro makes it not comparable to the headline Flash row, which is why Flash is what we report.
 
 \section*{Limitations}
 
@@ -604,7 +407,7 @@ The LA polygon used in the smart-commit gate (\Cref{eq:commit-score}) comes from
 
 SAM~3 fine-tuning was performed on CUDA with bf16 mixed precision; validation (the per-fold numbers in \Cref{tab:sam3-cv}) is scored on Apple Silicon with fp16 autocast. A small amount of run-to-run nondeterminism in the MPS evaluation kernels means the cross-validation numbers are reproducible to $\pm 0.003$ rather than bit-exact. The dominant published-source bottleneck is therefore not training stochasticity but the size of the annotated training pool (211 cases), which we expect any future extension of this dataset to relax.
 
-\section*{Acknowledgments}
+% \section*{Acknowledgments}
 
 %\bibliography{anthology,custom}
 % Custom bibliography entries only
@@ -627,70 +430,124 @@ geojson ID & Path to GeoJSON & \texttt{..78.geojson} \\ \bottomrule
 \label{Unique_Identification}
 \end{table}
 
+
+\begin{table*}[h]
+\centering
+\caption{Geographic Metadata Fields}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Field} & \textbf{Description} & \textbf{Example} \\ \midrule
+County & Administrative area & Kent, London (Westminster) \\
+Exact Location & Site description & ``Land at Golgotha, Shepherdswell'' \\
+Boundary Shape & Geometry type & Irregular polygon, Rectangular \\ \bottomrule
+\end{tabular}
+\end{table*}
+
+
 \section{Implementation Details}
 \label{sec:impl-appendix}
 
-This appendix expands the per-component summary in the main body. Section labels follow the data-flow order through the pipeline.
+This appendix expands the per-component summary in the main body. Subsections follow data-flow order.
 
-\subsection{Reader Phase}
-\label{appendix:reader}
+\subsection{Text Extraction}
+\label{appendix:text-extraction}
 
-The Reader runs a single Gemini~3~Flash call (\texttt{google/gemini-3-flash-preview}) at zero temperature with the PDF binary attached as a multimodal part and the per-page OCR text concatenated as a separate text block. Per-page text is produced by a two-step OCR cascade: PyMuPDF's text layer for born-digital pages, otherwise the macOS Vision framework (Apple Neural Engine accelerated, $\approx0.5$--2\,s per page on Apple Silicon, with English and language-correction hints enabled), falling back to PaddleOCR as a cross-platform option for environments without Vision. Extraction results are cached on disk by PDF content hash so reruns are instant. The reader's prompt instructs the model to trust the OCR text block as ground truth for any exact-string field (postcodes, grid references, addresses, scale) and to fall back to vision-based reading only when the text block is missing or marked as failed for a particular page. The output schema enforces approximately twenty fields per case and includes a model-level validator that refuses any extraction in which all of \texttt{place\_names}, \texttt{road\_names}, and \texttt{visible\_map\_labels} are empty when other fields prove the document is a real planning case (the dominant silent-dropout failure mode of the LLM).
+Per-page text is produced by a three-step cascade. PyMuPDF reads the embedded text layer for born-digital pages; if its output for a given page is shorter than 50 characters we fall back to OCR. The primary OCR backend is the macOS Vision framework (Apple Neural Engine accelerated, $\approx 0.5$--2\,s per page on Apple Silicon, accurate-level recognition with language correction over \texttt{en-GB}/\texttt{en-US}); PaddleOCR (3.x API, confidence floor 0.5) serves as a cross-platform fallback for environments without Vision or when Vision returns empty on a particular page. OCR rasterisation is at 250\,DPI. Per-page text is capped at 8\,000 characters and the entire cascade output is cached on disk keyed by PDF content hash, so reruns are instant.
 
-\subsection{Auto-Rotation}
+\subsection{Auto-Rotation Classifier}
 \label{subsection:rotation-classifier}
 
-Many UK planning maps\textemdash particularly historic Article~4 Direction sheets\textemdash are laid out sideways on the page. We replace the agent's earlier visual rotation decision (which destroyed several cases by rotating documents that were already upright) with a learned 4-class ResNet50~\cite{he2016resnet} classifier over the rotations $\{0°, 90°, 180°, 270°\}$. Training data is generated by applying each of the four rotations to 211 maps that have been visually confirmed upright (the same training pool as the SAM~3 fine-tune; \Cref{appendix:dataset-prep}), yielding 844 samples; we split by case using the same deterministic 5-fold assignment as the SAM~3 fine-tune (\Cref{subsection:sam3-finetune}) so that all four rotations of a given case fall in the same partition and each case is evaluated at inference by the fold that did not see it during training. At inference time we apply 4-rotation test-time augmentation\textemdash predicting on the input image plus its three CW rotations and cyclically shifting each prediction back to the original frame before averaging the softmax\textemdash and abstain (return zero rotation) whenever the top-class probability falls below 0.50. The abstention rule is what makes this reliable in practice: the failure mode is now ``no rotation'' rather than ``wrong rotation'', and the agent's positioning stage tolerates a missed rotation far better than an incorrect one.
+Many UK planning maps are laid out sideways on the page. We replace the agent's earlier visual rotation decision (which destroyed several cases by rotating documents that were already upright) with a learned 4-class ResNet50~\cite{he2016resnet} classifier over $\{0°, 90°, 180°, 270°\}$. Training data is generated by applying each of the four rotations to 211 maps confirmed upright by hand, yielding 844 samples; the split is by case using the same deterministic 5-fold assignment as the SAM~3 fine-tune so all four rotations of a given case fall in the same partition. The backbone is ImageNet-pretrained ResNet50 (V2 weights), full fine-tune at $768\times768$ input, ColorJitter + RandomErasing augmentation, AdamW (lr $10^{-4}$, weight-decay $10^{-4}$), cosine schedule, gradient clipped at norm 1.0, early stop patience 4. At inference we apply 4-rotation TTA\textemdash predicting on the input plus three CW rotations and cyclically shifting each prediction back to the original frame before averaging the softmax\textemdash and abstain (return zero rotation) whenever the top-class probability falls below 0.50.
 
-\subsection{Locate Sub-agent}
-\label{subsection:locate-cascade}
-
-The Locate sub-agent is a pydantic-ai \texttt{Agent} (Gemini~3~Flash at zero temperature) whose role is to choose one well-justified map centre per case. Its inputs are the rendered planning-map image and a filtered \texttt{PDFInfo} summary (site address, postcodes, grid references, road and place names, parish names, admin region, visible map labels, adjacency hints, the \texttt{is\_district\_wide} flag). Its output is a single \texttt{LocatePick}\textemdash a centre coordinate, an uncertainty radius $\sigma$, a confidence label, a short evidence string, and a boolean recording whether the pick was validated against the named local-authority polygon. Six tools wrap authoritative offline UK gazetteers and an LA polygon shapefile:
-
-\begin{itemize}[leftmargin=*,itemsep=2pt]
-  \item \texttt{postcode(pc)} resolves a UK postcode against OS Code-Point Open~\cite{os_code_point_open} (1.6M GB postcode unit centroids at sub-metre BNG; free under OGL v3); $\sigma\approx100$\,m.
-  \item \texttt{grid\_ref(gr)} parses an OS BNG letter+digit reference at any precision, returning a centre with $\sigma$ scaling from 100\,m (full eastings/northings) to 5\,km (two-letter prefix only).
-  \item \texttt{place(q, la?)} queries OS Open Names~\cite{os_open_names} (2.5M GB places and roads, OGL v3) for villages, hamlets, churches, schools, named buildings, and landmarks. The optional \texttt{la} argument filters to the named local-authority bounding box to suppress wrong-region homonyms.
-  \item \texttt{road(q, la?)} returns the centroid of an OML road-instance match within the optional LA bounding box, using a name-indexed cache derived from OS OpenMap Local.
-  \item \texttt{intersect(a, b, c?, la?)} computes the geometric intersection of 2--3 named road LineStrings (also from OML), which pins junctions to sub-100\,m precision when the document names cross-streets.
-  \item \texttt{la\_check(lat, lon, la)} tests whether a coord falls inside the named LA polygon from OS BoundaryLine~\cite{os_boundary_line} and returns the distance to the boundary (in km) when it does not; this is used both as a sanity check on a pick and as a letterhead filter on \texttt{PDFInfo.postcodes} (postcodes more than 5\,km from the named LA are dropped as likely council-letterhead noise).
-\end{itemize}
-
-The sub-agent's system prompt fixes a protocol: view the map for labels the reader missed, scan \texttt{PDFInfo} in decreasing order of signal specificity (SITE postcode $>$ grid reference $>$ house-number+road $>$ named landmark $>$ road name $>$ parish $>$ LA centroid), letterhead-check non-site postcodes via \texttt{la\_check}, build a pool of 2--4 candidate hits, cluster them, and emit the tightest consensus. $\sigma$ is set by the picked source: $\approx 200$\,m when two or more sources agree within $500$\,m, $300$--$500$\,m for a clean single signal, $800$--$1500$\,m for an ambiguous single signal, and the polygon's true radius for the LA-centroid fallback. The sub-agent is bounded to at most eight geocoder calls per case; on agent-loop failure an emergency LA-centroid pick is emitted so the Worker is guaranteed exactly one candidate to feed into Stage~3. When the Worker re-invokes \texttt{propose\_centers} after a weak match (low inliers or visual mismatch in the match panel), it can pass a free-text \texttt{match\_context} describing what went wrong; the sub-agent receives this together with its own prior conversation history (transcript carried on \texttt{AgentState.locate\_message\_history}) and is prompted to pick from a different signal type on the second pass.
-
-\subsection{Map-to-Tile Matching with MINIMA}
+\subsection{Matching (\texttt{match\_at}) Details}
 \label{subsection:matching}
 
-We use MINIMA~\cite{ren2025minima} on top of the LoFTR~\cite{sun2021loftr} backbone\textemdash a transformer-based dense matcher trained for image-to-tile correspondence under domain shift\textemdash as the workhorse of Stage~3. For each candidate centre the agent's \texttt{match\_at} tool resizes the planning map so that one map pixel corresponds to one tile pixel at the chosen Web-Mercator zoom (typically zoom 15--19; the best zoom is computed from the printed scale and the rendering DPI as $z = \log_2(C \cos\phi / m_{\text{px}})$, where $C \approx 156\,543$\,m is the equator pixel scale at zoom 0 and $\phi$ is the candidate latitude). The matcher is invoked at the chosen zoom plus its two neighbours and at $\pm15$\% scale perturbations of the chosen mpp; this absorbs both DPI metadata errors and printed scales that fall between the canonical 1:1250 / 1:2500 / 1:5000 grid points. The window stride is set to a target of $\approx100$ pixels per step (\texttt{WINDOW\_STRIDE\_TARGET=100}), with a 32-pixel floor that ensures sub-tile match positions are sampled densely on smaller tile canvases. RANSAC affine recovery uses single-seed estimation at a 10-pixel reprojection threshold; the 6-DOF fallback gates described in \Cref{subsection:alignment-pipeline} are applied unconditionally on top. The Delaunay-consistency filter is implemented over scipy's Delaunay triangulation\textemdash for each triangle we compute the source/target area ratio and discard triangles outside the band $[0.5, 2.0]$, then re-fit the affine on the surviving inliers, reverting to the original RANSAC fit whenever the filter would leave fewer than $\max(8, n_{\text{inliers}}/3)$ points.
+For each candidate centre the planning map is resized so that one map pixel corresponds to one tile pixel at the chosen Web-Mercator zoom; the best zoom is computed from the printed scale and the rendering DPI as $z = \log_2(C \cos\phi / m_{\text{px}})$, where $C \approx 156\,543$\,m is the equator pixel scale at zoom 0 and $\phi$ is the candidate latitude (zoom range 15--19 in practice). MINIMA~\cite{ren2025minima} (LoFTR~\cite{sun2021loftr} backbone, confidence threshold 0.2) is invoked at the chosen zoom plus its two neighbours and at $\pm15\%$ scale perturbations of the chosen mpp. The window stride targets $\approx 100$ pixels per step with a 32-pixel floor. RANSAC affine recovery uses 4-DOF (\texttt{cv2.estimateAffinePartial2D}) at a 10-pixel reprojection threshold; the 6-DOF (\texttt{cv2.estimateAffine2D}) fallback is committed only when its inlier count is at least $1.3\times$ the 4-DOF count and the recovered affine has positive determinant, $|b + c| < 0.15$ on the off-diagonals, aspect ratio above 0.85, and average scale within $[0.3, 3.0]$. The Delaunay-consistency filter~\cite{pierdicca2025delaunay} is then applied: for each Delaunay triangle on the inlier points we compute the source/target area ratio and discard triangles outside $[0.5, 2.0]$; the affine is re-fitted on the surviving inliers, reverting to the original RANSAC fit when the filter would leave fewer than $\max(8, n_{\text{inliers}}/3)$ points.
 
 \subsection{Tile Rendering}
 \label{subsection:tile-rendering}
 
-Tiles are rendered offline from the OS Open Zoomstack~\cite{os_open_zoomstack} GeoPackage\textemdash a $\approx750$\,MB OGL-v3 dataset that requires no API key. We use a dedicated styler that mimics the appearance of UK planning-map basemaps so that MINIMA's cross-modal gap is as small as possible: salmon-pink ($\#$FFB3B3) building footprints with grey outlines, white road fills with grey casings, light grey woodland, very light green greenspace, light blue surface water, and dark grey railways. Road widths scale with zoom (a Local Street is 1.5\,px wide at $z=17$ and proportionally wider at $z=18$/$z=19$); roads are drawn in two passes (casings first, fills on top) so that minor roads are correctly subordinated to major ones. The tile renderer projects geometry from BNG (EPSG:27700) through Web-Mercator (EPSG:3857) to per-tile pixels, with a 5\% bbox inflation to handle projection distortion at tile edges. Rendered tiles are cached to disk (\texttt{cache/os\_opendata\_tiles/}) keyed by zoom and BNG tile index; the first call for any case takes $\approx5$--20\,ms per tile and subsequent calls are sub-millisecond reads.
+Tiles are rendered offline from the OS Open Zoomstack~\cite{os_open_zoomstack} GeoPackage ($\approx 750$\,MB, OGL v3) by a styler that approximates UK planning-map basemaps: salmon-pink (\#FFB3B3) buildings with grey outlines, white road fills with grey casings, light green woodland, light blue surface water, dark grey railways. Road widths scale with zoom (a Local Street is 1.5\,px at $z=17$, proportionally wider at higher zoom); roads draw casings first then fills so minor roads are correctly subordinated to major. Geometry is projected from BNG (EPSG:27700) through Web-Mercator (EPSG:3857) to per-tile pixels with a 5\% bbox inflation. Rendered tiles are cached to disk keyed by zoom and BNG tile index; the first call for a case takes $\approx 5$--20\,ms per tile, subsequent calls are sub-millisecond reads.
 
-\subsection{SAM~3 Fine-Tuning with $k$-Fold Cross-Validation}
+\subsection{SAM~3 Fine-Tuning}
 \label{subsection:sam3-finetune}
 
-SAM~3~\cite{meta2025sam3} is fine-tuned with LoRA~\cite{hu2022lora} adapters on a curated dataset of hand-annotated UK planning boundaries (\Cref{appendix:dataset-prep}). We use rank-16 LoRA on every $\{q, k, v, o\}$ projection and on the two MLP projections ($fc_1$, $fc_2$) of every transformer subsystem (vision encoder, text encoder, geometry encoder, DETR encoder/decoder, mask decoder)\textemdash a deliberately broad scope, since restricting LoRA to the mask decoder alone produced markedly worse instance candidates in earlier ablations even though the loss only directly supervised the semantic head. The mask embedder, the presence head, and the semantic projection layer are added as fully trainable modules on top of the LoRA adapters via PEFT's \texttt{modules\_to\_save} mechanism. Training uses a combined loss over the semantic and instance heads, mirroring the SAM~3 author recipe:
+SAM~3~\cite{meta2025sam3} is fine-tuned with rank-16 LoRA~\cite{hu2022lora} adapters on every $\{q, k, v, o\}$ attention projection and the two MLP projections ($\text{fc}_1$, $\text{fc}_2$) of every transformer subsystem (vision encoder, text encoder, geometry encoder, DETR encoder/decoder, mask decoder)\textemdash deliberately broad, since restricting LoRA to the mask decoder alone produced markedly worse instance candidates in earlier ablations. The mask embedder, presence head, and semantic projection layer are fully trainable via PEFT's \texttt{modules\_to\_save}. LoRA $\alpha = 32$, dropout 0.05, bias \texttt{none}. The query phrase is fixed to ``planning boundary'' (the LoRA-trained anchor). Training jointly optimises the semantic and instance heads:
 \begin{align}
   \mathcal{L}_{\text{sem}} &= 5\,\mathcal{L}_{\text{focal}}^{\alpha=0.6,\gamma=1.6} + 5\,\mathcal{L}_{\text{dice}} + r(e) \cdot 0.5\,\mathcal{L}_{\text{surf}} \nonumber \\
   \mathcal{L}_{\text{inst}} &= 5\,\mathcal{L}_{\text{focal}}^{\alpha=0.25,\gamma=2} + 5\,\mathcal{L}_{\text{dice}} + 2\,\mathcal{L}_{\text{cls}} + \mathcal{L}_{\text{pres}} \nonumber \\
   \mathcal{L} &= \mathcal{L}_{\text{sem}} + \mathcal{L}_{\text{inst}}
   \label{eq:sam3-loss}
 \end{align}
-where $r(e) = \min(1, e/15)$ ramps the surface loss linearly over the first 15 epochs, the surface term penalises sigmoid prediction mass at signed-distance pixels far inside the boundary, and the instance focal+dice losses are computed on the slot selected by a Hungarian-style match (cost $= -\text{IoU} - 0.05\,\sigma(\text{cls}_i)$). The classification loss is a per-slot focal loss with a soft positive target $\sigma(\text{cls}_{\text{best}})^{0.25} \cdot \text{IoU}_{\text{best}}^{0.75}$ on the matched slot and zero elsewhere\textemdash this prevents the cls head from saturating to infinity on partially-correct masks while still anchoring slot identity across epochs. The presence BCE has target~1 everywhere because every training image contains a planning boundary; at inference the worker uses the presence head as a confidence gate. Training proceeds for up to 20 epochs with AdamW (lr $2 \times 10^{-4}$, cosine decay to 5\% of base, weight decay 0.01), batch size 1 with gradient accumulation 4, gradient clipping at 0.1, bf16 mixed precision on CUDA, and an early-stop patience of 6 epochs on semantic-head validation IoU.
+where $r(e) = \min(1, e/15)$ ramps the surface loss linearly over the first 15 epochs (the surface term penalises sigmoid prediction mass at signed-distance pixels far from the boundary). The instance focal+dice losses are computed on the slot selected by a Hungarian-style match with cost $-\text{IoU} - 0.05\,\sigma(\text{cls}_i)$. The classification loss is per-slot focal with a soft positive target $\sigma(\text{cls}_{\text{best}})^{0.25} \cdot \text{IoU}_{\text{best}}^{0.75}$ on the matched slot and zero elsewhere\textemdash this prevents the cls head from saturating on partially-correct masks while still anchoring slot identity across epochs. The presence BCE has target $= 1$ everywhere since every training image contains a planning boundary. Optimiser is AdamW (lr $2 \times 10^{-4}$, cosine decay to 5\% of base, weight-decay 0.01), batch size 1 with gradient accumulation 4, gradient clipping 0.1, bf16 mixed precision on CUDA, max 20 epochs, early-stop patience 6 epochs on semantic-head validation IoU.
 
-We use 5-fold cross-validation; the per-case fold assignment is produced by the longest-processing-time-first bin-packing scheme described in \Cref{appendix:dataset-prep}, which respects ``stay-together'' multi-page case groups and yields roughly balanced fold sizes. Each case is held out from training in exactly one fold. At inference time the model loader keeps each fold's adapter on disk and, before the first SAM~3 forward pass of a case, the worker calls \texttt{set\_fold\_for\_case} which canonicalises the case identifier, looks it up in the fold-assignment table, and activates the LoRA from the fold that excluded that case from training. This eliminates the possibility of GT leakage when benchmarking on cases that were part of the SAM~3 training pool, and lets us report results on the entire labelled set rather than a held-out partition. To increase effective training diversity from a small annotated pool we apply a style-transfer augmentation that re-renders each ground-truth boundary in a randomly chosen style and colour\textemdash solid outline, thick or thin outline, dashed, dotted, semi-transparent fill, opaque fill, or diagonal hatching\textemdash matching the visual diversity of real planning-map boundary annotations that a model trained on a single canonical style would otherwise miss.
+\paragraph{$k$-fold routing.}
+5-fold CV uses a deterministic longest-processing-time-first bin-packing assignment that preserves ``stay-together'' case groups (multi-page renders from a single source and twin sets of cases that share the same planning site are forced into the same fold). At inference the model loader keeps each fold's adapter on disk and \texttt{set\_fold\_for\_case} activates the LoRA from the fold that excluded the current case (training cases) or an MD5-hash assignment (deployment cases not in the training pool). This eliminates GT leakage when benchmarking on cases that were part of the SAM~3 training pool and lets us report results on the entire labelled set.
+
+\paragraph{Style-transfer augmentation.}
+To increase effective training diversity from a small annotated pool, every training sample is re-rendered (50\% probability) in one of eight randomly-chosen boundary styles: solid outline (3--10\,px), thick outline (10--20\,px), thin outline (1--3\,px), dashed, dotted, semi-transparent fill ($\alpha \in [0.2, 0.5]$), opaque fill, or diagonal hatching. Eleven colours are sampled uniformly. The existing boundary is faded (desaturate 70--100\%, blend toward local background mean) before the new style is drawn, and the drawn boundary is roughened with Gaussian blur, additive noise, and morphological roughening to mimic scan artefacts.
 
 \subsection{Mask Post-Processing}
 \label{subsection:mask-postproc}
 
-The raw SAM~3 mask is run through a three-step cleanup chain before contour extraction. First, \texttt{keep\_dominant\_components} drops connected components below 5\% of the largest component's area (with a 100-pixel absolute floor), filtering noise blobs while preserving genuine multi-region masks where the smaller regions are 20--80\% of the largest. Second, \texttt{expand\_thin\_mask} detects masks whose foreground covers less than 10\% of their own bounding-box area (i.e.\ thin outlines rather than filled regions) and dilates them with an elliptical kernel sized to $\approx1.5$\% of the bounding box's smaller dimension, accepting the result only when the new fill stays under 50\% of the image. Third, \texttt{fill\_mask\_holes} morphologically closes small interior gaps with an ellipse kernel sized to 1\% of the smaller image dimension and then fills any remaining holes by drawing the external contours filled. The cleaned mask is then converted to GeoJSON: external contours larger than 100 pixels are simplified by Douglas--Peucker with $\varepsilon = 3$\,px, projected through the committed affine into tile-canvas pixels, and converted to WGS84 via the inverse Web-Mercator transform. Polygons are explicitly closed and emitted as a single \texttt{Polygon} feature when there is one contour or as a \texttt{MultiPolygon} when there are several.
+The raw SAM~3 mask is run through a three-step cleanup chain before contour extraction. \texttt{keep\_dominant\_components} drops connected components below 5\% of the largest component's area (100-pixel absolute floor). \texttt{expand\_thin\_mask} detects masks whose foreground covers less than 10\% of their own bounding box and dilates them with an elliptical kernel sized to $\approx 1.5\%$ of the bounding box's smaller dimension, accepting the result only when fill stays under 50\% of the image. \texttt{fill\_mask\_holes} morphologically closes interior gaps with an ellipse kernel sized to 1\% of the smaller image dimension and fills remaining holes by drawing external contours filled. The cleaned mask is then converted to GeoJSON: external contours larger than 100 pixels are simplified by Douglas--Peucker ($\varepsilon = 3$\,px), projected through the committed affine into tile-canvas pixels, and converted to WGS84 via the inverse Web-Mercator. Polygons are explicitly closed and emitted as \texttt{Polygon} (one contour) or \texttt{MultiPolygon} (several).
+
+\subsection{Independent Critic}
+\label{subsection:critic-appendix}
+
+When enabled, the critic runs after the worker submits. It is a pydantic-ai \texttt{Agent} (same model family as the worker) whose output is a \texttt{CriticDirective}. Inputs are the top-3 stored candidates by total inliers (always including the worker's commit even when its inlier count puts it outside the top-3) sent as separate full-resolution images plus a text block listing per-(candidate, area\_group) metrics ($n_{\text{inliers}}$, road-name agreement, scale consistency). Each candidate image is LEFT|RIGHT: planning map with SAM~3 mask overlaid in translucent green on the left, OS-tile crop with the projected polygon outlined in red on the right. The critic must cite a concrete visual feature in its reasoning (named road, building block, junction) and outputs one of three actions: \texttt{approve}, \texttt{switch} (specifying \texttt{chosen\_candidate\_id}), or \texttt{retry\_locate}. A \texttt{switch} re-invokes the worker with the instruction to call \texttt{commit\_match} on the named candidate; a \texttt{retry\_locate} re-invokes the worker with the instruction to call \texttt{propose\_centers} with a \texttt{match\_context} string. Up to two iterations are allowed; if the geojson does not change between an action and the next state snapshot, the loop exits. The worker is opaque to the critic\textemdash its system prompt is never modified, and the re-invocation messages use neutral framing rather than naming a ``reviewer''.
 
 \subsection{Training Dataset Construction}
 \label{appendix:dataset-prep}
 
-The SAM~3 fine-tuning dataset is constructed from a three-stage hand-annotation pipeline. First, each of the 270 evaluation PDFs is rendered at DPI~200 without auto-rotation (so the annotator works in the same frame as the raw PDF render) and seeded with an initial polygon obtained by projecting the ground-truth GeoJSON through a cached affine from an earlier benchmark run. Second, a single annotator reviews each pre-rendered case in a browser-based Flask UI and either accepts the seeded polygon, edits its vertices to match the boundary actually drawn on the page, or rejects the case (typically when the PDF contains no usable map). Third, the curated annotations are copied into the training dataset with deterministic 5-fold assignment by a longest-processing-time-first bin-packing scheme that preserves ``stay-together'' case groups: multi-page renders from a single source (\texttt{A108P\_p4/p5/p6}, \texttt{A4D6A\_merged\_p9/p10}, etc.) and twin sets of cases that share the same planning site are forced into the same fold. The final training pool contains 211 cases; the per-fold split is approximately 42--43 validation cases per fold.
+The SAM~3 fine-tuning dataset is constructed from a three-stage hand-annotation pipeline. First, each evaluation PDF is rendered at DPI 200 without auto-rotation (so the annotator works in the raw render frame) and seeded with an initial polygon obtained by projecting the ground-truth GeoJSON through a cached affine from an earlier benchmark run. Second, a single annotator reviews each pre-rendered case in a browser-based Flask UI and either accepts the seeded polygon, edits its vertices to match the boundary actually drawn on the page, or rejects the case (typically when the PDF contains no usable map). Third, curated annotations are copied into the training dataset with deterministic 5-fold assignment by the bin-packing scheme above. The final training pool contains 211 annotated maps; the per-fold split is approximately 42--43 validation cases per fold.
+
+\subsection{System Prompts}
+\label{appendix:prompts}
+
+The four LLM agents each have a fixed system prompt enforced together with a pydantic schema for the output. Verbatim prompts are listed below (whitespace condensed for typesetting); the schemas and field-level descriptions are in \texttt{tools/agent/schemas.py}.
+
+\paragraph{Reader prompt (\texttt{READER\_SYSTEM\_PROMPT}).}
+\begin{quote}\small\sloppy
+``You are a UK planning document reader. Read every page of the PDF carefully and populate the \texttt{PDFInfo} schema. \emph{[Field-by-field guidance:]}\\
+\textbf{map\_page\_details:} one \texttt{MapPageMeta} entry per page that contains any map-like content; mark it \texttt{category=`match'} only if it is a real positionable map with a drawn planning boundary on a cartographic background; otherwise \texttt{`discard'}. Discard aggressively\textemdash false discards are worse than false matches. \texttt{area\_group=-1} for discards; for matches, pages of the same geographic area share the same integer (\texttt{0, 1, 2, \dots}); pages of the same area shown for different Schedule-2 class restrictions share the same area\_group and identical \texttt{area\_signature}. \texttt{boundary\_clarity} is \texttt{`clear'} only when the boundary is unambiguous to trace AND cartographic detail is visible around it; otherwise \texttt{`ambiguous'}. \texttt{detail\_level} is one of \texttt{close} (parcel), \texttt{medium} (neighbourhood), \texttt{wide} (town).\\
+\textbf{map\_pages:} ranked list of \texttt{category=`match'} page numbers. Within an area\_group, rank by boundary\_clarity, then wider detail\_level, then more cartographic detail. Do not rank by recency, DPI, or annotation density. Ordering across area\_groups is arbitrary.\\
+\textbf{postcodes / grid\_refs:} extract every UK postcode and OS grid reference, including from form fields and map title blocks.\\
+\textbf{is\_district\_wide / district\_name:} \texttt{true} when the boundary covers an entire borough/district/ward/parish/conservation area; \texttt{district\_name} is the standard UK admin name with a `UK' suffix, optionally with `\textbar' alternates.\\
+\textbf{site\_address:} the SITE address (not council/agent/architect office addresses).\\
+\textbf{directional\_modifier:} compact directional phrase if present (`Field north of 98 Pipers Lane'); null when ambiguous.\\
+\textbf{house\_number\_road\_pairs:} `<numbers> <road>'; collapse ranges (`126, 128, 130, 132 and 134 Norwich Road' $\rightarrow$ `126-134 Norwich Road'). Not parcel numbers.\\
+\textbf{parish\_names / admin\_region:} bare names.\\
+\textbf{likely\_town\_or\_city:} synthesised best guess from all signals; crucial for disambiguating homonymous road names.\\
+\textbf{visible\_map\_labels:} labels printed on the map image itself (copy verbatim).\\
+\textbf{adjacency\_hints:} named features explicitly adjacent (`adjoining X', `bordered by Y').''
+\end{quote}
+
+\paragraph{Worker prompt (\texttt{WORKER\_SYSTEM\_PROMPT}).}
+\begin{quote}\small\sloppy
+``You are the worker agent in a pipeline that extracts the application-site boundary from UK planning PDFs and projects it to a WGS84 GeoJSON polygon. \emph{[\dots]} Your tool surface is \texttt{propose\_centers} $\rightarrow$ \texttt{match\_at(page=N, \dots)} $\rightarrow$ \texttt{commit\_match} $\rightarrow$ return \texttt{BoundaryOutcome}, plus \texttt{lookup\_district} for documents covering an entire administrative area. SAM3 segmentation and GeoJSON projection are automatic.\\
+\textbf{Workflow:}\\
+1. \texttt{propose\_centers()}\textemdash one ranked candidate (lat/lon/sigma\_m/source).\\
+2. \texttt{match\_at(page=N, name, lat, lon)} on that candidate. Returns \texttt{total\_inliers} plus per\_group breakdown ($n_{\text{inliers}}$, road\_name\_agreement, scale\_consistency).\\
+3. Decide:\\
+\hspace*{1em} STRONG ($n_{\text{inliers}} \geq 50$ AND scale\_consistency $\geq 0.8$) $\rightarrow$ \texttt{commit\_match}.\\
+\hspace*{1em} BORDERLINE $\rightarrow$ MANDATORY: try at least one more \texttt{propose\_centers} candidate before committing.\\
+\hspace*{1em} scale\_consistency $<$ 0.5 with strong inliers ($\geq 80$) $\rightarrow$ trust inliers.\\
+\hspace*{1em} After 2+ \texttt{match\_at} attempts: pick the highest-total-inlier candidate and \texttt{commit\_match}; the call internally re-ranks with a 70\% penalty applied to candidates outside the reader's admin\_region polygon, so you don't need to verify LA containment yourself.\\
+4. Submit \texttt{BoundaryOutcome} with \texttt{status=`accepted'} (or \texttt{`district\_lookup'}).\\
+Budget: max 5 \texttt{match\_at} calls. No invented coordinates\textemdash every (lat, lon) must come from \texttt{propose\_centers}; to add a missing place, call \texttt{propose\_centers(extra\_terms=[\dots])}. After a weak match, you can re-call \texttt{propose\_centers(match\_context=`\dots')} describing what went wrong, and the locate sub-agent will pick from a different signal type. The pipeline always produces a polygon\textemdash never refuse.''
+\end{quote}
+
+\paragraph{Locate sub-agent prompt (\texttt{LOCATE\_SYSTEM\_PROMPT}).}
+\begin{quote}\small\sloppy
+``You are the LOCATE STAGE \emph{[\dots]}. Given pdf\_info text fields AND the rendered planning map image, produce ONE center coordinate (lat, lon) + uncertainty radius $\sigma$ + confidence. Six offline tools: \texttt{postcode}, \texttt{grid\_ref}, \texttt{place(q, la?)}, \texttt{road(q, la?)}, \texttt{intersect(road\_a, road\_b, la?, road\_c?)}, \texttt{la\_check(lat, lon, la)}.\\
+\textbf{Protocol:} (1) View the map carefully for labels missed by the reader. (2) Scan pdf\_info in decreasing specificity: full postcode IN site\_address (= SITE postcode, trust) $>$ grid\_ref $>$ house\_number + named road $>$ named place / landmark from pdf\_info OR map image $>$ road name (LA-filtered) $>$ parish $>$ LA centroid. (3) Letterhead-check postcodes: for each postcode not in site\_address, \texttt{la\_check}; drop if $>5$\,km from admin\_region. (4) Build a pool of 2--4 candidates from different signal types. (5) Cluster \& pick: 2+ candidates within 500\,m $\rightarrow$ $\sigma=200$, conf=high; clean single signal (SITE postcode, grid\_ref, intersect) $\rightarrow$ $\sigma=300$--500, high; single ambiguous (road, common place) $\rightarrow$ $\sigma=800$--1500, med; LA-only $\rightarrow$ $\sigma$ from tool, low. (6) Validate with \texttt{la\_check}. (7) Emit \texttt{LocatePick} to terminate. Budget: $\leq 8$ geocode calls.''
+\end{quote}
+
+\paragraph{Critic prompt (\texttt{CRITIC\_INSTRUCTIONS}).}
+\begin{quote}\small\sloppy
+``You are an independent reviewer of a UK planning-boundary extraction pipeline \emph{[\dots]}. You see ONE image per candidate (LEFT = planning map with SAM mask in green; RIGHT = OS tile with projected polygon in red) plus a metrics block listing $n_{\text{inliers}}$, road\_name\_agreement, and scale\_consistency per (candidate, area\_group). The committed candidate is tagged in both the panel label and the metrics block. Trace named roads, settlement shapes, building blocks between the planning map and the OS render; the drawn boundary on the planning map should sit where the red outlined polygon sits in the OS render. Decision (pick one): \texttt{approve} (committed candidate is correct), \texttt{switch} (a different stored candidate is visually better; specify it in \texttt{chosen\_candidate\_id}), \texttt{retry\_locate} (none of the candidates show good correspondence\textemdash agent should re-locate from a different geocoding signal). Reasoning MUST cite a concrete observation: a specific feature you saw matched or mismatched, or a specific metric. Never use vague language (`looks fine', `reasonable').''
+\end{quote}
 
 \end{document}
 

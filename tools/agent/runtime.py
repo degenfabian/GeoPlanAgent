@@ -34,13 +34,6 @@ from tools.agent.state import AgentState
 def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict:
     """Send the PDF to the reader agent, get a structured PDFInfo dict.
 
-    Augments the prompt with per-page text extracted via fitz (digital
-    pages) or OCR (scanned pages, ~60% of the eval). Gemini still does
-    its own PDF processing for vision-required fields (rotation, map
-    labels, boundary geometry), but exact-string fields benefit from
-    being given the ground-truth text. Text extraction is cached on disk
-    under cache/text_extraction/.
-
     Returns the PDFInfo dict plus a "_reader_tokens" key. On reader
     failure: an empty PDFInfo dict with an "error" key set.
     """
@@ -48,23 +41,6 @@ def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict
 
     if verbose:
         print(f"  Phase 1: reading PDF ({len(pdf_bytes) // 1024} KB)...")
-
-    try:
-        from tools.io.text_extraction import (extract_text_per_page,
-                                                format_for_reader_prompt)
-        page_texts = extract_text_per_page(pdf_path, use_cache=True, verbose=verbose)
-        text_block = format_for_reader_prompt(page_texts)
-        if verbose:
-            methods: Dict[str, int] = {}
-            for p in page_texts:
-                methods[p["method"]] = methods.get(p["method"], 0) + 1
-            print(f"  Phase 1: text extraction {dict(methods)}, "
-                  f"total {sum(p['chars'] for p in page_texts)} chars")
-    except Exception as e:
-        if verbose:
-            print(f"  Phase 1: text extraction failed ({e!s:.80}); "
-                  f"reader will rely on PDF binary only")
-        text_block = "(per-page text extraction unavailable)"
 
     model = resolve_model(model_name)
 
@@ -76,22 +52,7 @@ def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict
             [
                 BinaryContent(data=pdf_bytes, media_type='application/pdf'),
                 "Read this UK planning PDF and populate the PDFInfo schema "
-                "with all geographic information you can find.\n\n"
-                "Below is the PDF text already extracted by a dedicated OCR "
-                "pipeline (fitz for digital pages — 100% accurate; macOS "
-                "Vision for scanned pages — ~95-98% accurate). For ANY "
-                "exact-string "
-                "field — postcodes, grid_refs, site_address, "
-                "house_number_road_pairs, parish_names, admin_region, "
-                "district_name, scale — this TEXT BLOCK is the source of "
-                "truth. If the PDF image and the text block disagree on a "
-                "character (e.g. you 'see' NR15 2XE in the image but the "
-                "text block says NR16 1DJ), trust the TEXT BLOCK — it is "
-                "more accurate than re-reading the image.\n\n"
-                "If a page below says '(extraction failed; rely on PDF "
-                "image)', do your normal vision-OCR for that page only.\n\n"
-                "TEXT BLOCK (per page):\n\n"
-                f"{text_block}",
+                "with all geographic information you can find.",
             ],
             model=model,
             usage_limits=UsageLimits(request_limit=5),
@@ -268,7 +229,15 @@ def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
                 "name": a.get("name"),
                 "lat": a.get("lat"), "lon": a.get("lon"),
                 "total_inliers": a.get("total_inliers"),
-                "n_inliers": (a.get("match_info") or {}).get("n_inliers"),
+                # ``match_info`` lives inside per_group entries, not on
+                # the top-level attempt dict. Pull from the primary
+                # group so the debug file actually shows the inlier
+                # counts instead of always-null. Best-effort: degrade
+                # to None if no per_group / no match_info / etc.
+                "n_inliers": (
+                    ((a.get("per_group") or [{}])[0].get("match_info") or {})
+                    .get("n_inliers")
+                ),
             }
             for cid, a in (state.match_attempts or {}).items()
         },
@@ -453,40 +422,6 @@ def collect_agent_stats(
         except Exception:
             pass
     return agent_stats
-
-
-# ── Soft quality gate ─────────────────────────────────────────────────────
-
-def apply_quality_gate(state: AgentState, agent_rejected: bool,
-                        verbose: bool) -> None:
-    """Soft LOW_QUALITY gate: flag the result but never null the geojson —
-    partial IoU always beats no prediction.
-
-    Mutates state.accepted / state.accept_reason if the gate trips.
-    """
-    final_mi = state.current_result.get("match_info") or {}
-    if not (final_mi or agent_rejected):
-        return
-    _inl = final_mi.get("n_inliers", 0) or 0
-    _score = final_mi.get("score", 0) or 0
-    quant_reject = (_inl < 25 and _score < 15)
-    if not (quant_reject or agent_rejected):
-        return
-    prev_reason = state.accept_reason[:160] if state.accept_reason else ""
-    if agent_rejected and not quant_reject:
-        gate_reason = (
-            f"LOW_QUALITY (agent visual check flagged) "
-            f"(inliers={_inl}, score={_score:.1f}): {prev_reason}")
-    else:
-        gate_reason = (
-            f"LOW_QUALITY (inliers={_inl} < 25, score={_score:.1f} < 15). "
-            f"Agent said: {prev_reason}")
-    state.accepted = False
-    state.accept_reason = gate_reason
-    if verbose:
-        src = "agent visual" if agent_rejected and not quant_reject else "quality gate"
-        print(f"  {src.upper()}: flagging low-quality (inliers={_inl}, "
-              f"score={_score:.1f}) - keeping geojson for partial IoU")
 
 
 # ── Return-dict assembly ──────────────────────────────────────────────────

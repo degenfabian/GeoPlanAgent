@@ -132,10 +132,6 @@ class PDFInfo(BaseModel):
                     "can audit discards. Match category='match' "
                     "entries by page number against map_pages."
     )
-    n_pages: int = Field(
-        default=0,
-        description="Total page count of the PDF."
-    )
     road_names: List[str] = Field(
         default_factory=list,
         description="Named UK roads that appear in the document text OR on "
@@ -173,18 +169,6 @@ class PDFInfo(BaseModel):
     # These mirror things that downstream regex parsers currently extract
     # from site_address / notes. Having the LLM populate them directly is
     # more reliable than regex (handles paraphrasing, typos, mixed formats).
-
-    directional_modifier: Optional[str] = Field(
-        default=None,
-        description="Directional phrase from site_address in compact form, if "
-                    "present: '<direction> of <reference>'. Directions: north, "
-                    "south, east, west, NE, NW, SE, SW. Examples: "
-                    "'north of 98 Pipers Lane' → 'north of 98 Pipers Lane'; "
-                    "'Land rear of 26-64 Manor Road' → 'south of 26-64 Manor Road' "
-                    "(interpret 'rear of' as behind/south if no other cue); "
-                    "'land between A and B' → null (no unambiguous direction). "
-                    "Null if site_address has no clear directional offset."
-    )
 
     house_number_road_pairs: List[str] = Field(
         default_factory=list,

@@ -52,7 +52,15 @@ _HEADER = [
 
 _KEEP_COLS = ["NAME1", "TYPE", "LOCAL_TYPE",
               "GEOMETRY_X", "GEOMETRY_Y",
-              "DISTRICT_BOROUGH", "COUNTY_UNITARY", "COUNTRY"]
+              "DISTRICT_BOROUGH", "COUNTY_UNITARY", "COUNTRY",
+              # POPULATED_PLACE is the village/hamlet-level context
+              # column (filled on ~16% of rows). The context filter
+              # in ``search()`` iterates over POPULATED_PLACE, but
+              # without it in _KEEP_COLS the column was silently
+              # missing → the village-level disambiguation branch was
+              # a no-op (e.g. ``place("Manor Road", la="Cullivoe")``
+              # could not match by Cullivoe).
+              "POPULATED_PLACE"]
 
 # Sigma (meters) by LOCAL_TYPE — uncertainty about the planning-doc site
 # location given this gazetteer hit. The OS BLPU centroid is sub-metre
@@ -146,12 +154,21 @@ def _row_to_hit(row: pd.Series) -> Dict:
     name_full = ", ".join(p for p in (name, bo, co) if p)
     lat, lon = _bng_to_wgs84(float(row["GEOMETRY_X"]), float(row["GEOMETRY_Y"]))
     lt = row.get("LOCAL_TYPE", "") or ""
+    # Surface ``name``, ``admin_district`` and ``county`` as their own
+    # keys. The locate-agent's ``place`` tool reads them under those
+    # names — previously ``_row_to_hit`` only set ``name_full`` and
+    # folded district/county into it, so the LLM got nulls for all
+    # three disambiguation fields and had to spend extra ``la_check``
+    # calls.
     return {
         "name_full": name_full or name,
+        "name": name or None,
         "type": lt,
         "lat": float(lat), "lon": float(lon),
         "sigma_m": _sigma_for_type(lt),
         "source": f"os_open_names:{lt or 'unknown'}",
+        "admin_district": bo or None,
+        "county": co or None,
     }
 
 
@@ -290,9 +307,18 @@ def search(query: str, max_results: int = 10,
             pass
 
     if not idxs:
-        # Context filter eliminated everything? Retry globally.
+        # Context filter eliminated everything? Retry globally — but
+        # KEEP the bbox / radius constraints. A caller that supplied
+        # both context and a bbox is using the bbox as the stronger
+        # spatial signal (it's typically sub-borough); dropping it on
+        # the fallback would silently widen the recursive search to
+        # the whole UK and could return wrong-LA hits the bbox was
+        # supposed to prevent.
         if context and rows_pool is not df:
-            return search(query, max_results=max_results, context=None)
+            return search(query, max_results=max_results, context=None,
+                           bbox_wgs84=bbox_wgs84,
+                           bbox_center=bbox_center,
+                           bbox_radius_km=bbox_radius_km)
         return []
 
     rows = df.iloc[idxs]

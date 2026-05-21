@@ -56,15 +56,27 @@ def _normalize_la_name(s: str) -> str:
 
 
 def _add_la_variants(out: Dict[str, Any], name: str, geom):
-    """Insert (lower, normalized) → geom mappings, including useful aliases."""
+    """Insert (lower, normalized) → geom mappings, including useful aliases.
+
+    Every insertion is conditional (``if key not in out``) so that the
+    first layer to provide a given key wins. Combined with the
+    deterministic layer-load order in ``_load_la_polygons`` (district >
+    county > ceremonial), this guarantees that a name like "Bristol"
+    which appears in multiple layers resolves to the same polygon
+    across Python invocations. Previously the lowercase and ``(b)``
+    overwrites were unconditional, so set-iteration order of
+    ``layer_paths`` could change the resolved polygon between runs."""
     nm = name.lower()
-    out[nm] = geom
+    if nm not in out:
+        out[nm] = geom
     norm = _normalize_la_name(name)
     if norm and norm not in out:
         out[norm] = geom
     # Drop any "(b)" / "(district)" but keep the rest
     if " (b)" in nm:
-        out[nm.replace(" (b)", "")] = geom
+        bare = nm.replace(" (b)", "")
+        if bare not in out:
+            out[bare] = geom
     # Strip trailing district/borough
     for suffix in (" district", " borough", " london boro", " county"):
         if nm.endswith(suffix):
@@ -88,32 +100,59 @@ def _load_la_polygons() -> Dict[str, Any]:
     try:
         import geopandas as gpd
         out: Dict[str, Any] = {}
-        # Load all relevant layers
-        layer_paths = []
-        for fname in ("district_borough_unitary_region.shp",
-                       "county_region.shp",
-                       "boundary-line-ceremonial-counties_region.shp"):
-            paths = list(bdir.rglob(fname))
-            layer_paths.extend(paths)
-        # Also extract county shapefile from zip if not already
-        county_shp = bdir / "Data" / "GB" / "county_region.shp"
-        if not county_shp.exists():
+        # Load layers in a DETERMINISTIC precedence order. The first
+        # layer to set a name-key wins (see `_add_la_variants`).
+        # District/borough is the most specific administrative unit
+        # the rest of the pipeline uses (admin_region from the reader
+        # is typically the district, not the county), so it takes
+        # precedence. Counties and ceremonial counties fill in gaps for
+        # names not present at the district layer.
+        _LAYER_ORDER = (
+            "district_borough_unitary_region.shp",
+            "county_region.shp",
+            "boundary-line-ceremonial-counties_region.shp",
+        )
+        # Case-insensitive lookup so Linux case-sensitive filesystems
+        # don't silently drop the ceremonial-counties layer (the file
+        # ships as ``Boundary-line-ceremonial-counties_region.shp``
+        # with a capital B, but our pattern uses lowercase). macOS
+        # case-insensitive FS happens to work; Linux does not.
+        def _find_layer(fname: str):
+            lower = fname.lower()
+            for p in sorted(bdir.rglob("*.shp")):
+                if p.name.lower() == lower:
+                    return p
+            return None
+
+        # Extract layers from the OS BoundaryLine zip when ANY of the
+        # three required layers is missing on disk. Previously only the
+        # absence of ``county_region.shp`` triggered extraction, so a
+        # partial checkout missing only the ceremonial file would
+        # never re-extract.
+        missing_any = any(_find_layer(f) is None for f in _LAYER_ORDER)
+        if missing_any:
             zp = bdir / "bdline_essh.zip"
             if zp.exists():
                 import zipfile
                 with zipfile.ZipFile(zp) as z:
                     for member in z.namelist():
-                        if "county_region" in member or "ceremonial-counties" in member:
+                        ml = member.lower()
+                        if ("county_region" in ml
+                                or "ceremonial-counties" in ml
+                                or "district_borough_unitary" in ml):
                             try:
                                 z.extract(member, str(bdir))
                             except Exception:
                                 pass
-                paths = list(bdir.rglob("county_region.shp"))
-                layer_paths.extend(paths)
-                paths = list(bdir.rglob("boundary-line-ceremonial-counties_region.shp"))
-                layer_paths.extend(paths)
-
-        layer_paths = list(set(layer_paths))  # dedup
+        # Build layer_paths in `_LAYER_ORDER`. `seen` dedups across
+        # any duplicate copies that an rglob match might surface.
+        layer_paths = []
+        seen = set()
+        for fname in _LAYER_ORDER:
+            p = _find_layer(fname)
+            if p is not None and p not in seen:
+                seen.add(p)
+                layer_paths.append(p)
         if not layer_paths:
             print(f"  BoundaryLine: no LA shapefiles under {bdir}")
             _LA_POLYGONS = {}

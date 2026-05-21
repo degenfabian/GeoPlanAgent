@@ -117,11 +117,6 @@ additional rules):
 
 LOCATE-STAGE FIELDS (critical — downstream geocoding relies on these):
 
-- directional_modifier: if site_address says "Field north of 98 Pipers Lane",
-  "Land rear of 26 Manor Road", "Site east of the village", extract the
-  directional phrase in compact form. Null when there's no clear single
-  direction ("land between X and Y" is null).
-
 - house_number_road_pairs: parse ANY house numbers + named roads. Collapse
   ranges and lists into a single compact form — "126, 128, 130, 132 and 134
   Norwich Road" → ["126-134 Norwich Road"]. Preserve the actual road name

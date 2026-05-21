@@ -17,7 +17,8 @@ Usage:
     from tools.geo.code_point import lookup_postcode
     hit = lookup_postcode("AL1 3JE")
     # → {'lat': 51.7534, 'lon': -0.3361, 'easting': 515387, 'northing': 206398,
-    #    'sigma_m': 50, 'source': 'code_point_open'}
+    #    'sigma_m': 50, 'source': 'code_point_open',
+    #    'admin_district': 'St Albans'}
 
 Format: 122 CSVs in csv/Data/CSV/ (one per postcode area, e.g. al.csv).
 Columns: Postcode, Positional_Quality_Indicator, Eastings, Northings,
@@ -35,9 +36,20 @@ from typing import Dict, Optional
 # tools.geo.code_point.py after the 2026-05-13 reorg.
 ROOT = Path(__file__).resolve().parent.parent.parent
 CSV_DIR = ROOT / "os_opendata" / "code_point_open" / "csv" / "Data" / "CSV"
+_CODELIST_XLSX = (ROOT / "os_opendata" / "code_point_open" / "csv" / "Doc"
+                  / "Codelist.xlsx")
 
-_CACHE: Dict[str, Dict[str, tuple]] = {}  # area_lower -> {full_postcode -> (E, N)}
+# area_lower -> {full_postcode -> (E, N, district_code)} where
+# district_code is the GSS code (e.g. 'E07000240') for the resolving
+# admin district, or '' when the CSV row omitted it. Used by
+# `lookup_postcode` to surface a human-readable admin_district name.
+_CACHE: Dict[str, Dict[str, tuple]] = {}
 _TRANSFORMER = None
+# GSS code -> name, lazily loaded from the Codelist.xlsx that ships with
+# Code-Point Open. Resolves codes from DIS / LBO / MTD / UTA sheets
+# (district + borough + metropolitan + unitary). Empty dict if the
+# xlsx is missing or unreadable.
+_DISTRICT_NAMES: Optional[Dict[str, str]] = None
 
 
 def _normalize_postcode(pc: str) -> str:
@@ -62,7 +74,11 @@ def _area_for_postcode(pc_norm: str) -> str:
 
 
 def _load_area(area: str) -> Dict[str, tuple]:
-    """Lazy-load one area's CSV into memory. Returns {postcode: (E, N)}."""
+    """Lazy-load one area's CSV. Returns {postcode: (E, N, district_code)}.
+
+    district_code is parts[8] (the GSS Admin_District_Code, e.g.
+    'E07000240'). Empty string when missing. ``lookup_postcode``
+    resolves it to a human-readable name via ``_load_district_names``."""
     if area in _CACHE: return _CACHE[area]
     f = CSV_DIR / f"{area}.csv"
     if not f.exists():
@@ -78,10 +94,61 @@ def _load_area(area: str) -> Dict[str, tuple]:
                 e = int(parts[2]); n = int(parts[3])
             except (ValueError, IndexError):
                 continue
+            # Skip "no position available" postcodes — OS encodes these
+            # as BNG(0, 0) with PQ=90 (parts[1]). Without this guard,
+            # ``lookup_postcode`` returns a high-confidence σ=50m anchor
+            # at WGS84(49.77°N, -7.55°W) — the Celtic Sea — for 866 of
+            # 1.75M GB postcodes (0.05%). The locate-agent treats this
+            # as a sub-metre prior and wastes the search on open water.
+            # Same hazard the BNG-range guard in
+            # tools/geo/grid_ref.parse_easting_northing was added for.
+            if e == 0 and n == 0:
+                continue
+            try:
+                if len(parts) > 1 and int(parts[1].strip('"')) == 90:
+                    continue
+            except (ValueError, IndexError):
+                pass
+            dc = parts[8].strip('"') if len(parts) > 8 else ""
             # Postcodes in file are like '"AL1 1AG"' with single space
-            out[pc] = (e, n)
+            out[pc] = (e, n, dc)
     _CACHE[area] = out
     return out
+
+
+def _load_district_names() -> Dict[str, str]:
+    """Load GSS code → district name from Codelist.xlsx. Memoised.
+
+    Sheets DIS (district), LBO (London borough), MTD (metropolitan
+    district), UTA (unitary authority) cover every admin code that
+    appears in Code-Point Open. Each sheet has two columns
+    [Name, GSS code]; the header row is stored as the first data row
+    in pandas because Excel doesn't mark it as a header — so we read
+    raw and treat every row as data."""
+    global _DISTRICT_NAMES
+    if _DISTRICT_NAMES is not None:
+        return _DISTRICT_NAMES
+    if not _CODELIST_XLSX.exists():
+        _DISTRICT_NAMES = {}
+        return _DISTRICT_NAMES
+    try:
+        import pandas as pd
+        names: Dict[str, str] = {}
+        for sheet in ("DIS", "LBO", "MTD", "UTA"):
+            try:
+                df = pd.read_excel(_CODELIST_XLSX, sheet_name=sheet,
+                                    header=None, dtype=str)
+            except Exception:
+                continue
+            for _, row in df.iterrows():
+                name, code = str(row.iloc[0]).strip(), str(row.iloc[1]).strip()
+                if code and code.upper() != "NAN":
+                    names[code] = name
+        _DISTRICT_NAMES = names
+        return names
+    except Exception:
+        _DISTRICT_NAMES = {}
+        return _DISTRICT_NAMES
 
 
 def _bng_to_wgs84(easting: float, northing: float):
@@ -105,8 +172,9 @@ def lookup_postcode(postcode: str) -> Optional[Dict]:
         # Try with no space (some files might be inconsistent)
         coords = area_dict.get(pc_norm.replace(" ", ""))
     if coords is None: return None
-    e, n = coords
+    e, n, dcode = coords
     lat, lon = _bng_to_wgs84(e, n)
+    district_name = _load_district_names().get(dcode) if dcode else None
     return {
         "lat": float(lat), "lon": float(lon),
         "easting": int(e), "northing": int(n),
@@ -114,6 +182,8 @@ def lookup_postcode(postcode: str) -> Optional[Dict]:
         "source": "code_point_open",
         "name_full": f"Postcode {pc_norm}",
         "type": "postcode_unit",
+        "admin_district": district_name,
+        "admin_district_code": dcode or None,
     }
 
 
