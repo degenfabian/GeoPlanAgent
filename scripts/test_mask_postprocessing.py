@@ -28,14 +28,16 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+REPO = Path(__file__).resolve().parent.parent
+# Make `tools.*` importable when running the script from anywhere.
+sys.path.insert(0, str(REPO))
+
 import numpy as np
 from PIL import Image
 from shapely.geometry import shape
 
-REPO = Path(__file__).resolve().parent.parent
 BASELINE = REPO / "results/benchmark_v_this_is_the_MAXIMALLYFINALVERSION/gemini-flash"
 EVAL = REPO / "evaluation_data"
-PDFS = REPO / "evaluation_data"  # PDFs co-located with GT in each case dir
 
 
 def _iou(g1, g2) -> float:
