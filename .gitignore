@@ -6,9 +6,6 @@
 __pycache__/
 *.DS_Store
 
-# Reference clones, kept locally only
-claw-code/
-
 # Results and caches
 results/
 cache/
@@ -24,38 +21,28 @@ os_opendata/
 *.log
 *.out
 
-# External dependency repos (cloned, not part of this project)
-MapSAM/
-MapSAM2/
+# External dependency repo (cloned, not part of this project)
 MINIMA/
-MatchAnything/
 
-# Model weights (large files). Track README.md so the layout + paper
-# numbers are documented even when the binary weights aren't shipped.
-models/*
-!models/README.md
+# Model weights — only the multi-GB .pt files are ignored. Track everything
+# else under models/: README, cv_summary.{json,csv}, per-fold history.json,
+# fold_assignment.json, kfold_summary.json. These total ~70 KB and let a
+# reviewer cloning the repo recompute the paper table without the .pt files.
+# PEFT-format adapters (adapter_model.safetensors) are also ignored — they're
+# multi-MB binary artifacts intended for separate release.
+models/**/*.pt
+models/**/*.safetensors
+
+# Training scratch dirs — never committed; future runs may populate any of
+# these. Keep the prophylactic ignores so a quick training experiment doesn't
+# accidentally stage gigabytes of intermediate state.
 training/outputs/
 training/synthetic_data/
 training/controlnet_data/
 training/data/
-training/dataset_v5/
-
-# Annotation datasets (training data)
-boundary_annotation_dataset/
-boundary_annotation_curated/
-boundary_annotation_v2_auto/
-
-# boundary_annotation_v3/: the annotation tool's working dir. Keep the
-# user's saved edits (edited.json / edited_mask.png) tracked; ignore the
-# regeneratable bulk (map.png ~10-32 MB each, initial.json ~100 KB each).
-boundary_annotation_v3/*/map.png
-boundary_annotation_v3/*/initial.json
-road_annotation_dataset/
 
 # Claude Code internal state
 .claude/
-
-# External clones (kept locally, large)
 
 # overnight/ is local scratch — experiments, research notes, debug dumps.
 # Nothing in here needs to be in the public repo.
@@ -69,37 +56,19 @@ cases_iou_below_*/
 cases_iou_at_or_above_*/
 verifier_dataset/
 
-# loftr_probe experiment — generated data + weights, easy to nuke
-experiments/loftr_probe/pairs/
-experiments/loftr_probe/outputs/
-
-# sam3_v8_replay experiment outputs (easy to nuke)
-experiments/sam3_v8_replay/results.*
-
-
-# Renamed dirs (post 2026-05-14 reorg)
-# boundary_annotations/ replaces the v3 path; same selective-tracking pattern
-# (keep edited.json + edited_mask.png; ignore map.png + initial.json).
+# boundary_annotations/: keep the user's saved edits tracked (edited.json
+# + edited_mask.png); ignore the regeneratable bulk (map.png ~10-32 MB
+# each, initial.json ~100 KB each).
 boundary_annotations/*/map.png
 boundary_annotations/*/initial.json
 boundary_annotations/*/initial.json.bak
 
-# training/dataset/ replaces dataset_v6/. Heavy PNGs; only keep manifests.
+# training/dataset/: heavy PNGs; only keep manifests
+# (fold_assignment.json, rotation_annotations.json) tracked.
 training/dataset/maps/
 training/dataset/boundary_masks/
-
-# More experiment-output gitignores
-experiments/sam3_v8_replay/regression_renders/
-experiments/sam3_v8_replay/augmentation_samples/
-experiments/inspire_snap_results.json
 
 # OML road index/geometry — large (423MB / 41MB), regenerable via
 # tools/build_oml_road_index.py from OS OpenMap Local source data.
 tools/oml_road_index.json
 tools/oml_road_geom_subset.json
-
-# Geocoder/websearch caches — regenerable, no in-repo consumer reads them.
-tools/data/
-
-# External clones (mast3r etc.) — large third-party repos, local only
-external/
