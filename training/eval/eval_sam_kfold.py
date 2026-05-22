@@ -5,9 +5,10 @@ training conditions.
 This is the source of truth for ``models/sam3_lora/cv_summary.{json,csv}``
 (written at end of run). The trainer used to write that summary itself,
 but its `best_row` lookup was keying on `"val_iou"` while the history
-stores `"val_sem_iou"` — the silent fallback to `history[-1]` meant
+stored `"val_sem_iou"` — the silent fallback to `history[-1]` meant
 cv_summary reported final-epoch (post-overfit) metrics, not best-epoch
-ones. Computing the summary from `best.pt` directly side-steps that.
+ones. Computing the summary from the saved PEFT adapter directly
+side-steps that.
 
 F1 and dice are mathematically identical for binary masks (both equal
 2·TP / (2·TP + FP + FN)), so we report F1 only.
@@ -23,7 +24,7 @@ from pathlib import Path
 import numpy as np
 import torch
 import torch.nn.functional as F
-from peft import LoraConfig, PeftModel, get_peft_model
+from peft import PeftModel
 from torch.utils.data import DataLoader
 from transformers import Sam3Model, Sam3Processor
 
@@ -37,13 +38,11 @@ from training.train_sam3_kfold import (
     FoldDataset, collate, seed_everything,
     _ensure_pred_mask_on_gt, _autocast_ctx,
     _build_manifest_from_disk,
-    LORA_TARGET_MODULES, MODEL_ID,
+    MODEL_ID,
     DATASET_DIR as TRAIN_DATASET_DIR,
 )
 
 MODELS_DIR = REPO / "models" / "sam3_lora"
-HEAD_MODULES = ["mask_embedder", "presence_head", "semantic_projection"]
-RANK = 16
 BF16 = True  # match training's autocast
 
 device = "mps" if torch.backends.mps.is_available() else (
@@ -98,45 +97,26 @@ def main():
                                  num_workers=0, collate_fn=collate)
         cases = [e["case"] for e in val_ds.entries]
 
-        # ── Load fold's checkpoint ─────────────────────────────────────
-        # Prefer PEFT format (adapter_config.json + adapter_model.safetensors,
-        # ~76 MB) — written by training/migrate_sam3_to_peft.py and the
-        # updated trainer. Fall back to raw best.pt (~3.6 GB state-dict +
-        # optim + scheduler) only for legacy local checkpoints.
-        #
-        # We rebuild the model per fold rather than re-using a single
-        # PeftModel + load_state_dict: PEFT's blessed loader does NOT
-        # touch the frozen base model state, so the only correct way to
-        # ensure a clean fold-to-fold swap with PEFT files is a fresh
-        # base each time. The byte-identical equivalence between this
-        # path and the old strict=True load is verified in
-        # training/migrate_sam3_to_peft.py output.
+        # ── Load fold's PEFT checkpoint ───────────────────────────────
+        # We rebuild the base + PEFT wrapper per fold rather than re-using
+        # a single PeftModel: PEFT's blessed loader does NOT touch the
+        # frozen base model state, so the only correct way to ensure a
+        # clean fold-to-fold swap is a fresh base each iteration. Slower
+        # by ~30s/fold but byte-identical to the old load_state_dict path
+        # (verified at migration time, see training/migrate_sam3_to_peft.py
+        # output: max abs diff 0.00e+00 across all 1008 trainable tensors).
         fold_dir = MODELS_DIR / f"fold_{fold}"
-        peft_cfg = fold_dir / "adapter_config.json"
-        legacy_pt = fold_dir / "best.pt"
-        meta_p = fold_dir / "training_meta.json"
-
-        base = Sam3Model.from_pretrained(MODEL_ID, token=hf_token)
-        if peft_cfg.exists():
-            model = PeftModel.from_pretrained(base, str(fold_dir)).to(device)
-            meta = json.loads(meta_p.read_text()) if meta_p.exists() else {}
-            ckpt_format = "PEFT"
-        elif legacy_pt.exists():
-            cfg = LoraConfig(r=RANK, lora_alpha=RANK * 2,
-                            target_modules=LORA_TARGET_MODULES,
-                            lora_dropout=0.05, bias="none",
-                            modules_to_save=HEAD_MODULES)
-            model = get_peft_model(base, cfg).to(device)
-            ckpt = torch.load(legacy_pt, map_location="cpu", weights_only=False)
-            model.load_state_dict(ckpt["state_dict"], strict=True)
-            meta = ckpt
-            ckpt_format = "best.pt"
-        else:
-            print(f"fold {fold}: no checkpoint found at {fold_dir}, skipping")
+        if not (fold_dir / "adapter_config.json").exists():
+            print(f"fold {fold}: no PEFT adapter at {fold_dir}, skipping")
             continue
+        base = Sam3Model.from_pretrained(MODEL_ID, token=hf_token)
+        model = PeftModel.from_pretrained(base, str(fold_dir)).to(device)
         model.eval()
 
-        print(f"\n=== fold {fold}: {len(val_ds)} cases  [{ckpt_format}] | "
+        meta_p = fold_dir / "training_meta.json"
+        meta = json.loads(meta_p.read_text()) if meta_p.exists() else {}
+
+        print(f"\n=== fold {fold}: {len(val_ds)} cases | "
               f"epoch {meta.get('epoch')} | "
               f"reported best_val_iou {meta.get('best_val_iou', 0) or 0:.4f} ===")
 

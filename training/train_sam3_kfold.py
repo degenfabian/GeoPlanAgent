@@ -13,14 +13,17 @@ heads contribute to the loss:
                          useful alternatives at inference.
 
 Per-fold checkpoints land in models/sam3_lora/fold_<k>/:
-  latest.pt                  rewritten every epoch — resume target
-                             (~3.6 GB: full state-dict + optim + sched;
-                             safely deletable after training completes)
+  latest/                    PEFT adapter + trainer_state.pt sidecar
+                             (~150 MB: LoRA+heads adapter + AdamW moment
+                             buffers + scheduler + epoch/history); rewritten
+                             every epoch as the resume target. Safely
+                             deletable after training completes.
   adapter_config.json        rewritten when val IoU improves; PEFT
   adapter_model.safetensors    publication format (~76 MB total for LoRA
                              + saved heads). Production loads via
                              tools.extraction.sam3.load_sam3_ft, which
-                             prefers this format over best.pt.
+                             reads this format directly via
+                             PeftModel.from_pretrained.
   training_meta.json         epoch / best_val_iou / config that PEFT's
                              save_pretrained drops on its own.
   history.json               per-epoch train/val loss + IoU for analysis
@@ -537,33 +540,38 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(
         optim, T_max=max(1, total_steps), eta_min=args.lr * 0.05)
 
-    # Resume
+    # Resume from PEFT-format latest dir (LoRA + heads adapter + a small
+    # trainer_state.pt with optimizer/scheduler/epoch/etc.). Total ~150 MB
+    # per fold vs the old ~3.6 GB latest.pt — same correctness, 24× less
+    # disk pressure during training.
     start_epoch = 0
     best_val_iou = 0.0
     epochs_since_best = 0
     history: List[Dict] = []
-    latest_p = out_dir / "latest.pt"
-    if args.resume and latest_p.exists():
-        ckpt = torch.load(latest_p, map_location="cpu", weights_only=False)
-        # strict=True surfaces LoRA-target-module additions or renames
-        # immediately. PEFT produces a stable key set for the same config,
-        # so this should never hit unless config drifted between runs.
-        model.load_state_dict(ckpt["state_dict"], strict=True)
-        optim.load_state_dict(ckpt["optim"])
-        # Restore scheduler state directly when present (saved post-fix);
-        # fall back to the legacy replay path for older checkpoints that
-        # didn't persist sched state. The replay works for stateless
-        # schedulers like CosineAnnealingLR but won't survive a switch
-        # to a stateful one (OneCycleLR, anything with momentum).
-        if "sched" in ckpt:
-            sched.load_state_dict(ckpt["sched"])
-        else:
-            for _ in range(ckpt["global_step"]):
-                sched.step()
-        start_epoch = ckpt["epoch"] + 1
-        best_val_iou = ckpt.get("best_val_iou", 0.0)
-        epochs_since_best = ckpt.get("epochs_since_best", 0)
-        history = ckpt.get("history") or []
+    latest_dir = out_dir / "latest"
+    if args.resume and (latest_dir / "adapter_config.json").exists():
+        # Re-attach the saved adapter on top of the freshly-built base model.
+        # set_peft_model_state_dict expects the same key shape get_peft_model
+        # produces, which the trainer's LoraConfig guarantees.
+        from peft import set_peft_model_state_dict
+        from safetensors.torch import load_file
+        adapter_state = load_file(latest_dir / "adapter_model.safetensors")
+        # set_peft_model_state_dict adapts loaded keys to the model's
+        # current adapter_name ("default"); strict in spirit since any
+        # missing/unexpected key indicates a config drift.
+        res = set_peft_model_state_dict(model, adapter_state)
+        if res.unexpected_keys:
+            raise RuntimeError(f"Resume: unexpected keys "
+                                f"{res.unexpected_keys[:5]} — config drift")
+        # Restore optimizer + scheduler + bookkeeping from the sidecar.
+        ts = torch.load(latest_dir / "trainer_state.pt",
+                        map_location="cpu", weights_only=False)
+        optim.load_state_dict(ts["optim"])
+        sched.load_state_dict(ts["sched"])
+        start_epoch = ts["epoch"] + 1
+        best_val_iou = ts.get("best_val_iou", 0.0)
+        epochs_since_best = ts.get("epochs_since_best", 0)
+        history = ts.get("history") or []
         print(f"  Resumed at epoch {start_epoch}, best_val_iou={best_val_iou:.3f}, "
               f"epochs_since_best={epochs_since_best}")
 
@@ -754,11 +762,26 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
         else:
             epochs_since_best += 1
 
-        # Save checkpoint. Includes scheduler state (so resume doesn't have
-        # to replay sched.step() count-by-count, which only worked for
-        # stateless schedulers).
-        ckpt = {
-            "state_dict": model.state_dict(),
+        # Per-epoch persistence — both best and latest use PEFT format.
+        # `latest/`     resume target: adapter + trainer_state.pt sidecar
+        #               (~150 MB; deletable after training completes)
+        # `<fold dir>`  best-IoU adapter: ships as the publication artifact
+        #               (~76 MB; what gets uploaded to HuggingFace/GH Release)
+        config = {"rank": args.rank, "lr": args.lr,
+                  "epochs": args.epochs, "batch_size": args.batch_size,
+                  "grad_accum": args.grad_accum,
+                  "oversample": args.oversample,
+                  "num_workers": args.num_workers,
+                  "seed": args.seed,
+                  "bf16": bool(args.bf16),
+                  "patience": args.patience}
+
+        # Latest: PEFT adapter + a small sidecar for optimizer/scheduler/
+        # bookkeeping. PEFT save_pretrained writes the adapter; torch.save
+        # writes the sidecar.
+        latest_dir = out_dir / "latest"
+        model.save_pretrained(str(latest_dir))
+        torch.save({
             "optim": optim.state_dict(),
             "sched": sched.state_dict(),
             "epoch": epoch,
@@ -767,37 +790,24 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
             "epochs_since_best": epochs_since_best,
             "history": history,
             "fold": fold,
-            "config": {"rank": args.rank, "lr": args.lr,
-                        "epochs": args.epochs, "batch_size": args.batch_size,
-                        "grad_accum": args.grad_accum,
-                        "oversample": args.oversample,
-                        "num_workers": args.num_workers,
-                        "seed": args.seed,
-                        "bf16": bool(args.bf16),
-                        "patience": args.patience},
-        }
-        torch.save(ckpt, latest_p)
+            "config": config,
+        }, latest_dir / "trainer_state.pt")
+
         if new_best:
-            # Save the publication-ready PEFT format:
-            #   adapter_config.json       (~1 KB)
-            #   adapter_model.safetensors (~76 MB) — LoRA + saved heads only
-            # vs the full state_dict in latest.pt (~3.6 GB, base + LoRA +
-            # optim + sched). The frozen base lives in HuggingFace's
-            # facebook/sam3 repo, so production reload via
-            # PeftModel.from_pretrained reconstructs the same model state
-            # for 50× less disk. (Verified byte-identical against the old
-            # best.pt format in training/migrate_sam3_to_peft.py.)
+            # Best-IoU adapter — what the eval script + production loader
+            # read. Verified byte-identical against the old best.pt format
+            # via training/migrate_sam3_to_peft.py (max abs diff 0.00e+00
+            # across all trainable params).
             model.save_pretrained(str(out_dir))
-            # save_pretrained drops epoch/val_iou/config; preserve them
-            # alongside so the eval script + cv_summary writer can still
-            # report which epoch produced this best.
+            # save_pretrained drops epoch/val_iou/config; preserve them so
+            # eval + cv_summary can still report which epoch produced this.
             (out_dir / "training_meta.json").write_text(json.dumps({
                 "epoch": epoch,
                 "global_step": global_step,
                 "best_val_iou": best_val_iou,
                 "epochs_since_best": epochs_since_best,
                 "fold": fold,
-                "config": ckpt["config"],
+                "config": config,
             }, indent=2))
             print(f"    new best val_iou={best_val_iou:.3f}, saved PEFT adapter")
         (out_dir / "history.json").write_text(json.dumps(history, indent=2))
