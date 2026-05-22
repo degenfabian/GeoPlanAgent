@@ -1,30 +1,34 @@
-"""5-fold rotation classifier training using SAM3's exact fold assignment.
+"""5-fold rotation classifier training (ResNet50, ImageNet pre-trained).
 
 Inputs:
   - boundary_annotations/<case>/map.png  (the rendered map images)
-  - rotation_annotations.json            (corrective-rotation labels in
-                                           degrees, hand-annotated)
+  - training/dataset/rotation_annotations.json  (corrective-rotation
+    labels in degrees, hand-annotated)
 
-Fold routing is borrowed verbatim from SAM3
-(``tools.extraction.sam3._fold_for_case`` + the existing
-``models/sam3_lora/fold_assignment.json``). A case routed to fold K at
-SAM3 inference is the same case routed to fold K here, so the rotation
-classifier's hold-out partition matches SAM3's.
+Fold routing is shared with SAM3 via tools.core.fold_routing + the
+existing models/sam3_lora/fold_assignment.json. A case routed to fold
+K at SAM3 inference is the same case routed to fold K here, so the
+rotation classifier's hold-out partition matches SAM3's.
 
 Each labelled case generates 4 training samples by applying all 4 CW
-rotations to the image — the corrective rotation of the rotated image is
-(R - k) mod 360 where R is the annotation and k is the applied rotation.
-This makes the training set class-balanced regardless of the heavy 0°
-skew in the raw annotations (189/15/1/6 in our case).
+rotations to the image — the corrective rotation of the rotated image
+is (R - k) mod 360 where R is the annotation and k is the applied
+rotation. This makes the training set class-balanced regardless of the
+heavy 0° skew in the raw annotations.
 
 Output: models/rotation_classifier_kfold/fold_K/best.pt + history.json
 plus a top-level fold_assignment.json copied from SAM3 for the 211
-annotated cases (so this training output is self-contained at inference
-time).
+annotated cases (so this training output is self-contained at
+inference time).
 
-Run:   uv run python training/train_rotation_kfold.py
-       uv run python training/train_rotation_kfold.py --folds 0,1      (subset)
-       uv run python training/train_rotation_kfold.py --epochs 15
+This module also exposes the shared model + utilities used by
+``training/eval/eval_rotation_kfold.py``: RotationClassifier,
+KFoldRotationDataset, evaluate, seed_everything, _make_transform,
+CLASS_DEGREES, etc.
+
+Run:   uv run python training/train_rotation.py
+       uv run python training/train_rotation.py --folds 0,1      (subset)
+       uv run python training/train_rotation.py --epochs 15
 """
 
 from __future__ import annotations
@@ -41,34 +45,130 @@ from pathlib import Path
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
+import random
+
 import cv2
+import numpy as np
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
+import torchvision.models as tv_models
+import torchvision.transforms as T
 
 THIS = Path(__file__).resolve().parent
 REPO = THIS.parent
 sys.path.insert(0, str(REPO))
 
-# Reuse the existing trainer's helpers — model, transforms, eval, constants.
-from training.train_rotation_classifier import (  # noqa: E402
-    APPLIED_ROTATIONS_CW,
-    CLASS_DEGREES,
-    CV2_ROTATE_CODES,
-    IMAGENET_MEAN,
-    IMAGENET_STD,
-    RotationClassifier,
-    RotationDataset,  # we'll wrap, not inherit — keeps it simple
-    evaluate,
-    seed_everything,
+# Reuse SAM3's fold routing verbatim.
+from tools.core.fold_routing import (  # noqa: E402
+    N_FOLDS,
+    fold_for_case as _fold_for_case,
+    normalise_case_name as _normalise_case_name,
 )
 
-# Reuse SAM3's fold routing verbatim.
-from tools.extraction.sam3 import (  # noqa: E402
-    N_FOLDS,
-    _fold_for_case,
-    _normalise_case_name,
-)
+
+# ── Shared constants ────────────────────────────────────────────────────────
+
+CLASS_DEGREES = [0, 90, 180, 270]  # class_idx → degrees CW to make upright
+
+# These are the rotations APPLIED to upright training images. Their inverse
+# (the rotation needed to UNDO them, i.e. the model's target class) is the
+# label.
+APPLIED_ROTATIONS_CW = [0, 90, 180, 270]
+
+CV2_ROTATE_CODES = {
+    90: cv2.ROTATE_90_CLOCKWISE,
+    180: cv2.ROTATE_180,
+    270: cv2.ROTATE_90_COUNTERCLOCKWISE,
+}
+
+IMAGENET_MEAN = [0.485, 0.456, 0.406]
+IMAGENET_STD = [0.229, 0.224, 0.225]
+
+
+# ── Shared model + utilities ────────────────────────────────────────────────
+
+def seed_everything(seed: int = 42) -> torch.Generator:
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+    g = torch.Generator()
+    g.manual_seed(seed)
+    return g
+
+
+class RotationClassifier(nn.Module):
+    """ResNet50 (ImageNet-pretrained) full fine-tune.
+
+    Tried DINOv2 frozen first; it hit val_acc≈0.51. The DINOv2 SSL
+    objective makes features rotation-INVARIANT (good for "what is this"
+    classification, bad for "what rotation is this"). ImageNet
+    classification training preserves rotation-sensitive features
+    (upside-down cat ≠ upright cat) — exactly what we want here.
+    Full fine-tune adapts the late layers to planning-map appearance
+    while keeping the rotation-discriminative early features.
+    """
+
+    def __init__(self, n_classes: int = 4):
+        super().__init__()
+        self.backbone = tv_models.resnet50(
+            weights=tv_models.ResNet50_Weights.IMAGENET1K_V2)
+        in_features = self.backbone.fc.in_features
+        self.backbone.fc = nn.Linear(in_features, n_classes)
+
+    def forward(self, x):
+        return self.backbone(x)
+
+
+def _make_transform(img_size: int, train: bool):
+    """Image preprocessing pipeline.
+
+    Train: RandomResizedCrop + ColorJitter + RandomErasing kill the case-
+    identity shortcut so the model has to use rotation-discriminative
+    features (text orientation, north arrows, scale bar position) rather
+    than memorising layouts. No horizontal flip — that would change the
+    rotation label.
+
+    Eval: plain resize + normalise.
+    """
+    if train:
+        return T.Compose([
+            T.ToPILImage(),
+            T.RandomResizedCrop(img_size, scale=(0.6, 1.0),
+                                ratio=(0.85, 1.18), antialias=True),
+            T.ColorJitter(brightness=0.3, contrast=0.3,
+                          saturation=0.15, hue=0.05),
+            T.ToTensor(),
+            T.Normalize(IMAGENET_MEAN, IMAGENET_STD),
+            T.RandomErasing(p=0.4, scale=(0.02, 0.18),
+                            ratio=(0.3, 3.3), value=0),
+        ])
+    return T.Compose([
+        T.ToPILImage(),
+        T.Resize((img_size, img_size), antialias=True),
+        T.ToTensor(),
+        T.Normalize(IMAGENET_MEAN, IMAGENET_STD),
+    ])
+
+
+def evaluate(model, loader, device) -> tuple[float, float]:
+    model.eval()
+    n_correct, n_total = 0, 0
+    losses = []
+    with torch.no_grad():
+        for x, y in loader:
+            x = x.to(device)
+            y = y.to(device)
+            logits = model(x)
+            loss = F.cross_entropy(logits, y)
+            losses.append(loss.item())
+            preds = logits.argmax(dim=-1)
+            n_correct += (preds == y).sum().item()
+            n_total += y.numel()
+    return sum(losses) / max(1, len(losses)), n_correct / max(1, n_total)
 
 
 # Inputs
@@ -132,13 +232,7 @@ class KFoldRotationDataset(Dataset):
         self.labels = labels
         self.train = train
         self.samples = [(c, k) for c in cases for k in APPLIED_ROTATIONS_CW]
-        # Reuse the transform pipeline from the existing trainer's Dataset —
-        # the transform list is identical (RandomResizedCrop + ColorJitter +
-        # RandomErasing for train, plain resize for eval), so we instantiate
-        # a one-case dummy RotationDataset just to harvest its `.transform`.
-        helper = RotationDataset(cases=cases[:1] if cases else ["__dummy__"],
-                                  img_size=img_size, train=train)
-        self.transform = helper.transform
+        self.transform = _make_transform(img_size, train=train)
         self.img_size = img_size
 
     def __len__(self) -> int:

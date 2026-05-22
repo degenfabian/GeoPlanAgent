@@ -8,7 +8,6 @@ Outputs:
   training/dataset/maps/<case>.png            — copied map
   training/dataset/boundary_masks/<case>.png  — copied mask
   training/dataset/manifest.json              — per-case {case, filename, fold, group_key, ...}
-  training/dataset/manifest.csv               — same as JSON for inspection
   training/dataset/fold_assignment.json       — {case_name: fold} for production lookup
 
 Fold assignment uses LPT (longest-processing-time-first) bin-packing for
@@ -22,7 +21,6 @@ Re-running the script is idempotent (same input → bit-identical output).
 """
 from __future__ import annotations
 
-import csv
 import hashlib
 import json
 import os
@@ -139,14 +137,6 @@ def main() -> int:
     # manifest.json
     (OUT_ROOT / "manifest.json").write_text(
         json.dumps(cases, indent=2, sort_keys=True))
-
-    # manifest.csv
-    with open(OUT_ROOT / "manifest.csv", "w", newline="") as fh:
-        w = csv.DictWriter(fh, fieldnames=["case", "filename",
-                                            "fold", "group_key",
-                                            "map_src", "mask_src"])
-        w.writeheader()
-        for c in cases: w.writerow(c)
 
     # fold_assignment.json — production reads {case_name: fold}. We write
     # BOTH the original folder name AND the canonical underscore form

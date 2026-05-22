@@ -1,13 +1,23 @@
 """Cross-fold evaluation: per-case prediction using the model that did NOT see it.
 
-For each fold k, load fold_k/best.pt and predict on cases assigned to fold k.
-Output: rotation_kfold_predictions.json (case -> predicted corrective rotation in deg).
+For each fold k, load fold_k/best.pt and predict on cases assigned to
+fold k. Writes per-case predictions to
+``training/eval/predictions/rotation_kfold.json``.
 
-Also computes 3-way comparison (LLM / Vision OCR / ResNet kfold) vs GT.
+With ``--tta``, applies 4-way test-time augmentation (predict on the
+image and its 90°/180°/270° rotations, re-rotate the predicted classes
+back to the original frame, average the logits). Writes to
+``training/eval/predictions/rotation_kfold_tta.json``. The deployed
+pipeline uses TTA, so the TTA accuracy is the operationally relevant
+number.
+
+Also computes 3-way comparison (LLM / Vision OCR / ResNet kfold) vs GT
+when those baseline prediction files exist on disk.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import time
@@ -22,26 +32,35 @@ REPO = THIS.parent.parent
 sys.path.insert(0, str(REPO))
 
 from training.eval._util import write_predictions_json  # noqa: E402
-from training.train_rotation_classifier import (  # noqa: E402
+from training.train_rotation import (  # noqa: E402
     CLASS_DEGREES, RotationClassifier,
-)
-from training.train_rotation_kfold import (  # noqa: E402
     KFoldRotationDataset, load_labels, fold_for, OUTPUT_DIR, SAM3_FOLD_ASSIGNMENT,
 )
 
 
 def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument(
+        "--tta", action="store_true",
+        help=("Use 4-way test-time augmentation: predict on each of the "
+              "image's 4 rotations and average the logits (re-rotating "
+              "the class space to the original frame for each). "
+              "Default is off — single-view prediction. Production "
+              "inference uses TTA, so the TTA accuracy is the "
+              "operationally relevant number."),
+    )
+    args = ap.parse_args()
+
     if torch.cuda.is_available(): device = "cuda"
     elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available(): device = "mps"
     else: device = "cpu"
-    print(f"Device: {device}")
+    print(f"Device: {device}  TTA: {args.tta}")
 
     labels = load_labels()
     sam3_fa = json.loads(SAM3_FOLD_ASSIGNMENT.read_text())
     case_to_fold = {c: fold_for(c, sam3_fa) for c in labels}
 
     predictions: dict[str, int] = {}
-    per_case_logits: dict[str, list] = {}
 
     for fold_k in sorted(set(case_to_fold.values())):
         ckpt_path = OUTPUT_DIR / f"fold_{fold_k}" / "best.pt"
@@ -56,30 +75,50 @@ def main() -> int:
 
         val_cases = sorted([c for c, f in case_to_fold.items() if f == fold_k])
         ds = KFoldRotationDataset(val_cases, labels, img_size=img_size, train=False)
-        # Only the "original" applied_rotation=0 sample per case for prediction
-        # (corrective rotation is the case-level label, not augmentation-level)
-        idx_orig = [i for i, (c, k) in enumerate(ds.samples) if k == 0]
+        # Group sample indices by case so we can do TTA over all 4
+        # rotations or just the k=0 view, both off the same Dataset.
+        case_idx: dict[str, dict[int, int]] = {}
+        for i, (c, k) in enumerate(ds.samples):
+            case_idx.setdefault(c, {})[k] = i
 
         n_match = 0
         t0 = time.time()
-        for i in idx_orig:
-            case, _k = ds.samples[i]
-            x, _label = ds[i]
-            x = x.unsqueeze(0).to(device)
-            with torch.no_grad():
-                logits = model(x)
+        for case in val_cases:
+            views = case_idx.get(case) or {}
+            if args.tta:
+                # Predict on all 4 rotated views; re-rotate each view's
+                # class space back to the original frame; average logits.
+                accum = torch.zeros(4, device=device)
+                for k in (0, 90, 180, 270):
+                    if k not in views: continue
+                    x, _label = ds[views[k]]
+                    x = x.unsqueeze(0).to(device)
+                    with torch.no_grad():
+                        logits = model(x).squeeze(0)
+                    # Convert this view's class predictions back into the
+                    # original frame: if we rotated by k CW before predict,
+                    # a "class c (= c·90° CW corrective)" on the view is
+                    # equivalent to "(c·90° + k) mod 360 CW corrective" on
+                    # the original. Shift logits accordingly.
+                    shift = (k // 90) % 4
+                    accum += torch.roll(logits, shifts=shift)
+                logits = accum
+            else:
+                x, _label = ds[views[0]]
+                x = x.unsqueeze(0).to(device)
+                with torch.no_grad():
+                    logits = model(x).squeeze(0)
             pred_class = int(logits.argmax(dim=-1).item())
             pred_deg = CLASS_DEGREES[pred_class]
             predictions[case] = pred_deg
-            per_case_logits[case] = [round(v, 4) for v in logits.squeeze(0).cpu().tolist()]
             if pred_deg == labels[case]:
                 n_match += 1
         elapsed = time.time() - t0
-        print(f"fold {fold_k}: {n_match}/{len(idx_orig)} correct on val "
-              f"({100*n_match/max(1,len(idx_orig)):.1f}%, {elapsed:.0f}s)")
+        print(f"fold {fold_k}: {n_match}/{len(val_cases)} correct on val "
+              f"({100*n_match/max(1,len(val_cases)):.1f}%, {elapsed:.0f}s)")
 
-    write_predictions_json(
-        predictions, THIS / "predictions" / "rotation_kfold.json")
+    out_name = "rotation_kfold_tta.json" if args.tta else "rotation_kfold.json"
+    write_predictions_json(predictions, THIS / "predictions" / out_name)
 
     # 3-way comparison
     print("\n========== 3-way comparison ==========")
