@@ -237,48 +237,24 @@ def affine_center_to_latlon(affine_H, map_h, map_w, tile_info):
     )
 
 
-# Mask cleanup primitives moved to `tools/extraction/mask_ops.py`
-# (originally extracted from this file on 2026-05-11). The legacy
-# underscore-prefixed names are kept as module-level aliases so
-# external imports like `from tools.matching import _expand_thin_mask`
-# keep working.
-from tools.extraction.mask_ops import (
-    cleanup_mask_pipeline,
-    expand_thin_mask as _expand_thin_mask,
-    fill_mask_holes as _fill_mask_holes,
-    keep_dominant_components as _keep_dominant_components,
-)
-
-
 def mask_to_geojson_affine(mask, affine_H, tile_info, simplify_px=0.0):
     """Convert SAM3 mask to GeoJSON Feature using affine transform.
 
     Args:
-        mask: Binary boundary mask (uint8).
+        mask: Binary boundary mask (uint8). SAM3-FT outputs are already
+            clean — no morphological cleanup is applied before contour
+            extraction (a 177-case ablation 2026-05-22 showed the old
+            cleanup pipeline was a net +0.001 IoU wash with 2 wins / 2
+            losses, and removing it eliminates ~5 hand-tuned params).
         affine_H: 2x3 affine matrix mapping mask pixels to tile canvas pixels.
         tile_info: Dict with zoom, tx_min, ty_min from fetch_os_opendata_grid.
         simplify_px: Douglas-Peucker epsilon in pixels. Default 0.0 means
             no simplification — the polygon retains every contour vertex.
-            The previous 3.0 default was an arbitrary "clean segments"
-            smoothing that had no principled basis.
 
     Returns GeoJSON Feature dict, or None if no valid contours.
     """
-    # Drop tiny noise components before any other processing. Targets cases
-    # like v12 8FB7 where SAM returns 1 main blob + dozens of scattered noise
-    # specks; the noise inflates predicted area without GT overlap.
-    mask = _keep_dominant_components(mask)
-
-    # Expand thin outline masks into filled regions before hole-filling.
-    # SAM3 often traces boundary lines rather than selecting filled areas.
-    mask = _expand_thin_mask(mask)
-
-    # Fill internal holes (roads, text gaps) before extracting contours.
-    # This prevents fragmented multi-polygon output.
-    filled_mask = _fill_mask_holes(mask)
-
     contours, _ = cv2.findContours(
-        (filled_mask > 0).astype(np.uint8), cv2.RETR_EXTERNAL,
+        (mask > 0).astype(np.uint8), cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE,
     )
     if not contours:
@@ -290,10 +266,6 @@ def mask_to_geojson_affine(mask, affine_H, tile_info, simplify_px=0.0):
 
     all_polys = []
     for contour in contours:
-        # Any contour the mask cleanup left intact is projected. The
-        # previous "< 100 pixels" floor was an arbitrary noise filter
-        # already covered by _keep_dominant_components above; keeping
-        # both was redundant.
         if simplify_px > 0:
             contour = cv2.approxPolyDP(contour, simplify_px, True)
         coords = []

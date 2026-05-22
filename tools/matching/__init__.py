@@ -26,8 +26,6 @@ from tools.matching._core import (
     _build_scale_H,
     # Sliding-window search (the master entry point)
     sliding_window_position,
-    # Thin-mask helper used by mask_to_geojson_affine
-    _expand_thin_mask,
 )
 
 # Road-name verification (re-exported from tools.matching.road_verify)
