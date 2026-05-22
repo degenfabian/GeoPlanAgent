@@ -7,13 +7,11 @@ training (no leakage).
 ```
 models/
 ├── sam3_lora/                    # SAM3 boundary segmentation
-│   ├── fold_<k>/                 # one per fold (0..4)
-│   │   ├── adapter_config.json       # PEFT config (best-val checkpoint)
+│   ├── fold_<k>/                 # one per fold (0..4) — best-val checkpoint only
+│   │   ├── adapter_config.json       # PEFT config
 │   │   ├── adapter_model.safetensors # LoRA + heads weights (~76 MB)
 │   │   ├── training_meta.json        # epoch, best_val_iou, training config
-│   │   ├── history.json              # per-epoch train/val metrics
-│   │   └── latest/                   # resume target (PEFT + sidecar);
-│   │                                 # deletable after training completes
+│   │   └── history.json              # per-epoch train/val metrics
 │   ├── fold_assignment.json      # {case_name: fold} — sync'd from
 │   │                             # training/dataset/fold_assignment.json
 │   └── cv_summary.{csv,json}     # held-out 5-fold sem/inst IoU + P/R/F1
@@ -30,10 +28,14 @@ models/
                                  # _tta suffix when run with --tta
 ```
 
-`models/` is gitignored except for the small JSON/MD metadata that's
-useful to version. The PEFT safetensors (SAM3 LoRA, ~76 MB / fold) and
-the ResNet50 checkpoints (~90 MB / fold) live locally only —
-~830 MB total across the two model families and ten folds.
+The shipped fold directories contain ONLY the best-val checkpoint.
+During training the trainer also writes a sibling `latest/` subdir per
+fold as its `--resume` target, but it's deleted after training
+completes (see the "Notes on what isn't here" section). `models/` is
+gitignored except for the small JSON/MD metadata that's useful to
+version. The PEFT safetensors (SAM3 LoRA, ~76 MB / fold) and the
+ResNet50 checkpoints (~90 MB / fold) live locally only — ~830 MB
+total across the two model families and ten folds.
 
 ## SAM3 LoRA adapter (`sam3_lora/`)
 
@@ -176,9 +178,11 @@ for robust lookup, not a leakage source.
   dataset.
 - **No critic weights.** The critic uses an LLM at inference; it
   doesn't have its own learned model.
-- **No `latest/` PEFT dirs in the shipped checkpoints.** Those are
-  the trainer's resume target, rewritten every epoch. Safe to
-  delete once training completes. Re-running training with
-  `--resume` regenerates them.
+- **No `latest/` PEFT dirs in the shipped checkpoints.** The trainer
+  writes `<fold_k>/latest/` every epoch as its `--resume` target —
+  same PEFT format as the best-val checkpoint, plus a small
+  `trainer_state.pt` sidecar with optimizer / scheduler / epoch /
+  history. After training completes those dirs are deleted to save
+  disk. Re-running training with `--resume` regenerates them.
 - **No legacy `models/rotation_classifier/best.pt` single-checkpoint
   fallback path.** The k-fold layout is the only supported one.

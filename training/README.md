@@ -135,17 +135,18 @@ models/sam3_lora/fold_<k>/
 ├── adapter_config.json         # PEFT config (best-val checkpoint)
 ├── adapter_model.safetensors   # LoRA + saved head weights (~76 MB)
 ├── training_meta.json          # epoch, best_val_iou, config
-├── history.json                # per-epoch train/val loss + val IoU
-└── latest/                     # resume target — same PEFT format
-    ├── adapter_config.json     #   plus a small
-    ├── adapter_model.safetensors
-    └── trainer_state.pt        #   sidecar with optimizer + sched + bookkeeping
+└── history.json                # per-epoch train/val loss + val IoU
 ```
 
-`latest/` is the resume target (rewritten every epoch). The top-level
-PEFT files are the best-val checkpoint — rewritten whenever val IoU
-improves and what production loads via
-`tools.extraction.sam3.load_sam3_ft`.
+Only the best-val checkpoint ships. **During training**, the trainer
+also writes a transient `<fold_k>/latest/` PEFT subdir each epoch
+(same `adapter_*` files plus a `trainer_state.pt` sidecar carrying
+the optimizer / scheduler / epoch / history). It's the `--resume`
+target only — delete it after training completes (or skip it
+entirely if you don't intend to resume).
+
+The top-level PEFT files are rewritten whenever val IoU improves;
+they're what production loads via `tools.extraction.sam3.load_sam3_ft`.
 
 Wall time: ~1.5–2 hr per fold on Apple MPS with bf16; ~1 hr per fold
 on CUDA. ~8–10 hr for all five.
