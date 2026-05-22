@@ -171,7 +171,6 @@ from tools.geo.coords import (
     WEB_MERCATOR_C,
     best_zoom_for_scale,
     compute_map_mpp,
-    haversine_m,
     latlon_to_global_tile_pixel,
     osm_pixel_to_latlon,
     tile_mpp as _tile_mpp_at,

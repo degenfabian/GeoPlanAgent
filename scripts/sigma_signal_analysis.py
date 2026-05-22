@@ -33,7 +33,7 @@ EVAL = REPO / "evaluation_data"
 OUT_CSV = REPO / "results" / "v3_sigma_signal.csv"
 
 
-from tools.geo.coords import haversine_m  # noqa: E402 (kept as local name)
+from tools.geo.coords import haversine_km  # noqa: E402
 
 
 def polygon_centroid(geom: dict):
@@ -153,14 +153,14 @@ def main():
         gt = gt_centroid(case.name)
         pick_err_km = None
         if gt is not None and pick.get("lat") is not None:
-            pick_err_km = haversine_m(pick["lat"], pick["lon"], gt[0], gt[1]) / 1000
+            pick_err_km = 1000 * haversine_km(pick["lat"], pick["lon"], gt[0], gt[1]) / 1000
 
         # MINIMA matched centre vs GT centre (post-match positioning)
         mi = m.get("match_info") or {}
         ll = mi.get("center_latlon") or mi.get("chosen_center_latlon")
         match_err_km = None
         if gt is not None and ll:
-            match_err_km = haversine_m(ll[0], ll[1], gt[0], gt[1]) / 1000
+            match_err_km = 1000 * haversine_km(ll[0], ll[1], gt[0], gt[1]) / 1000
 
         # Final predicted polygon centroid vs GT
         pred_err_km = None
@@ -171,7 +171,7 @@ def main():
                 gm = pred.get("geometry") or pred
                 pc = polygon_centroid(gm)
                 if pc:
-                    pred_err_km = haversine_m(pc[0], pc[1], gt[0], gt[1]) / 1000
+                    pred_err_km = 1000 * haversine_km(pc[0], pc[1], gt[0], gt[1]) / 1000
             except Exception:
                 pass
 

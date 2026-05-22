@@ -197,9 +197,9 @@ def match_at(
     # Reject invented coordinates (same logic as before).
     matched_candidate = None
     if state.proposed_centers:
-        from tools.geo.coords import haversine_m as _distance_m
+        from tools.geo.coords import haversine_km
         nearest = min(
-            (_distance_m(lat, lon, c["lat"], c["lon"]), c)
+            (haversine_km(lat, lon, c["lat"], c["lon"]) * 1000.0, c)
             for c in state.proposed_centers
         )
         if nearest[0] > 100.0:

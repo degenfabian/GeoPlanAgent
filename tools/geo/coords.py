@@ -27,23 +27,10 @@ from typing import Tuple
 WEB_MERCATOR_C: float = 156543.03
 
 
-def haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    """Approximate haversine distance in metres between two lat/lon points.
-
-    Uses the flat-earth approximation (good to ~0.5% for distances under
-    a few hundred km, which covers every pair we measure inside the UK).
-    Kept for callers that explicitly want the flat-earth speed/precision
-    tradeoff (tools.matching._core, tools.agent.tools.match). For new
-    code prefer :func:`haversine_km` (true great-circle).
-    """
-    dlat = (lat2 - lat1) * 111111
-    dlon = (lon2 - lon1) * 111111 * math.cos(math.radians((lat1 + lat2) / 2))
-    return math.sqrt(dlat ** 2 + dlon ** 2)
-
-
-# Mean Earth radius (km); WGS84 conventional value used everywhere in the
-# repo. 6371.0 (3 sf) is the standard "spherical Earth" approximation —
-# accurate to ~0.3% vs the proper ellipsoid for UK-scale distances.
+# Mean Earth radius (km); WGS84 conventional spherical-Earth value used
+# everywhere in the repo. 6371.0 km is the standard "spherical Earth"
+# approximation — accurate to ~0.3% vs the proper ellipsoid for UK-scale
+# distances.
 _EARTH_R_KM = 6371.0
 
 
@@ -55,10 +42,10 @@ def haversine_km(lat1: float, lon1: float,
     inner ``min(1.0, ...)`` guards against floating-point noise pushing
     the argument of ``asin`` above 1.0 for near-coincident points.
 
-    Consolidated 2026-05-22 — five separate inline implementations
-    existed across tools/metrics/geojson.py, tools/agent/locate_agent.py,
-    tools/matching/source_priorities.py, scripts/monitor_lucky_shot.py,
-    scripts/sigma_signal_analysis.py — all numerically identical.
+    The repo previously also exposed a separate ``haversine_m`` flat-
+    earth approximation (kept "for speed in hot paths"), but the
+    callers were dead imports or sub-percent-precision use cases. One
+    true function for everyone now; multiply by 1000 if you want metres.
     """
     phi1 = math.radians(lat1)
     phi2 = math.radians(lat2)
