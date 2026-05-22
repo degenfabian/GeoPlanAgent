@@ -19,7 +19,9 @@ pages) so it's easy to see whether the model is doing well on the
 from __future__ import annotations
 
 import argparse
+import csv
 import json
+import statistics
 import sys
 import time
 from pathlib import Path
@@ -62,6 +64,7 @@ def main() -> int:
     case_to_fold = {c: fold_for(c, sam3_fa) for c in labels}
 
     predictions: dict[str, int] = {}
+    fold_stats: list[dict] = []  # filled inside the loop below
 
     for fold_k in sorted(set(case_to_fold.values())):
         ckpt_path = OUTPUT_DIR / f"fold_{fold_k}" / "best.pt"
@@ -115,8 +118,12 @@ def main() -> int:
             if pred_deg == labels[case]:
                 n_match += 1
         elapsed = time.time() - t0
-        print(f"fold {fold_k}: {n_match}/{len(val_cases)} correct on val "
-              f"({100*n_match/max(1,len(val_cases)):.1f}%, {elapsed:.0f}s)")
+        n_val_fold = len(val_cases)
+        fold_acc = n_match / n_val_fold if n_val_fold > 0 else 0.0
+        fold_stats.append({"fold": fold_k, "n_val": n_val_fold,
+                           "n_correct": n_match, "val_acc": fold_acc})
+        print(f"fold {fold_k}: {n_match}/{n_val_fold} correct on val "
+              f"({100*fold_acc:.1f}%, {elapsed:.0f}s)")
 
     out_name = "rotation_kfold_tta.json" if args.tta else "rotation_kfold.json"
     write_predictions_json(predictions, THIS / "predictions" / out_name)
@@ -142,6 +149,44 @@ def main() -> int:
     print(f"  on upright:  {correct_up}/{n_up} ({100*correct_up/max(1,n_up):.1f}%)")
     print(f"  on rotated:  {correct_rot}/{n_rot} ({100*correct_rot/max(1,n_rot):.1f}%)")
     print(f"  GT split:    upright={gt_upright}/{total}  rotated={gt_rotated}/{total}")
+
+    # ── cv_summary{_tta}.{json,csv} — paper-table source ─────────────────
+    # Reuses the same per-fold n_match counter that produced the printout
+    # above, so the CSV and the printout can't disagree. Mean/std are over
+    # the 5 folds (mean-of-fold-means, population std) — same convention
+    # as models/sam3_lora/cv_summary.json.
+    fold_accs = [f["val_acc"] for f in fold_stats]
+    mean_acc = sum(fold_accs) / len(fold_accs) if fold_accs else 0.0
+    std_acc = statistics.pstdev(fold_accs) if len(fold_accs) > 1 else 0.0
+    n_total = sum(f["n_val"] for f in fold_stats)
+    n_correct_total = sum(f["n_correct"] for f in fold_stats)
+    overall_acc = n_correct_total / n_total if n_total > 0 else 0.0
+
+    cv = {
+        "folds": fold_stats,
+        "mean": {"val_acc": mean_acc},
+        "std": {"val_acc": std_acc},
+        "n_total_val": n_total,
+        "n_total_correct": n_correct_total,
+        "overall_acc": overall_acc,
+        "tta": args.tta,
+        "source": "training/eval/eval_rotation_kfold.py",
+        "notes": ("Per-fold val_acc is held-out accuracy of fold k's "
+                  "best.pt on cases assigned to fold k. mean/std are over "
+                  "the 5 folds (fold-weighted, not case-weighted)."),
+    }
+    suffix = "_tta" if args.tta else ""
+    cv_json = OUTPUT_DIR / f"cv_summary{suffix}.json"
+    cv_csv = OUTPUT_DIR / f"cv_summary{suffix}.csv"
+    cv_json.write_text(json.dumps(cv, indent=2))
+    with open(cv_csv, "w", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["fold", "n_val", "n_correct", "val_acc"])
+        for f in fold_stats:
+            w.writerow([f["fold"], f["n_val"], f["n_correct"],
+                        f"{f['val_acc']:.4f}"])
+    print(f"\nWrote {cv_json}")
+    print(f"Wrote {cv_csv}")
     return 0
 
 

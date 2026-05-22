@@ -2,17 +2,18 @@
 
 Held-out cross-fold validators for the two trained models. Each one
 loads every fold's checkpoint, runs it on the cases assigned to that
-fold (i.e. cases the checkpoint did NOT see at training time), and
-writes per-case predictions to `predictions/<model>.json`.
+fold (i.e. cases the checkpoint did NOT see at training time), writes
+per-case predictions to `predictions/<model>.json`, and writes a
+fold-level `cv_summary.{json,csv}` next to the checkpoints. These are
+the source of truth for the paper's per-fold numbers (SAM3:
+`0.912 ± 0.028` mean sem IoU; rotation classifier: `0.981 ± 0.010` mean
+TTA accuracy).
 
-These are the scripts that produce the paper's per-fold numbers
-(`tab:sam3-cv`, rotation classifier `0.960 ± 0.022`).
-
-| Script | Output | Paper table |
+| Script | Per-case output | Aggregate output |
 |---|---|---|
-| `eval_sam_kfold.py` | `predictions/sam_kfold.json` ← `{case: {fold, sem_iou, inst_iou}}` | `tab:sam3-cv` |
-| `eval_rotation_kfold.py` | `predictions/rotation_kfold.json` ← `{case: predicted_rotation_deg}` (no TTA) | (mentioned in §5.x) |
-| `eval_rotation_kfold.py --tta` | `predictions/rotation_kfold_tta.json` ← same shape, 4-way TTA | this is what the deployed pipeline actually uses |
+| `eval_sam_kfold.py` | `predictions/sam_kfold.json` ← `{case: {fold, sem_iou, sem_precision, sem_recall, sem_f1, inst_iou, inst_precision, inst_recall, inst_f1}}` | `models/sam3_lora/cv_summary.{json,csv}` — sources `tab:sam3-cv` |
+| `eval_rotation_kfold.py` | `predictions/rotation_kfold.json` ← `{case: predicted_rotation_deg}` (no TTA) | `models/rotation_classifier_kfold/cv_summary.{json,csv}` |
+| `eval_rotation_kfold.py --tta` | `predictions/rotation_kfold_tta.json` ← same shape, 4-way TTA | `models/rotation_classifier_kfold/cv_summary_tta.{json,csv}` — deployed-pipeline number |
 
 ## How fold routing works
 
@@ -39,7 +40,8 @@ numbers match the trainer's saved `val_sem_iou`.
 ```python
 import json
 sam = json.load(open("training/eval/predictions/sam_kfold.json"))
-# {"095AB379-...": {"fold": 0, "sem_iou": 0.95, "inst_iou": 0.93}, ...}
+# {"095AB379-...": {"fold": 0, "sem_iou": 0.95, "sem_precision": 0.97,
+#                   "sem_recall": 0.98, "sem_f1": 0.97, "inst_iou": 0.93, ...}, ...}
 mean_iou = sum(v["sem_iou"] for v in sam.values()) / len(sam)
 ```
 
@@ -56,9 +58,12 @@ into the original frame, and averages the logits. This exactly
 mirrors the inference-time TTA in `tools.io.rotation_classifier`
 (`predict_rotation_with_confidence` with `tta=True`).
 
-In our run TTA improves overall accuracy from ~0.953 to ~0.986. The
-deployed pipeline uses TTA, so the TTA accuracy is the operationally
-relevant number; the no-TTA file is kept for historical comparability.
+In our run TTA recovers 6 cases (mostly in fold 0), lifting overall
+accuracy from `201/211 = 0.953` to `207/211 = 0.981`. The deployed
+pipeline uses TTA, so the TTA accuracy is the operationally relevant
+number; the no-TTA file is kept for historical comparability. With
+MPS bf16 inference there's ~1-case run-to-run jitter near the softmax
+decision boundary, so the TTA number is reproducible to roughly ±0.005.
 
 ## Shared helper
 

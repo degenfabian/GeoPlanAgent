@@ -249,16 +249,24 @@ Notes on the per-term design:
 
 ## Cross-fold reporting
 
-After all 5 folds finish, the trainer prints:
+After all 5 folds finish, the trainer prints per-fold metrics + an
+aggregate, and writes `models/sam3_lora/cv_summary.{json,csv}`. Held-out
+re-eval (`training/eval/eval_sam_kfold.py`) overwrites the same files
+with bit-for-bit reproducible numbers; the paper table sources from
+those. Reference values from the current checkpoints:
 
 ```
 === 5-fold summary (sem-gated) ===
-  fold 0: best val_sem_iou = 0.877  val_inst_iou = 0.867
-  fold 1: best val_sem_iou = 0.922  val_inst_iou = 0.922
-  fold 2: best val_sem_iou = 0.827  val_inst_iou = 0.827
-  fold 3: best val_sem_iou = 0.879  …
-  fold 4: …
-  mean ± std:  …
+  fold 0 (n_val=43, best_ep=8):  sem_iou=0.911  f1=0.943  inst_iou=0.909
+  fold 1 (n_val=42, best_ep=5):  sem_iou=0.932  f1=0.961  inst_iou=0.894
+  fold 2 (n_val=42, best_ep=6):  sem_iou=0.879  f1=0.909  inst_iou=0.874
+  fold 3 (n_val=42, best_ep=3):  sem_iou=0.886  f1=0.920  inst_iou=0.883
+  fold 4 (n_val=42, best_ep=19): sem_iou=0.952  f1=0.973  inst_iou=0.953
+
+  Paper-grade aggregates (n_total_val=211):
+    sem iou     0.9121 ± 0.0276
+    sem f1      0.9414 ± 0.0241
+    inst iou    0.9027 ± 0.0279
 ```
 
 Reading the variance: `std < 0.02` → folds agree, model is converged.

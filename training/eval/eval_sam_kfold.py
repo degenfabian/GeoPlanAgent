@@ -1,12 +1,22 @@
-"""K-fold held-out pixel IoU — reusing training's exact FoldDataset and
-val-loop logic, with autocast enabled to match training conditions.
+"""K-fold held-out pixel IoU + precision/recall/F1 — reusing training's
+exact FoldDataset and val-loop logic, with autocast enabled to match
+training conditions.
 
-This eliminates eval-implementation drift between my eval and the val
-metrics in models/sam3_lora/fold_*/history.json.
+This is the source of truth for ``models/sam3_lora/cv_summary.{json,csv}``
+(written at end of run). The trainer used to write that summary itself,
+but its `best_row` lookup was keying on `"val_iou"` while the history
+stores `"val_sem_iou"` — the silent fallback to `history[-1]` meant
+cv_summary reported final-epoch (post-overfit) metrics, not best-epoch
+ones. Computing the summary from `best.pt` directly side-steps that.
+
+F1 and dice are mathematically identical for binary masks (both equal
+2·TP / (2·TP + FP + FN)), so we report F1 only.
 """
 from __future__ import annotations
+import csv
 import json
 import os
+import statistics
 import sys
 from pathlib import Path
 
@@ -39,6 +49,27 @@ BF16 = True  # match training's autocast
 device = "mps" if torch.backends.mps.is_available() else (
     "cuda" if torch.cuda.is_available() else "cpu")
 print(f"device={device}  bf16={BF16}  dataset={TRAIN_DATASET_DIR}")
+
+
+def _binary_metrics(p_bin: torch.Tensor, g_bin: torch.Tensor) -> dict:
+    """IoU + precision + recall + F1 from two boolean masks of equal shape.
+
+    TP = |pred ∧ gt|; FP = |pred| − TP; FN = |gt| − TP. All four metrics
+    are computed from the same TP/FP/FN triple so they're internally
+    consistent (no risk of IoU and F1 disagreeing on the same case).
+    """
+    tp = (p_bin & g_bin).sum().item()
+    union = (p_bin | g_bin).sum().item()
+    p_sum = p_bin.sum().item()
+    g_sum = g_bin.sum().item()
+    fp = p_sum - tp
+    fn = g_sum - tp
+    iou = tp / union if union > 0 else 0.0
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    f1 = 2 * precision * recall / (precision + recall) \
+        if (precision + recall) > 0 else 0.0
+    return {"iou": iou, "precision": precision, "recall": recall, "f1": f1}
 
 
 def main():
@@ -84,7 +115,7 @@ def main():
               f"epoch {ckpt.get('epoch')} | "
               f"reported best_val_iou {ckpt.get('best_val_iou',0):.4f} ===")
 
-        sem_ious_fold, inst_ious_fold = [], []
+        fold_rows: list[dict] = []
 
         with torch.no_grad():
             for i, (inputs, gts, dms) in enumerate(val_loader):
@@ -93,25 +124,23 @@ def main():
                 with _autocast_ctx(device, BF16):
                     outputs = model(**inputs)
 
-                # ── Semantic IoU — copied verbatim from train_sam3_kfold.py
-                # then hardened: use bool masks + bitwise ops so any MPS
-                # fp16 nondeterminism can't produce non-binary intermediates.
+                # ── Semantic head metrics — autocast + CPU-bool IoU keeps
+                # bit-stability under MPS fp16. _binary_metrics computes
+                # IoU/P/R/F1 from one shared TP/FP/FN so they can't disagree.
                 sem_pred = outputs.semantic_seg.squeeze(1).float()
+                sem = {"iou": 0.0, "precision": 0.0, "recall": 0.0, "f1": 0.0}
                 for b in range(sem_pred.shape[0]):
                     g = gts[b].to(device)
                     pred = _ensure_pred_mask_on_gt(sem_pred[b], g)
-                    # Force everything to CPU bool for the IoU calc — eliminates
-                    # any chance of MPS-side non-determinism in the metric.
                     p_bin = (torch.sigmoid(pred) > 0.5).cpu().bool()
                     g_bin = (g > 0.5).cpu().bool()
                     assert p_bin.shape == g_bin.shape, (
                         f"shape mismatch p={p_bin.shape} g={g_bin.shape}")
-                    inter = (p_bin & g_bin).sum().item()
-                    union = (p_bin | g_bin).sum().item()
-                    sem_iou = inter / union if union > 0 else 0.0
+                    sem = _binary_metrics(p_bin, g_bin)
 
-                # ── Instance IoU — copied verbatim from train_sam3_kfold.py ──
-                inst_iou = None
+                # ── Instance head metrics — top-scoring slot's mask, same
+                # IoU/P/R/F1 calc as the semantic head.
+                inst = None
                 inst_masks = getattr(outputs, "pred_masks", None)
                 cls_logits = getattr(outputs, "pred_logits", None)
                 if inst_masks is not None and cls_logits is not None:
@@ -129,27 +158,38 @@ def main():
                         align_corners=False).squeeze(0).squeeze(0)
                     p_bin = (torch.sigmoid(pred_up) > 0.5).cpu().bool()
                     g_bin = (g > 0.5).cpu().bool()
-                    inter = (p_bin & g_bin).sum().item()
-                    union = (p_bin | g_bin).sum().item()
-                    inst_iou = inter / union if union > 0 else 0.0
+                    inst = _binary_metrics(p_bin, g_bin)
 
-                case = cases[i]
-                rows.append((fold, case, sem_iou, inst_iou))
-                sem_ious_fold.append(sem_iou)
-                if inst_iou is not None:
-                    inst_ious_fold.append(inst_iou)
+                row = {"fold": fold, "case": cases[i],
+                       "sem_iou": sem["iou"], "sem_precision": sem["precision"],
+                       "sem_recall": sem["recall"], "sem_f1": sem["f1"]}
+                if inst is not None:
+                    row.update({
+                        "inst_iou": inst["iou"],
+                        "inst_precision": inst["precision"],
+                        "inst_recall": inst["recall"],
+                        "inst_f1": inst["f1"],
+                    })
+                else:
+                    row.update({"inst_iou": None, "inst_precision": None,
+                                "inst_recall": None, "inst_f1": None})
+                rows.append(row)
+                fold_rows.append(row)
 
-        mean_sem = sum(sem_ious_fold) / len(sem_ious_fold)
-        mean_inst = (sum(inst_ious_fold) / len(inst_ious_fold)
-                      if inst_ious_fold else 0.0)
-        print(f"  fold {fold}: mean sem_iou={mean_sem:.4f}  "
-              f"mean inst_iou={mean_inst:.4f}")
+        # Per-fold means (macro: mean of per-case values)
+        def _mean(key):
+            xs = [r[key] for r in fold_rows if r.get(key) is not None]
+            return sum(xs) / len(xs) if xs else 0.0
+        print(f"  fold {fold}: sem iou={_mean('sem_iou'):.4f} "
+              f"p={_mean('sem_precision'):.4f} r={_mean('sem_recall'):.4f} "
+              f"f1={_mean('sem_f1'):.4f}  |  "
+              f"inst iou={_mean('inst_iou'):.4f} f1={_mean('inst_f1'):.4f}")
 
     print("\n" + "=" * 60)
     print("AGGREGATE (bf16 autocast, exact training val-loop)")
     print("=" * 60)
-    sem_all = [r[2] for r in rows if r[2] is not None]
-    inst_all = [r[3] for r in rows if r[3] is not None]
+    sem_all = [r["sem_iou"] for r in rows if r["sem_iou"] is not None]
+    inst_all = [r["inst_iou"] for r in rows if r["inst_iou"] is not None]
 
     def summarise(name, xs):
         n = len(xs)
@@ -171,11 +211,58 @@ def main():
     summarise("Semantic-head IoU", sem_all)
     summarise("Instance-head IoU", inst_all)
 
+    # ── cv_summary.{json,csv} — paper-table source ────────────────────────
+    metric_keys = ("sem_iou", "sem_precision", "sem_recall", "sem_f1",
+                   "inst_iou", "inst_precision", "inst_recall", "inst_f1")
+
+    def _macro(rows_, key):
+        xs = [r[key] for r in rows_ if r.get(key) is not None]
+        return sum(xs) / len(xs) if xs else 0.0
+
+    folds_summary = []
+    for k in sorted({r["fold"] for r in rows}):
+        fr = [r for r in rows if r["fold"] == k]
+        folds_summary.append({"fold": k, "n_val": len(fr),
+                              **{f"val_{m}": _macro(fr, m) for m in metric_keys}})
+
+    # cv mean/std are mean-of-fold-means and pop-std-over-folds (standard
+    # K-fold CV reporting — fold-weighted, not case-weighted). For
+    # equal-sized folds these match macro-over-all-cases, but our split
+    # is 43/42/42/42/42 so they differ in the 4th decimal. The old
+    # cv_summary.json (pre-fix) used this same definition, so paper
+    # numbers stay comparable across runs.
+    overall_mean, overall_std = {}, {}
+    for m in metric_keys:
+        xs = [f[f"val_{m}"] for f in folds_summary]
+        overall_mean[f"val_{m}"] = sum(xs) / len(xs) if xs else 0.0
+        overall_std[f"val_{m}"] = statistics.pstdev(xs) if len(xs) > 1 else 0.0
+
+    cv = {
+        "folds": folds_summary,
+        "mean": overall_mean,
+        "std": overall_std,
+        "n_total_val": len(rows),
+        "source": "training/eval/eval_sam_kfold.py",
+        "notes": ("Computed from each fold's best.pt against its held-out "
+                  "val cases. mean/std are over the 5 folds (mean-of-fold-"
+                  "means, population std). F1 == dice for binary masks, "
+                  "so dice is not reported separately."),
+    }
+    (MODELS_DIR / "cv_summary.json").write_text(json.dumps(cv, indent=2))
+    with open(MODELS_DIR / "cv_summary.csv", "w", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["fold", "n_val", *[f"val_{m}" for m in metric_keys]])
+        for f in folds_summary:
+            w.writerow([f["fold"], f["n_val"],
+                        *[f[f"val_{m}"] for m in metric_keys]])
+    print(f"\nWrote {MODELS_DIR/'cv_summary.json'}")
+    print(f"Wrote {MODELS_DIR/'cv_summary.csv'}")
+
+    # ── per-case predictions ──────────────────────────────────────────────
     predictions = {
-        case: {"fold": int(fold),
-               "sem_iou": float(si),
-               "inst_iou": float(ii)}
-        for fold, case, si, ii in rows
+        r["case"]: {k: (float(r[k]) if k != "fold" else int(r[k]))
+                    for k in ("fold", *metric_keys) if r.get(k) is not None}
+        for r in rows
     }
     write_predictions_json(predictions, THIS / "predictions" / "sam_kfold.json")
 

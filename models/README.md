@@ -12,14 +12,18 @@ models/
 │   │   └── history.json          #   per-epoch train/val metrics
 │   ├── fold_assignment.json      # {case_name: fold} — sync'd from
 │   │                             # training/dataset/fold_assignment.json
-│   └── cv_summary.{csv,json}     # 5-fold val IoU + F1 + precision/recall
+│   └── cv_summary.{csv,json}     # held-out 5-fold sem/inst IoU + P/R/F1
+│                                 # (written by training/eval/eval_sam_kfold.py)
 │
 └── rotation_classifier_kfold/    # 4-way page-rotation classifier
     ├── fold_<k>/
     │   ├── best.pt
     │   └── history.json
     ├── fold_assignment.json      # same content as the SAM3 one
-    └── kfold_summary.json
+    ├── kfold_summary.json        # training-time per-epoch + best_val_acc
+    └── cv_summary{,_tta}.{csv,json}   # held-out 5-fold accuracy, written
+                                 # by training/eval/eval_rotation_kfold.py;
+                                 # _tta suffix when run with --tta
 ```
 
 `models/` is gitignored — the .pt files are ~17 GB total and live
@@ -54,16 +58,17 @@ to the shared helper `tools.core.fold_routing.resolve_fold`:
    signal).
 
 5-fold cross-val (from `cv_summary.json`, matches `tab:sam3-cv` in
-the paper):
+the paper). Each fold's `best.pt` evaluated on its held-out val set;
+mean/std are over the 5 folds (mean-of-fold-means, population std):
 
-| Fold | n_val | val_sem_iou | val_sem_f1 | val_inst_iou |
-|---|---|---|---|---|
-| 0 | 43 | 0.877 | 0.908 | 0.867 |
-| 1 | 42 | 0.922 | 0.946 | 0.922 |
-| 2 | 42 | 0.827 | 0.860 | 0.827 |
-| 3 | 42 | 0.879 | 0.914 | … |
-| 4 | 42 | 0.953 | 0.974 | … |
-| Mean ± std | — | **0.892 ± 0.043** | 0.920 | — |
+| Fold | n_val | val_sem_iou | val_sem_f1 | val_inst_iou | val_inst_f1 |
+|---|---|---|---|---|---|
+| 0 | 43 | 0.911 | 0.943 | 0.909 | 0.942 |
+| 1 | 42 | 0.932 | 0.961 | 0.894 | 0.919 |
+| 2 | 42 | 0.879 | 0.909 | 0.874 | 0.907 |
+| 3 | 42 | 0.886 | 0.920 | 0.883 | 0.916 |
+| 4 | 42 | 0.952 | 0.973 | 0.953 | 0.974 |
+| Mean ± std | — | **0.912 ± 0.028** | 0.941 ± 0.024 | 0.903 ± 0.028 | 0.931 ± 0.024 |
 
 To regenerate exactly:
 
@@ -100,16 +105,21 @@ where the boundary-specific knowledge lives.
 - **Fold routing**: same `resolve_fold` helper as SAM3 — production
   reads from `fold_assignment.json` in this dir.
 
-5-fold accuracy (per-fold top-1, ResNet50 backbone):
+5-fold held-out accuracy (each fold's `best.pt` evaluated on its
+held-out val set; mean ± std over the 5 folds, from
+`cv_summary{,_tta}.json`):
 
 | Mode | Accuracy |
 |---|---|
-| No TTA | 0.953 |
-| 4-way TTA (deployed) | **0.986** |
+| No TTA | 0.953 ± 0.061 |
+| 4-way TTA (deployed) | **0.981 ± 0.010** |
 
-The paper currently cites the no-TTA number (`0.960`), but the
-deployed pipeline uses TTA — the TTA accuracy is the operationally
-relevant one. To regenerate either:
+TTA recovers 6 cases the single-view classifier misses (most of them in
+fold 0); on the rotated subset both modes hit 20-21/22. The deployed
+pipeline uses TTA, so the TTA accuracy is the operationally relevant
+number. With MPS bf16 inference there's ~1-case run-to-run jitter at
+the softmax decision boundary, so this number is reproducible to
+roughly ±0.005. To regenerate either:
 
 ```bash
 uv run python training/eval/eval_rotation_kfold.py        # single-view → rotation_kfold.json

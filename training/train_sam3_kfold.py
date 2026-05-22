@@ -781,9 +781,13 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
             break
 
     # Final summary — pull the best epoch's row from history (the row whose
-    # val_iou matches best_val_iou, taking the earliest match if there are
-    # ties to be deterministic). Paper metrics come from that row.
-    best_row = next((r for r in history if r.get("val_iou") == best_val_iou),
+    # val_sem_iou matches best_val_iou, taking the earliest match if there
+    # are ties to be deterministic). Paper metrics come from that row.
+    # NB: key is `val_sem_iou` not `val_iou` — the gate-metric IoU is stored
+    # under the semantic-head-specific name. A prior version used `val_iou`
+    # here, which silently fell back to history[-1] (the final epoch) — making
+    # cv_summary.json under-report by reading post-overfitting numbers.
+    best_row = next((r for r in history if r.get("val_sem_iou") == best_val_iou),
                     history[-1] if history else {})
     print(f"\n=== fold {fold} done. best val_iou={best_val_iou:.3f}. "
           f"checkpoints in {out_dir}")
