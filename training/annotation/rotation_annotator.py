@@ -3,12 +3,12 @@
 For each case's `map.png`, click the corrective rotation needed to make the
 map upright (e.g. if the map appears rotated 90° clockwise, click 270 — the
 amount you'd rotate it CW to undo). Annotations are saved to
-`rotation_annotations.json` at repo root after every click. The dataset is
-read-only: only map.png files are read, nothing is written under
+`training/dataset/rotation_annotations.json` after every click. The dataset
+is read-only: only map.png files are read, nothing is written under
 boundary_annotations/.
 
 Run:
-    uv run scripts/rotation_annotator.py
+    uv run python training/annotation/rotation_annotator.py
 
 Then open http://127.0.0.1:5000 in a browser.
 

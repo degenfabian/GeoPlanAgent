@@ -12,15 +12,36 @@ Both are 5-fold cross-validated so each benchmark case is evaluated by
 the fold whose val set it belonged to (no leakage). Not required for
 inference if you have the shipped weights in `models/`.
 
-## Files
+## Layout
 
-| File | Purpose |
-|---|---|
-| `train_sam3_kfold.py` | SAM3 LoRA 5-fold trainer. Combined semantic + instance-head loss, focal + dice + ramped surface. |
-| `train_rotation_kfold.py` | Rotation classifier 5-fold trainer. ResNet50, 4-way head, 4-rotation TTA at eval. |
-| `train_rotation_classifier.py` | Legacy single-split rotation trainer (kept for parity / ablation). |
-| `boundary_augmentations.py` | Style-transfer + copy-paste augmentations used at train time. |
-| `dataset/` | Assembled SAM3 training data: `maps/`, `boundary_masks/`, `manifest.json`, `fold_assignment.json`. |
+```
+training/
+├── README.md                       ← you are here
+├── boundary_augmentations.py       style-transfer + copy-paste augmentations
+├── build_sam3_training_set.py      assemble training set from boundary_annotations/
+├── train_rotation.py               ResNet50 5-fold rotation classifier (shared
+│                                   model class + KFoldRotationDataset live here too,
+│                                   used by training/eval/)
+├── train_sam3_kfold.py             SAM3 LoRA 5-fold trainer (combined semantic
+│                                   + instance head, focal + dice + ramped surface)
+├── annotation/                     interactive UIs for building the training set
+│   ├── README.md
+│   ├── boundary_annotator.py       Flask backend for the boundary-polygon UI
+│   ├── boundary_annotator_ui.html  the HTML/JS canvas UI
+│   ├── boundary_prerender.py       pre-render every eval case at production DPI
+│   └── rotation_annotator.py       Flask UI for hand-labelling corrective rotations
+├── dataset/                        assembled training inputs
+│   ├── maps/                       211 PNG renders (one per case)
+│   ├── boundary_masks/             211 binary masks (annotator output)
+│   ├── fold_assignment.json        single source of truth: {case_name: fold}
+│   └── rotation_annotations.json   hand-labelled corrective rotations per case
+└── eval/                           held-out k-fold validators
+    ├── README.md
+    ├── _util.py                    write_predictions_json helper
+    ├── eval_rotation_kfold.py
+    ├── eval_sam_kfold.py
+    └── predictions/                JSON outputs of the two eval scripts
+```
 
 ## Prerequisites
 
@@ -32,55 +53,71 @@ uv sync --extra training
 weights (~3 GB) download from HuggingFace on first run; needs
 `HF_TOKEN` in `.env`.
 
-## Reproducing the dataset
+## Reproducing the training set
 
 The dataset is assembled from a hand-annotation pipeline rather than
-auto-labelled. Three stages, in order:
+auto-labelled. Three stages, in order — see
+[`annotation/README.md`](annotation/README.md) for the UI details:
 
 ### 1. Pre-render every eval case
 
 ```bash
-uv run python scripts/annotate_prerender.py
+uv run python training/annotation/boundary_prerender.py
 ```
 
 Renders each `evaluation_data/<case>/document.pdf` at DPI 200 (the
-production DPI), **without** auto-rotation — we want the annotator to
-work in the same frame as the raw PDF render so the annotation isn't
-coupled to the rotation classifier's confidence. Output:
-`boundary_annotations/<case>/map.png` plus per-case initial polygon
-coords seeded from cached affines.
+production DPI), **without** auto-rotation — annotation happens in the
+raw PDF frame so it isn't coupled to the rotation classifier's
+confidence. Output: `boundary_annotations/<case>/map.png` plus a
+per-case `initial.json` seeded with polygon coords from cached
+affines.
 
-### 2. Annotate in the browser
+### 2. Annotate boundaries in the browser
 
 ```bash
-uv run python scripts/annotate_server.py
+uv run python training/annotation/boundary_annotator.py
 # → http://localhost:5000/
 ```
 
-Flask + canvas UI. For each case, the annotator traces / corrects the
-boundary polygon over the rendered map. Saves to
-`boundary_annotations/<case>/edited.json` (image-pixel rings) plus a
-rasterised `edited_mask.png`. State persists per-case so quitting and
-resuming is fine.
+Flask + canvas UI. The annotator traces / corrects each case's
+boundary polygon over the rendered map. Saves
+`boundary_annotations/<case>/{edited.json, edited_mask.png}` (image
+pixel coords + raster mask). State persists per-case; resumable.
 
-### 3. Assemble the training set
+### 3. Annotate corrective rotations
 
 ```bash
-uv run python scripts/build_sam3_training_set.py
+uv run python training/annotation/rotation_annotator.py
+# → http://localhost:5000/
+```
+
+For each `map.png`, click `0` / `90` / `180` / `270` for the
+corrective rotation needed to make the map upright. Writes to
+`training/dataset/rotation_annotations.json`.
+
+### 4. Assemble the SAM3 training set
+
+```bash
+uv run python training/build_sam3_training_set.py
 ```
 
 Copies `boundary_annotations/<case>/{map.png, edited_mask.png}` into
-`training/dataset/{maps, boundary_masks}/<case>.png` and writes:
-
-- `manifest.json` — per-case `{case, filename, fold, group_key, …}`
-- `fold_assignment.json` — `{case_name: fold}` for production lookup
-  (mirrored into `models/sam3_lora/fold_assignment.json` after training)
-- `manifest.csv` — same as JSON for inspection
+`training/dataset/{maps, boundary_masks}/<case>.png` and writes
+`fold_assignment.json` (`{case_name: fold}`).
 
 Fold assignment uses LPT (longest-processing-time-first) bin-packing
-for balanced fold sizes while keeping "stay-together" groups intact
-(multi-page renders from one source, twin sets sharing a planning
-site). Idempotent: same input → bit-identical output.
+for balanced fold sizes (43/42/42/42/42 for our 211-case pool) while
+keeping "stay-together" groups intact: multi-page renders from one
+source PDF and explicit twin sets sharing a planning site never
+straddle the train/val split. **Idempotent: same input → bit-identical
+output.** No separate manifest file — every case's filename stem IS
+its canonical name, and the fold-assignment JSON contains its fold.
+
+`fold_assignment.json` records three keys per case (original case
+name, canonical underscore form, and filesystem-safe form) so lookups
+by any of those three forms resolve. Production inference looks up by
+the case name straight from the eval-data folder; training looks up
+by the map filename's stem.
 
 ## Train SAM3 LoRA k-fold
 
@@ -88,9 +125,9 @@ site). Idempotent: same input → bit-identical output.
 uv run python training/train_sam3_kfold.py
 ```
 
-Iterates folds 0→4 sequentially. Each fold trains on cases NOT in fold
-k (~95-100 cases) and validates on cases IN fold k (~40 cases). Per-
-fold checkpoints land in `models/sam3_lora/fold_<k>/`:
+Iterates folds 0→4 sequentially. Each fold trains on cases NOT in
+fold k (~170 cases) and validates on cases IN fold k (~42 cases).
+Per-fold checkpoints land in `models/sam3_lora/fold_<k>/`:
 
 ```
 models/sam3_lora/fold_<k>/
@@ -100,7 +137,7 @@ models/sam3_lora/fold_<k>/
 ```
 
 Wall time: ~1.5–2 hr per fold on Apple MPS with bf16; ~1 hr per fold
-on CUDA. ~8-10 hr for all five.
+on CUDA. ~8–10 hr for all five.
 
 ### Trainer flags
 
@@ -111,33 +148,45 @@ uv run python training/train_sam3_kfold.py --help
 | Flag | Default | Purpose |
 |---|---|---|
 | `--folds` | `0,1,2,3,4` | Comma-separated fold indices to run |
-| `--epochs` | 30 | Max epochs per fold |
-| `--rank` | 16 | LoRA rank |
-| `--lr` | 2e-4 | Initial learning rate (cosine decay to 0.05× by end) |
-| `--batch-size` | 1 | Effective batch = `batch_size × grad_accum` |
-| `--grad-accum` | 4 | Gradient accumulation steps |
+| `--epochs` | `20` | Max epochs per fold |
+| `--rank` | `16` | LoRA rank |
+| `--lr` | `2e-4` | Initial LR (cosine decay to 5% of base) |
+| `--batch-size` | `1` | Effective batch = `batch_size × grad_accum` |
+| `--grad-accum` | `4` | Gradient accumulation steps |
+| `--grad-clip` | `0.1` | Max grad norm |
+| `--oversample` | `2` | Train-set oversample factor |
 | `--bf16 / --no-bf16` | `--bf16` | Mixed precision (bf16 on CUDA, fp16 on MPS) |
-| `--patience` | 6 | Early-stop fold if val IoU stalls (0 = disabled) |
-| `--seed` | 42 | Master seed; per-fold seed = `seed + fold_idx` |
+| `--patience` | `6` | Early-stop fold if val IoU stalls (0 = disabled) |
+| `--seed` | `42` | Master seed; per-fold seed = `seed + fold_idx` |
+| `--num-workers` | `2` | DataLoader workers |
 | `--resume` | off | Resume each fold from `latest.pt` if present |
 | `--dataset-dir` | `training/dataset` | Override dataset location |
 
 ## Train rotation classifier k-fold
 
 ```bash
-uv run python training/train_rotation_kfold.py
+uv run python training/train_rotation.py
 ```
 
-Same 5-fold split as SAM3 (`fold_assignment.json` is shared via case
-name). Each fold trains a ResNet50 (ImageNet pretrained, frozen first
-N layers) with 4-way head on rotation-augmented map pages. Output:
+Same 5-fold split as SAM3 (the same `fold_assignment.json` keys are
+read). Each fold trains a ResNet50 (ImageNet pretrained, full
+fine-tune) with a 4-way head on rotation-augmented map pages. Output:
 
 ```
 models/rotation_classifier_kfold/
 ├── fold_<k>/best.pt + history.json
 ├── fold_assignment.json    # mirror for inference lookup
-└── kfold_summary.json      # per-fold best_val_acc + history
+└── kfold_summary.json      # per-fold best_val_acc
 ```
+
+`train_rotation.py` also defines the shared `RotationClassifier`,
+`KFoldRotationDataset`, and helper utilities; the eval script
+in `training/eval/eval_rotation_kfold.py` imports from it.
+
+## Held-out evaluation
+
+See [`eval/README.md`](eval/README.md) for the per-case k-fold
+validators. They write `training/eval/predictions/<model>.json`.
 
 ## Reproducibility guarantees
 
@@ -149,15 +198,15 @@ hardware produce matching trajectories:
 - ✅ LoRA init seeded (PEFT honours `torch.manual_seed`).
 - ✅ Per-fold seed = `master_seed + fold_idx` so folds explore
   independent sequences.
-- ⚠️ With `--bf16` on, you get tiny float-rounding deltas across runs
-  (same trajectory, different last-bits). Disable for bit-exact repro.
+- ⚠️ With `--bf16` on, tiny float-rounding deltas across runs (same
+  trajectory, different last-bits). Disable for bit-exact repro.
 - ⚠️ MPS has a few non-deterministic ops. CUDA with
   `torch.use_deterministic_algorithms(True)` is the gold path for
   bit-exact reproduction.
 
 Each saved checkpoint embeds its `config` dict (rank, lr, epochs,
-seed, bf16, patience) so a third party can read a checkpoint and know
-exactly which flags produced it.
+seed, bf16, patience) so a third party can read a checkpoint and
+know exactly which flags produced it.
 
 ## Loss formulation (SAM3 LoRA)
 
@@ -192,9 +241,8 @@ Notes on the per-term design:
   contains a planning boundary. At inference the worker uses the
   presence head as a confidence gate on the instance flow.
 - **No erosion-consistency loss.** Was a band-aid for hand-drawn
-  outline-style masks; the curated training set uses
-  `cv2.fillPoly`-style filled masks, so erosion adds no signal and
-  hurts multi-blob predictions.
+  outline-style masks; the curated training set uses filled masks,
+  so erosion adds no signal and hurts multi-blob predictions.
 - **Instance loss runs at the head's native resolution (~256×256)**,
   not the full map resolution. Necessary on MPS to avoid materialising
   a `[100, 2300, 1654]` intermediate that exceeds MPSGraph's INT_MAX.
@@ -204,7 +252,7 @@ Notes on the per-term design:
 After all 5 folds finish, the trainer prints:
 
 ```
-=== 5-fold summary ===
+=== 5-fold summary (sem-gated) ===
   fold 0: best val_sem_iou = 0.877  val_inst_iou = 0.867
   fold 1: best val_sem_iou = 0.922  val_inst_iou = 0.922
   fold 2: best val_sem_iou = 0.827  val_inst_iou = 0.827
@@ -219,15 +267,16 @@ augmentation could close the gap.
 
 ## Inference-time fold routing
 
-`tools.extraction.sam3.set_fold_for_case(state, case_name)`:
+The shared routing helper is `tools.core.fold_routing.resolve_fold`,
+used both by `tools.extraction.sam3.set_fold_for_case` and by the
+rotation classifier:
 
 1. Canonicalise the case_name (`replace(":", "_").replace("/", "_")`).
-2. Look up `fold_assignment.json[case_name]` if present.
-3. Fall back to `md5(canonical) % 5` if the case wasn't in the
-   training pool.
-4. Load `models/sam3_lora/fold_<k>/best.pt` (LoRA weights + saved
-   head modules).
-
-Same mechanism for the rotation classifier:
-`tools.io.rotation_classifier` looks up the fold via case_name and
-loads `models/rotation_classifier_kfold/fold_<k>/best.pt`.
+2. Look up `fold_assignment.json[case_name]` (then the canonical
+   form).
+3. **If the case isn't in `fold_assignment.json`** (only possible for
+   an external deployment on a fresh case not in the training pool),
+   fall back to `min(available_folds)`. The hash-based fallback that
+   lived here previously was redundant: an unseen case has no
+   preferred fold, so any deterministic constant is equivalent.
+4. Load `models/<model>/fold_<k>/best.pt`.

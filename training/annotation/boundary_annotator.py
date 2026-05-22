@@ -1,7 +1,7 @@
 """Flask backend for the boundary annotation UI.
 
-Run after `scripts/annotate_prerender.py` has produced the per-case map
-images and initial polygon coordinates.
+Run after `training/annotation/boundary_prerender.py` has produced the
+per-case map images and initial polygon coordinates.
 
 Endpoints
 ---------
@@ -42,7 +42,7 @@ def index():
 @app.get("/api/cases")
 def list_cases():
     if not WORK.exists():
-        return jsonify({"error": "Run scripts/annotate_prerender.py first"}), 500
+        return jsonify({"error": "Run training/annotation/boundary_prerender.py first"}), 500
     cases = []
     for d in sorted(WORK.iterdir()):
         if not d.is_dir(): continue
