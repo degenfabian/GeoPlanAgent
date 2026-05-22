@@ -105,7 +105,13 @@ def main():
     if n_cases > 0:
         all_cases = all_cases[:n_cases]
 
-    print(f"Testing {len(all_cases)} cases (sorted by cached IoU)\n")
+    # Skip cases committed via lookup_district — they don't go through the
+    # matcher and have no affine to test.
+    all_cases = [(n, i) for (n, i) in all_cases
+                 if (BASELINE / n / "affine_H.npy").exists()]
+
+    print(f"Testing {len(all_cases)} cases (sorted by cached IoU; "
+          f"district_lookup outcomes skipped)\n")
     print(f"{'case':40s}  {'cached':>7s}  {'cleaned':>8s}  {'raw':>7s}  {'Δ':>7s}")
 
     results = []
@@ -122,8 +128,12 @@ def main():
                 print(f"{case_name:40s}  (no PDF)")
                 continue
 
-            # Render the same page the original run used.
-            map_img, _ = render_map_page(str(pdf_path), page=page, dpi=200)
+            # Render the same page the original run used. render_map_page
+            # uses the keyword `page_1based`, not `page`.
+            map_img, _ = render_map_page(
+                str(pdf_path), page_1based=page, dpi=200,
+                case_name=case_name,
+            )
 
             # Run SAM3 with the same fold this case was evaluated under.
             set_fold_for_case(sam, case_name)
