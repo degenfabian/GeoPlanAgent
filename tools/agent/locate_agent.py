@@ -437,16 +437,10 @@ def la_check(lat: float, lon: float, la: str) -> dict:
             # anchor near the LA" verdict was warped by it. Haversine
             # handles the cos(lat) factor correctly regardless of
             # bearing.
-            import math
             from shapely.ops import nearest_points
+            from tools.geo.coords import haversine_km
             _, q = nearest_points(p, poly.boundary)
-            lat1, lon1 = math.radians(lat), math.radians(lon)
-            lat2, lon2 = math.radians(q.y), math.radians(q.x)
-            dlat = lat2 - lat1
-            dlon = lon2 - lon1
-            a = (math.sin(dlat / 2) ** 2
-                 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2)
-            d_km = 6371.0 * 2 * math.asin(min(1.0, math.sqrt(a)))
+            d_km = haversine_km(lat, lon, q.y, q.x)
         centroid = poly.centroid
         return {"success": True, "lat": lat, "lon": lon, "la": la,
                 "inside_la": inside,

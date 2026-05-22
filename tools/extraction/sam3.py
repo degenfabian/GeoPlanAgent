@@ -70,38 +70,17 @@ def try_fill_boundary_outline(mask):
 # (no LoRA) — useful for environments where the LoRA isn't shipped, but
 # accuracy will drop noticeably.
 DEFAULT_KFOLD_DIR = "models/sam3_lora"
-N_FOLDS = 5
 
-
-def _normalise_case_name(case_name: str) -> str:
-    """Convert a case identifier to the canonical underscore form used as
-    the key in fold_assignment.json. Idempotent.
-
-    Both the auto-labeller and the curated-dataset builder use a
-    'safe filename' convention that replaces ':' with '_'. The
-    benchmark runner passes the original eval-data folder name (with
-    colons), so we have to translate before any lookup or hash. Without
-    this, lookups miss and fall back to a hash on the colon form, which
-    differs from the hash on the underscore form — silent leakage.
-    """
-    return (case_name or "").replace(":", "_").replace("/", "_")
-
-
-def _fold_for_case(case_name: str, n_folds: int = N_FOLDS) -> int:
-    """Deterministic fold assignment via md5(canonical_case_name) % n_folds.
-
-    Mirrors `scripts/build_curated_training_set.py:fold_for` so a case
-    that was in fold k's val set during training also routes to fold k
-    at inference (= the model that did NOT see this case during training).
-
-    IMPORTANT: hash on the canonical (underscore) form so that
-    `md5("12:00114:ART4")` and `md5("12_00114_ART4")` resolve to the
-    same fold — both are aliases for the same case.
-    """
-    import hashlib
-    canonical = _normalise_case_name(case_name)
-    h = hashlib.md5(canonical.encode()).hexdigest()
-    return int(h, 16) % n_folds
+# Re-export fold-routing helpers under their historical private names
+# so external imports (`from tools.extraction.sam3 import _fold_for_case`,
+# `N_FOLDS`, `_normalise_case_name`) keep working. The canonical source
+# lives in tools.core.fold_routing; both SAM3 and the rotation
+# classifier delegate there.
+from tools.core.fold_routing import (
+    N_FOLDS,
+    normalise_case_name as _normalise_case_name,
+    fold_for_case as _fold_for_case,
+)
 
 
 def _load_kfold(kfold_dir, hf_token, device):

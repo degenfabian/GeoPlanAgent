@@ -123,7 +123,7 @@ def calculate_iou(
 
 def calculate_positioning_error_m(pred_geojson, gt_geojson):
     """Haversine distance (meters) between centroids of predicted and GT polygons."""
-    import math
+    from tools.geo.coords import haversine_km
     try:
         pred_shape = geojson_to_shape(pred_geojson)
         gt_shape = geojson_to_shape(gt_geojson)
@@ -132,11 +132,7 @@ def calculate_positioning_error_m(pred_geojson, gt_geojson):
         if pred_shape.is_empty or gt_shape.is_empty:
             return None
         pc, gc = pred_shape.centroid, gt_shape.centroid
-        lat1, lon1 = math.radians(gc.y), math.radians(gc.x)
-        lat2, lon2 = math.radians(pc.y), math.radians(pc.x)
-        dlat, dlon = lat2 - lat1, lon2 - lon1
-        a = math.sin(dlat/2)**2 + math.cos(lat1)*math.cos(lat2)*math.sin(dlon/2)**2
-        return 6371000 * 2 * math.asin(math.sqrt(a))
+        return haversine_km(gc.y, gc.x, pc.y, pc.x) * 1000.0
     except Exception:
         return None
 

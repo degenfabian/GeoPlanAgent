@@ -33,11 +33,7 @@ EVAL = REPO / "evaluation_data"
 OUT_CSV = REPO / "results" / "v3_sigma_signal.csv"
 
 
-def haversine_m(lat1, lon1, lat2, lon2):
-    R = 6_371_000
-    dlat = math.radians(lat2 - lat1)
-    dlon = math.radians(lon2 - lon1) * math.cos(math.radians((lat1 + lat2) / 2))
-    return R * math.hypot(dlat, dlon)
+from tools.geo.coords import haversine_m  # noqa: E402 (kept as local name)
 
 
 def polygon_centroid(geom: dict):

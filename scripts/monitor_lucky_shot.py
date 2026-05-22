@@ -12,9 +12,13 @@ Usage:
 from __future__ import annotations
 import json
 import math
+import sys
 import time
 from pathlib import Path
 from typing import Optional
+
+# Make `tools.*` importable when running this script from any cwd.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import numpy as np
 
@@ -41,32 +45,15 @@ def iou_of(case_dir: Path) -> Optional[float]:
 
 
 def load_centroid_latlon(geojson_path: Path) -> Optional[tuple]:
-    try:
-        d = json.loads(geojson_path.read_text())
-        if d.get("type") == "Feature":
-            d = d["geometry"]
-        elif d.get("type") == "FeatureCollection":
-            d = d["features"][0]["geometry"]
-        from shapely.geometry import shape
-        g = shape(d)
-        if not g.is_valid:
-            g = g.buffer(0)
-        c = g.centroid
-        return (float(c.y), float(c.x))
-    except Exception:
-        return None
+    from tools.geo.geojson import centroid_latlon
+    return centroid_latlon(geojson_path)
 
 
 def haversine_km(p1, p2):
     if not p1 or not p2:
         return None
-    lat1, lon1 = p1; lat2, lon2 = p2
-    R = 6371.0
-    phi1, phi2 = math.radians(lat1), math.radians(lat2)
-    dphi = math.radians(lat2 - lat1)
-    dlam = math.radians(lon2 - lon1)
-    a = math.sin(dphi/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(dlam/2)**2
-    return 2 * R * math.asin(math.sqrt(a))
+    from tools.geo.coords import haversine_km as _hk
+    return _hk(p1[0], p1[1], p2[0], p2[1])
 
 
 def load_pdf_info(case_dir: Path) -> dict:

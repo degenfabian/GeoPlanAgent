@@ -156,9 +156,9 @@ def candidate_la_distance_km(source: str, lat: float, lon: float,
     if src not in _FILTERABLE_SOURCES:
         return 0.0
     try:
-        import math
         from shapely.geometry import Point
         from shapely.ops import nearest_points
+        from tools.geo.coords import haversine_km
         from tools.verification_checks import _resolve_la, _load_la_polygons
         _load_la_polygons()
         la = _resolve_la(admin_region)
@@ -168,15 +168,7 @@ def candidate_la_distance_km(source: str, lat: float, lon: float,
         if la.contains(p):
             return 0.0
         _, q = nearest_points(p, la.boundary)
-        # Haversine to convert degree-distance to km.
-        R = 6371.0
-        phi1 = math.radians(lat)
-        phi2 = math.radians(q.y)
-        dp = math.radians(q.y - lat)
-        dl = math.radians(q.x - lon)
-        a = (math.sin(dp / 2) ** 2
-             + math.cos(phi1) * math.cos(phi2) * math.sin(dl / 2) ** 2)
-        return 2.0 * R * math.asin(math.sqrt(a))
+        return haversine_km(lat, lon, q.y, q.x)
     except Exception:
         return 0.0
 

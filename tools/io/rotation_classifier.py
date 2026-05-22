@@ -195,36 +195,14 @@ def _load_kfold_state() -> Optional[dict]:
         return _kfold_state
 
 
-def _normalise_case_name(case: str) -> str:
-    """Mirrors tools.extraction.sam3._normalise_case_name. Inlined to keep
-    this module dependency-light (the SAM3 module imports torch + peft +
-    transformers, which we don't want for a small classifier loader)."""
-    return (case or "").replace(":", "_").replace("/", "_")
-
-
-def _fold_for_case(case_name: str, n_folds: int = 5) -> int:
-    """Mirror of tools.extraction.sam3._fold_for_case. md5 hash routing.
-    Inlined to avoid pulling in transformers/peft just for the hash."""
-    import hashlib
-    canonical = _normalise_case_name(case_name)
-    h = hashlib.md5(canonical.encode()).hexdigest()
-    return int(h, 16) % n_folds
-
-
-def _resolve_fold(case_name: str, fold_assignment: dict, available_folds) -> int:
-    """Resolve the k-fold index for ``case_name``. Used by both
-    ``_model_for_case`` and ``predict_rotation_with_confidence`` —
-    the previous open-coded duplicates disagreed on fold-0 handling
-    (one used ``is None`` checks, the other an ``or`` chain that
-    treats fold 0 as falsy)."""
-    fold = fold_assignment.get(case_name)
-    if fold is None:
-        fold = fold_assignment.get(_normalise_case_name(case_name))
-    if fold is None:
-        fold = _fold_for_case(case_name)
-    if fold not in available_folds:
-        fold = min(available_folds)
-    return int(fold)
+# Fold-routing helpers live in tools.core.fold_routing (shared with
+# tools.extraction.sam3). The module-level aliases below keep the
+# historical private names available to call sites in this file.
+from tools.core.fold_routing import (
+    normalise_case_name as _normalise_case_name,
+    fold_for_case as _fold_for_case,
+    resolve_fold as _resolve_fold,
+)
 
 
 def _model_for_case(case_name: Optional[str]) -> tuple[torch.nn.Module, dict]:
