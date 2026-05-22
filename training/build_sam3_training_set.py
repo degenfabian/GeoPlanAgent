@@ -7,7 +7,6 @@ Inputs (one per case):
 Outputs:
   training/dataset/maps/<case>.png            — copied map
   training/dataset/boundary_masks/<case>.png  — copied mask
-  training/dataset/manifest.json              — per-case {case, filename, fold, group_key, ...}
   training/dataset/fold_assignment.json       — {case_name: fold} for production lookup
 
 Fold assignment uses LPT (longest-processing-time-first) bin-packing for
@@ -116,49 +115,40 @@ def main() -> int:
     # ── Pass 2: LPT bin-pack groups onto folds for balanced sizes ──
     group_to_fold = _assign_folds_balanced(group_to_members, N_FOLDS)
 
-    # ── Pass 3: emit per-case manifest + copy files ──
-    # Field names match the schema the trainer consumes
-    # (training/train_sam3_kfold.py reads entry["filename"] and ["fold"]).
-    cases = []
+    # ── Pass 3: copy files + assemble fold_assignment ──
+    # File stems are filesystem-safe (parens/colons replaced with `_`).
+    # The mapping back to boundary_annotations/<case>/ is implicit in the
+    # original case name, recorded as a key in fold_assignment.json
+    # alongside the canonical-underscore form AND the filesystem-safe form
+    # — so either lookup path resolves: production looks up by case name
+    # (with colon→underscore canonicalisation handled in tools.core.
+    # fold_routing); training/eval lookups use the map filename's stem.
+    fold_map = {}
+    cases_summary = []  # for the post-run report only
     for case_name, safe_name, group_key, map_p, mask_p in case_records:
         fold = group_to_fold[group_key]
         filename = f"{safe_name}.png"
-        cases.append({
-            "case": case_name,            # original folder name (with colons)
-            "filename": filename,         # png basename in maps/ + boundary_masks/
-            "fold": fold,
-            "group_key": group_key,
-            "map_src": str(map_p.relative_to(REPO)),
-            "mask_src": str(mask_p.relative_to(REPO)),
-        })
         shutil.copy(map_p, maps_out / filename)
         shutil.copy(mask_p, masks_out / filename)
 
-    # manifest.json
-    (OUT_ROOT / "manifest.json").write_text(
-        json.dumps(cases, indent=2, sort_keys=True))
+        # All forms of the case name resolve to the same fold:
+        canonical = case_name.replace(":", "_").replace("/", "_")
+        for key in {case_name, canonical, safe_name}:
+            fold_map[key] = fold
+        cases_summary.append({"case": case_name, "fold": fold,
+                               "group_key": group_key})
 
-    # fold_assignment.json — production reads {case_name: fold}. We write
-    # BOTH the original folder name AND the canonical underscore form
-    # (set_fold_for_case canonicalises ':' → '_' before lookup) so either
-    # key resolves.
-    fold_map = {}
-    for c in cases:
-        fold_map[c["case"]] = c["fold"]
-        canonical = c["case"].replace(":", "_").replace("/", "_")
-        if canonical != c["case"]:
-            fold_map[canonical] = c["fold"]
     (OUT_ROOT / "fold_assignment.json").write_text(
         json.dumps(fold_map, indent=2, sort_keys=True))
 
     # ── Report ──
-    by_fold = Counter(c["fold"] for c in cases)
+    by_fold = Counter(c["fold"] for c in cases_summary)
     by_group = defaultdict(list)
-    for c in cases:
+    for c in cases_summary:
         by_group[c["group_key"]].append(c["case"])
 
     print(f"\nDataset built at {OUT_ROOT}")
-    print(f"  cases:  {len(cases)}")
+    print(f"  cases:  {len(cases_summary)}")
     print(f"  groups: {len(by_group)}  (each group → exactly one fold)")
     print(f"  skipped: {len(skipped)}" + (": " + str(skipped[:5]) if skipped else ""))
     print(f"\nFold distribution:")

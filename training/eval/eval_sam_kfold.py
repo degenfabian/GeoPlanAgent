@@ -41,7 +41,17 @@ print(f"device={device}  bf16={BF16}  dataset={TRAIN_DATASET_DIR}")
 
 
 def main():
-    manifest = json.loads((TRAIN_DATASET_DIR / "manifest.json").read_text())
+    # Build the per-case manifest in-place from maps/ + fold_assignment.json
+    # (same logic as train_sam3_kfold). Each map filename's stem is the
+    # canonical case name; fold comes from the assignment file.
+    fold_map = json.loads(
+        (TRAIN_DATASET_DIR / "fold_assignment.json").read_text())
+    manifest = []
+    for png in sorted((TRAIN_DATASET_DIR / "maps").glob("*.png")):
+        fold = fold_map.get(png.stem)
+        if fold is None:
+            continue
+        manifest.append({"filename": png.name, "fold": int(fold)})
     print(f"manifest: {len(manifest)} cases")
 
     hf_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN")

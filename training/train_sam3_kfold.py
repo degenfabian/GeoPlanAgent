@@ -475,9 +475,7 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
     #                                          presence_logits (shared MLP)
     #   semantic_projection (mask_decoder)  → final 1×1 conv that produces
     #                                          semantic_seg
-    head_modules = ["mask_embedder", "presence_head"]
-    if not args.instance_only:
-        head_modules.append("semantic_projection")
+    head_modules = ["mask_embedder", "presence_head", "semantic_projection"]
     lora_cfg = LoraConfig(r=args.rank, lora_alpha=args.rank * 2,
                             target_modules=LORA_TARGET_MODULES,
                             lora_dropout=0.05, bias="none",
@@ -499,16 +497,6 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
     latest_p = out_dir / "latest.pt"
     if args.resume and latest_p.exists():
         ckpt = torch.load(latest_p, map_location="cpu", weights_only=False)
-        # Refuse to resume a checkpoint trained in a different mode — the
-        # optimizer state (Adam moments) is meaningless across mode changes
-        # and the loss surface is incompatible.
-        ckpt_mode = bool((ckpt.get("config") or {}).get("instance_only", False))
-        if ckpt_mode != bool(args.instance_only):
-            raise SystemExit(
-                f"Refusing to resume: checkpoint was trained with "
-                f"instance_only={ckpt_mode}, current run has "
-                f"instance_only={bool(args.instance_only)}. Move/delete "
-                f"the checkpoint or rerun without --resume.")
         # strict=True surfaces LoRA-target-module additions or renames
         # immediately. PEFT produces a stable key set for the same config,
         # so this should never hit unless config drifted between runs.
@@ -548,13 +536,12 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
 
             with _autocast_ctx(device, args.bf16):
                 outputs = model(**inputs)
-            # Skip the semantic_seg cast in instance-only mode — the model
-            # produces it unconditionally (Sam3MaskDecoder.forward computes
-            # both heads), but we don't use it. Cast is only ~0.3 MB at
-            # native res so the saving is tiny, but no reason to make it
+            # Cast outputs to fp32. Sam3MaskDecoder.forward computes
+            # both heads unconditionally so we always have semantic_seg
+            # available. Cast is only ~0.3 MB at native res; no reason
+            # to make it
             # live in fp32 if we never read from it.
-            sem_pred = (None if args.instance_only
-                         else outputs.semantic_seg.squeeze(1).float())
+            sem_pred = outputs.semantic_seg.squeeze(1).float()
             inst_masks = getattr(outputs, "pred_masks", None)
             if inst_masks is not None:
                 inst_masks = inst_masks.float()
@@ -565,24 +552,20 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
             if presence is not None:
                 presence = presence.float()
 
-            # Batch size from whichever output tensor we have — sem_pred
-            # is None in instance-only mode (skipped to avoid materializing
-            # an unused fp32 tensor).
-            B = sem_pred.shape[0] if sem_pred is not None else inst_masks.shape[0]
+            B = sem_pred.shape[0]
             sem_l_total = torch.tensor(0.0, device=device)
             inst_l_total = torch.tensor(0.0, device=device)
 
             for b in range(B):
-                if not args.instance_only:
-                    pred_b = _ensure_pred_mask_on_gt(sem_pred[b], gts_d[b])
-                    dm_b = (dms_d[b] if dms_d[b].shape == gts_d[b].shape
-                             else F.interpolate(dms_d[b].unsqueeze(0).unsqueeze(0),
-                                                  size=gts_d[b].shape[-2:],
-                                                  mode="bilinear",
-                                                  align_corners=False).squeeze())
-                    sem_l_total = sem_l_total + semantic_loss(
-                        pred_b.unsqueeze(0), gts_d[b].unsqueeze(0),
-                        dist_map=dm_b.unsqueeze(0), epoch=epoch)
+                pred_b = _ensure_pred_mask_on_gt(sem_pred[b], gts_d[b])
+                dm_b = (dms_d[b] if dms_d[b].shape == gts_d[b].shape
+                         else F.interpolate(dms_d[b].unsqueeze(0).unsqueeze(0),
+                                              size=gts_d[b].shape[-2:],
+                                              mode="bilinear",
+                                              align_corners=False).squeeze())
+                sem_l_total = sem_l_total + semantic_loss(
+                    pred_b.unsqueeze(0), gts_d[b].unsqueeze(0),
+                    dist_map=dm_b.unsqueeze(0), epoch=epoch)
 
                 if inst_masks is not None and inst_masks.numel() > 0:
                     inst_b = inst_masks[b]
@@ -593,7 +576,7 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
 
             sem_l = sem_l_total / B
             inst_l = inst_l_total / B
-            loss = inst_l if args.instance_only else (sem_l + inst_l)
+            loss = sem_l + inst_l
             (loss / args.grad_accum).backward()
 
             if (step + 1) % args.grad_accum == 0:
@@ -615,11 +598,10 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
         avg_train = {k: (sum(v) / len(v) if v else 0.0)
                      for k, v in ep_losses.items()}
 
-        # Validation: measure both heads. Combined-head runs gate on the
-        # SEMANTIC head (the user-facing metric for the paper); instance-only
-        # runs fall back to the instance head. Per-case precision/recall/F1
-        # of the semantic head are also tracked so the cross-fold summary
-        # has paper-grade numbers, not just IoU.
+        # Validation: measure both heads. Gate on the SEMANTIC head (the
+        # user-facing metric for the paper). Per-case precision/recall/F1
+        # of the semantic head are tracked so the cross-fold summary has
+        # paper-grade numbers, not just IoU.
         model.eval()
         inst_ious, sem_ious = [], []
         sem_precisions, sem_recalls, sem_f1s, sem_dices = [], [], [], []
@@ -661,28 +643,27 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
                         inst_ious.append(inter / union if union > 0 else 0.0)
 
                 # Semantic head IoU + paper metrics (precision / recall /
-                # F1 / Dice). Only when semantic is being trained.
-                if not args.instance_only:
-                    sem_pred = outputs.semantic_seg.squeeze(1).float()
-                    for b in range(sem_pred.shape[0]):
-                        g = gts[b].to(device)
-                        pred = _ensure_pred_mask_on_gt(sem_pred[b], g)
-                        p_bin = (torch.sigmoid(pred) > 0.5).float()
-                        g_bin = (g > 0.5).float()
-                        inter = (p_bin * g_bin).sum().item()
-                        p_sum = p_bin.sum().item()
-                        g_sum = g_bin.sum().item()
-                        union = p_sum + g_sum - inter
-                        sem_ious.append(inter / union if union > 0 else 0.0)
-                        # Precision = TP / (TP + FP), Recall = TP / (TP + FN)
-                        prec = inter / p_sum if p_sum > 0 else 0.0
-                        rec = inter / g_sum if g_sum > 0 else 0.0
-                        sem_precisions.append(prec)
-                        sem_recalls.append(rec)
-                        sem_f1s.append(2 * prec * rec / (prec + rec)
-                                       if (prec + rec) > 0 else 0.0)
-                        sem_dices.append(2 * inter / (p_sum + g_sum)
-                                         if (p_sum + g_sum) > 0 else 0.0)
+                # F1 / Dice).
+                sem_pred = outputs.semantic_seg.squeeze(1).float()
+                for b in range(sem_pred.shape[0]):
+                    g = gts[b].to(device)
+                    pred = _ensure_pred_mask_on_gt(sem_pred[b], g)
+                    p_bin = (torch.sigmoid(pred) > 0.5).float()
+                    g_bin = (g > 0.5).float()
+                    inter = (p_bin * g_bin).sum().item()
+                    p_sum = p_bin.sum().item()
+                    g_sum = g_bin.sum().item()
+                    union = p_sum + g_sum - inter
+                    sem_ious.append(inter / union if union > 0 else 0.0)
+                    # Precision = TP / (TP + FP), Recall = TP / (TP + FN)
+                    prec = inter / p_sum if p_sum > 0 else 0.0
+                    rec = inter / g_sum if g_sum > 0 else 0.0
+                    sem_precisions.append(prec)
+                    sem_recalls.append(rec)
+                    sem_f1s.append(2 * prec * rec / (prec + rec)
+                                   if (prec + rec) > 0 else 0.0)
+                    sem_dices.append(2 * inter / (p_sum + g_sum)
+                                     if (p_sum + g_sum) > 0 else 0.0)
 
         def _mean(xs): return sum(xs) / len(xs) if xs else 0.0
         avg_inst_iou = _mean(inst_ious)
@@ -692,11 +673,8 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
         avg_sem_f1 = _mean(sem_f1s)
         avg_sem_dice = _mean(sem_dices)
         avg_inst_loss = _mean(inst_losses)
-        # Early-stop / best-checkpoint key: SEMANTIC IoU when both heads
-        # are trained (the paper-grade head); instance IoU when running
-        # --instance-only (semantic head isn't trained then).
-        avg_iou = (avg_sem_iou if (not args.instance_only and sem_ious)
-                   else avg_inst_iou)
+        # Early-stop / best-checkpoint key: SEMANTIC IoU (the paper-grade head).
+        avg_iou = avg_sem_iou if sem_ious else avg_inst_iou
         avg_val = avg_inst_loss
 
         elapsed = time.time() - t0
@@ -711,8 +689,7 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
                           "val_sem_recall": round(avg_sem_rec, 4),
                           "val_sem_f1": round(avg_sem_f1, 4),
                           "val_sem_dice": round(avg_sem_dice, 4)})
-        sem_str = (f"  sem_iou={avg_sem_iou:.3f}  sem_f1={avg_sem_f1:.3f}"
-                   if not args.instance_only else "")
+        sem_str = f"  sem_iou={avg_sem_iou:.3f}  sem_f1={avg_sem_f1:.3f}"
         print(f"  ep{epoch+1}: train={avg_train['total']:.3f} "
               f"(sem={avg_train['sem']:.3f} inst={avg_train['inst']:.3f})  "
               f"inst_iou={avg_inst_iou:.3f}{sem_str}  "
@@ -749,8 +726,7 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
                         "num_workers": args.num_workers,
                         "seed": args.seed,
                         "bf16": bool(args.bf16),
-                        "patience": args.patience,
-                        "instance_only": bool(args.instance_only)},
+                        "patience": args.patience},
         }
         torch.save(ckpt, latest_p)
         if new_best:
@@ -825,30 +801,28 @@ def main() -> int:
                     help="Master seed. Per-fold seed = seed + fold_idx, so "
                          "two runs of the same fold are reproducible (modulo "
                          "bf16 float-rounding).")
-    ap.add_argument("--instance-only", action="store_true",
-                    help="Train ONLY the instance head (semantic loss "
-                         "weight=0). Validation also uses the instance head's "
-                         "top-classification slot's IoU. Output goes to "
-                         "models/sam3_lora_v6_instance/. Use this when the "
-                         "v5 combined-head training damaged the instance "
-                         "candidates and you want a clean instance-only LoRA.")
     args = ap.parse_args()
 
     DATASET_DIR_ = Path(args.dataset_dir)
-    # When --instance-only, redirect output to a dedicated v6 directory so
-    # we don't overwrite the v5 (semantic-good) checkpoints.
-    global OUTPUT_BASE
-    if args.instance_only:
-        OUTPUT_BASE = REPO / "models" / "sam3_lora_v6_instance"
-        print(f"--instance-only: output → {OUTPUT_BASE}")
     OUTPUT_BASE.mkdir(parents=True, exist_ok=True)
 
-    if not (DATASET_DIR_ / "manifest.json").exists():
-        print(f"ERROR: missing {DATASET_DIR_ / 'manifest.json'}. Run "
-              f"scripts/build_curated_training_set.py first.", file=sys.stderr)
+    fold_assignment_path = DATASET_DIR_ / "fold_assignment.json"
+    if not fold_assignment_path.exists():
+        print(f"ERROR: missing {fold_assignment_path}. Run "
+              f"training/build_sam3_training_set.py first.", file=sys.stderr)
         return 1
-    manifest = json.loads((DATASET_DIR_ / "manifest.json").read_text())
-    fold_map = json.loads((DATASET_DIR_ / "fold_assignment.json").read_text())
+    fold_map = json.loads(fold_assignment_path.read_text())
+    # Build the per-case manifest in-place from the maps/ directory + fold
+    # assignment. Each map file's stem IS the case name (after canonical
+    # underscoring), so the provenance back to boundary_annotations/<case>/
+    # is encoded in the filename itself.
+    manifest = []
+    for png in sorted((DATASET_DIR_ / "maps").glob("*.png")):
+        fold = fold_map.get(png.stem)
+        if fold is None:
+            continue  # map without a fold assignment — skip silently
+        manifest.append({"filename": png.name, "fold": int(fold)})
+
     # Mirror fold_assignment.json into the training-output dir so production
     # can find it next to the checkpoints.
     (OUTPUT_BASE / "fold_assignment.json").write_text(
@@ -901,8 +875,7 @@ def main() -> int:
             "mean": means,
             "std": stds,
             "n_total_val": n_total_val,
-            "gate_metric": ("val_sem_iou" if not args.instance_only
-                            else "val_inst_iou"),
+            "gate_metric": "val_sem_iou",
             "dataset_dir": str(DATASET_DIR_),
             "model_dir": str(OUTPUT_BASE),
             "config": {"rank": args.rank, "lr": args.lr,
@@ -910,8 +883,7 @@ def main() -> int:
                        "grad_accum": args.grad_accum,
                        "oversample": args.oversample,
                        "seed": args.seed, "bf16": bool(args.bf16),
-                       "patience": args.patience,
-                       "instance_only": bool(args.instance_only)},
+                       "patience": args.patience},
         }
         (OUTPUT_BASE / "cv_summary.json").write_text(json.dumps(cv, indent=2))
         with open(OUTPUT_BASE / "cv_summary.csv", "w", newline="") as fh:
@@ -922,7 +894,7 @@ def main() -> int:
             w.writeheader()
             for row in cv["folds"]: w.writerow(row)
 
-        print(f"\n=== 5-fold summary ({'sem-gated' if not args.instance_only else 'inst-only'}) ===")
+        print(f"\n=== 5-fold summary (sem-gated) ===")
         for s in summary:
             print(f"  fold {s['fold']:>1d} (n_val={s.get('n_val','?'):>3}, "
                   f"best_ep={s.get('best_epoch')}): "
