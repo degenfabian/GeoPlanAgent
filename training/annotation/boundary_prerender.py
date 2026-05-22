@@ -1,20 +1,26 @@
 """Pre-render the planning map at production DPI for every eval case.
 
   1. render_pdf_page(..., dpi=200)
-  2. (auto_rotate DISABLED — annotate the map as the PDF renders it,
-     so we don't depend on the rotation classifier for the eval frame)
-  3. map_crop.detect_title_block_crop
+  2. auto_rotate DISABLED — annotate the map as the PDF renders it,
+     so we don't depend on the rotation classifier for the eval frame.
 
-The GT polygon is projected onto the rendered map via the cached affine_H
-(benchmark_v20 → v17). Because auto_rotate is off here but ON in the
-cached benchmarks, the projection lands in the wrong place for any case
-the classifier rotated. We detect that by checking whether the projected
-polygon is sane (most coordinates inside the image bounds); if not, we
-fall back to a centered, scaled-to-40% placement so you can transform it
-manually in the UI.
+Title-block cropping was removed (the heuristic ate real map content);
+``tools.io.map_crop`` no longer exists. Pages are taken from the
+reader's ``pdf_info.map_pages`` directly — manual page overrides used
+to live in ``scripts/annotate_page_overrides.json`` but the reader now
+produces correct ``map_pages`` for every case that used to need an
+override.
 
-Outputs per case under `boundary_annotation_v3/<case_id>/`:
-  map.png            -- rendered map (production DPI + preprocessing)
+The GT polygon is projected onto the rendered map via the cached
+affine_H (benchmark_v20 → v17). Because auto_rotate is off here but ON
+in the cached benchmarks, the projection lands in the wrong place for
+any case the classifier rotated. We detect that by checking whether
+the projected polygon is sane (most coordinates inside the image
+bounds); if not, we fall back to a centered, scaled-to-40% placement
+so you can transform it manually in the UI.
+
+Outputs per case under ``boundary_annotations/<case_id>/``:
+  map.png            -- rendered map (production DPI, no crop)
   initial.json       -- polygon(s) in image-pixel coords + affine source tag
 """
 from __future__ import annotations
@@ -26,45 +32,17 @@ from typing import Any, Dict, List, Optional, Tuple
 import cv2
 import numpy as np
 
-REPO = Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO))
 
 from tools.io.pdf import render_pdf_page
-# auto_rotate intentionally NOT imported (user preference: annotate raw frame)
-from tools.io.map_crop import detect_title_block_crop
 
 
 OUT_ROOT = REPO / "boundary_annotations"
 EVAL_ROOT = REPO / "evaluation_data"
-OVERRIDES_PATH = REPO / "scripts" / "annotate_page_overrides.json"
-NO_CROP_PATH = REPO / "scripts" / "annotate_no_crop.json"
 
 # Cached-affine source priority — pick the freshest run that has an affine_H.
 AFFINE_SOURCES = ["benchmark_v20", "benchmark_v17"]
-
-
-def _page_overrides() -> Dict[str, int]:
-    """Read manual page overrides. Keys are case_ids; values are 1-indexed
-    page numbers. The leading "_comment" key (if present) is ignored."""
-    if not OVERRIDES_PATH.exists():
-        return {}
-    try:
-        d = json.loads(OVERRIDES_PATH.read_text())
-    except Exception:
-        return {}
-    return {k: int(v) for k, v in d.items()
-            if not k.startswith("_") and isinstance(v, int)}
-
-
-def _no_crop_cases() -> set:
-    """Read the no-crop opt-out list."""
-    if not NO_CROP_PATH.exists():
-        return set()
-    try:
-        d = json.loads(NO_CROP_PATH.read_text())
-    except Exception:
-        return set()
-    return set(d.get("cases") or [])
 
 
 def _list_cases() -> List[str]:
@@ -273,12 +251,8 @@ def render_one(case_id: str, force: bool = False) -> Dict[str, Any]:
     if pdf is None:
         return {"case_id": case_id, "status": "no_pdf"}
     pi = _pdf_info(case_id) or {}
-    overrides = _page_overrides()
-    if case_id in overrides:
-        page_idx = overrides[case_id] - 1   # manual override wins
-    else:
-        pages = pi.get("map_pages") or [1]
-        page_idx = int(pages[0]) - 1
+    pages = pi.get("map_pages") or [1]
+    page_idx = int(pages[0]) - 1
 
     try:
         # 200 DPI matches production benchmark_runner default.

@@ -25,11 +25,11 @@ import cv2
 import numpy as np
 from flask import Flask, jsonify, request, send_file, abort, send_from_directory
 
-REPO = Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO))
 
 WORK = REPO / "boundary_annotations"
-UI_HTML = REPO / "scripts" / "annotate_ui.html"
+UI_HTML = Path(__file__).resolve().parent / "boundary_annotator_ui.html"
 
 app = Flask(__name__)
 

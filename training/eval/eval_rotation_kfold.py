@@ -18,9 +18,10 @@ import torch
 from torch.utils.data import DataLoader
 
 THIS = Path(__file__).resolve().parent
-REPO = THIS.parent
+REPO = THIS.parent.parent
 sys.path.insert(0, str(REPO))
 
+from training.eval._util import write_predictions_json  # noqa: E402
 from training.train_rotation_classifier import (  # noqa: E402
     CLASS_DEGREES, RotationClassifier,
 )
@@ -77,9 +78,8 @@ def main() -> int:
         print(f"fold {fold_k}: {n_match}/{len(idx_orig)} correct on val "
               f"({100*n_match/max(1,len(idx_orig)):.1f}%, {elapsed:.0f}s)")
 
-    out_path = REPO / "rotation_kfold_predictions.json"
-    out_path.write_text(json.dumps(predictions, indent=2, sort_keys=True))
-    print(f"\nWrote {len(predictions)} predictions to {out_path.name}")
+    write_predictions_json(
+        predictions, THIS / "predictions" / "rotation_kfold.json")
 
     # 3-way comparison
     print("\n========== 3-way comparison ==========")

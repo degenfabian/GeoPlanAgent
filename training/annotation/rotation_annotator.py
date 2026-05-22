@@ -25,9 +25,9 @@ from typing import Optional
 
 from flask import Flask, abort, redirect, request, send_file, url_for
 
-REPO = Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parent.parent.parent
 DATASET_DIR = REPO / "boundary_annotations"
-ANNOTATIONS_FILE = REPO / "rotation_annotations.json"
+ANNOTATIONS_FILE = REPO / "training" / "dataset" / "rotation_annotations.json"
 
 app = Flask(__name__)
 

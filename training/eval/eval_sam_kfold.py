@@ -17,12 +17,13 @@ from peft import LoraConfig, get_peft_model
 from torch.utils.data import DataLoader
 from transformers import Sam3Model, Sam3Processor
 
-REPO = Path(__file__).resolve().parents[1]
+THIS = Path(__file__).resolve().parent
+REPO = THIS.parent.parent
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "training"))
 
 # Reuse the exact training-time dataset class and config constants
-from train_sam3_kfold import (
+from training.eval._util import write_predictions_json
+from training.train_sam3_kfold import (
     FoldDataset, collate, seed_everything,
     _ensure_pred_mask_on_gt, _autocast_ctx,
     LORA_TARGET_MODULES, MODEL_ID,
@@ -163,12 +164,13 @@ def main():
     summarise("Semantic-head IoU", sem_all)
     summarise("Instance-head IoU", inst_all)
 
-    out_path = REPO / "results" / "benchmark_v21" / "sam_kfold_shape_iou_v2.csv"
-    with out_path.open("w") as f:
-        f.write("fold,case,sem_iou,inst_iou\n")
-        for fold, case, si, ii in rows:
-            f.write(f"{fold},{case},{si},{ii}\n")
-    print(f"\nWrote: {out_path}")
+    predictions = {
+        case: {"fold": int(fold),
+               "sem_iou": float(si),
+               "inst_iou": float(ii)}
+        for fold, case, si, ii in rows
+    }
+    write_predictions_json(predictions, THIS / "predictions" / "sam_kfold.json")
 
 
 if __name__ == "__main__":

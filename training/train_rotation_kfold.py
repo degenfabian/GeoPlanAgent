@@ -73,7 +73,7 @@ from tools.extraction.sam3 import (  # noqa: E402
 
 # Inputs
 DATASET_DIR = REPO / "boundary_annotations"
-LABELS_FILE = REPO / "rotation_annotations.json"
+LABELS_FILE = REPO / "training" / "dataset" / "rotation_annotations.json"
 SAM3_FOLD_ASSIGNMENT = REPO / "models" / "sam3_lora" / "fold_assignment.json"
 
 # Output
