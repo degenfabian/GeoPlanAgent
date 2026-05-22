@@ -15,7 +15,7 @@ from tools.matching import (
     sigma_from_scale,           # σ default given a map's stated scale
     sigma_from_source,          # σ default given a geocode source label
     effective_sigma,            # max(provided, source-default)
-    candidate_passes_la_filter, # outside-LA penalty hook for the smart-commit gate
+    candidate_passes_la_filter, # locate-stage outside-LA filter (fail-open)
 )
 ```
 
@@ -70,7 +70,7 @@ Each geocoded candidate carries a `source` prefix (e.g.
 | `sigma_from_source(name)` | Empirical p95 candidate→GT distance for this source. Postcode lookups → ~50-300 m; place names → ~800 m; LA centroid → kilometres. Used as the search-window radius when the worker didn't supply one. |
 | `source_priority(name)` | Lower = preferred. Postcodes / code_point rank 0; admin / parish rank 9. Used when capping candidate count. |
 | `effective_sigma(provided, source)` | `max(provided, default-for-source)` so a worker-supplied σ never goes below the source's empirical floor. |
-| `candidate_passes_la_filter(source, lat, lon, admin_region)` | Lazy-imports `tools.verification_checks._resolve_la` and checks LA-polygon containment. Used by `tools.scoring.commit_attempt_score` to apply the smart-commit `OUTSIDE_LA_PENALTY=0.3`. |
+| `candidate_passes_la_filter(source, lat, lon, admin_region)` | Lazy-imports `tools.verification_checks._resolve_la` and checks LA-polygon containment. Returns True (fail-open) when no `admin_region` is provided or the source is exempt (postcodes, grid_refs, etc.). Used at the locate stage to drop catastrophic wrong-region picks. |
 
 ## Output of `sliding_window_position`
 

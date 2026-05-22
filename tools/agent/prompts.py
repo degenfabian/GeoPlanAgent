@@ -53,11 +53,10 @@ additional rules):
   SCHEDULE-CLASSIFICATION GUARD: pages of the SAME geographic area
   shown for DIFFERENT permitted-development class restrictions of an
   Article 4 direction (Schedule 2 classes like Class A / Class E / Class
-  F, Parts 1 / 2, etc.) are the SAME area_group with the SAME
-  area_signature. The underlying physical area is the same; only the
-  legal classification differs. Strip class / part / schedule
-  qualifiers from the underlying name when deciding whether two pages
-  cover the same area.
+  F, Parts 1 / 2, etc.) belong to the SAME area_group. The underlying
+  physical area is the same; only the legal classification differs.
+  Strip class / part / schedule qualifiers when deciding whether two
+  pages cover the same area.
 
   boundary_clarity: 'clear' requires BOTH (a) the boundary
                     line/hatch/edge is unambiguous to trace AND
@@ -67,9 +66,6 @@ additional rules):
 
   detail_level: close (parcel level) / medium (neighbourhood) /
                 wide (town or regional).
-
-  area_signature: short noun phrase naming the area. Pages with the
-                  same area_group MUST have the identical signature.
 
   caption: one-line description (≤120 chars).
 
@@ -167,22 +163,24 @@ DOCUMENT STRUCTURE (you'll see this in the user prompt):
 • area_group: every match page has an integer `area_group`. Pages with
   the SAME area_group are duplicate views of the SAME geographic area
   (pick the highest-ranked one). Pages with DIFFERENT area_groups
-  cover DIFFERENT geographic areas — multi-boundary planning docs.
-• match_at internally runs MINIMA at one locate centre for the primary
-  page of EVERY area_group and UNIONS the resulting polygons into one
-  final GeoJSON. You do NOT iterate groups — a single match_at handles
-  them all, and the response's `per_group` array tells you how each
-  group did.
-• To retry just ONE group whose mask or alignment looks wrong, call
-  match_at again with page=<next alternate page in that group>; the
-  other groups are re-matched at the same centre but reuse their
-  existing cached SAM3 masks (no recomputation).
+  cover DIFFERENT geographic areas — multi-area planning documents.
+• Each match_at call matches exactly ONE page (and therefore one
+  area_group). The returned candidate carries that single match.
+• Each commit_match call commits exactly ONE candidate — i.e. one
+  area_group. The polygon for that group goes into the running
+  final-result union. For multi-area documents you call
+  propose_centers + match_at + commit_match SEPARATELY for each
+  area_group; commit_match unions every committed group's geojson
+  into the final output.
+• Most documents are single-area (one area_group only) — just run the
+  loop once and you're done.
 
 INPUT: PDFInfo summary + the top-ranked match page rendered upright. Other
 match pages are not visible to you — match_at returns numbers only,
 which is all you need to compare candidates and commit.
 OUTPUT: a BoundaryOutcome. The output_validator enforces:
-• status="accepted" → a commit_match call must have produced a geojson.
+• status="accepted" → at least one commit_match call must have produced
+  a geojson.
 • status="district_lookup" → lookup_district() must have succeeded.
 The status enum is just ["accepted", "district_lookup"] — refusing a case
 is not supported, the pipeline always produces a polygon.
@@ -194,67 +192,79 @@ WORKFLOW
 2. match_at(page=N, name, lat, lon) on the candidate from propose_centers.
    propose_centers returns ONE pick per call — to try a different anchor,
    call propose_centers again (optionally with match_context="..." feedback,
-   see below). The `page` argument is REQUIRED; for single-area docs just
-   pass map_pages[0]. For multi-area docs, pass the primary page of the
-   area_group you want this candidate evaluated against — other groups
-   are matched automatically at the same centre (see DOCUMENT STRUCTURE
-   above).
-   Each call returns total_inliers and a per_group breakdown
-   (n_inliers, road_name_agreement + verdict, scale_consistency).
-   Judge candidate quality from these numbers.
+   see below). The `page` argument is REQUIRED; for single-area docs pass
+   map_pages[0]. For multi-area docs, work ONE group at a time: pass that
+   group's primary page, locate it, match it, then commit it before
+   moving to the next group.
+
+   Each match_at call covers exactly one area_group and returns:
+     - candidate_id        integer handle
+     - area_group, page    which group/page this attempt covers
+     - n_inliers           RANSAC match strength (the primary signal)
+     - scale_consistency   per-axis (0..1)
+     - road_name_agreement per-axis (0..1)
+     - budget_remaining    match_at calls left in this case
 
    SAM3 segmentation runs automatically on first need per page (cached
    per page across calls).
 
-   Decision rules:
-     • STRONG match: total_inliers ≥ 50 AND scale_consistency close
-       to 1.0 → commit_match.
-     • BORDERLINE (anything below STRONG): try AT LEAST ONE more
-       propose_centers candidate before committing — this is MANDATORY
-       even when the first attempt looks decent (e.g. ~30 inliers).
-       The second match often lands at a different zoom and reveals a
-       much better fit.
-     • scale_consistency markedly below 1.0 → possibly poor match. If
-       n_inliers is strong (≥ 80) trust the inliers and commit; if
-       inliers are also weak (< 50), call propose_centers again.
-     • After 2+ match_at attempts: pick the candidate with the highest
-       total_inliers and call commit_match on it. commit_match runs a
-       deterministic re-rank against all stored attempts, applying a
-       smooth distance-based penalty 1/(1+km_outside) to candidates
-       whose centre falls OUTSIDE the reader's admin_region polygon
-       (per OS BoundaryLine). If your pick fails this re-rank,
-       commit_match commits a different stored attempt instead and
-       returns the redirected id — so you don't need to verify LA
-       containment yourself; just pick on inliers and let the call
-       correct you.
+   THREE SIGNALS — explicit tiers, no fuzzy thresholds:
 
-   Reading the per-axis signals:
-     • n_inliers is the primary signal. ≥ 50 means the match is almost
-       always correct (~95% of historical commits at that threshold
-       reach IoU ≥ 0.5). < 25 is too weak to commit.
-     • scale_consistency near 1.0 means the recovered affine scale
-       agrees with the reader's stated map scale; far from 1.0 means
-       the assumed scale was wrong OR this is the wrong area — prefer
-       another candidate if there is one.
-     • road_name_agreement = 0.0 means OS has roads at this location
-       but NONE match the reader's road names — possible wrong-area
-       signal. But be careful: if n_inliers is strong (≥ 80) and
-       scale_consistency is reasonable, trust the inlier count over
-       this signal.
-     • road_name_agreement = 0.5 with verdict "no OS roads within
-       radius" means sparse OS cartography (typical rural villages);
-       it is NOT a wrong-area signal — trust n_inliers +
-       scale_consistency instead.
+     n_inliers (RANSAC match strength, integer ≥ 0):
+       ≥ 100   STRONG     — commit on this attempt unless another
+                            signal disagrees.
+       50-99   OK         — commit ONLY after trying at least one
+                            more propose_centers candidate.
+       25-49   WEAK       — keep exploring; don't commit yet.
+       < 25    TOO WEAK   — try another candidate; never commit
+                            unless budget exhausted.
 
-3. commit_match(candidate_id) — promotes one stored match_at attempt
-   to the active result AND automatically projects the SAM3 mask
-   through its affine into a WGS84 GeoJSON polygon. Before promoting,
-   it runs a deterministic re-rank across ALL stored attempts using
-   total_inliers with a 70%-penalty applied to candidates whose centre
-   falls OUTSIDE the admin_region polygon; if your pick fails the
-   re-rank against another stored attempt, it commits that attempt
-   instead and returns the redirected id. You may call commit_match
-   again with a different id to change your mind (projection re-runs).
+     scale_consistency (per-group, range 0..1):
+       ≥ 0.8   GOOD       — recovered scale matches the reader's
+                            stated map scale.
+       0.5-0.8 MARGINAL   — scale stretched; prefer an alternative
+                            if you have one.
+       < 0.5   BAD        — scale very off; trust only if n_inliers
+                            ≥ 100 (the match is so strong the affine
+                            absorbed a scale error).
+
+     road_name_agreement (per-group, range 0..1):
+       ≥ 0.6   STRONG     — reader's road names found at this location.
+       0.0     CONFLICT   — OS has roads here but NONE of reader's
+                            road names appear; possible wrong-area
+                            signal. Trust only if n_inliers ≥ 100.
+       0.5     NEUTRAL    — verdict says "no OS roads within radius";
+                            sparse cartography (rural). No signal —
+                            decide on n_inliers + scale_consistency.
+       other   PARTIAL    — some roads matched; weak corroboration,
+                            don't over-weight.
+
+   COMMIT DECISION (apply in order, per area_group):
+     1. If you have a STRONG n_inliers attempt for this group with
+        GOOD scale and STRONG or NEUTRAL road agreement → commit it.
+     2. Otherwise try another propose_centers candidate for this
+        group (MANDATORY before committing anything below STRONG).
+     3. After 2+ attempts for the group, pick the candidate with the
+        highest n_inliers. Break ties on scale_consistency (closer
+        to 1.0 wins), then on road_name_agreement.
+     4. commit_match takes your pick as-is — it does not second-
+        guess you. The only rejection is the strict gate (this
+        candidate's match produced no valid affine).
+     5. On multi-area documents, repeat the whole loop for the next
+        area_group. The final geojson is the union of every
+        committed group.
+
+3. commit_match(candidate_id) — commits ONE candidate for its
+   area_group. The geojson for that group is added to (or replaces in
+   that group's slot) the running final-result union. Calling
+   commit_match a second time with a candidate whose area_group
+   already has a commit just overwrites that group's slot — other
+   groups stay. For single-area docs you call commit_match exactly
+   once; for multi-area docs once per group.
+
+   The only precondition is the strict gate: this attempt's match
+   must have produced a valid affine. Otherwise commit_match rejects
+   and asks you to try a different candidate, page, or centre.
 
 4. Return BoundaryOutcome with status="accepted" (or
    status="district_lookup" if you took the lookup_district path).
@@ -265,22 +275,21 @@ WORKFLOW
    rotation_checked is auto-overwritten from state — leave at default.
 
 BUDGET: max 5 match_at calls per case. Focus on top-specificity candidates
-first. If all 5 attempts are weak (best total_inliers < 25), commit the
-highest-inlier one anyway via commit_match — the pipeline always produces
-a polygon, never refuse.
+first. If every attempt for a group is TOO WEAK (best n_inliers < 25),
+commit the highest-n_inliers one anyway via commit_match — the
+pipeline always produces a polygon, never refuse.
 
 NO INVENTED COORDINATES: every match_at (lat, lon) must come from
 propose_centers. To add a missing place call
 propose_centers(extra_terms=["place name from the map"]) — never type
 coordinates yourself.
 
-RE-CALLING propose_centers WITH FEEDBACK: after a weak match_at (low
-total_inliers, scale_consistency markedly below 1.0, or
-road_name_agreement=0.0 combined with weak inliers), you can call
-propose_centers again with
-match_context="..." describing in plain English what went wrong. The
-locate sub-agent reads it and is told to pick from a DIFFERENT signal
-type. Example:
+RE-CALLING propose_centers WITH FEEDBACK: after a WEAK or TOO WEAK
+match_at (or any attempt with scale_consistency BAD or
+road_name_agreement CONFLICT combined with weak n_inliers), call
+propose_centers again with match_context="..." describing in plain
+English what went wrong. The locate sub-agent reads it and is told to
+pick from a DIFFERENT signal type. Example:
    propose_centers(match_context="Prior pick at (51.51, -2.63) had 12
    inliers; OS tile showed farmland but planning map is dense urban,
    so postcode probably points to council letterhead. Try a road-based
@@ -291,9 +300,9 @@ agent should consider.
 
 OTHER:
 • No duplicate tool calls with the same args.
-• If stuck, commit the highest-total_inliers match_at result and return
-  BoundaryOutcome. The pipeline does NOT support refusing a case —
-  always emit a polygon."""
+• If stuck, commit the highest-n_inliers match_at result for each
+  group and return BoundaryOutcome. The pipeline does NOT support
+  refusing a case — always emit a polygon."""
 
 
 __all__ = [

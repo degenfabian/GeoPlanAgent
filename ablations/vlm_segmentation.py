@@ -318,11 +318,22 @@ def main() -> None:
     args = ap.parse_args()
 
     # ── Load manifest + filter ──────────────────────────────────────────────
+    # Build the manifest in-memory from `maps/*.png` + `fold_assignment.json`
+    # using the same helper the training scripts use. We deliberately do
+    # NOT persist a `manifest.json` on disk — it would just duplicate
+    # information that's already derivable from the case filenames and
+    # the fold assignment, and could drift out of sync with them.
     dataset_dir = REPO / "training" / "dataset"
-    manifest_path = dataset_dir / "manifest.json"
-    if not manifest_path.exists():
-        sys.exit(f"manifest not found: {manifest_path}")
-    manifest = json.loads(manifest_path.read_text())
+    fold_assignment_path = dataset_dir / "fold_assignment.json"
+    if not fold_assignment_path.exists():
+        sys.exit(f"fold_assignment.json not found: {fold_assignment_path}. "
+                 f"Run training/build_sam3_training_set.py first.")
+    from training.train_sam3_kfold import _build_manifest_from_disk
+    fold_map = json.loads(fold_assignment_path.read_text())
+    manifest = _build_manifest_from_disk(dataset_dir, fold_map)
+    if not manifest:
+        sys.exit(f"manifest is empty — no .png files found in "
+                 f"{dataset_dir / 'maps'} matching fold_assignment.json")
 
     if args.cases:
         wanted = set(args.cases)

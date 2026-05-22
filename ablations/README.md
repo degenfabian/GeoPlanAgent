@@ -23,7 +23,10 @@ already-staged code.
 Pure single-shot VLM inference — no SAM3, no MINIMA, no agent loop. The
 script:
 
-1. Loads `training/dataset/manifest.json` and iterates each case.
+1. Builds the per-case manifest in-memory from
+   `training/dataset/maps/*.png` + `training/dataset/fold_assignment.json`
+   (no `manifest.json` on disk — see `training/train_sam3_kfold._build_manifest_from_disk`)
+   and iterates each case.
 2. Sends each `training/dataset/maps/<case>.png` to the VLM with a
    segmentation prompt asking for polygon vertices.
 3. Rasterises the returned polygons to a binary mask at the source

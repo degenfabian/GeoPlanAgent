@@ -228,12 +228,11 @@ def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
             cid: {
                 "name": a.get("name"),
                 "lat": a.get("lat"), "lon": a.get("lon"),
-                "total_inliers": a.get("total_inliers"),
-                # ``match_info`` lives inside per_group entries, not on
-                # the top-level attempt dict. Pull from the primary
-                # group so the debug file actually shows the inlier
-                # counts instead of always-null. Best-effort: degrade
-                # to None if no per_group / no match_info / etc.
+                "area_group": a.get("requested_group"),
+                "page": a.get("requested_page"),
+                # n_inliers lives in this candidate's only per_group
+                # entry. Best-effort: None if no per_group / no
+                # match_info.
                 "n_inliers": (
                     ((a.get("per_group") or [{}])[0].get("match_info") or {})
                     .get("n_inliers")

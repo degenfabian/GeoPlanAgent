@@ -1,17 +1,12 @@
-"""Match-stage worker tools: match_at + commit_match (multi-group capable).
+"""Match-stage worker tools: match_at + commit_match.
 
-Each match_at call:
-  - takes an explicit `page` argument (the worker chooses which page to
-    use for the area_group it wants to override)
-  - resolves the full set of area_groups in the document and the page
-    each should be matched on (worker's choice for its group, primaries
-    for the others)
-  - per group: lazily renders the page, lazily segments with SAM3
-    (caches both per page across calls), runs MINIMA at the supplied
-    (lat, lon) centre, projects the mask through the resulting affine
-  - drops groups whose match fails the strict commit gate
-  - unions remaining per-group polygons into a single GeoJSON
-  - stores ONE candidate; commit_match commits it as-is.
+Each match_at call matches ONE page (and therefore one area_group). The
+worker calls match_at + commit_match separately for each area_group of
+a multi-area document; commit_match incrementally unions the committed
+groups into state.current_result["geojson"].
+
+For the typical single-area document (99% of cases) this is just:
+  propose_centers → match_at(page=N) → commit_match → done.
 
 SAM3 masks are cached on state.sam_masks_by_page keyed by 1-based page
 number, so re-calling match_at on a page that's been segmented is fast
@@ -98,47 +93,25 @@ def _get_or_compute_mask(state: AgentState, page: int,
     return mask
 
 
-def _groups_to_match(state: AgentState,
-                       requested_page: int) -> List[Tuple[int, int]]:
-    """Return [(area_group_id, page_to_match), ...] across all match groups.
+def _resolve_area_group(state: AgentState, page: int) -> int:
+    """Return the area_group of `page` from pdf_info.map_page_details.
 
-    For the area_group of `requested_page`, use that page.
-    For all other area_groups, use the primary (first map_pages entry of
-    that group).
+    Raises ModelRetry if `page` isn't a category='match' page. Falls back
+    to 0 when pdf_info is empty (the legacy "no metadata" path).
     """
     details = (state.pdf_info or {}).get("map_page_details") or []
-    map_pages = (state.pdf_info or {}).get("map_pages") or []
-    if not details or not map_pages:
-        return [(0, requested_page)]
-
+    if not details:
+        return 0  # legacy path with no metadata — treat as single group 0
     by_page = {int(d["page"]): d for d in details
                if d.get("category") == "match"}
-    req_meta = by_page.get(int(requested_page))
-    if req_meta is None:
+    meta = by_page.get(int(page))
+    if meta is None:
         raise ModelRetry(
-            f"page={requested_page} is not a category='match' page. "
-            f"Valid match pages: {sorted(by_page.keys())}. "
-            f"Pick one from pdf_info.map_pages."
+            f"page={page} is not a category='match' page. Valid match "
+            f"pages: {sorted(by_page.keys())}. Pick one from "
+            f"pdf_info.map_pages."
         )
-    req_group = int(req_meta.get("area_group", 0))
-
-    # Walk map_pages in order; pick first match page per area_group.
-    seen: set = set()
-    out: List[Tuple[int, int]] = []
-    for page in map_pages:
-        page = int(page)
-        meta = by_page.get(page)
-        if meta is None:
-            continue
-        g = int(meta.get("area_group", 0))
-        if g in seen:
-            continue
-        seen.add(g)
-        if g == req_group:
-            out.append((g, int(requested_page)))
-        else:
-            out.append((g, page))
-    return out or [(req_group, requested_page)]
+    return int(meta.get("area_group", 0))
 
 
 # ── match_at ─────────────────────────────────────────────────────────────
@@ -153,15 +126,14 @@ def match_at(
     sigma_m: Optional[float] = None,
     scale_ratio: Optional[float] = None,
 ) -> dict:
-    """Run MINIMA at (lat, lon); auto-matches every area_group in the doc.
+    """Run MINIMA at (lat, lon) on ONE page (one area_group).
 
-    The `page` argument selects which page to use FOR ITS area_group.
-    Other area_groups in the document use their primaries automatically.
-    The returned candidate's polygon is the UNION of per-group projections.
+    Each match_at covers exactly the page you pass and its area_group.
+    For multi-area documents, call match_at + commit_match separately
+    for each area_group's primary page.
 
-    This tool returns numbers only — judge the match from total_inliers
-    and the per_group breakdown (n_inliers, scale_consistency,
-    road_name_agreement + verdict).
+    This tool returns numbers only — judge the match from n_inliers,
+    scale_consistency, road_name_agreement + verdict.
 
     Args:
         page: 1-based page number. Must be a category='match' page from
@@ -173,11 +145,9 @@ def match_at(
         scale_ratio: Map scale denominator (default: parsed from PDFInfo.scale).
 
     Returns:
-        {"success": True, "candidate_id": int, "total_inliers": int,
-         "n_groups": int, "n_groups_committed": int,
-         "per_group": [{"page", "area_group", "n_inliers",
-         "road_name_agreement", "road_name_verdict",
-         "scale_consistency"}, ...],
+        {"success": True, "candidate_id": int, "area_group": int,
+         "page": int, "n_inliers": int, "road_name_agreement": float,
+         "road_name_verdict": str, "scale_consistency": float,
          "budget_remaining": int}
     """
     state = ctx.deps
@@ -194,7 +164,7 @@ def match_at(
         "sigma_m": sigma_m, "scale_ratio": scale_ratio,
     })
 
-    # Reject invented coordinates (same logic as before).
+    # Reject invented coordinates.
     matched_candidate = None
     if state.proposed_centers:
         from tools.geo.coords import haversine_km
@@ -252,85 +222,50 @@ def match_at(
     if scale_ratio is None and state.pdf_info:
         scale_ratio = _parse_scale(state.pdf_info.get("scale"))
 
-    # Resolve the per-group page list.
-    groups_pages = _groups_to_match(state, int(page))
+    # Resolve the area_group of this page.
+    area_group = _resolve_area_group(state, int(page))
 
-    per_group: List[Dict[str, Any]] = []
-    requested_group = None
-    for d in (state.pdf_info or {}).get("map_page_details") or []:
-        if int(d.get("page", -1)) == int(page) and d.get("category") == "match":
-            requested_group = int(d.get("area_group", 0))
-            break
+    # Match the single requested page.
+    single = _match_single_page(state, int(page), name, float(lat), float(lon),
+                                  float(sigma_m), scale_ratio, matched_candidate)
+    single["area_group"] = area_group
+    single["page"] = int(page)
+    valid = single.get("affine_H") is not None and not single.get("error")
+    n_inliers = int((single.get("match_info") or {}).get("n_inliers") or 0) if valid else 0
+    geojson = single.get("geojson") if valid else None
 
-    for group_id, group_page in groups_pages:
-        single = _match_single_page(state, group_page, name, float(lat), float(lon),
-                                       float(sigma_m), scale_ratio, matched_candidate)
-        single["area_group"] = int(group_id)
-        single["page"] = int(group_page)
-        per_group.append(single)
-
-    # Aggregate metrics across groups that produced a valid match.
-    valid = [g for g in per_group
-             if g.get("affine_H") is not None
-             and not g.get("error")]
-    total_inliers = sum(int((g.get("match_info") or {}).get("n_inliers") or 0)
-                        for g in valid)
-
-    # Union per-group GeoJSONs that passed the per-group commit gate.
-    # Track committed entries by object identity rather than equality —
-    # the per-group dicts hold numpy arrays (affine_H, etc.) and dict-equality
-    # comparison triggers numpy element-wise `==` which raises
-    # "truth value of an array is ambiguous" whenever Python's `in` falls
-    # back from identity to equality (the multi-group, partial-success case).
-    committed_groups = []
-    committed_ids: set = set()
-    for g in valid:
-        if g.get("geojson") is not None:
-            committed_groups.append(g)
-            committed_ids.add(id(g))
-
-    unioned_geojson = _union_geojsons([g["geojson"] for g in committed_groups])
-
+    # Store the attempt. per_group is a 1-element list (kept for shape
+    # parity with the rest of the pipeline — critic_agent, output
+    # validator, and the saved metrics.json all read per_group).
     cid = state._match_attempt_counter
     state._match_attempt_counter += 1
     state.match_attempts[cid] = {
         "candidate_id": cid,
         "name": name, "lat": float(lat), "lon": float(lon),
         "sigma_m": float(sigma_m), "scale_ratio": scale_ratio,
-        "per_group": per_group,
-        "committed_groups_idx": [i for i, g in enumerate(per_group)
-                                  if id(g) in committed_ids],
-        "geojson": unioned_geojson,
-        "total_inliers": int(total_inliers),
-        "n_groups": len(per_group),
-        "n_groups_committed": len(committed_groups),
+        "per_group": [single],
+        "geojson": geojson,
+        "n_groups": 1,
+        "n_groups_committed": 1 if valid else 0,
         "requested_page": int(page),
-        "requested_group": requested_group,
+        "requested_group": area_group,
     }
 
-    summary = {
+    return {
         "success": True,
         "candidate_id": cid,
-        "total_inliers": int(total_inliers),
-        "n_groups": len(per_group),
-        "n_groups_committed": len(committed_groups),
-        "per_group": [
-            {
-                "page": g["page"], "area_group": g["area_group"],
-                "n_inliers": int((g.get("match_info") or {}).get("n_inliers") or 0),
-                "road_name_agreement": _axis_field(
-                    g.get("reward"), "road_name_agreement", "score"),
-                "road_name_verdict": _axis_field(
-                    g.get("reward"), "road_name_agreement", "verdict"),
-                "scale_consistency": _axis_field(
-                    g.get("reward"), "scale_consistency", "score"),
-            }
-            for g in per_group
-        ],
+        "area_group": area_group,
+        "page": int(page),
+        "n_inliers": n_inliers,
+        "road_name_agreement": _axis_field(
+            single.get("reward"), "road_name_agreement", "score"),
+        "road_name_verdict": _axis_field(
+            single.get("reward"), "road_name_agreement", "verdict"),
+        "scale_consistency": _axis_field(
+            single.get("reward"), "scale_consistency", "score"),
         "budget_remaining": state.match_at_budget,
+        "committed_groups": sorted(state.committed_groups.keys()),
     }
-
-    return summary
 
 
 # ── Per-page MINIMA driver (called once per group inside match_at) ──────
@@ -446,17 +381,84 @@ def _union_geojsons(geojsons: List[dict]) -> Optional[dict]:
 
 # ── commit_match ─────────────────────────────────────────────────────────
 
+def _recompute_current_result(state: AgentState) -> None:
+    """Rebuild ``state.current_result`` from every entry in
+    ``state.committed_groups``.
+
+    The geojson field is the shapely-union of every committed group's
+    geojson. The other fields (affine_H, tile_info, match_info, reward)
+    come from the "primary" committed group — the one with the highest
+    n_inliers — since they're single-page values that downstream
+    visualisations only render against one page.
+
+    For single-area docs (one entry in committed_groups) this matches
+    the pre-refactor behavior exactly.
+    """
+    cands = [state.match_attempts[cid]
+             for cid in state.committed_groups.values()]
+    if not cands:
+        state.current_result = {}
+        return
+
+    # Union every group's geojson.
+    geojsons = [c.get("geojson") for c in cands if c.get("geojson")]
+    if len(geojsons) == 1:
+        unioned = geojsons[0]
+    elif len(geojsons) > 1:
+        unioned = _union_geojsons(geojsons)
+    else:
+        unioned = None
+
+    # Primary = highest-inlier committed group. Its affine/tile/mask
+    # are the ones we render for human visualisations and what
+    # downstream `affine_H.npy` / `boundary_mask.png` get saved from.
+    # n_inliers per candidate lives at per_group[0].match_info.n_inliers
+    # since each candidate covers exactly one area_group.
+    def _cand_n_inliers(c) -> int:
+        pg = (c.get("per_group") or [{}])[0]
+        return int((pg.get("match_info") or {}).get("n_inliers") or 0)
+
+    primary = max(cands, key=_cand_n_inliers)
+    primary_pg = (primary.get("per_group") or [{}])[0]
+
+    # Sum n_inliers across committed groups — exposed below as
+    # state.current_result["total_inliers"] for the output validator
+    # (which surfaces it as BoundaryOutcome.final_n_inliers).
+    total = sum(_cand_n_inliers(c) for c in cands)
+
+    state.current_result = {
+        "affine_H": primary_pg.get("affine_H"),
+        "tile_info": primary_pg.get("tile_info"),
+        "match_info": primary_pg.get("match_info"),
+        "geojson": unioned,
+        "candidate_id": primary.get("candidate_id"),
+        "reward": primary_pg.get("reward"),
+        # per_group on current_result lists ONE entry per committed
+        # group (the first/only per_group entry from each candidate).
+        "per_group": [(c.get("per_group") or [{}])[0] for c in cands],
+        "requested_group": primary.get("requested_group"),
+        "requested_page": primary.get("requested_page"),
+        "n_groups_committed": len(cands),
+        "total_inliers": total,
+    }
+
+
 @_agent.tool
 def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
-    """Mark a stored match_at candidate as the active result.
+    """Commit a stored match_at attempt for its area_group.
 
-    For multi-group docs the candidate's geojson is already the union
-    across area_groups for which MINIMA produced a valid affine. The
-    smart-commit gate below redirects to a better candidate if the
-    worker has tried multiple match_at calls and picked a worse one;
-    the strict gate rejects commits where NO group produced an affine
-    — try a different page or centre via match_at, or call
-    propose_centers(extra_terms=[…]).
+    Each commit_match call adds (or replaces) the commit for ONE
+    area_group — the one this candidate's match_at was called on. For
+    multi-area documents the worker calls commit_match once per group;
+    each call unions its new geojson into the running result.
+
+    Calling commit_match a second time with a candidate covering an
+    already-committed group OVERWRITES that group's commit; other
+    groups stay. To change your mind, just call commit_match with a
+    different id whose area_group matches.
+
+    The only precondition is the strict gate: this candidate's match
+    must have produced a valid affine.
 
     Args:
         candidate_id: ID returned from a prior match_at call.
@@ -469,180 +471,27 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
             f"{sorted(state.match_attempts.keys())}"
         )
 
-    # Smart-commit: prefer the candidate with the most total inliers
-    # across groups, weighted by inside-LA filter on the requested page's
-    # match. Skips when the worker has tried <2 candidates.
-    #
-    # The critic can override this gate by setting
-    # ``state.bypass_smart_commit_one_shot = True`` before re-invoking
-    # the worker. We READ the flag here but do NOT consume it yet — the
-    # consume happens at the end of the function, only after a
-    # successful commit. Otherwise a retry_locate rehand where the
-    # first commit_match raises ModelRetry (e.g. strict gate trips on
-    # n_groups_committed==0) would burn the override, and a SUBSEQUENT
-    # commit_match in the same rehand would run the gate against the
-    # critic-rejected candidates and could redirect back to one of
-    # them. The outer rehand wrapper in critic_agent always resets the
-    # flag at the end as a backstop. The flag is NOT exposed as a
-    # ``commit_match`` parameter — the worker has no way to set it
-    # from its tool schema; only critic-side code can flip it.
-    bypass = bool(getattr(state, "bypass_smart_commit_one_shot", False))
-    if not bypass and len(state.match_attempts) >= 2:
-        from tools.matching import candidate_la_distance_km
-        from tools.scoring import (
-            commit_attempt_score,
-            quadrant_coverage_from_inlier_points,
-        )
-        admin_region = (state.pdf_info or {}).get("admin_region") if state.pdf_info else None
-
-        # Cross-candidate smart-commit scoring combines four signals,
-        # each already computed for every stored candidate elsewhere in
-        # the pipeline:
-        #   * raw inlier count    (RANSAC strength)
-        #   * la_distance_km      (smooth distance penalty: 1/(1+d_km)
-        #                          equals 1 inside admin_region, decays
-        #                          with distance to the boundary; catches
-        #                          wrong-LA picks without over-penalising
-        #                          boundary cases that sit ~tens of metres
-        #                          outside the OS BoundaryLine polygon)
-        #   * quadrant coverage   (inliers spread across map quadrants;
-        #                          resolves ties between candidates with
-        #                          similar inlier counts)
-        #   * scale_consistency   (min(s,1/s)^2; demotes candidates whose
-        #                          recovered affine had to stretch the
-        #                          map to align — a sign the matcher was
-        #                          clever in a wrong window)
-        # The signals were previously computed per-window inside
-        # sliding_window_position but discarded at the cross-candidate
-        # ranking step; this combined score lifts them up.
-        def _attempt_score(c):
-            # Use total inliers across all groups for multi-group candidates.
-            try:
-                n = int(c.get("total_inliers") or 0)
-            except (TypeError, ValueError):
-                return -1
-            ll = None
-            for g in c.get("per_group") or []:
-                mi = g.get("match_info") or {}
-                if ll is None:
-                    ll = mi.get("center_latlon") or mi.get("chosen_center_latlon")
-            d_km = 0.0
-            if admin_region and ll:
-                try:
-                    d_km = candidate_la_distance_km(
-                        "feature_cluster", ll[0], ll[1], admin_region
-                    )
-                except Exception:
-                    d_km = 0.0
-            base = commit_attempt_score(n, d_km)
-
-            # Quadrant factor: best (max) per_group quadrant coverage,
-            # normalised to [0, 1]. For multi-area docs this is generous;
-            # for single-area it just reads the one value.
-            best_q = 0
-            for g in c.get("per_group") or []:
-                mi = g.get("match_info") or {}
-                q = mi.get("_quadrant_cov")
-                if q is None:
-                    pts = mi.get("_inlier_pts_map")
-                    shape = mi.get("_rot_map_shape")
-                    if pts and shape and len(shape) >= 2:
-                        # _rot_map_shape is (H, W) numpy convention; the
-                        # callee expects a (H, W) tuple as its second arg.
-                        h, w = int(shape[0]), int(shape[1])
-                        q = quadrant_coverage_from_inlier_points(pts, (h, w))
-                if q is not None and int(q) > best_q:
-                    best_q = int(q)
-            if best_q == 0:
-                best_q = 4  # neutral when no signal
-            base *= (best_q / 4.0)
-
-            # Scale-consistency factor: worst (min) per_group score —
-            # for multi-area docs one badly-scaled group sinks the
-            # candidate (conservative); for single-area it just reads
-            # the one value.
-            worst_sc = None
-            for g in c.get("per_group") or []:
-                rwd = g.get("reward") or {}
-                axes = rwd.get("axes") or {}
-                sc = axes.get("scale_consistency") or {}
-                s = sc.get("score") if isinstance(sc, dict) else None
-                if isinstance(s, (int, float)):
-                    if worst_sc is None or s < worst_sc:
-                        worst_sc = float(s)
-            if worst_sc is None:
-                worst_sc = 1.0  # neutral when no signal
-            base *= worst_sc
-            return base
-
-        best_id = None
-        best_score = _attempt_score(cand)
-        for cid, c in state.match_attempts.items():
-            if cid == int(candidate_id):
-                continue
-            cscore = _attempt_score(c)
-            if cscore > best_score:
-                best_score = cscore
-                best_id = cid
-
-        if best_id is not None:
-            best_cand = state.match_attempts[best_id]
-            raise ModelRetry(
-                f"commit_match REJECTED candidate_id={candidate_id}. "
-                f"Candidate_id={best_id} has a better commit-score "
-                f"(total_inliers={best_cand.get('total_inliers', '?')}, "
-                f"inside-LA-weighted). Commit candidate_id={best_id} "
-                f"instead."
-            )
-
-    # Strict gate: at least one group must have produced a valid affine.
+    # Strict gate: this candidate's match must have produced a valid affine.
     n_committed = int(cand.get("n_groups_committed") or 0)
     if n_committed == 0:
         avail_ids = sorted(state.match_attempts.keys())
         raise ModelRetry(
             f"commit_match REJECTED candidate_id={candidate_id}: MINIMA "
-            f"produced no usable affine for any group (every group is "
-            f"missing affine_H/geojson). Try a different page or a "
-            f"different centre via match_at; or call propose_centers"
+            f"produced no usable affine for this attempt (missing "
+            f"affine_H/geojson). Try a different page or a different "
+            f"centre via match_at; or call propose_centers"
             f"(extra_terms=[...]) to add more candidates. "
             f"Available IDs: {avail_ids}."
         )
 
-    geojson = cand.get("geojson")
-    # The committed primary is the worker's requested area_group; other
-    # groups in per_group represent the auto-matched alternates that were
-    # unioned in. Downstream consumers (benchmark output, critic_agent)
-    # use committed_primary_page(state) to derive the relevant page/mask.
-    primary_group = next(
-        (g for g in cand.get("per_group") or []
-         if g.get("area_group") == cand.get("requested_group")),
-        (cand.get("per_group") or [{}])[0],
-    )
-    state.current_result = {
-        "affine_H": primary_group.get("affine_H"),
-        "tile_info": primary_group.get("tile_info"),
-        "match_info": primary_group.get("match_info"),
-        "geojson": geojson,
-        "candidate_id": int(candidate_id),
-        "reward": primary_group.get("reward"),
-        "per_group": cand.get("per_group"),
-        "requested_group": cand.get("requested_group"),
-        "requested_page": cand.get("requested_page"),
-        "n_groups_committed": n_committed,
-        # Total inliers SUMMED across all groups in this candidate.
-        # The worker's output_validator reads this for multi-group
-        # docs — primary-group inliers alone underreports a strong
-        # union from 3 groups.
-        "total_inliers": int(cand.get("total_inliers") or 0),
-    }
+    # Update the per-group commit registry and rebuild current_result.
+    group_id = int(cand.get("requested_group", 0))
+    state.committed_groups[group_id] = int(candidate_id)
+    _recompute_current_result(state)
     state.position_calls += 1
-    # Now that the commit has succeeded, consume the one-shot bypass.
-    # Moving the consume here (rather than at function entry) means a
-    # ModelRetry-causing call doesn't burn the override — the next
-    # commit_match in the same rehand still benefits from the bypass.
-    if bypass:
-        state.bypass_smart_commit_one_shot = False
 
+    # Count the number of polygons in the now-unioned final geojson.
+    geojson = state.current_result.get("geojson")
     n_polys = 0
     if isinstance(geojson, dict):
         geom = geojson.get("geometry") or {}
@@ -651,13 +500,20 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
         elif geom.get("type") == "Polygon":
             n_polys = 1
 
+    # n_inliers lives in this candidate's only per_group entry.
+    cand_pg = (cand.get("per_group") or [{}])[0]
+    cand_n_inliers = int((cand_pg.get("match_info") or {}).get("n_inliers") or 0)
+
     return {
         "success": True,
         "committed": {
-            "candidate_id": candidate_id,
+            "candidate_id": int(candidate_id),
+            "area_group": group_id,
             "name": cand["name"],
-            "total_inliers": int(cand.get("total_inliers") or 0),
-            "n_groups_committed": n_committed,
+            "n_inliers": cand_n_inliers,
             "n_polygons": n_polys,
-        }
+        },
+        # Across-call state so the worker can see which groups are
+        # still uncommitted on multi-area documents.
+        "all_committed_groups": sorted(state.committed_groups.keys()),
     }

@@ -13,10 +13,9 @@ Axes (each returns a score in [0, 1] plus a 1-line verdict):
                         the OS road network at the matched window?
 
 Raw n_inliers (from match_info) is itself the primary RANSAC strength
-signal — the worker and critic read it directly, and the smart-commit
-gate uses it as the base factor before multiplying in scale_consistency
-and quadrant coverage. We no longer wrap it in a redundant
-"inlier_strength" axis whose score nothing in the pipeline consumed.
+signal — the worker and critic read it directly. We no longer wrap it
+in a redundant "inlier_strength" axis whose score nothing in the
+pipeline consumed.
 """
 
 from __future__ import annotations
@@ -72,9 +71,9 @@ def axis_scale_consistency(
     Score is ``min(s, 1/s) ** 2`` — symmetric about identity (treats
     "stretched 31% more" and "compressed by 24%" as equally suspicious),
     returns 1.0 at s=1, smoothly decays toward 0. The squaring is the
-    only knob (``p=2``); it sharpens the slope near identity enough that
-    a 10–30% deviation produces a decisive ranking difference at
-    smart-commit time.
+    only knob (``p=2``); it sharpens the slope near identity enough
+    that a 10–30% deviation produces a decisive ranking difference
+    when the worker or critic compares candidates.
     """
     s = float(avg_scale or 0.0)
     if s <= 0:

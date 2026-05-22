@@ -4,7 +4,7 @@ Resolves a UK administrative-area name to its boundary polygon using
 local OS BoundaryLine shapefiles. Called by:
 - the locate sub-agent's `la_check` tool,
 - the worker's `lookup_district` tool,
-- the smart-commit gate's inside-LA filter.
+- the locate-stage LA filter (`candidate_passes_la_filter`).
 
 Public surface:
 - _resolve_la(query)        → shapely (Multi)Polygon | None

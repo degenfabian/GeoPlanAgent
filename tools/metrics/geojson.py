@@ -228,32 +228,3 @@ def calculate_spatial_metrics(
     return metrics
 
 
-def gt_centroid(gt_path):
-    """Compute centroid of ground truth GeoJSON file.
-
-    Returns (lat, lon) tuple, or (None, None) if extraction fails.
-    """
-    import numpy as np
-
-    with open(gt_path) as f:
-        gj = json.load(f)
-    coords = []
-
-    def extract(obj):
-        if isinstance(obj, list):
-            if len(obj) >= 2 and isinstance(obj[0], (int, float)):
-                coords.append((obj[1], obj[0]))  # lat, lon
-            else:
-                for item in obj:
-                    extract(item)
-        elif isinstance(obj, dict):
-            if "coordinates" in obj:
-                extract(obj["coordinates"])
-            for v in obj.values():
-                if isinstance(v, (list, dict)):
-                    extract(v)
-
-    extract(gj)
-    if not coords:
-        return None, None
-    return float(np.mean([c[0] for c in coords])), float(np.mean([c[1] for c in coords]))

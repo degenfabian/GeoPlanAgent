@@ -161,7 +161,11 @@ def _load_kfold_state() -> Optional[dict]:
 
         device = _device()
         models: dict = {}
-        img_size = 768
+        # Track each fold's img_size so we can detect inconsistency.
+        # Previously the loop overwrote a single `img_size` variable with
+        # whichever fold was loaded last, so a mismatched fold would
+        # silently use the wrong transform resolution for the others.
+        per_fold_img_size: dict[int, int] = {}
         for fold_dir in sorted(_KFOLD_DIR.glob("fold_*")):
             ckpt_path = fold_dir / "best.pt"
             if not ckpt_path.exists():
@@ -172,13 +176,27 @@ def _load_kfold_state() -> Optional[dict]:
                 continue
             ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
             cfg = ckpt.get("config") or {}
-            img_size = int(cfg.get("img_size", img_size))
+            per_fold_img_size[fold_k] = int(cfg.get("img_size", 768))
             model = _build_model(n_classes=int(cfg.get("n_classes", 4)))
             model.load_state_dict(ckpt["state_dict"])
             model = model.to(device).eval()
             models[fold_k] = model
         if not models:
             return None
+
+        # Pick a single transform resolution for inference. All folds were
+        # trained at the same img_size in practice (768); if a future
+        # checkpoint disagrees, warn loudly rather than silently using
+        # whichever happened to load last. Use the most common value.
+        sizes = list(per_fold_img_size.values())
+        img_size = max(set(sizes), key=sizes.count)
+        mismatched = {f: s for f, s in per_fold_img_size.items() if s != img_size}
+        if mismatched:
+            print(f"  rotation_classifier: WARNING — fold img_size mismatch "
+                  f"(folds with non-default img_size: {mismatched}). Using "
+                  f"img_size={img_size} for all folds; mismatched folds may "
+                  f"see degraded accuracy because their training resolution "
+                  f"differs from the inference transform.")
 
         _kfold_state = {
             "models": models,

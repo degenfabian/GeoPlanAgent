@@ -154,7 +154,7 @@ async def validate_boundary_outcome(
             "Cannot accept: no successful match_at + commit_match has produced "
             "a result. Run positioning to completion (propose_centers → "
             "match_at → commit_match). Even if all match_at attempts are weak "
-            "(low total_inliers), commit the highest-total_inliers one anyway "
+            "(low n_inliers), commit the highest-n_inliers one anyway "
             "and proceed — the pipeline always produces a polygon."
         )
 

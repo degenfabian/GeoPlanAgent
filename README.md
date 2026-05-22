@@ -22,10 +22,10 @@ ground-truth GeoJSON.
             • grid_refs              6 geocoders)     │
             • map_pages                                ▼
               (ranked per       match_at(page=N) ──► commit_match
-              area_group)         (MINIMA at one      (smart-commit
-            • district info       centre, automatic    gate, projects
-            • text & visual       SAM3 + projection    SAM mask →
-              cues for locate     across all groups)   GeoJSON)
+              area_group)         (MINIMA at one      (picks stored
+            • district info       centre, automatic    attempt; strict
+            • text & visual       SAM3 + projection    gate refuses
+              cues for locate     across all groups)   no-affine picks)
                                                        │
                                                        ▼
                                        BoundaryOutcome → final GeoJSON
@@ -52,7 +52,7 @@ GeoMapAgent_autonomous/
 │   ├── geo/                   # Offline geocoders + BNG ↔ WGS84
 │   ├── io/                    # PDF render, OS tiles, OCR, rotation
 │   ├── metrics/               # IoU/F1, MINIMA reward, viz
-│   ├── scoring.py             # commit_attempt_score, composite_window_score
+│   ├── scoring.py             # composite_window_score (sliding-window reranker)
 │   └── verification_checks.py # OS BoundaryLine LA-polygon resolver
 │
 ├── ablations/                 # Paper ablation scripts (see ablations/README.md)
@@ -176,12 +176,11 @@ Tool-calling pydantic-ai agent. Four worker tools:
    SAM3 mask caching, polygons UNIONed). Returns a multi-axis reward
    (overall_score, total_inliers, road_name_agreement, scale_consistency)
    — numbers only.
-3. **`commit_match(candidate_id)`** — picks the best stored match_at
-   attempt as the active result and projects the SAM mask through the
-   committed affine to GeoJSON. The smart-commit gate combines
-   `total_inliers` with an outside-LA penalty so a worse pick gets
-   redirected; the strict gate rejects commits where MINIMA produced
-   no usable affine for any group.
+3. **`commit_match(candidate_id)`** — picks the stored match_at attempt
+   the worker chooses as the active result. The polygon is already
+   projected from the SAM mask through the committed affine inside
+   match_at, so commit_match is just a selector. A strict gate rejects
+   commits where MINIMA produced no usable affine for any group.
 4. **`lookup_district(district_name)`** — OS BoundaryLine offline lookup
    for documents that cover an entire admin district (e.g. Article 4
    directions, conservation-area-wide documents). When this succeeds
@@ -235,7 +234,7 @@ per-case rows.
 | `n_inliers` (RANSAC) | Meaning |
 |---|---|
 | ≥ 100 | Strong match |
-| 50–100 | Decent — should still pass smart-commit gate |
+| 50–100 | Decent — likely passes commit |
 | 25–50 | Borderline — worker must try at least one more candidate |
 | < 25 | Weak — worker should try another centre |
 

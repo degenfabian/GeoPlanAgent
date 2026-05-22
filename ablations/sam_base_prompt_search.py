@@ -222,7 +222,19 @@ def main() -> int:
     args = ap.parse_args()
 
     dataset_dir = REPO / "training" / "dataset"
-    manifest = json.loads((dataset_dir / "manifest.json").read_text())
+    # Build the manifest in-memory from `maps/*.png` + `fold_assignment.json`
+    # rather than reading a persisted manifest.json — see the matching
+    # comment in ablations/vlm_segmentation.py for the rationale.
+    fold_assignment_path = dataset_dir / "fold_assignment.json"
+    if not fold_assignment_path.exists():
+        sys.exit(f"fold_assignment.json not found: {fold_assignment_path}. "
+                 f"Run training/build_sam3_training_set.py first.")
+    from training.train_sam3_kfold import _build_manifest_from_disk
+    fold_map = json.loads(fold_assignment_path.read_text())
+    manifest = _build_manifest_from_disk(dataset_dir, fold_map)
+    if not manifest:
+        sys.exit(f"manifest is empty — no .png files found in "
+                 f"{dataset_dir / 'maps'} matching fold_assignment.json")
     if args.max_cases is not None:
         manifest = manifest[: args.max_cases]
     print(f"manifest: {len(manifest)} cases")

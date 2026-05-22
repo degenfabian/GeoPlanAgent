@@ -66,16 +66,6 @@ class MapPageMeta(BaseModel):
                     "'wide' ≈ town / district / regional (≈ 1:10000+)."
     )
 
-    area_signature: str = Field(
-        default="",
-        description="Short noun phrase (≤8 words) identifying the "
-                    "geographic area shown. Pages with the same "
-                    "area_group MUST have the identical signature "
-                    "(same spelling, same case). For category='discard' "
-                    "pages give a short description like 'legend' / "
-                    "'location pin' / 'application form text'."
-    )
-
     caption: str = Field(
         default="",
         description="One-line description of the page content so the "

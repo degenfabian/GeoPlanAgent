@@ -53,6 +53,20 @@ def _load_kfold(kfold_dir, hf_token, device):
     kfold_dir = Path(kfold_dir)
     fa_path = kfold_dir / "fold_assignment.json"
     if not fa_path.exists():
+        # If adapter dirs ARE present but fold_assignment.json is missing,
+        # the caller silently falls all the way back to base SAM3 (no
+        # LoRA), which tanks inference accuracy. Surface that loudly so
+        # a half-populated k-fold dir doesn't look like a clean run.
+        adapter_dirs = [
+            d for d in kfold_dir.glob("fold_*")
+            if (d / "adapter_config.json").exists() or (d / "best.pt").exists()
+        ]
+        if adapter_dirs:
+            print(f"  sam3 loader: WARNING — {fa_path} missing but "
+                  f"{len(adapter_dirs)} adapter dir(s) present "
+                  f"({[d.name for d in adapter_dirs]}). Falling back to "
+                  f"base SAM3 with NO LoRA — accuracy will drop. Restore "
+                  f"fold_assignment.json to use the trained adapters.")
         return None  # signal caller to use legacy path
 
     fold_assignment = {}

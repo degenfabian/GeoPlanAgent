@@ -17,7 +17,6 @@ Model: Gemini Flash via OpenRouter (matches worker default).
 from __future__ import annotations
 import json
 import math
-import sys
 from pathlib import Path
 from typing import List, Optional
 
@@ -27,8 +26,11 @@ from pydantic_ai.usage import UsageLimits
 
 from tools.agent._model import resolve_model
 
+# Repo root path used by the `road` / `intersect` tools below to locate
+# the OML index files at runtime. We no longer mutate sys.path on import
+# — the codebase is always launched from the repo root (so cwd is
+# already on sys.path) and import-time side effects are surprising.
 REPO = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(REPO))
 
 
 # ── Output schema ──────────────────────────────────────────────────────────
@@ -565,8 +567,7 @@ def run_locate(
             "road_names": pdf_info.get("road_names") or [],
             "place_names": (pdf_info.get("place_names") or [])[:8],
             "admin_region": pdf_info.get("admin_region"),
-            "likely_town": (pdf_info.get("likely_town")
-                             or pdf_info.get("likely_town_or_city")),
+            "likely_town": pdf_info.get("likely_town_or_city"),
             "parish_names": (pdf_info.get("parish_names") or [])[:5],
             "adjacency_hints": (pdf_info.get("adjacency_hints") or [])[:5],
             "house_number_road_pairs": (

@@ -1,11 +1,7 @@
 """Single source of truth for match-stage candidate scoring.
 
-Two stages, each with a named function:
-
-1. :func:`composite_window_score` — applied to each MINIMA sliding-window
-   match. Decides which window to keep within a candidate centre.
-2. :func:`commit_attempt_score` — applied across the agent's accumulated
-   ``match_at`` attempts. Decides which one ``commit_match`` will keep.
+:func:`composite_window_score` is applied to each MINIMA sliding-window
+match to decide which window to keep within a candidate centre.
 
 Locate-stage scoring lives inside :mod:`tools.agent.locate_agent` (the
 live LLM-locate sub-agent picks one center directly).
@@ -62,23 +58,3 @@ def quadrant_coverage_from_inlier_points(
         return 4
 
 
-# ─── Stage 2: smart-commit gate score ──────────────────────────────────────
-
-def commit_attempt_score(n_inliers: int, la_distance_km: float = 0.0) -> float:
-    """Score a single ``match_at`` attempt for ``commit_match`` ranking.
-
-    The two signals are:
-
-    * ``n_inliers``       — the raw matching signal.
-    * ``la_distance_km``  — how far (in km) the predicted centre falls
-      from the named LA polygon boundary; 0.0 if inside (or no LA
-      filter applies). The penalty multiplier is ``1 / (1 + d_km)`` —
-      smooth, parameter-free, equals 1.0 inside the polygon, decays
-      naturally with distance: a 25-m boundary case is barely
-      penalised (0.97×), a 1-km drift gets 0.5×, a 10-km wrong-town
-      pick gets 0.09×.
-    """
-    if n_inliers < 0:
-        return -1.0
-    d = max(0.0, float(la_distance_km or 0.0))
-    return float(n_inliers) / (1.0 + d)

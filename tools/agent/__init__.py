@@ -11,11 +11,12 @@ The pipeline is three LLM agents:
             tools.agent.worker_agent._agent. The canonical loop is:
               propose_centers → match_at(page=X) → commit_match
               → submit BoundaryOutcome.
-            match_at takes the page explicitly. For multi-area_group
-            documents one match_at call handles all groups at the same
-            centre (per-group MINIMA + per-page SAM3 cache) and unions
-            the resulting polygons; commit_match commits the unioned
-            candidate.
+            Each match_at matches ONE page (one area_group) and each
+            commit_match commits ONE area_group's geojson into the
+            running final-result union. For single-area documents
+            (99% of cases) the loop runs once. For multi-area
+            documents the worker runs the loop per area_group; the
+            final geojson is unioned across all committed groups.
 
 The pure functions for each phase live in tools.agent.runtime; this
 module is just the coordinator + tool-module import (which triggers the

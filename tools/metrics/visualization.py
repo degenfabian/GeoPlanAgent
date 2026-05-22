@@ -37,7 +37,7 @@ def visualize_geojson_boundary(
 
     Args:
         geojson_data: GeoJSON Feature object containing the boundary polygon.
-        padding: Padding around boundary as fraction of boundary size (default: 3.0).
+        padding: Padding around boundary as fraction of boundary size (default: 2.0).
                  A value of 1.0 means 100% extra space on each side.
         max_size: Maximum dimension (width or height) in pixels (default: 1024).
                   Images larger than this will be resized to fit API constraints.

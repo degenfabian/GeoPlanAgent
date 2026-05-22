@@ -19,7 +19,7 @@ from tools.matching._core import (
     # Scale / zoom / sigma / LA helpers
     compute_map_mpp, best_zoom_for_scale, sigma_from_scale,
     sigma_from_source,
-    effective_sigma, candidate_passes_la_filter, candidate_la_distance_km,
+    effective_sigma, candidate_passes_la_filter,
     # Affine + GeoJSON
     resize_map_to_match_zoom,
     affine_center_to_latlon, mask_to_geojson_affine,
@@ -38,8 +38,13 @@ from tools.matching.road_verify import (
 __all__ = [
     "load_minima", "run_minima", "estimate_affine",
     "compute_map_mpp", "best_zoom_for_scale", "sigma_from_scale",
-    "effective_sigma", "candidate_passes_la_filter", "candidate_la_distance_km",
+    "sigma_from_source",
+    "effective_sigma", "candidate_passes_la_filter",
     "resize_map_to_match_zoom",
     "affine_center_to_latlon", "mask_to_geojson_affine",
     "sliding_window_position",
+    # Road-name verification helpers — exposed for the metrics-reward axis.
+    "_verify_candidates_with_road_names",
+    "_query_gpkg_road_names",
+    "_fuzzy_road_match",
 ]

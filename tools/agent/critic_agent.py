@@ -81,14 +81,19 @@ a single directive on whether to accept or redirect.
 WHAT YOU SEE
 - ONE image per candidate (sent as separate images so each renders at
   full resolution rather than getting downscaled inside a tall stack).
+  Each candidate covers exactly ONE area_group and one page. On
+  multi-area documents the worker commits group-by-group, producing
+  one candidate per (group, attempt); they appear here as separate
+  panels.
   Each image is LEFT|RIGHT, with labels acting purely as identifiers
   (numeric metrics live in the text block — see "INTERPRETING THE
   METRICS" below):
     LEFT  = planning map with the SAM mask overlaid in translucent green.
             Label: "CANDIDATE {id} [COMMITTED] group {g} page {p}".
-            The COMMITTED tag marks the worker's choice.
-            "page" = the 1-based PDF page this row's match was run on.
-            "group" = area_group index (see area_groups note below).
+            The COMMITTED tag marks the worker's choice for THIS group
+            (on multi-area docs more than one candidate can be tagged).
+            "page" = the 1-based PDF page this match was run on.
+            "group" = area_group index.
     RIGHT = OS tile render at the matched window, with the projected
             polygon outlined in red. Label: "OS tile @ zoom={z}".
             "OS" = Ordnance Survey, the UK national mapping agency
@@ -97,27 +102,21 @@ WHAT YOU SEE
             z18 ≈ 0.3m/px, z19 ≈ 0.15m/px) — different candidates
             may have matched at different zooms, so each panel
             reports its own.
-- Only the TOP-3 candidates by BEST per-area_group n_inliers are shown,
-  plus the worker's committed candidate if it falls outside the top-3
-  (so you always see the worker's pick alongside the strongest
-  alternatives). Ranking by best per-group, not summed total_inliers,
-  prevents a multi-group attempt with several weak groups from
-  outranking a candidate with one genuinely strong group. A note at
-  the top of the metrics block tells you how many total candidates
+- Only the TOP-3 candidates by n_inliers are shown, plus the worker's
+  committed candidate(s) if they fall outside the top-3 (so you always
+  see the worker's pick alongside the strongest alternatives). A note
+  at the top of the metrics block tells you how many total candidates
   exist and how many are shown.
-- area_groups: a single planning document can cover MULTIPLE separate
-  geographic areas (e.g., a multi-site Article 4 direction). When this
-  happens, ONE candidate image contains stacked sub-rows (one per area-
-  group) and the metrics block has one line per (candidate, area-group).
-- A metrics block accompanying the images, with one line per
-  (candidate, area_group). Each line is:
+- A metrics block accompanying the images, with one line per candidate.
+  Each line is:
     "cand {id}  group {g}  page {p}  n_inliers={N}  "
     "road_name_agreement={r}  scale_consistency={s}  [COMMITTED]?"
   The "cand", "group", "page" fields match the corresponding panel-
   label identifiers, so you can map every metrics row back to its
-  image. The [COMMITTED] tag appears on the worker's committed row.
-- The worker's committed candidate_id is also stated explicitly at
-  the top of the metrics block.
+  image. The [COMMITTED] tag appears on the worker's committed
+  candidate(s).
+- For multi-area documents the worker's committed candidate_ids
+  (one per area_group) are listed at the top of the metrics block.
 
 WHAT "GOOD" LOOKS LIKE — for a candidate
 Trace named roads, settlement shapes, or distinctive features between
@@ -134,45 +133,53 @@ WHAT "BAD" LOOKS LIKE
 - The polygon outline lands well outside the planning map's drawn
   boundary, or its shape clearly doesn't match.
 
-INTERPRETING THE METRICS
-- n_inliers is reported PER (candidate, area_group) row. n_inliers
-  ≥ 50 is a strong signal that the affine is correct for THAT row;
-  < 25 is too weak to trust. For multi-area-group documents, the
-  candidate's overall strength is roughly the sum of per-row inliers
-  (this is what determined the top-3 selection above), but you
-  should still judge each row's correspondence visually.
-- scale_consistency is the squared inverse of the affine's deformation
-  away from identity: 1.0 means the recovered scale matches the
-  document's stated scale exactly; close to 1.0 is strong agreement;
-  markedly below 1.0 hints at a possibly poor match. If n_inliers is
-  strong (≥ 80) the match can still be right.
-- road_name_agreement = 0.0 means OS roads at this location exist
-  but don't match the reader's road names — possible wrong-area
-  signal. But be careful: if n_inliers is strong (≥ 80) and
-  scale_consistency is reasonable (close to 1.0), trust the inlier
-  count over this signal.
-- These numbers are supporting evidence — the visual panels are the
-  primary signal for your decision.
+INTERPRETING THE METRICS (same tiers the worker uses)
+
+  n_inliers (RANSAC match strength, integer ≥ 0):
+    ≥ 100   STRONG     — the affine is almost always correct here.
+    50-99   OK         — borderline; lean on the visual panels.
+    25-49   WEAK       — likely wrong; needs visual confirmation.
+    < 25    TOO WEAK   — almost certainly wrong location.
+
+  scale_consistency (range 0..1):
+    ≥ 0.8   GOOD       — recovered scale matches the document's stated scale.
+    0.5-0.8 MARGINAL   — scale stretched; suspect alternative is better.
+    < 0.5   BAD        — scale very off; trust only if n_inliers ≥ 100.
+
+  road_name_agreement (range 0..1):
+    ≥ 0.6   STRONG     — reader's road names found at the matched location.
+    0.0     CONFLICT   — OS has roads here but NONE match the reader;
+                         possible wrong-area signal. Trust only if
+                         n_inliers ≥ 100.
+    0.5     NEUTRAL    — verdict says "no OS roads within radius"
+                         (sparse cartography); no signal.
+    other   PARTIAL    — some roads matched; weak corroboration.
+
+These numbers are supporting evidence — the visual panels are the
+primary signal for your decision.
 
 DECISION (pick exactly one action)
 
 - approve
-    The worker's committed candidate shows clear road/feature
+    The worker's committed candidate(s) show clear road/feature
     correspondence AND the polygon outline aligns with the drawn
-    boundary. Set chosen_candidate_id = committed_id.
+    boundary. Set chosen_candidate_id = committed_id (use any one of
+    the committed ids on multi-area docs; the action applies to the
+    whole set).
 
 - switch
     A DIFFERENT stored candidate looks visually better (clearer
-    correspondence, better polygon alignment) than the committed one.
-    Set chosen_candidate_id to that candidate's id. Cite the specific
-    visual feature that swayed you.
+    correspondence, better polygon alignment) than the committed one
+    FOR ITS area_group. Set chosen_candidate_id to that candidate's
+    id; the worker's commit for that group will be replaced. Cite
+    the specific visual feature that swayed you.
 
 - retry_locate
     None of the stored candidates show good correspondence — they all
     appear to be in the wrong region (no road / feature match, polygons
-    in totally different terrain). The agent will be asked to re-locate
-    from a different geocoding signal (postcode vs place vs road, etc.).
-    Set chosen_candidate_id = committed_id (placeholder).
+    in totally different terrain). The worker will be asked to
+    re-locate from a different geocoding signal (postcode vs place vs
+    road, etc.). Set chosen_candidate_id = committed_id (placeholder).
 
 OUTPUT
 A single CriticDirective. Reasoning MUST cite a concrete observation —
@@ -352,17 +359,30 @@ def _stack_candidate_panels(panels: List[np.ndarray]) -> Optional[np.ndarray]:
 
 def _format_metrics_text(state: Any,
                           attempts: List[Dict[str, Any]],
-                          committed_id: int) -> str:
-    """Per-candidate compact metrics block."""
+                          committed_ids: set) -> str:
+    """Per-candidate compact metrics block.
+
+    ``committed_ids`` is the SET of candidate_ids the worker has
+    committed — one per area_group. On single-area docs this is a
+    single-entry set; on multi-area docs multiple candidates are
+    tagged [COMMITTED].
+    """
     lines = ["=== CANDIDATES ==="]
-    lines.append(f"  worker's committed_id: {committed_id}")
+    if not committed_ids:
+        lines.append("  worker's committed_ids: (none — nothing committed yet)")
+    elif len(committed_ids) == 1:
+        lines.append(f"  worker's committed_id: {next(iter(committed_ids))}")
+    else:
+        lines.append(
+            f"  worker's committed_ids (one per area_group): "
+            f"{sorted(committed_ids)}")
     lines.append("")
     for a in attempts:
         cid = a.get("candidate_id")
-        tag = "  [COMMITTED]" if cid == committed_id else ""
+        tag = "  [COMMITTED]" if cid in committed_ids else ""
         per_group = a.get("per_group") or []
-        # Aggregate per-group axis numbers — show committed-group(s) only
-        # if multi-group, else single line.
+        # Each attempt has per_group = 1-element list (one area_group).
+        # The loop is kept for legacy-state compatibility.
         for g in per_group:
             mi = g.get("match_info") or {}
             rwd = g.get("reward") or {}
@@ -410,51 +430,42 @@ def _run_critic_once(state: Any, model_name: str,
     """
     attempts = sorted(state.match_attempts.values(),
                        key=lambda a: int(a.get("candidate_id") or 0))
-    cr = state.current_result or {}
-    committed_id = cr.get("candidate_id")
-    if committed_id is None and attempts:
-        committed_id = attempts[-1].get("candidate_id")
+    # SET of committed candidate_ids — one per area_group. Single-area
+    # docs have one entry; multi-area docs can have several.
+    committed_ids: set = set(int(c) for c in (
+        getattr(state, "committed_groups", {}) or {}).values())
+    # Legacy fallback: if committed_groups wasn't populated (very old
+    # state shape), read from current_result["candidate_id"].
+    if not committed_ids:
+        cr = state.current_result or {}
+        if cr.get("candidate_id") is not None:
+            committed_ids = {int(cr["candidate_id"])}
 
-    # Pick top-3 candidates by the BEST per-group inlier count
-    # (strongest single area_group). This favours a strong single-
-    # group attempt over a weak multi-group attempt whose
-    # total_inliers happens to be higher just because it summed over
-    # more groups — total_inliers was biasing the panel away from
-    # genuinely-strong single-group candidates on multi-area_group
-    # documents.
-    #
-    # Tie-break by candidate_id to make the ordering reproducible
-    # across runs of the same case (Python's sort is stable, but the
-    # iteration order of state.match_attempts.values() is only stable
-    # while the underlying dict is unchanged — adding an explicit
-    # secondary key removes that fragility).
-    def _best_group_inliers(a: Dict[str, Any]) -> int:
-        per = a.get("per_group") or []
-        best = 0
-        for g in per:
-            mi = g.get("match_info") or {}
-            n = int(mi.get("n_inliers") or 0)
-            if n > best:
-                best = n
-        if not per:
-            # Legacy / partial state: fall back to total_inliers.
-            best = int(a.get("total_inliers") or 0)
-        return best
+    # Rank candidates by n_inliers (each attempt covers one area_group
+    # so this is the per-group strength). Tie-break by candidate_id
+    # for reproducibility.
+    def _attempt_n_inliers(a: Dict[str, Any]) -> int:
+        per = a.get("per_group") or [{}]
+        mi = (per[0] or {}).get("match_info") or {}
+        return int(mi.get("n_inliers") or 0)
 
     total_n_attempts = len(attempts)
     by_inliers = sorted(
         attempts,
-        key=lambda a: (-_best_group_inliers(a),
+        key=lambda a: (-_attempt_n_inliers(a),
                        int(a.get("candidate_id") or 0)),
     )
     shown = list(by_inliers[:3])
     shown_ids = {a.get("candidate_id") for a in shown}
-    if committed_id is not None and committed_id not in shown_ids:
+    # Always include every committed candidate, even if not in top-3.
+    for cid in committed_ids:
+        if cid in shown_ids:
+            continue
         committed_attempt = next(
-            (a for a in attempts if a.get("candidate_id") == committed_id),
-            None)
+            (a for a in attempts if a.get("candidate_id") == cid), None)
         if committed_attempt is not None:
             shown.append(committed_attempt)
+            shown_ids.add(cid)
     # Display order: by candidate_id (stable across iterations).
     shown.sort(key=lambda a: int(a.get("candidate_id") or 0))
 
@@ -465,26 +476,20 @@ def _run_critic_once(state: Any, model_name: str,
     for a in shown:
         p = _build_candidate_panel(
             state, a,
-            is_committed=(a.get("candidate_id") == committed_id))
+            is_committed=(a.get("candidate_id") in committed_ids))
         if p is not None:
             cand_panels_with_id.append((a.get("candidate_id"), p))
 
     # Aggregated stack — for disk save only, not sent to the LLM.
     panel = _stack_candidate_panels([p for _, p in cand_panels_with_id])
 
-    # Use explicit None check — committed_id=0 is a valid value
-    # (the first match_at attempt has candidate_id=0). The old
-    # 'committed_id or -1' incorrectly treated 0 as missing.
-    metrics_text = _format_metrics_text(
-        state, shown,
-        committed_id if committed_id is not None else -1)
+    metrics_text = _format_metrics_text(state, shown, committed_ids)
     selection_note = (
         f"Showing top-{len(shown)} of {total_n_attempts} stored candidates "
-        f"(ranked by the BEST per-area_group n_inliers — i.e. strongest "
-        f"single-group match — so multi-group attempts can't outweigh a "
-        f"genuinely-strong single-group candidate just by summing over "
-        f"more groups; the worker's committed candidate is always "
-        f"included). Each candidate is sent as a separate image."
+        f"(ranked by n_inliers; the worker's committed candidate(s) are "
+        f"always included). On multi-area documents the worker commits "
+        f"one candidate per area_group, so multiple panels may be tagged "
+        f"[COMMITTED]. Each candidate is sent as a separate image."
     )
 
     # On follow-up iterations the message_history already contains the
@@ -568,9 +573,8 @@ def _direct_switch_commit(state: Any,
     candidate is already in ``state.match_attempts`` (it was put there
     by an earlier ``match_at`` call). An LLM re-invocation here would
     just be a middleman that types out ``commit_match(N)`` — wasted
-    cost, deterministic risk (the worker could rationalise around the
-    pick), and it pulls the smart-commit gate into a fight the critic
-    has already won.
+    cost and deterministic risk (the worker could rationalise around
+    the pick).
 
     Mutates ``state.current_result`` / ``state.last_output`` /
     ``state.accepted`` / ``state.accept_reason`` to mirror what a
@@ -598,27 +602,16 @@ def _direct_switch_commit(state: Any,
                   f"geojson (n_groups_committed={n_committed}); skipping")
         return worker_result
 
-    # Mirror commit_match's state.current_result assembly exactly so
-    # downstream consumers (build_run_agent_return, extract_message_log,
-    # …) see the same shape they always see.
-    primary_group = next(
-        (g for g in (cand.get("per_group") or [])
-         if g.get("area_group") == cand.get("requested_group")),
-        (cand.get("per_group") or [{}])[0],
-    )
-    state.current_result = {
-        "affine_H": primary_group.get("affine_H"),
-        "tile_info": primary_group.get("tile_info"),
-        "match_info": primary_group.get("match_info"),
-        "geojson": cand.get("geojson"),
-        "candidate_id": int(chosen_id),
-        "reward": primary_group.get("reward"),
-        "per_group": cand.get("per_group"),
-        "requested_group": cand.get("requested_group"),
-        "requested_page": cand.get("requested_page"),
-        "n_groups_committed": n_committed,
-        "total_inliers": int(cand.get("total_inliers") or 0),
-    }
+    # Per-group commit: replace the entry for THIS candidate's
+    # area_group, then rebuild current_result by re-unioning every
+    # committed group's geojson. For single-area docs (99% of cases)
+    # this just replaces the one entry. For multi-area docs the
+    # critic's switch affects only the group it picked; the other
+    # groups stay committed to whatever the worker chose for them.
+    from tools.agent.tools.match import _recompute_current_result
+    group_id = int(cand.get("requested_group", 0))
+    state.committed_groups[group_id] = int(chosen_id)
+    _recompute_current_result(state)
     # Mirror commit_match's position_calls increment so agent_stats
     # accurately reflects total commits, including critic-driven
     # switches. Without this, the metric undercounts commits whenever
@@ -637,9 +630,12 @@ def _direct_switch_commit(state: Any,
         f"[critic-switch to candidate {chosen_id}] "
         f"{(directive_reasoning or '')[:900]}"
     )
+    # final_n_inliers reflects the SUM across all committed groups,
+    # which is what state.current_result["total_inliers"] holds after
+    # _recompute_current_result ran above.
     state.last_output = BoundaryOutcome(
         status=prev_status,
-        final_n_inliers=int(cand.get("total_inliers") or 0),
+        final_n_inliers=int(state.current_result.get("total_inliers") or 0),
         rotation_checked=state.rotation_checked,
         reasoning=new_reasoning,
     )
@@ -648,7 +644,7 @@ def _direct_switch_commit(state: Any,
 
     if verbose:
         print(f"  direct_switch: committed candidate {chosen_id} "
-              f"(total_inliers={state.current_result['total_inliers']}) "
+              f"(sum_n_inliers={state.current_result['total_inliers']}) "
               f"without worker re-invoke")
     return worker_result
 
@@ -663,9 +659,7 @@ def _rehand_to_worker(state: Any,
 
     * ``switch``       → handled entirely in Python by
       ``_direct_switch_commit``. No LLM call. The critic already chose
-      the candidate; we just copy it into state. The smart-commit gate
-      is bypassed structurally (it lives inside ``commit_match`` and
-      we don't call ``commit_match``).
+      the candidate; we just copy it into state.
     * ``retry_locate`` → worker IS re-invoked: it has to call
       ``propose_centers`` + ``match_at`` on a NEW location, which
       requires LLM reasoning about why the previous locate was wrong.
@@ -706,15 +700,6 @@ def _rehand_to_worker(state: Any,
         # intended fix is lost with no on-disk trace.
         state.match_at_budget = max(state.match_at_budget, 0) + 2
         state.recent_calls = set()
-        # The critic just said "all current candidates are wrong".
-        # When the worker calls commit_match on a new candidate, the
-        # smart-commit gate would otherwise compare its inlier count
-        # against the OLD (rejected-by-critic) candidates and could
-        # reroute back to one of them. The one-shot bypass keeps the
-        # critic's verdict in force for the new commit. The flag is
-        # NOT in the worker's tool schema — only critic-side code can
-        # set it.
-        state.bypass_smart_commit_one_shot = True
         instruction = (
             f"Reconsider your commit. None of your stored match "
             f"candidates appear to align with the boundary drawn on the "
@@ -754,20 +739,9 @@ def _rehand_to_worker(state: Any,
                 )
         except Exception:
             pass
-        # Always reset the bypass flag at the end of the rehand. The
-        # worker may have completed WITHOUT calling commit_match (e.g.
-        # status=district_lookup, or just resubmitting BoundaryOutcome
-        # from the existing committed state). In that case
-        # ``commit_match`` never consumed the flag, and a subsequent
-        # commit on a later critic iteration would bypass the gate
-        # unintentionally.
-        state.bypass_smart_commit_one_shot = False
         return sub_result, None
     except Exception as e:
         rehand_error = f"{type(e).__name__}: {str(e)[:160]}"
-        # Same reset on the exception path — rehand may have raised
-        # before commit_match was ever called.
-        state.bypass_smart_commit_one_shot = False
         if verbose:
             print(f"  critic rehand: worker re-invoke failed: {rehand_error}")
         return worker_result, rehand_error

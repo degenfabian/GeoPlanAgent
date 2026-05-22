@@ -6,7 +6,7 @@ Top-level packages:
                 LLM-locate sub-agent (locate_agent.py) called from the
                 worker's propose_centers tool.
   matching/   — MINIMA sliding-window matcher + RANSAC affine fit
-  scoring.py  — composite_window_score, commit_attempt_score
+  scoring.py  — composite_window_score
   extraction/ — SAM3 boundary segmentation + colour primitives + mask ops
   geo/        — Geographic primitives: lat/lon math, BNG grid-ref parsing,
                 Code-Point Open postcode lookup, OS Open Names search.

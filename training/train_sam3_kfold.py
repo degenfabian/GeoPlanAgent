@@ -823,11 +823,15 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
     # Final summary — pull the best epoch's row from history (the row whose
     # val_sem_iou matches best_val_iou, taking the earliest match if there
     # are ties to be deterministic). Paper metrics come from that row.
-    # NB: key is `val_sem_iou` not `val_iou` — the gate-metric IoU is stored
-    # under the semantic-head-specific name. A prior version used `val_iou`
-    # here, which silently fell back to history[-1] (the final epoch) — making
-    # cv_summary.json under-report by reading post-overfitting numbers.
-    best_row = next((r for r in history if r.get("val_sem_iou") == best_val_iou),
+    # NB: history stores val_sem_iou as round(avg_iou, 4) (see the
+    # history.append above), but best_val_iou itself is the unrounded float
+    # — so we MUST round in the comparison or every iteration falls through
+    # to history[-1] (the final/post-overfit epoch). Authoritative source
+    # for cv_summary is training/eval/eval_sam_kfold.py, which loads the
+    # saved checkpoint directly; this fix keeps the trainer-side meta
+    # consistent for offline debugging.
+    best_row = next((r for r in history
+                     if r.get("val_sem_iou") == round(best_val_iou, 4)),
                     history[-1] if history else {})
     print(f"\n=== fold {fold} done. best val_iou={best_val_iou:.3f}. "
           f"checkpoints in {out_dir}")

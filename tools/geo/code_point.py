@@ -168,9 +168,6 @@ def lookup_postcode(postcode: str) -> Optional[Dict]:
     if not area: return None
     area_dict = _load_area(area)
     coords = area_dict.get(pc_norm)
-    if coords is None:
-        # Try with no space (some files might be inconsistent)
-        coords = area_dict.get(pc_norm.replace(" ", ""))
     if coords is None: return None
     e, n, dcode = coords
     lat, lon = _bng_to_wgs84(e, n)

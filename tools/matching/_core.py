@@ -190,7 +190,6 @@ from tools.matching.source_priorities import (
     _SOURCE_SIGMA_M,
     SOURCE_PRIORITY,
     candidate_passes_la_filter,
-    candidate_la_distance_km,
     effective_sigma,
     sigma_from_scale,
     sigma_from_source,
@@ -560,11 +559,12 @@ def sliding_window_position(
                             center_ll = affine_center_to_latlon(
                                 scale_H, map_h, map_w, tile_info)
                             avg_scale = avg_scale_now
-                            # Inlier keypoints in MAP coords feed the composite
-                            # reranker (quadrant coverage). Reprojection errors
-                            # were removed: only stale MAGSAC offline tests
-                            # read them, and the norm+tolist hot allocation
-                            # paid per successful window adds up.
+                            # Inlier keypoints in MAP coords feed the live
+                            # composite reranker (quadrant coverage — see
+                            # the rescoring block at the bottom of this
+                            # function). Despite the leading underscore,
+                            # these fields are consumed on the live path,
+                            # not just offline.
                             inlier_pts_map = None
                             if inlier_mask is not None:
                                 try:
@@ -591,8 +591,11 @@ def sliding_window_position(
                                     "window": (wx, wy),
                                     "center_latlon": center_ll,
                                     "anchor_latlon": (float(clat), float(clon)),
-                                    "_inlier_pts_map": inlier_pts_map,  # offline-only
-                                    "_rot_map_shape": (rot_h, rot_w),  # offline-only
+                                    # Underscore-prefix marks "internal"
+                                    # (consumed by the live reranker),
+                                    # not "offline-only".
+                                    "_inlier_pts_map": inlier_pts_map,
+                                    "_rot_map_shape": (rot_h, rot_w),
                                 },
                                 "n_windows": 0,
                                 "_metric": metric,
@@ -611,8 +614,9 @@ def sliding_window_position(
                       f"best={best_metric:.1f}", flush=True)
 
     # Flatten per-(center, zoom) buckets and take the global top-N.
-    # This is the "diversity-capped top-K" — at most PER_BUCKET (2) entries
-    # from any one (center, zoom) sweep survive into post-verification.
+    # This is the "diversity-capped top-K" — at most PER_BUCKET (=1, set
+    # near the top of this function) entries from any one (center, zoom)
+    # sweep survive into post-verification.
     all_candidates: List[Tuple[float, int, dict]] = []
     for bucket in per_bucket.values():
         all_candidates.extend(bucket)
