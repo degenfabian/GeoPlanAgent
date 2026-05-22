@@ -207,25 +207,26 @@ WORKFLOW
    per page across calls).
 
    Decision rules:
-     • STRONG match: total_inliers ≥ 50 AND scale_consistency ≥ 0.8
-       → commit_match.
+     • STRONG match: total_inliers ≥ 50 AND scale_consistency close
+       to 1.0 → commit_match.
      • BORDERLINE (anything below STRONG): try AT LEAST ONE more
        propose_centers candidate before committing — this is MANDATORY
        even when the first attempt looks decent (e.g. ~30 inliers).
        The second match often lands at a different zoom and reveals a
        much better fit.
-     • scale_consistency < 0.5 → possibly poor match. If n_inliers is
-       strong (≥ 80) trust the inliers and commit; if inliers are also
-       weak (< 50), call propose_centers again.
+     • scale_consistency markedly below 1.0 → possibly poor match. If
+       n_inliers is strong (≥ 80) trust the inliers and commit; if
+       inliers are also weak (< 50), call propose_centers again.
      • After 2+ match_at attempts: pick the candidate with the highest
        total_inliers and call commit_match on it. commit_match runs a
-       deterministic re-rank against all stored attempts, with a
-       70%-penalty applied to candidates whose centre falls OUTSIDE
-       the reader's admin_region polygon (per OS BoundaryLine). If
-       your pick fails this re-rank, commit_match commits a different
-       stored attempt instead and returns the redirected id — so you
-       don't need to verify LA containment yourself; just pick on
-       inliers and let the call correct you.
+       deterministic re-rank against all stored attempts, applying a
+       smooth distance-based penalty 1/(1+km_outside) to candidates
+       whose centre falls OUTSIDE the reader's admin_region polygon
+       (per OS BoundaryLine). If your pick fails this re-rank,
+       commit_match commits a different stored attempt instead and
+       returns the redirected id — so you don't need to verify LA
+       containment yourself; just pick on inliers and let the call
+       correct you.
 
    Reading the per-axis signals:
      • n_inliers is the primary signal. ≥ 50 means the match is almost
@@ -274,8 +275,9 @@ propose_centers(extra_terms=["place name from the map"]) — never type
 coordinates yourself.
 
 RE-CALLING propose_centers WITH FEEDBACK: after a weak match_at (low
-total_inliers, scale_consistency < 0.5, or road_name_agreement=0.0
-combined with weak inliers), you can call propose_centers again with
+total_inliers, scale_consistency markedly below 1.0, or
+road_name_agreement=0.0 combined with weak inliers), you can call
+propose_centers again with
 match_context="..." describing in plain English what went wrong. The
 locate sub-agent reads it and is told to pick from a DIFFERENT signal
 type. Example:
