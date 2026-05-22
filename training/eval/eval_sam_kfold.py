@@ -26,6 +26,7 @@ from training.eval._util import write_predictions_json
 from training.train_sam3_kfold import (
     FoldDataset, collate, seed_everything,
     _ensure_pred_mask_on_gt, _autocast_ctx,
+    _build_manifest_from_disk,
     LORA_TARGET_MODULES, MODEL_ID,
     DATASET_DIR as TRAIN_DATASET_DIR,
 )
@@ -42,18 +43,12 @@ print(f"device={device}  bf16={BF16}  dataset={TRAIN_DATASET_DIR}")
 
 def main():
     # Build the per-case manifest in-place from maps/ + fold_assignment.json
-    # (same logic as train_sam3_kfold). Each map filename's stem is the
-    # canonical case name; fold comes from the assignment file.
+    # via the shared helper in train_sam3_kfold. `case` is the original
+    # name (with colons/parens) so it matches benchmark_runner output;
+    # `filename` is the on-disk safe-form PNG name.
     fold_map = json.loads(
         (TRAIN_DATASET_DIR / "fold_assignment.json").read_text())
-    manifest = []
-    for png in sorted((TRAIN_DATASET_DIR / "maps").glob("*.png")):
-        fold = fold_map.get(png.stem)
-        if fold is None:
-            continue
-        manifest.append({"case": png.stem,
-                          "filename": png.name,
-                          "fold": int(fold)})
+    manifest = _build_manifest_from_disk(TRAIN_DATASET_DIR, fold_map)
     print(f"manifest: {len(manifest)} cases")
 
     hf_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN")

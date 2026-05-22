@@ -11,8 +11,9 @@ back to the original frame, average the logits). Writes to
 pipeline uses TTA, so the TTA accuracy is the operationally relevant
 number.
 
-Also computes 3-way comparison (LLM / Vision OCR / ResNet kfold) vs GT
-when those baseline prediction files exist on disk.
+Prints an accuracy breakdown (overall / on upright pages / on rotated
+pages) so it's easy to see whether the model is doing well on the
+~90% upright cases or also on the ~10% rotated ones.
 """
 
 from __future__ import annotations
@@ -120,55 +121,27 @@ def main() -> int:
     out_name = "rotation_kfold_tta.json" if args.tta else "rotation_kfold.json"
     write_predictions_json(predictions, THIS / "predictions" / out_name)
 
-    # 3-way comparison
-    print("\n========== 3-way comparison ==========")
-    print(f"{'method':<22} {'overall':>10} {'on upright':>12} {'on rotated':>12}")
-
-    # GT counts
+    # Accuracy breakdown: overall / upright (gt=0) / rotated (gt!=0)
     gt_upright = sum(1 for v in labels.values() if v == 0)
     gt_rotated = sum(1 for v in labels.values() if v != 0)
     total = len(labels)
-
-    def score(predictor: dict, name: str):
-        correct, correct_up, correct_rot = 0, 0, 0
-        n, n_up, n_rot = 0, 0, 0
-        for c, gt_v in labels.items():
-            if c not in predictor: continue
-            n += 1
-            pred = predictor[c]
-            if pred == gt_v: correct += 1
-            if gt_v == 0:
-                n_up += 1
-                if pred == gt_v: correct_up += 1
-            else:
-                n_rot += 1
-                if pred == gt_v: correct_rot += 1
-        print(f"{name:<22} {correct}/{n} ({100*correct/max(1,n):4.1f}%)"
-              f"  {correct_up}/{n_up} ({100*correct_up/max(1,n_up):4.1f}%)"
-              f"  {correct_rot}/{n_rot} ({100*correct_rot/max(1,n_rot):4.1f}%)")
-
-    # LLM predictions from v3 cache
-    llm_preds = {}
-    import glob, os
-    for f in glob.glob("results/benchmark_v3/gemini-flash/*/pdf_info.json"):
-        case = os.path.basename(os.path.dirname(f))
-        if case in labels:
-            try:
-                llm_preds[case] = json.load(open(f)).get("map_rotation", 0) or 0
-            except Exception: pass
-
-    # Vision OCR
-    vis = {}
-    vis_path = REPO / "vision_rotation_predictions.json"
-    if vis_path.exists():
-        raw = json.loads(vis_path.read_text())
-        vis = {c: v["predicted_rotation"] for c, v in raw.items()}
-
-    score(llm_preds, "LLM (Gemini)")
-    score(vis, "Vision OCR")
-    score(predictions, "ResNet50 5-fold")
-    print(f"\nGT distribution: upright={gt_upright}/{total} ({100*gt_upright/total:.0f}%), "
-          f"rotated={gt_rotated}/{total} ({100*gt_rotated/total:.0f}%)")
+    correct, correct_up, correct_rot = 0, 0, 0
+    n_up, n_rot = 0, 0
+    for c, gt_v in labels.items():
+        if c not in predictions: continue
+        pred = predictions[c]
+        if pred == gt_v: correct += 1
+        if gt_v == 0:
+            n_up += 1
+            if pred == gt_v: correct_up += 1
+        else:
+            n_rot += 1
+            if pred == gt_v: correct_rot += 1
+    print()
+    print(f"  overall:     {correct}/{total} ({100*correct/max(1,total):.1f}%)")
+    print(f"  on upright:  {correct_up}/{n_up} ({100*correct_up/max(1,n_up):.1f}%)")
+    print(f"  on rotated:  {correct_rot}/{n_rot} ({100*correct_rot/max(1,n_rot):.1f}%)")
+    print(f"  GT split:    upright={gt_upright}/{total}  rotated={gt_rotated}/{total}")
     return 0
 
 

@@ -44,6 +44,7 @@ from __future__ import annotations
 import argparse
 import json
 import random
+import re
 import sys
 import time
 from pathlib import Path
@@ -348,6 +349,43 @@ def instance_loss(pred_masks, pred_logits, presence_logits, gt_mask):
 
 
 # ── Dataset ────────────────────────────────────────────────────────────────
+
+
+_FILENAME_SAFE_RE = re.compile(r"[^A-Za-z0-9._-]")
+
+
+def _safe_filename(s: str) -> str:
+    return _FILENAME_SAFE_RE.sub("_", s)
+
+
+def _build_manifest_from_disk(dataset_dir: Path,
+                               fold_map: Dict[str, int]) -> List[Dict]:
+    """Return [{case, filename, fold}, ...] from `maps/` + fold_assignment.
+
+    ``case`` is the original case name (matching benchmark_runner's
+    eval-data folder names). ``filename`` is the on-disk PNG name
+    (filesystem-safe form). The reverse mapping uses fold_assignment.json,
+    which records both forms (original + safe) so the file stem can be
+    inverted back to the original. Falls back to the stem itself when no
+    inverse mapping exists (cases whose original name was already
+    filesystem-safe).
+    """
+    safe_to_original = {}
+    for orig in fold_map:
+        safe = _safe_filename(orig)
+        if safe != orig:
+            safe_to_original.setdefault(safe, orig)
+
+    manifest = []
+    for png in sorted((dataset_dir / "maps").glob("*.png")):
+        fold = fold_map.get(png.stem)
+        if fold is None:
+            continue
+        case = safe_to_original.get(png.stem, png.stem)
+        manifest.append({"case": case,
+                          "filename": png.name,
+                          "fold": int(fold)})
+    return manifest
 
 
 class FoldDataset(Dataset):
@@ -812,18 +850,15 @@ def main() -> int:
               f"training/build_sam3_training_set.py first.", file=sys.stderr)
         return 1
     fold_map = json.loads(fold_assignment_path.read_text())
-    # Build the per-case manifest in-place from the maps/ directory + fold
-    # assignment. Each map file's stem IS the case name (after canonical
-    # underscoring), so the provenance back to boundary_annotations/<case>/
-    # is encoded in the filename itself.
-    manifest = []
-    for png in sorted((DATASET_DIR_ / "maps").glob("*.png")):
-        fold = fold_map.get(png.stem)
-        if fold is None:
-            continue  # map without a fold assignment — skip silently
-        manifest.append({"case": png.stem,
-                          "filename": png.name,
-                          "fold": int(fold)})
+    # Build the per-case manifest in-place from the maps/ + fold assignment.
+    # Each map file's stem is the filesystem-safe form of the case name
+    # (e.g. "12_00114_ART4" for original "12:00114:ART4"). Recover the
+    # original case name by reverse-mapping through fold_assignment.json,
+    # which records all key variants (original + canonical + safe-form)
+    # per case. This matters because downstream consumers cross-reference
+    # the predictions JSON against benchmark_runner output (which uses
+    # the original folder name).
+    manifest = _build_manifest_from_disk(DATASET_DIR_, fold_map)
 
     # Mirror fold_assignment.json into the training-output dir so production
     # can find it next to the checkpoints.
