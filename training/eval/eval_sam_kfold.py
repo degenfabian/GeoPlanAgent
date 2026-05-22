@@ -23,7 +23,7 @@ from pathlib import Path
 import numpy as np
 import torch
 import torch.nn.functional as F
-from peft import LoraConfig, get_peft_model
+from peft import LoraConfig, PeftModel, get_peft_model
 from torch.utils.data import DataLoader
 from transformers import Sam3Model, Sam3Processor
 
@@ -84,14 +84,8 @@ def main():
 
     hf_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN")
     processor = Sam3Processor.from_pretrained(MODEL_ID, token=hf_token)
-    base = Sam3Model.from_pretrained(MODEL_ID, token=hf_token)
-    cfg = LoraConfig(r=RANK, lora_alpha=RANK * 2,
-                    target_modules=LORA_TARGET_MODULES,
-                    lora_dropout=0.05, bias="none",
-                    modules_to_save=HEAD_MODULES)
-    model = get_peft_model(base, cfg).to(device)
 
-    rows = []  # (fold, case, sem_iou, inst_iou)
+    rows = []  # filled per-case below
 
     for fold in range(5):
         # Use TRAINING's FoldDataset to build val set — bit-for-bit match
@@ -104,16 +98,47 @@ def main():
                                  num_workers=0, collate_fn=collate)
         cases = [e["case"] for e in val_ds.entries]
 
-        # Load fold's best.pt (strict=True so any silent drop blows up)
-        ckpt = torch.load(MODELS_DIR / f"fold_{fold}" / "best.pt",
-                            map_location="cpu", weights_only=False)
-        state = ckpt["state_dict"]
-        res = model.load_state_dict(state, strict=True)
+        # ── Load fold's checkpoint ─────────────────────────────────────
+        # Prefer PEFT format (adapter_config.json + adapter_model.safetensors,
+        # ~76 MB) — written by training/migrate_sam3_to_peft.py and the
+        # updated trainer. Fall back to raw best.pt (~3.6 GB state-dict +
+        # optim + scheduler) only for legacy local checkpoints.
+        #
+        # We rebuild the model per fold rather than re-using a single
+        # PeftModel + load_state_dict: PEFT's blessed loader does NOT
+        # touch the frozen base model state, so the only correct way to
+        # ensure a clean fold-to-fold swap with PEFT files is a fresh
+        # base each time. The byte-identical equivalence between this
+        # path and the old strict=True load is verified in
+        # training/migrate_sam3_to_peft.py output.
+        fold_dir = MODELS_DIR / f"fold_{fold}"
+        peft_cfg = fold_dir / "adapter_config.json"
+        legacy_pt = fold_dir / "best.pt"
+        meta_p = fold_dir / "training_meta.json"
+
+        base = Sam3Model.from_pretrained(MODEL_ID, token=hf_token)
+        if peft_cfg.exists():
+            model = PeftModel.from_pretrained(base, str(fold_dir)).to(device)
+            meta = json.loads(meta_p.read_text()) if meta_p.exists() else {}
+            ckpt_format = "PEFT"
+        elif legacy_pt.exists():
+            cfg = LoraConfig(r=RANK, lora_alpha=RANK * 2,
+                            target_modules=LORA_TARGET_MODULES,
+                            lora_dropout=0.05, bias="none",
+                            modules_to_save=HEAD_MODULES)
+            model = get_peft_model(base, cfg).to(device)
+            ckpt = torch.load(legacy_pt, map_location="cpu", weights_only=False)
+            model.load_state_dict(ckpt["state_dict"], strict=True)
+            meta = ckpt
+            ckpt_format = "best.pt"
+        else:
+            print(f"fold {fold}: no checkpoint found at {fold_dir}, skipping")
+            continue
         model.eval()
 
-        print(f"\n=== fold {fold}: {len(val_ds)} cases | "
-              f"epoch {ckpt.get('epoch')} | "
-              f"reported best_val_iou {ckpt.get('best_val_iou',0):.4f} ===")
+        print(f"\n=== fold {fold}: {len(val_ds)} cases  [{ckpt_format}] | "
+              f"epoch {meta.get('epoch')} | "
+              f"reported best_val_iou {meta.get('best_val_iou', 0) or 0:.4f} ===")
 
         fold_rows: list[dict] = []
 

@@ -12,15 +12,23 @@ heads contribute to the loss:
                          so the agent's `mode='instance'` flow gets
                          useful alternatives at inference.
 
-Per-fold checkpoints land in models/sam3_lora_v5/fold_<k>/:
-  latest.pt   rewritten every epoch — resume target
-  best.pt     rewritten when val IoU improves
-  history.json  per-epoch train/val loss + IoU for analysis
+Per-fold checkpoints land in models/sam3_lora/fold_<k>/:
+  latest.pt                  rewritten every epoch — resume target
+                             (~3.6 GB: full state-dict + optim + sched;
+                             safely deletable after training completes)
+  adapter_config.json        rewritten when val IoU improves; PEFT
+  adapter_model.safetensors    publication format (~76 MB total for LoRA
+                             + saved heads). Production loads via
+                             tools.extraction.sam3.load_sam3_ft, which
+                             prefers this format over best.pt.
+  training_meta.json         epoch / best_val_iou / config that PEFT's
+                             save_pretrained drops on its own.
+  history.json               per-epoch train/val loss + IoU for analysis
 
 fold_assignment.json (case_name → fold index) is mirrored from
-training/dataset_v5/ to models/sam3_lora_v5/ so production can look up
-the per-case checkpoint at inference time without colocating the
-training set.
+training/dataset/ to models/sam3_lora/ so production can look up the
+per-case checkpoint at inference time without colocating the training
+set.
 
 For reproducibility, every random source is seeded from --seed (default
 42). With --bf16 disabled and the same seed + dataset, two runs of the
@@ -94,6 +102,16 @@ OUTPUT_BASE = REPO / "models" / "sam3_lora"
 # Match count: ~490 modules (matches every q/k/v/o/fc1/fc2 in any
 # subsystem), vs the restricted decoder-only regex at 88 modules.
 LORA_TARGET_MODULES = ["q_proj", "k_proj", "v_proj", "o_proj", "fc1", "fc2"]
+
+# Heads that are fully trained (not LoRA-adapted) alongside the LoRA matrices.
+# v4 proved this pattern for the semantic head; v6+ mirrors it for both heads.
+#   mask_embedder       (mask_decoder)  → produces pred_masks
+#   presence_head       (detr_decoder)  → produces pred_logits + presence_logits
+#   semantic_projection (mask_decoder)  → final 1×1 conv → semantic_seg
+# Promoted to module scope so eval + migration scripts import the EXACT same
+# list the trainer uses — a drift between any of these three lists means PEFT
+# rebuild produces a different model structure and load_state_dict fails.
+HEAD_MODULES = ["mask_embedder", "presence_head", "semantic_projection"]
 
 # Loss weights. Mask losses use focal+dice (DETR/Mask2Former defaults).
 # Instance head also gets per-slot classification BCE (matched=1, unmatched=0)
@@ -505,19 +523,11 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
 
     # Fresh model + LoRA per fold
     base = Sam3Model.from_pretrained(MODEL_ID)
-    # Fully train the final prediction MLPs in addition to LoRA on the
-    # upstream transformer blocks. v4 proved this pattern works for the
-    # semantic head; we mirror it for both heads when both are trained.
-    #   mask_embedder       (mask_decoder)  → produces pred_masks
-    #   presence_head       (detr_decoder)  → produces pred_logits AND
-    #                                          presence_logits (shared MLP)
-    #   semantic_projection (mask_decoder)  → final 1×1 conv that produces
-    #                                          semantic_seg
-    head_modules = ["mask_embedder", "presence_head", "semantic_projection"]
+    # Heads fully trained alongside LoRA — see HEAD_MODULES at module scope.
     lora_cfg = LoraConfig(r=args.rank, lora_alpha=args.rank * 2,
                             target_modules=LORA_TARGET_MODULES,
                             lora_dropout=0.05, bias="none",
-                            modules_to_save=head_modules)
+                            modules_to_save=HEAD_MODULES)
     model = get_peft_model(base, lora_cfg).to(device)
     model.print_trainable_parameters()
 
@@ -768,8 +778,28 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
         }
         torch.save(ckpt, latest_p)
         if new_best:
-            torch.save(ckpt, out_dir / "best.pt")
-            print(f"    new best val_iou={best_val_iou:.3f}, saved best.pt")
+            # Save the publication-ready PEFT format:
+            #   adapter_config.json       (~1 KB)
+            #   adapter_model.safetensors (~76 MB) — LoRA + saved heads only
+            # vs the full state_dict in latest.pt (~3.6 GB, base + LoRA +
+            # optim + sched). The frozen base lives in HuggingFace's
+            # facebook/sam3 repo, so production reload via
+            # PeftModel.from_pretrained reconstructs the same model state
+            # for 50× less disk. (Verified byte-identical against the old
+            # best.pt format in training/migrate_sam3_to_peft.py.)
+            model.save_pretrained(str(out_dir))
+            # save_pretrained drops epoch/val_iou/config; preserve them
+            # alongside so the eval script + cv_summary writer can still
+            # report which epoch produced this best.
+            (out_dir / "training_meta.json").write_text(json.dumps({
+                "epoch": epoch,
+                "global_step": global_step,
+                "best_val_iou": best_val_iou,
+                "epochs_since_best": epochs_since_best,
+                "fold": fold,
+                "config": ckpt["config"],
+            }, indent=2))
+            print(f"    new best val_iou={best_val_iou:.3f}, saved PEFT adapter")
         (out_dir / "history.json").write_text(json.dumps(history, indent=2))
 
         # Early stopping: if val IoU hasn't improved for `patience` epochs,
