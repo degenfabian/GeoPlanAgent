@@ -127,14 +127,25 @@ uv run python training/train_sam3_kfold.py
 
 Iterates folds 0→4 sequentially. Each fold trains on cases NOT in
 fold k (~170 cases) and validates on cases IN fold k (~42 cases).
-Per-fold checkpoints land in `models/sam3_lora/fold_<k>/`:
+Per-fold checkpoints land in `models/sam3_lora/fold_<k>/` in PEFT
+format:
 
 ```
 models/sam3_lora/fold_<k>/
-├── best.pt         # rewritten when val IoU improves
-├── latest.pt       # rewritten every epoch (resume target)
-└── history.json    # per-epoch train/val loss + val IoU
+├── adapter_config.json         # PEFT config (best-val checkpoint)
+├── adapter_model.safetensors   # LoRA + saved head weights (~76 MB)
+├── training_meta.json          # epoch, best_val_iou, config
+├── history.json                # per-epoch train/val loss + val IoU
+└── latest/                     # resume target — same PEFT format
+    ├── adapter_config.json     #   plus a small
+    ├── adapter_model.safetensors
+    └── trainer_state.pt        #   sidecar with optimizer + sched + bookkeeping
 ```
+
+`latest/` is the resume target (rewritten every epoch). The top-level
+PEFT files are the best-val checkpoint — rewritten whenever val IoU
+improves and what production loads via
+`tools.extraction.sam3.load_sam3_ft`.
 
 Wall time: ~1.5–2 hr per fold on Apple MPS with bf16; ~1 hr per fold
 on CUDA. ~8–10 hr for all five.

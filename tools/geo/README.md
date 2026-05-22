@@ -12,7 +12,7 @@ connection or an API key. The geocoder data files live under
 | `os_names` | `lookup(name)` / `search(query, max_results, context?)` | Place / settlement / road / landmark name search. From OS Open Names (2.5 M GB entries). Sub-metre BNG. |
 | `grid_ref` | `os_grid_ref_to_latlon(gr)` | Parse an OS BNG grid reference in any common format → `(lat, lon)`. |
 | `grid_ref` | `lookup_district_boundary(district_name)` | OS BoundaryLine offline lookup of a UK admin district → GeoJSON feature. Supports `'|'`-separated name alternates and common-suffix normalisation. |
-| `coords` | (helpers) | Web-Mercator / tile-pixel math, BNG ↔ WGS84, `haversine_m`. |
+| `coords` | (helpers) | Web-Mercator / tile-pixel math, BNG ↔ WGS84, `haversine_km`. |
 
 These are the building blocks the locate sub-agent's six geocoders are
 built from (see `tools.agent.locate_agent`). The same modules are
@@ -93,7 +93,8 @@ All Web-Mercator / tile-pixel / BNG ↔ WGS84 math lives here. Single
 source of truth; the same formula was previously duplicated across
 six modules in the repo. Notable:
 
-- `haversine_m(lat1, lon1, lat2, lon2)` — great-circle distance in metres.
+- `haversine_km(lat1, lon1, lat2, lon2)` — great-circle distance in
+  kilometres (multiply by 1000 for metres).
 - BNG transforms via `pyproj.Transformer.from_crs("EPSG:4326",
   "EPSG:27700")`.
 - Web-Mercator tile-pixel projection: `156543.03 * cos(lat) / 2**zoom`

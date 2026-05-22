@@ -8,8 +8,12 @@ training (no leakage).
 models/
 ├── sam3_lora/                    # SAM3 boundary segmentation
 │   ├── fold_<k>/                 # one per fold (0..4)
-│   │   ├── best.pt               #   peak-val checkpoint (~3.3 GB)
-│   │   └── history.json          #   per-epoch train/val metrics
+│   │   ├── adapter_config.json       # PEFT config (best-val checkpoint)
+│   │   ├── adapter_model.safetensors # LoRA + heads weights (~76 MB)
+│   │   ├── training_meta.json        # epoch, best_val_iou, training config
+│   │   ├── history.json              # per-epoch train/val metrics
+│   │   └── latest/                   # resume target (PEFT + sidecar);
+│   │                                 # deletable after training completes
 │   ├── fold_assignment.json      # {case_name: fold} — sync'd from
 │   │                             # training/dataset/fold_assignment.json
 │   └── cv_summary.{csv,json}     # held-out 5-fold sem/inst IoU + P/R/F1
@@ -17,7 +21,7 @@ models/
 │
 └── rotation_classifier_kfold/    # 4-way page-rotation classifier
     ├── fold_<k>/
-    │   ├── best.pt
+    │   ├── best.pt                   # ~90 MB (full ResNet50 state_dict)
     │   └── history.json
     ├── fold_assignment.json      # same content as the SAM3 one
     ├── kfold_summary.json        # training-time per-epoch + best_val_acc
@@ -26,8 +30,10 @@ models/
                                  # _tta suffix when run with --tta
 ```
 
-`models/` is gitignored — the .pt files are ~17 GB total and live
-locally only.
+`models/` is gitignored except for the small JSON/MD metadata that's
+useful to version. The PEFT safetensors (SAM3 LoRA, ~76 MB / fold) and
+the ResNet50 checkpoints (~90 MB / fold) live locally only —
+~830 MB total across the two model families and ten folds.
 
 ## SAM3 LoRA adapter (`sam3_lora/`)
 
@@ -38,9 +44,10 @@ locally only.
   head trained on the Hungarian-matched best-IoU slot.
 - **Text query** at inference is locked to `"planning boundary"` (the
   literal phrase the LoRA was trained against).
-- **Checkpoint size**: ~3.3 GB per fold (full PyTorch state_dict —
-  base model + LoRA + saved head modules `mask_embedder`,
-  `presence_head`, `semantic_projection`).
+- **Checkpoint size**: ~76 MB per fold in PEFT format. Only the LoRA
+  matrices + the saved head modules (`mask_embedder`, `presence_head`,
+  `semantic_projection`) are persisted; the base SAM3 weights load
+  from HuggingFace at inference.
 
 ### Fold routing at inference
 
@@ -169,8 +176,9 @@ for robust lookup, not a leakage source.
   dataset.
 - **No critic weights.** The critic uses an LLM at inference; it
   doesn't have its own learned model.
-- **No `latest.pt` files.** Those were the trainer's resume target,
-  rewritten every epoch. Removed once training was done (~17 GB
-  saved). Re-running training with `--resume` regenerates them.
+- **No `latest/` PEFT dirs in the shipped checkpoints.** Those are
+  the trainer's resume target, rewritten every epoch. Safe to
+  delete once training completes. Re-running training with
+  `--resume` regenerates them.
 - **No legacy `models/rotation_classifier/best.pt` single-checkpoint
   fallback path.** The k-fold layout is the only supported one.

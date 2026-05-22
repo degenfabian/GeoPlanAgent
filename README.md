@@ -8,13 +8,13 @@ fine-tuned SAM3 model, and projects the result to a WGS84 GeoJSON polygon.
 
 ## Pipeline
 
-Two LLM phases plus one inline sub-agent. There is no critic; the pipeline
-always emits a polygon and downstream scores it via IoU against
-ground-truth GeoJSON.
+Two LLM phases plus an inline locate sub-agent, with an optional third
+LLM critic phase. The pipeline always emits a polygon and downstream
+scores it via IoU against ground-truth GeoJSON.
 
 ```
                 Phase 1                Phase 2 — Worker agent loop
-                Reader                 (5 tools)
+                Reader                 (4 tools)
                                        ─────────────────────────────
  PDF ────►  PDFInfo (JSON)  ────►  propose_centers  ──┐
             • site_address          (calls locate     │
@@ -22,10 +22,14 @@ ground-truth GeoJSON.
             • grid_refs              6 geocoders)     │
             • map_pages                                ▼
               (ranked per       match_at(page=N) ──► commit_match
-              area_group)         (MINIMA at one      (picks stored
-            • district info       centre, automatic    attempt; strict
-            • text & visual       SAM3 + projection    gate refuses
-              cues for locate     across all groups)   no-affine picks)
+              area_group)         (MINIMA + SAM3       (commits this
+            • district info       on ONE page; one     candidate for
+            • text & visual       area_group at a      its area_group;
+              cues for locate     time)                unions running
+                                                       result. Loop
+                                                       once per group
+                                                       on multi-area
+                                                       documents.)
                                                        │
                                                        ▼
                                        BoundaryOutcome → final GeoJSON
@@ -46,11 +50,11 @@ GeoMapAgent_autonomous/
 ├── uv.lock
 │
 ├── tools/                     # Core pipeline (see tools/README.md)
-│   ├── agent/                 # Reader + worker + locate sub-agent
+│   ├── agent/                 # Reader + worker + locate sub-agent + critic
 │   ├── matching/              # MINIMA sliding-window + RANSAC
-│   ├── extraction/            # SAM3 + LoRA k-fold + mask ops
+│   ├── extraction/            # SAM3 + LoRA k-fold loader (single module)
 │   ├── geo/                   # Offline geocoders + BNG ↔ WGS84
-│   ├── io/                    # PDF render, OS tiles, OCR, rotation
+│   ├── io/                    # PDF render, OS tiles, rotation classifier
 │   ├── metrics/               # IoU/F1, MINIMA reward, viz
 │   ├── scoring.py             # composite_window_score (sliding-window reranker)
 │   └── verification_checks.py # OS BoundaryLine LA-polygon resolver
@@ -65,7 +69,7 @@ GeoMapAgent_autonomous/
 ├── os_opendata/               # OS OpenData (Zoomstack, BoundaryLine,
 │                              # OpenNames, OpenMapLocal, Code-Point Open)
 │                              # — gitignored
-├── cache/                     # text_extraction + tile caches
+├── cache/                     # OS tile cache (gitignored)
 └── results/                   # Benchmark outputs (gitignored)
 ```
 
@@ -153,14 +157,13 @@ if result["geojson"]:
 
 ### Phase 1 — Reader
 
-One-shot pydantic-ai call (`output_type=PDFInfo`). Sees the raw PDF binary
-plus a per-page text block extracted by fitz (digital pages) or macOS
-Vision / PaddleOCR (scanned pages, cached on disk). Populates a
+One-shot pydantic-ai call (`output_type=PDFInfo`) over the raw PDF
+binary — no OCR pipeline, the VLM reads the PDF directly. Populates a
 schema covering: site address, postcodes, grid references, scale,
 ranked map pages with per-page area-group / boundary-clarity /
 detail-level metadata, district info, and locate-stage signals
 (road names, place names, parishes, admin region, visible map
-labels). Cached for speed.
+labels).
 
 ### Phase 2 — Worker
 
@@ -170,25 +173,27 @@ Tool-calling pydantic-ai agent. Four worker tools:
    locate sub-agent (see `tools/agent/README.md`), which uses six
    offline geocoders (postcode, grid_ref, place, road, intersect,
    la_check) to return ONE picked centre with σ + confidence + provenance.
-2. **`match_at(page=N, name, lat, lon)`** — runs MINIMA at the supplied
-   centre. For multi-area-group documents one call handles every group
-   automatically (per-group MINIMA on each group's primary page, per-page
-   SAM3 mask caching, polygons UNIONed). Returns a multi-axis reward
-   (overall_score, total_inliers, road_name_agreement, scale_consistency)
-   — numbers only.
-3. **`commit_match(candidate_id)`** — picks the stored match_at attempt
-   the worker chooses as the active result. The polygon is already
-   projected from the SAM mask through the committed affine inside
-   match_at, so commit_match is just a selector. A strict gate rejects
-   commits where MINIMA produced no usable affine for any group.
+2. **`match_at(page=N, name, lat, lon)`** — runs MINIMA + SAM3 on the
+   supplied centre and ONE page (one area_group). Stores one
+   candidate covering that group. Returns numeric signals only
+   (`n_inliers`, `scale_consistency`, `road_name_agreement`,
+   `area_group`, `page`).
+3. **`commit_match(candidate_id)`** — commits this candidate for its
+   area_group. The polygon was already projected inside match_at;
+   commit_match adds (or replaces) the group's slot in the running
+   result and unions all committed groups into the final geojson.
+   A strict gate rejects commits where MINIMA produced no valid affine.
 4. **`lookup_district(district_name)`** — OS BoundaryLine offline lookup
    for documents that cover an entire admin district (e.g. Article 4
    directions, conservation-area-wide documents). When this succeeds
    the worker submits `status="district_lookup"` and the polygon comes
    straight from BoundaryLine — no SAM, no positioning.
 
-Plus `reader_refine(question, page_hint?)` — re-consults the source PDF
-(binary + cached OCR text) for a focused question. Budget 3 per case.
+For multi-area documents the worker iterates the
+`propose_centers → match_at → commit_match` loop once per
+area_group; the final geojson is the union of every committed
+group's polygon. Most documents are single-area, in which case the
+loop runs once.
 
 The worker output (`BoundaryOutcome`) is validated by an
 `output_validator` that re-reads tool-call state, so the worker can't
@@ -231,21 +236,31 @@ per-case rows.
 
 ## Positioning quality signals
 
-| `n_inliers` (RANSAC) | Meaning |
-|---|---|
-| ≥ 100 | Strong match |
-| 50–100 | Decent — likely passes commit |
-| 25–50 | Borderline — worker must try at least one more candidate |
-| < 25 | Weak — worker should try another centre |
+The worker prompt formalises four explicit tiers per signal (matched
+exactly in the critic prompt for cross-phase consistency):
 
-Multi-axis reward axes (returned in each `match_at` per-group entry):
+| `n_inliers` (RANSAC) | Tier | Meaning |
+|---|---|---|
+| ≥ 100 | STRONG    | Commit on this attempt unless another signal disagrees |
+| 50–99 | OK        | Commit only after trying at least one more candidate |
+| 25–49 | WEAK      | Keep exploring; don't commit yet |
+| < 25  | TOO WEAK  | Try another candidate; never commit unless budget exhausted |
 
-- `overall_score` — weighted geometric mean of the axes (0-1)
-- `n_inliers` / `score` — RANSAC quality
-- `road_name_agreement` (+ verdict) — do reader-extracted road names
-  appear in OS Open Zoomstack at the matched location?
-- `scale_consistency` — does the recovered affine scale agree with the
-  reader's stated map scale?
+| `scale_consistency` | Tier | Meaning |
+|---|---|---|
+| ≥ 0.8   | GOOD     | Recovered scale matches stated map scale |
+| 0.5–0.8 | MARGINAL | Stretched; prefer an alternative if you have one |
+| < 0.5   | BAD      | Scale very off; trust only if `n_inliers ≥ 100` |
+
+| `road_name_agreement` | Tier | Meaning |
+|---|---|---|
+| ≥ 0.6 | STRONG   | Reader's road names found at the matched location |
+| 0.0   | CONFLICT | OS has roads but none match reader; possible wrong area |
+| 0.5   | NEUTRAL  | "No OS roads in radius" (sparse cartography); no signal |
+| other | PARTIAL  | Some roads matched; weak corroboration |
+
+Tie-break order across candidates (within the same area_group):
+`n_inliers` → `scale_consistency` (closer to 1.0 wins) → `road_name_agreement`.
 
 ## External dependencies (offline)
 
@@ -253,7 +268,8 @@ Multi-axis reward axes (returned in each `match_at` per-group entry):
   weights in `MINIMA/weights/`.
 - **SAM3 + LoRA** — Facebook SAM3 base weights auto-downloaded from
   HuggingFace on first run (`HF_TOKEN`). The fine-tuned LoRA adapter is
-  shipped per fold in `models/sam3_lora/fold_*/best.pt`.
+  shipped per fold in `models/sam3_lora/fold_*/` as PEFT-format
+  `adapter_config.json` + `adapter_model.safetensors` (~76 MB / fold).
 - **OS OpenData** — `OS_Open_Zoomstack.gpkg`, BoundaryLine, OpenNames,
   OpenMapLocal, Code-Point Open. All OGL v3, no API key, no rate limit.
   Placed under `os_opendata/`. Setup instructions live in the relevant
@@ -263,6 +279,6 @@ Multi-axis reward axes (returned in each `match_at` per-group entry):
 
 - Python 3.10+ (managed via `uv`)
 - macOS with MPS or Linux with CUDA for GPU acceleration
-- ~10 GB disk: SAM3 base weights (~3 GB) + LoRA adapters (~1 GB) +
-  OS OpenData (~5 GB) + tile cache (~200 GB at full benchmark scale,
-  but cached lazily)
+- ~10 GB disk: SAM3 base weights (~3 GB) + LoRA + rotation
+  adapters (~830 MB) + OS OpenData (~5 GB) + tile cache (~200 GB at
+  full benchmark scale, but cached lazily)

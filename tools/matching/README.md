@@ -25,7 +25,7 @@ respectively — `from tools.matching import …` is the stable surface.
 ## How it fits in the pipeline
 
 `tools.agent.tools.match.match_at` is the worker tool that drives this
-package. Per `match_at` call (for each area_group):
+package. Each `match_at` call covers ONE page (one area_group):
 
 1. **`load_minima()`** (once at process start) returns the LoFTR-based
    MINIMA matcher.
@@ -45,8 +45,11 @@ package. Per `match_at` call (for each area_group):
      (`tools.scoring.composite_window_score`).
 3. **`mask_to_geojson_affine(mask, affine_H, tile_info)`** projects the
    SAM3 mask through the winning affine into a WGS84 GeoJSON
-   `Feature` with `MultiPolygon` geometry. Mask cleanup primitives
-   (`tools.extraction.mask_ops.*`) run inline before vectorisation.
+   `Feature` with `MultiPolygon` geometry. No morphological mask
+   cleanup is applied (the SAM3-FT outputs are clean — a 177-case
+   2026-05-22 ablation showed the old `keep_dominant_components
+   → expand_thin_mask → fill_mask_holes` chain was a +0.001 IoU wash
+   and was removed along with the `mask_ops` module).
 
 ## RANSAC affine (`estimate_affine`)
 
@@ -88,4 +91,4 @@ A dict with:
 | Constant | Home | Value | Purpose |
 |---|---|---|---|
 | `WINDOW_STRIDE_TARGET` | `_core.py` | 100 | Sliding-window stride target (px) |
-| `OUTSIDE_LA_PENALTY` | `tools/scoring.py` | 0.3 | Smart-commit penalty (applied via `candidate_passes_la_filter`) |
+| `MAX_CANDIDATES` / `PER_BUCKET` | `_core.py` | 5 / 1 | Diversity-capped top-K within a single sliding-window pass |

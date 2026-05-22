@@ -1,9 +1,9 @@
 # tools/extraction/
 
-SAM3 boundary segmentation + binary-mask cleanup primitives. The
-fine-tuned model loaded here is what runs inside `match_at` (lazily,
-per page) to produce the planning-boundary mask that gets projected
-through the committed affine.
+SAM3 boundary segmentation. The fine-tuned model loaded here is what
+runs inside `match_at` (lazily, per page) to produce the
+planning-boundary mask that gets projected through the committed
+affine.
 
 ## Public API
 
@@ -12,40 +12,43 @@ from tools.extraction.sam3 import (
     load_sam3_ft,                    # one-time loader at process start
     set_fold_for_case,               # swap in fold k's LoRA for this case
     extract_boundary_sam3_semantic,  # run the segmentation
-    try_fill_boundary_outline,       # morphological hole-fill for thin outlines
-)
-from tools.extraction.mask_ops import (
-    fill_mask_holes,
-    expand_thin_mask,
-    keep_dominant_components,
-    cleanup_mask_pipeline,           # all three chained
 )
 ```
 
 ## How it fits in the pipeline
 
 1. `benchmark_runner.load_models()` calls `load_sam3_ft()` once. The
-   returned state dict carries the base SAM3 + LoRA-wrapped model, the
-   processor, the device, and k-fold metadata (`adapters_by_fold`,
-   `fold_assignment`).
+   returned state dict carries the base SAM3 + LoRA-wrapped model (the
+   PEFT `PeftModel` with one named adapter per fold), the processor,
+   the device, and k-fold metadata (`fold_assignment`,
+   `available_folds`, `current_fold`).
 2. `tools.agent.tools.match._get_or_compute_mask` is called per page
    inside `match_at`. It:
    - Looks up the case's fold via `set_fold_for_case(state.sam3_state,
-     state.case_name)` and swaps in `fold_<k>/best.pt` if not already
-     active.
+     state.case_name)` and switches the active adapter to
+     `fold_<k>` if not already active.
    - Calls `extract_boundary_sam3_semantic(image_path, processor,
      model, device, query="planning boundary")`.
    - Caches the resulting mask on `state.sam_masks_by_page[page]`.
-3. `mask_to_geojson_affine` (in `tools.matching`) feeds the cached mask
-   through `cleanup_mask_pipeline` before vectorising to GeoJSON.
+3. `mask_to_geojson_affine` (in `tools.matching._core`) vectorises the
+   cached mask directly via `cv2.findContours` — **no morphological
+   cleanup**. A 177-case ablation 2026-05-22 showed the old
+   `keep_dominant_components → expand_thin_mask → fill_mask_holes`
+   chain was a +0.001 IoU wash (2 wins / 2 losses) and was deleted
+   along with the `mask_ops` module.
 
 ## SAM3 + LoRA (`sam3.py`)
 
 - **Base model**: `facebook/sam3` (HuggingFace, ~3 GB, requires `HF_TOKEN`).
-- **Fine-tune**: LoRA r=16 on both heads (semantic + instance).
-  Shipped per-fold in `models/sam3_lora/fold_<k>/best.pt`. If
-  `models/sam3_lora/` is missing, the loader falls through to base
-  SAM3 — accuracy drops materially.
+- **Fine-tune**: LoRA r=16 on `q_proj` / `k_proj` / `v_proj` / `o_proj`
+  / `fc1` / `fc2` across every transformer subsystem, plus
+  fully-trained head modules (`mask_embedder`, `presence_head`,
+  `semantic_projection`). Shipped per-fold in
+  `models/sam3_lora/fold_<k>/` as PEFT-format
+  `adapter_model.safetensors` (~76 MB / fold). If the directory is
+  missing, the loader falls through to base SAM3 with no LoRA —
+  accuracy drops materially (and the loader prints a warning when it
+  detects a half-populated k-fold dir).
 - **Text query** is locked to the literal phrase `"planning boundary"`
   (`_SAM3_QUERY` in `tools.agent.tools.match`). The LoRA was trained
   against this exact string; using a paraphrase silently regresses.
@@ -57,8 +60,8 @@ from tools.extraction.mask_ops import (
 ### Fold dispatch
 
 ```python
-state = load_sam3_ft()               # base + processor + adapters_by_fold
-set_fold_for_case(state, case_name)  # swap in fold k's LoRA
+state = load_sam3_ft()               # base SAM3 + PEFT wrapper w/ all folds loaded
+set_fold_for_case(state, case_name)  # switch active adapter to fold k
 
 # Then to run:
 mask = extract_boundary_sam3_semantic(
@@ -69,26 +72,9 @@ mask = extract_boundary_sam3_semantic(
 
 `set_fold_for_case` canonicalises the case name (`replace(":", "_").
 replace("/", "_")`), looks up `fold_assignment.json[case_name]`, and
-applies the matching LoRA. The shared helper is
-`tools.core.fold_routing.resolve_fold`. For cases not in the training
-pool (only possible for an external deployment on a fresh case), it
-returns `min(available_folds)` deterministically — no fold "owns" an
-unseen case so any adapter is equally valid; an earlier md5-hash
-fallback added no signal and was removed.
-
-## Mask cleanup primitives (`mask_ops.py`)
-
-`mask_to_geojson_affine` in `tools.matching` runs these in order
-before vectorisation. Each is a small pure function on a binary
-mask:
-
-| Function | What it does |
-|---|---|
-| `keep_dominant_components(mask, min_area_frac=0.05)` | Drops noise blobs. Keeps connected components whose area is at least `min_area_frac` of the largest blob. |
-| `expand_thin_mask(mask)` | Thickens hollow outlines (rare against the LoRA, common against base SAM3). Detects boundary-style masks via fill-ratio and dilates. |
-| `fill_mask_holes(mask)` | Plugs interior gaps. Morphological close + external-contour fill — SAM3 sometimes returns masks with road/text-shaped holes inside the boundary, producing fragmented polygons instead of one. |
-| `cleanup_mask_pipeline(mask)` | All three chained: `keep_dominant_components → expand_thin_mask → fill_mask_holes`. |
-
-Kernel sizes auto-scale to the input dimensions (~1% of the shorter
-side, clamped to `[5, 31]` and forced odd) so the chain works on
-either ~256 px previews or full-res ~2000 px maps.
+calls `model.set_adapter(f"fold_{k}")` to swap the active LoRA. The
+shared helper is `tools.core.fold_routing.resolve_fold`. For cases not
+in the training pool (only possible for an external deployment on a
+fresh case), it returns `min(available_folds)` deterministically — no
+fold "owns" an unseen case, so any adapter is equally valid; an
+earlier md5-hash fallback added no signal and was removed.
