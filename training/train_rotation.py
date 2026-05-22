@@ -63,8 +63,8 @@ sys.path.insert(0, str(REPO))
 # Reuse SAM3's fold routing verbatim.
 from tools.core.fold_routing import (  # noqa: E402
     N_FOLDS,
-    fold_for_case as _fold_for_case,
     normalise_case_name as _normalise_case_name,
+    resolve_fold as _resolve_fold,
 )
 
 
@@ -202,14 +202,10 @@ def load_labels() -> dict[str, int]:
 
 
 def fold_for(case: str, sam3_fa: dict) -> int:
-    """Return the fold index a case belongs to, using SAM3's exact routing:
-    direct lookup → canonical lookup → md5 hash fallback."""
-    f = sam3_fa.get(case)
-    if f is None:
-        f = sam3_fa.get(_normalise_case_name(case))
-    if f is None:
-        f = _fold_for_case(case)
-    return int(f)
+    """Return the fold index a case belongs to, using SAM3's exact routing
+    (direct lookup → canonical lookup → ``min(folds)`` fallback for cases
+    the training pool didn't contain)."""
+    return _resolve_fold(case, sam3_fa, set(range(N_FOLDS)))
 
 
 class KFoldRotationDataset(Dataset):

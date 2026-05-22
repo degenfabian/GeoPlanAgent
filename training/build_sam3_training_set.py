@@ -20,7 +20,6 @@ Re-running the script is idempotent (same input → bit-identical output).
 """
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import re

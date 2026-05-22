@@ -72,14 +72,14 @@ def try_fill_boundary_outline(mask):
 DEFAULT_KFOLD_DIR = "models/sam3_lora"
 
 # Re-export fold-routing helpers under their historical private names
-# so external imports (`from tools.extraction.sam3 import _fold_for_case`,
-# `N_FOLDS`, `_normalise_case_name`) keep working. The canonical source
-# lives in tools.core.fold_routing; both SAM3 and the rotation
-# classifier delegate there.
+# so external imports (`from tools.extraction.sam3 import N_FOLDS`,
+# `_normalise_case_name`) keep working. The canonical source lives in
+# tools.core.fold_routing; both SAM3 and the rotation classifier
+# delegate there.
 from tools.core.fold_routing import (
     N_FOLDS,
     normalise_case_name as _normalise_case_name,
-    fold_for_case as _fold_for_case,
+    resolve_fold as _resolve_fold,
 )
 
 
@@ -257,13 +257,12 @@ def _load_kfold(kfold_dir, hf_token, device):
 def set_fold_for_case(sam_state, case_name):
     """Switch the active LoRA adapter to the fold that excluded this case
     from training. No-op when the loaded model is the legacy single
-    adapter.
+    adapter or when ``case_name`` resolves to the currently-active fold.
 
-    Routing:
-      - Look up `case_name` in fold_assignment.json (training cases).
-      - If not present, hash via md5 % N_FOLDS (new cases at deployment).
-      - If the chosen fold isn't trained yet, fall back to the lowest
-        available fold and log it.
+    Routing is delegated to :func:`tools.core.fold_routing.resolve_fold`:
+    look up by case name, then by canonical underscore form, then fall
+    back to ``min(available_folds)`` for cases the training pool didn't
+    contain.
     """
     if not isinstance(sam_state, dict) or sam_state.get("kind") != "kfold":
         return  # legacy single-adapter path; nothing to switch
@@ -273,20 +272,7 @@ def set_fold_for_case(sam_state, case_name):
     avail = sam_state.get("available_folds") or set()
     if not avail:
         return
-    canonical = _normalise_case_name(case_name)
-    # Look up under both as-given and canonical form so this works
-    # regardless of whether fa has colon-keys (legacy) or underscore-keys
-    # (current). The build script uses underscore-keys.
-    fold = fa.get(case_name)
-    if fold is None:
-        fold = fa.get(canonical)
-    if fold is None:
-        fold = _fold_for_case(case_name)  # _fold_for_case canonicalises internally
-    if fold not in avail:
-        fold_chosen = sorted(avail)[0]
-        print(f"  SAM3 fold {fold} not trained yet for case {case_name!r}; "
-              f"falling back to fold {fold_chosen}")
-        fold = fold_chosen
+    fold = _resolve_fold(case_name, fa, avail)
     if sam_state.get("current_fold") == fold:
         return
     try:

@@ -199,8 +199,6 @@ def _load_kfold_state() -> Optional[dict]:
 # tools.extraction.sam3). The module-level aliases below keep the
 # historical private names available to call sites in this file.
 from tools.core.fold_routing import (
-    normalise_case_name as _normalise_case_name,
-    fold_for_case as _fold_for_case,
     resolve_fold as _resolve_fold,
 )
 
