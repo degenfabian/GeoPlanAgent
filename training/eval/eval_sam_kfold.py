@@ -51,7 +51,9 @@ def main():
         fold = fold_map.get(png.stem)
         if fold is None:
             continue
-        manifest.append({"filename": png.name, "fold": int(fold)})
+        manifest.append({"case": png.stem,
+                          "filename": png.name,
+                          "fold": int(fold)})
     print(f"manifest: {len(manifest)} cases")
 
     hf_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN")

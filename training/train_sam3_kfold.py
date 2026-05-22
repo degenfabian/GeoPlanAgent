@@ -821,7 +821,9 @@ def main() -> int:
         fold = fold_map.get(png.stem)
         if fold is None:
             continue  # map without a fold assignment — skip silently
-        manifest.append({"filename": png.name, "fold": int(fold)})
+        manifest.append({"case": png.stem,
+                          "filename": png.name,
+                          "fold": int(fold)})
 
     # Mirror fold_assignment.json into the training-output dir so production
     # can find it next to the checkpoints.
