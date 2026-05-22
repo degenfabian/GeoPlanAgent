@@ -483,7 +483,7 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
     # from its tool schema; only critic-side code can flip it.
     bypass = bool(getattr(state, "bypass_smart_commit_one_shot", False))
     if not bypass and len(state.match_attempts) >= 2:
-        from tools.matching import candidate_passes_la_filter
+        from tools.matching import candidate_la_distance_km
         from tools.scoring import (
             commit_attempt_score,
             quadrant_coverage_from_inlier_points,
@@ -493,13 +493,20 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
         # Cross-candidate smart-commit scoring combines four signals,
         # each already computed for every stored candidate elsewhere in
         # the pipeline:
-        #   * raw inlier count (RANSAC strength)
-        #   * inside-admin_region check (catches wrong-LA picks)
+        #   * raw inlier count    (RANSAC strength)
+        #   * la_distance_km      (smooth distance penalty: 1/(1+d_km)
+        #                          equals 1 inside admin_region, decays
+        #                          with distance to the boundary; catches
+        #                          wrong-LA picks without over-penalising
+        #                          boundary cases that sit ~tens of metres
+        #                          outside the OS BoundaryLine polygon)
         #   * quadrant coverage   (inliers spread across map quadrants;
-        #     resolves ties between candidates with similar inlier counts)
-        #   * scale_consistency   (1 / max(s,1/s)^2; demotes candidates
-        #     whose recovered affine had to stretch the map to align —
-        #     a sign the matcher was clever in a wrong window)
+        #                          resolves ties between candidates with
+        #                          similar inlier counts)
+        #   * scale_consistency   (min(s,1/s)^2; demotes candidates whose
+        #                          recovered affine had to stretch the
+        #                          map to align — a sign the matcher was
+        #                          clever in a wrong window)
         # The signals were previously computed per-window inside
         # sliding_window_position but discarded at the cross-candidate
         # ranking step; this combined score lifts them up.
@@ -514,15 +521,15 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
                 mi = g.get("match_info") or {}
                 if ll is None:
                     ll = mi.get("center_latlon") or mi.get("chosen_center_latlon")
-            inside_la = True
+            d_km = 0.0
             if admin_region and ll:
                 try:
-                    inside_la = candidate_passes_la_filter(
+                    d_km = candidate_la_distance_km(
                         "feature_cluster", ll[0], ll[1], admin_region
                     )
                 except Exception:
-                    inside_la = True
-            base = commit_attempt_score(n, inside_la)
+                    d_km = 0.0
+            base = commit_attempt_score(n, d_km)
 
             # Quadrant factor: best (max) per_group quadrant coverage,
             # normalised to [0, 1]. For multi-area docs this is generous;

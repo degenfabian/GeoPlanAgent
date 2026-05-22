@@ -142,6 +142,45 @@ def candidate_passes_la_filter(source: str, lat: float, lon: float,
         return True
 
 
+def candidate_la_distance_km(source: str, lat: float, lon: float,
+                              admin_region: Optional[str]) -> float:
+    """Return the distance in km from (lat, lon) to the named LA polygon
+    boundary, or 0.0 if inside the polygon. Returns 0.0 (i.e. "no
+    penalty") whenever the filter doesn't apply: no admin_region given,
+    no LA polygon loadable, or source is exempt (postcodes etc. — see
+    ``_FILTERABLE_SOURCES``). Fail-open like ``candidate_passes_la_filter``.
+    """
+    if not admin_region:
+        return 0.0
+    src = (source or "").split(":")[0].lower()
+    if src not in _FILTERABLE_SOURCES:
+        return 0.0
+    try:
+        import math
+        from shapely.geometry import Point
+        from shapely.ops import nearest_points
+        from tools.verification_checks import _resolve_la, _load_la_polygons
+        _load_la_polygons()
+        la = _resolve_la(admin_region)
+        if la is None:
+            return 0.0
+        p = Point(lon, lat)
+        if la.contains(p):
+            return 0.0
+        _, q = nearest_points(p, la.boundary)
+        # Haversine to convert degree-distance to km.
+        R = 6371.0
+        phi1 = math.radians(lat)
+        phi2 = math.radians(q.y)
+        dp = math.radians(q.y - lat)
+        dl = math.radians(q.x - lon)
+        a = (math.sin(dp / 2) ** 2
+             + math.cos(phi1) * math.cos(phi2) * math.sin(dl / 2) ** 2)
+        return 2.0 * R * math.asin(math.sqrt(a))
+    except Exception:
+        return 0.0
+
+
 # ── Canonical source priority table ─────────────────────────────────────────
 #
 # SOURCE_PRIORITY ranks candidate sources for capping the candidate list

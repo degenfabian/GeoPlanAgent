@@ -64,24 +64,24 @@ def quadrant_coverage_from_inlier_points(
 
 # ─── Stage 2: smart-commit gate score ──────────────────────────────────────
 
-# Penalty multiplier when a candidate centre falls outside the named LA
-# polygon. 0.3× is small enough that a much-higher-inlier outside-LA
-# candidate can still beat a low-inlier inside-LA candidate (the LA
-# polygon is itself imperfect), but big enough to dominate ties.
-OUTSIDE_LA_PENALTY = 0.3
-
-
-def commit_attempt_score(n_inliers: int, inside_la: bool) -> float:
+def commit_attempt_score(n_inliers: int, la_distance_km: float = 0.0) -> float:
     """Score a single ``match_at`` attempt for ``commit_match`` ranking.
 
     The two signals are:
 
-    * ``n_inliers``  — the raw matching signal.
-    * ``inside_la``  — whether the predicted centre falls inside the
-      reader-extracted admin_region polygon. Catches wrong-town homonym
-      matches (e.g. CB:82's road_intersection 5 km outside the LA).
+    * ``n_inliers``       — the raw matching signal.
+    * ``la_distance_km``  — how far (in km) the predicted centre falls
+      from the named LA polygon boundary; 0.0 if inside (or no LA
+      filter applies). The penalty multiplier is ``1 / (1 + d_km)`` —
+      smooth, parameter-free, equals 1.0 inside the polygon, decays
+      naturally with distance: a 25-m boundary case is barely
+      penalised (0.97×), a 1-km drift gets 0.5×, a 10-km wrong-town
+      pick gets 0.09×. Replaces the previous binary
+      OUTSIDE_LA_PENALTY=0.3 which over-penalised the ~150 m boundary
+      cases (12:00162, 71) where the OS BoundaryLine polygon and the
+      true LA edge diverge by tens of metres.
     """
     if n_inliers < 0:
         return -1.0
-    penalty = 1.0 if inside_la else OUTSIDE_LA_PENALTY
-    return float(n_inliers) * penalty
+    d = max(0.0, float(la_distance_km or 0.0))
+    return float(n_inliers) / (1.0 + d)

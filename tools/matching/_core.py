@@ -191,6 +191,7 @@ from tools.matching.source_priorities import (
     _SOURCE_SIGMA_M,
     SOURCE_PRIORITY,
     candidate_passes_la_filter,
+    candidate_la_distance_km,
     effective_sigma,
     sigma_from_scale,
     sigma_from_source,
