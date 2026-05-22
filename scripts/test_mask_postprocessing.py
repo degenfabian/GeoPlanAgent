@@ -151,11 +151,34 @@ def main():
                 continue
 
             # Two projections.
-            cleaned_mask = cleanup_mask_pipeline(raw_mask.copy())
-            gj_raw = mask_to_geojson_affine(raw_mask, affine_H, tile_info)
-            gj_cln = mask_to_geojson_affine(cleaned_mask, affine_H, tile_info)
-            gt = _gt_polygon(case_name)
+            #
+            # The "cleaned" branch is mask_to_geojson_affine's current
+            # behaviour: it applies _keep_dominant_components +
+            # _expand_thin_mask + _fill_mask_holes INTERNALLY before
+            # contour extraction.
+            #
+            # The "raw" branch monkey-patches those three internal
+            # cleanup calls to be identity functions, projecting the raw
+            # SAM3-FT mask directly through the affine with no
+            # morphological cleanup at all.
+            from tools.matching import _core as _matching_core
+            gj_cln = mask_to_geojson_affine(raw_mask.copy(), affine_H, tile_info)
 
+            _orig_kd = _matching_core._keep_dominant_components
+            _orig_ex = _matching_core._expand_thin_mask
+            _orig_fh = _matching_core._fill_mask_holes
+            _identity = lambda m: m
+            try:
+                _matching_core._keep_dominant_components = _identity
+                _matching_core._expand_thin_mask = _identity
+                _matching_core._fill_mask_holes = _identity
+                gj_raw = mask_to_geojson_affine(raw_mask.copy(), affine_H, tile_info)
+            finally:
+                _matching_core._keep_dominant_components = _orig_kd
+                _matching_core._expand_thin_mask = _orig_ex
+                _matching_core._fill_mask_holes = _orig_fh
+
+            gt = _gt_polygon(case_name)
             poly_raw = shape(gj_raw["geometry"]) if gj_raw else None
             poly_cln = shape(gj_cln["geometry"]) if gj_cln else None
             iou_raw = _iou(poly_raw, gt) if gt else 0.0
