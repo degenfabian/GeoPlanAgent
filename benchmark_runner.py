@@ -19,7 +19,7 @@ import traceback
 import numpy as np
 import pandas as pd
 import cv2
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from datetime import datetime
 
 from tools.metrics.geojson import load_geojson, calculate_spatial_metrics
@@ -217,7 +217,11 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
     for case_idx, (_, row) in enumerate(dataset.iterrows()):
         folder_name = str(row["Unique ID (Folder_Name)"])
         sl_no = int(row["Sl no"])
-        geojson_file = str(row["geojson ID (for sanity check)"]).split("/")[-1]
+        # The xlsx cells were authored on POSIX; PurePosixPath always uses
+        # '/' regardless of host OS, so the basename extraction works the
+        # same on Windows or Linux.
+        geojson_file = PurePosixPath(
+            str(row["geojson ID (for sanity check)"])).name
 
         print(f"\n{'─' * 70}")
         print(f"[{case_idx+1}/{len(dataset)}] Sl {sl_no}: {folder_name}")
@@ -442,11 +446,18 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                     cv2.imwrite(str(case_dir / "selected_boundary.png"),
                                   selected_overlay))
 
-            # Visualization (with timeout). The agent cleans up map_img
-            # before returning, so only comparison viz runs here.
-            old_handler = signal.signal(signal.SIGALRM,
-                lambda s, f: (_ for _ in ()).throw(TimeoutError))
-            signal.alarm(60)
+            # Visualization (with timeout on POSIX). The agent cleans up
+            # map_img before returning, so only comparison viz runs here.
+            # SIGALRM is Unix-only; on Windows we skip the timeout — viz
+            # is bounded by the typical work it does (comparison overlay
+            # on a 2k×2k canvas, single-digit seconds), so the lack of a
+            # hard cap is a small risk vs the cross-platform win.
+            has_alarm = hasattr(signal, "SIGALRM")
+            old_handler = None
+            if has_alarm:
+                old_handler = signal.signal(signal.SIGALRM,
+                    lambda s, f: (_ for _ in ()).throw(TimeoutError))
+                signal.alarm(60)
             try:
                 save_visualizations(
                     case_dir, None, None, geojson, gt_geojson
@@ -456,8 +467,9 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
             except Exception as _e:
                 print(f"  warn: viz failed: {str(_e)[:120]}")
             finally:
-                signal.alarm(0)
-                signal.signal(signal.SIGALRM, old_handler)
+                if has_alarm:
+                    signal.alarm(0)
+                    signal.signal(signal.SIGALRM, old_handler)
 
         except Exception as e:
             traceback.print_exc()

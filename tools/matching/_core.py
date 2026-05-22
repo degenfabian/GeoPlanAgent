@@ -236,7 +236,7 @@ def affine_center_to_latlon(affine_H, map_h, map_w, tile_info):
     )
 
 
-def mask_to_geojson_affine(mask, affine_H, tile_info, simplify_px=0.0):
+def mask_to_geojson_affine(mask, affine_H, tile_info):
     """Convert SAM3 mask to GeoJSON Feature using affine transform.
 
     Args:
@@ -247,8 +247,6 @@ def mask_to_geojson_affine(mask, affine_H, tile_info, simplify_px=0.0):
             losses, and removing it eliminates ~5 hand-tuned params).
         affine_H: 2x3 affine matrix mapping mask pixels to tile canvas pixels.
         tile_info: Dict with zoom, tx_min, ty_min from fetch_os_opendata_grid.
-        simplify_px: Douglas-Peucker epsilon in pixels. Default 0.0 means
-            no simplification — the polygon retains every contour vertex.
 
     Returns GeoJSON Feature dict, or None if no valid contours.
     """
@@ -265,8 +263,6 @@ def mask_to_geojson_affine(mask, affine_H, tile_info, simplify_px=0.0):
 
     all_polys = []
     for contour in contours:
-        if simplify_px > 0:
-            contour = cv2.approxPolyDP(contour, simplify_px, True)
         coords = []
         for pt in contour:
             px, py = float(pt[0][0]), float(pt[0][1])
@@ -437,11 +433,6 @@ def sliding_window_position(
         # (k-fold ResNet50, TTA) so by the time MINIMA sees the image it is
         # already upright. There is no per-window rotation search at match time.
         rotations = [0]
-
-    # No early termination — the EARLY_STOP_METRIC=75.0 threshold was
-    # a tuning knob calibrated to a single sweep with no principled basis.
-    # Running all (centre, zoom) configurations is slower but removes a
-    # magic-constant cutoff.
 
     # Sort centers by sigma (tightest first) so the most-confident
     # anchors are explored first.

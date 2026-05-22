@@ -202,6 +202,11 @@ def match_at(
             (haversine_km(lat, lon, c["lat"], c["lon"]) * 1000.0, c)
             for c in state.proposed_centers
         )
+        # 100 m tolerance: covers rounding noise on candidate lat/lons
+        # (sub-metre postcode centroids round to ~10 m, place-name
+        # centroids to ~50 m). Anything beyond that means the LLM
+        # produced a coordinate that wasn't in propose_centers — most
+        # commonly a hallucinated centre from the map image itself.
         if nearest[0] > 100.0:
             avail = ", ".join(
                 f"id={c['id']} ({c['source'][:30]})"
@@ -542,13 +547,10 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
                     pts = mi.get("_inlier_pts_map")
                     shape = mi.get("_rot_map_shape")
                     if pts and shape and len(shape) >= 2:
-                        # _rot_map_shape is (H, W) numpy convention.
+                        # _rot_map_shape is (H, W) numpy convention; the
+                        # callee expects a (H, W) tuple as its second arg.
                         h, w = int(shape[0]), int(shape[1])
-                        try:
-                            q = quadrant_coverage_from_inlier_points(
-                                pts, w, h)
-                        except Exception:
-                            q = None
+                        q = quadrant_coverage_from_inlier_points(pts, (h, w))
                 if q is not None and int(q) > best_q:
                     best_q = int(q)
             if best_q == 0:

@@ -187,7 +187,9 @@ def _load_kfold_state() -> Optional[dict]:
             "transform": _make_transform(img_size),
             "fold_assignment": fa,
             "kind": "kfold",
-            "available_folds": sorted(models.keys()),
+            # Set, not list — `_resolve_fold` does `fold not in available_folds`
+            # which is O(1) on sets, O(n) on lists. Matches tools.extraction.sam3.
+            "available_folds": set(models.keys()),
         }
         print(f"  rotation_classifier: loaded {len(models)} k-fold adapter(s) "
               f"from {_KFOLD_DIR.name}/ "

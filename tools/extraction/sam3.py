@@ -8,59 +8,7 @@ k-fold adapter routing.
 """
 
 import numpy as np
-import cv2
 import torch
-
-
-# ── Flood fill ──────────────────────────────────────────────────────────────
-
-def try_fill_boundary_outline(mask):
-    """Try to fill gaps in a boundary outline mask using morphological closing.
-
-    If the mask is a thin outline (low fill ratio), applies morphological
-    close to bridge small gaps, then floodfills from border pixels to mark
-    the exterior, and returns the interior as a filled mask.
-    """
-    if mask is None:
-        return None
-
-    h, w = mask.shape[:2]
-    total_pixels = h * w
-    filled_pixels = np.sum(mask > 0)
-    fill_ratio = filled_pixels / total_pixels
-
-    # Already well-filled or too sparse — return as-is
-    if fill_ratio > 0.4 or fill_ratio < 0.001:
-        return mask
-
-    # Morphological close to bridge small gaps in outline
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
-    closed = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=2)
-
-    # Flood-fill from border pixels to mark the exterior, then invert.
-    flood = closed.copy()
-    flood_h, flood_w = flood.shape[:2]
-    ff_mask = np.zeros((flood_h + 2, flood_w + 2), dtype=np.uint8)
-
-    border_seeds = []
-    if flood[0, 0] == 0: border_seeds.append((0, 0))
-    if flood[0, flood_w - 1] == 0: border_seeds.append((flood_w - 1, 0))
-    if flood[flood_h - 1, 0] == 0: border_seeds.append((0, flood_h - 1))
-    if flood[flood_h - 1, flood_w - 1] == 0: border_seeds.append((flood_w - 1, flood_h - 1))
-
-    for seed in border_seeds:
-        cv2.floodFill(flood, ff_mask, seed, 128)
-
-    # Pixels that are 0 (not exterior, not original outline) are interior.
-    filled = (flood == 0).astype(np.uint8) * 255
-    # Combine the original outline with the new interior fill.
-    filled = np.maximum(filled, closed)
-
-    filled_after = np.sum(filled > 0) / total_pixels
-    # Only use filled version if it meaningfully increased coverage
-    if filled_after > fill_ratio * 1.2 and filled_after < 0.85:
-        return filled
-    return mask
 
 
 # ── Model loading ───────────────────────────────────────────────────────────
@@ -110,8 +58,9 @@ def _load_kfold(kfold_dir, hf_token, device):
     fold_assignment = {}
     try:
         fold_assignment = json.loads(fa_path.read_text())
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"  sam3 loader: WARNING — failed to parse {fa_path.name} "
+              f"({e!r}); k-fold routing falls back to min(available_folds)")
 
     # Find which folds actually have a usable adapter on disk.
     available = []
@@ -378,4 +327,4 @@ def extract_boundary_sam3_semantic(map_crop_path, processor, model, device,
     pct = np.sum(mask > 0) / (h * w) * 100
     bbox_str = f", bbox={bbox}" if bbox is not None else ""
     print(f"  SAM3 semantic: mask {pct:.1f}% of image (query={query!r}{bbox_str})")
-    return try_fill_boundary_outline(mask)
+    return mask

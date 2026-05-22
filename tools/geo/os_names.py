@@ -230,7 +230,13 @@ def search(query: str, max_results: int = 10,
     rows_pool = df
 
     # 1. Spatial bbox filter (strongest disambiguator — UK postcodes give
-    #    sub-borough precision)
+    #    sub-borough precision).
+    # 111 km/°: rough mean length of one degree of latitude on the WGS84
+    # ellipsoid (varies by ±0.5% with latitude — fine for a filter bbox).
+    # 1.6× lon half-width: at mid-UK latitude (~54°), cos(54°) ≈ 0.588,
+    # so one degree of longitude is ~65 km. Symmetric-in-km coverage
+    # therefore needs lon-degree half-width ≈ 1/0.588 ≈ 1.7× the lat
+    # half-width; 1.6 is the safe rounded approximation.
     if bbox_wgs84 is None and bbox_center is not None and bbox_radius_km:
         clat, clon = bbox_center
         d = bbox_radius_km / 111.0
@@ -239,7 +245,11 @@ def search(query: str, max_results: int = 10,
         lat_min, lon_min, lat_max, lon_max = bbox_wgs84
         x_min, y_min, x_max, y_max = _wgs84_bbox_to_bng(
             lat_min, lon_min, lat_max, lon_max)
-        # Inflate by 500m to handle edge cases at the bbox boundary
+        # 500 m BNG inflation: handles place-name records whose
+        # GEOMETRY_X/Y is the centroid of a feature whose extent crosses
+        # the bbox boundary (parks, large estates). 500 m comfortably
+        # exceeds the largest such offset in Open Names while staying
+        # tight enough that the resulting candidate pool is small.
         x_min -= 500; y_min -= 500; x_max += 500; y_max += 500
         spatial_mask = (
             (df["GEOMETRY_X"] >= x_min) & (df["GEOMETRY_X"] <= x_max) &

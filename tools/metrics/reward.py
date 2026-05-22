@@ -144,18 +144,18 @@ def axis_road_name_agreement(
         if _fuzzy_road_match(rn, nearby):
             matched.append(rn)
 
+    # Score is the raw match ratio; the verdict is just human-readable
+    # context. Resist the urge to add tier thresholds here — the critic
+    # reads the score directly, and any "strong/partial/weak" labels would
+    # be arbitrary cutoffs masquerading as principled signal.
     n_matched = len(matched)
     score = n_matched / n_total
-    if score >= 0.6:
-        v = f"strong agreement ({n_matched}/{n_total} reader roads found in OS)"
-    elif score >= 0.3:
-        v = f"partial agreement ({n_matched}/{n_total} reader roads found)"
-    elif score > 0:
-        v = f"weak agreement ({n_matched}/{n_total} reader roads found)"
-    else:
+    if score == 0:
         v = (f"OS roads present here but ZERO of {n_total} reader roads "
              f"match — possible wrong-area signal (trust strong inliers "
              f"over this)")
+    else:
+        v = f"{n_matched}/{n_total} reader roads found in OS"
 
     return AxisResult(
         score=score, verdict=v,

@@ -16,6 +16,11 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+# Set to True the first time we notice the OS Zoomstack file is missing,
+# so the verifier prints exactly one warning per process instead of
+# spamming every candidate iteration.
+_ZOOMSTACK_WARNED = False
+
 
 # ─── Road-name verifier ────────────────────────────────────────────────────
 
@@ -27,6 +32,14 @@ def _query_gpkg_road_names(lat, lon, radius_m=1500):
 
         gpkg_path = BASE_DIR / "os_opendata" / "OS_Open_Zoomstack.gpkg"
         if not gpkg_path.exists():
+            # Warn ONCE per process, not per-call (this fires inside the
+            # per-candidate verifier loop and the per-call critic axis).
+            global _ZOOMSTACK_WARNED
+            if not _ZOOMSTACK_WARNED:
+                print(f"  road_verify: WARNING — {gpkg_path} not found; "
+                      f"road-name verification disabled. Download from "
+                      f"OS Open Zoomstack and place at this path.")
+                _ZOOMSTACK_WARNED = True
             return []
 
         transformer = pyproj.Transformer.from_crs(

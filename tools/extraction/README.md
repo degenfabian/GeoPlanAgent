@@ -68,20 +68,13 @@ mask = extract_boundary_sam3_semantic(
 ```
 
 `set_fold_for_case` canonicalises the case name (`replace(":", "_").
-replace("/", "_")`), looks up `fold_assignment.json[case_name]`,
-falls back to `md5(canonical) % 5` for unseen cases, and applies the
-matching LoRA. Important: hash on the canonical form, otherwise
-`md5("12:00114:ART4")` and `md5("12_00114_ART4")` resolve to
-different folds — silent leakage. The normaliser fixes this.
-
-### `try_fill_boundary_outline` (legacy)
-
-Pre-LoRA, the model occasionally returned a thin outline-style mask
-(just the boundary line, not the filled interior). This helper
-morphologically closes the outline and floodfills the exterior from
-border pixels to recover the interior. Rarely needed against the
-LoRA, which is trained on filled masks, but kept for ablations and
-the base-SAM3 fallback path.
+replace("/", "_")`), looks up `fold_assignment.json[case_name]`, and
+applies the matching LoRA. The shared helper is
+`tools.core.fold_routing.resolve_fold`. For cases not in the training
+pool (only possible for an external deployment on a fresh case), it
+returns `min(available_folds)` deterministically — no fold "owns" an
+unseen case so any adapter is equally valid; an earlier md5-hash
+fallback added no signal and was removed.
 
 ## Mask cleanup primitives (`mask_ops.py`)
 

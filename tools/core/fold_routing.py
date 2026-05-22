@@ -30,8 +30,12 @@ def normalise_case_name(case_name: str) -> str:
 
 
 def resolve_fold(case_name: str, fold_assignment: dict,
-                  available_folds) -> int:
+                  available_folds: set[int]) -> int:
     """Pick the fold index to use for ``case_name``.
+
+    ``available_folds`` is a set of int fold indices that actually have
+    a usable adapter on disk. We rely on O(1) membership tests, so
+    callers must pass a set (not a list).
 
     Resolution order:
       1. Look up the case in the trained-time assignment file (handles

@@ -76,10 +76,7 @@ def commit_attempt_score(n_inliers: int, la_distance_km: float = 0.0) -> float:
       smooth, parameter-free, equals 1.0 inside the polygon, decays
       naturally with distance: a 25-m boundary case is barely
       penalised (0.97×), a 1-km drift gets 0.5×, a 10-km wrong-town
-      pick gets 0.09×. Replaces the previous binary
-      OUTSIDE_LA_PENALTY=0.3 which over-penalised the ~150 m boundary
-      cases (12:00162, 71) where the OS BoundaryLine polygon and the
-      true LA edge diverge by tens of metres.
+      pick gets 0.09×.
     """
     if n_inliers < 0:
         return -1.0
