@@ -7,15 +7,17 @@ locate LOO ablation; production callers omit the kwarg for the cached default.
 from __future__ import annotations
 import json
 import math
+import time
 from functools import lru_cache
 from pathlib import Path
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
-from pydantic_ai import Agent, BinaryContent
+from pydantic_ai import Agent, BinaryContent, ModelRetry, RunContext
 from pydantic_ai.usage import UsageLimits
 
 from tools.agent._model import resolve_model
+from tools.geo.coords import haversine_km
 
 REPO = Path(__file__).resolve().parent.parent.parent
 
@@ -621,11 +623,116 @@ def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
             continue
         agent.tool_plain(_TOOL_IMPLS[tool_name])
 
+    # L2 output validator: cross-check the agent's final LocatePick against
+    # the most recent la_check coord. Catches sign-flips, lat/lon swaps,
+    # and other LLM numerical-fidelity bugs that the schema bounds alone
+    # can't detect (e.g. (51.51, 0.33) when the verified coord was
+    # (51.51, -0.33) — both within UK bounds, but ~46km apart).
+    # Safe to register even when la_check is disabled — the validator
+    # just no-ops when no la_check call is found in history.
+    @agent.output_validator
+    async def _validate_pick_matches_recent_la_check(
+        ctx: RunContext[LocateState], pick: LocatePick
+    ) -> LocatePick:
+        for msg in reversed(ctx.messages):
+            parts = getattr(msg, "parts", None) or []
+            for part in parts:
+                if getattr(part, "tool_name", None) != "la_check":
+                    continue
+                args = getattr(part, "args", None)
+                if isinstance(args, str):
+                    try:
+                        args = json.loads(args)
+                    except Exception:
+                        continue
+                if not isinstance(args, dict):
+                    continue
+                try:
+                    check_lat = float(args["lat"])
+                    check_lon = float(args["lon"])
+                except (KeyError, ValueError, TypeError):
+                    continue
+                d = haversine_km(pick.top_lat, pick.top_lon,
+                                 check_lat, check_lon)
+                if d > 1.0:
+                    raise ModelRetry(
+                        f"Your final pick ({pick.top_lat}, {pick.top_lon}) "
+                        f"is {d:.1f} km from the coord you just verified "
+                        f"with la_check ({check_lat}, {check_lon}). Likely "
+                        f"a sign flip or lat/lon swap. Re-emit using the "
+                        f"la_check'd coord."
+                    )
+                return pick   # validated against most recent la_check
+        return pick   # no la_check call found — can't validate, accept as-is
+
     return agent
 
 
 # Default production singleton (built lazily via lru_cache).
 _locate_agent = make_locate_agent()
+
+
+# ── Helpers for transient-error handling ──────────────────────────────────
+
+
+# Gemini's image-input limit is generous (~20 MB) but big planning maps
+# at 200 DPI can exceed it (A3/A2/A0 paper sizes). Pre-downscale anything
+# over this threshold; ~10 MB is comfortably under the limit with room
+# for the JSON pdf_info plus headers on the request.
+_MAX_IMAGE_BYTES = 10_000_000
+_MAX_IMAGE_EDGE = 2048
+
+
+def _downscale_image_if_oversized(img_bytes: bytes) -> bytes:
+    """If img_bytes exceeds the size threshold, downscale and re-encode
+    to PNG. Otherwise return img_bytes unchanged.
+
+    Catches the HTTP 413 failure mode where the rendered planning map
+    page is too large for gemini's image input.
+    """
+    if not img_bytes or len(img_bytes) <= _MAX_IMAGE_BYTES:
+        return img_bytes
+    try:
+        import cv2
+        import numpy as np
+        arr = np.frombuffer(img_bytes, dtype=np.uint8)
+        img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+        if img is None:
+            return img_bytes
+        h, w = img.shape[:2]
+        scale = _MAX_IMAGE_EDGE / max(h, w)
+        if scale >= 1.0:
+            # Edge is already small but byte size is high — try heavier
+            # PNG compression as a fallback before giving up.
+            _, buf = cv2.imencode(".png", img, [cv2.IMWRITE_PNG_COMPRESSION, 9])
+            return buf.tobytes()
+        new_w, new_h = int(round(w * scale)), int(round(h * scale))
+        resized = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_AREA)
+        _, buf = cv2.imencode(".png", resized,
+                              [cv2.IMWRITE_PNG_COMPRESSION, 6])
+        return buf.tobytes()
+    except Exception:
+        # On any decode/encode failure, return the original — the
+        # downstream request will fail with HTTP 413, then the retry
+        # path (now with a more aggressive downscale) will try again.
+        return img_bytes
+
+
+_TRANSIENT_HTTP_MARKERS = (
+    "status_code: 400",   # Provider sometimes returns 400 for rate-limit /
+                          # quota / oversize-request issues.
+    "status_code: 413",   # Payload too large (oversized image).
+    "status_code: 429",   # Rate limited.
+    "status_code: 500",   # Provider internal error.
+    "status_code: 502",   # Bad gateway.
+    "status_code: 503",   # Service unavailable.
+    "status_code: 504",   # Gateway timeout.
+)
+
+
+def _is_transient_error(e: Exception) -> bool:
+    s = str(e).lower()
+    return any(m in s for m in (x.lower() for x in _TRANSIENT_HTTP_MARKERS))
 
 
 # ── Entry point ───────────────────────────────────────────────────────────
@@ -755,6 +862,19 @@ def run_locate(
             user_parts.insert(
                 0, BinaryContent(data=map_img_bytes, media_type="image/png"))
 
+    # Pre-downscale oversized map images so we don't hit HTTP 413 on the
+    # first attempt. Catches A3/A2/A0 planning maps rendered at 200 DPI.
+    if map_img_bytes is not None:
+        original_size = len(map_img_bytes)
+        map_img_bytes = _downscale_image_if_oversized(map_img_bytes)
+        if len(map_img_bytes) != original_size:
+            # Rebuild user_parts with the downscaled image in place.
+            for i, p in enumerate(user_parts):
+                if isinstance(p, BinaryContent):
+                    user_parts[i] = BinaryContent(
+                        data=map_img_bytes, media_type="image/png")
+                    break
+
     admin = pdf_info.get("admin_region") or "?"
     pcs = pdf_info.get("postcodes") or []
     grs = pdf_info.get("grid_refs") or []
@@ -762,19 +882,40 @@ def run_locate(
                    else "first_call")
     disabled_tag = (f", disabled={sorted(disabled_tools)}"
                     if disabled_tools else "")
+    img_tag = (f", img={len(map_img_bytes)//1024}KB"
+               if map_img_bytes is not None else "")
     print(f"  [locate] start: admin_region={admin!r}, postcodes={pcs[:2]}, "
           f"grid_refs={grs[:2]}, match_context={'yes' if match_context else 'no'}, "
-          f"{history_tag}{disabled_tag}")
+          f"{history_tag}{disabled_tag}{img_tag}")
 
-    try:
-        result = agent.run_sync(
-            user_parts,
-            deps=deps,
-            model=model,
-            usage_limits=UsageLimits(request_limit=15),
-            message_history=prior_messages,
-        )
-    except Exception as e:
+    # Run the agent with up to one retry on transient HTTP errors. The
+    # default OpenRouter exception → caught and falls back to emergency,
+    # which is too pessimistic for 4xx/5xx errors that succeed on retry.
+    MAX_RETRIES = 1
+    result = None
+    last_exc: Optional[Exception] = None
+    for attempt in range(MAX_RETRIES + 1):
+        try:
+            result = agent.run_sync(
+                user_parts,
+                deps=deps,
+                model=model,
+                usage_limits=UsageLimits(request_limit=15),
+                message_history=prior_messages,
+            )
+            break
+        except Exception as e:
+            last_exc = e
+            if attempt < MAX_RETRIES and _is_transient_error(e):
+                wait = 2 ** attempt
+                print(f"  [locate] transient error (attempt {attempt+1}/"
+                      f"{MAX_RETRIES+1}): {e!s:.140} — retrying in {wait}s")
+                time.sleep(wait)
+                continue
+            break
+
+    if result is None:
+        e = last_exc if last_exc is not None else RuntimeError("unknown locate failure")
         print(f"  [locate] FAILED: {e!s:.200}")
         pick = _emergency_la_centroid_pick(
             pdf_info, reason=f"agent failed: {e!s:.60}")
