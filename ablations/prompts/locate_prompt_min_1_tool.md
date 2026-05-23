@@ -26,6 +26,6 @@ BUDGET: ≤ 8 geocode tool calls per case. If you've made 8 calls, commit your b
 
 EDGE CASES:
 - Empty pdf_info → look hardest at the map image for any labels, then
-  fall back to your best place hit with wide σ (~5000m) and confidence='low'.
-- "District-wide" cases (whole-borough policy zone) → use place to search for the district / borough name, with wide σ (~5000m).
+  fall back to your best place hit with wide σ and confidence='low'.
+- "District-wide" cases (whole-borough policy zone) → search via place for the district / borough name; pick σ to cover the district (small LAs: 2-5 km; large LAs like Cornwall / Highland: 20-30 km).
 - Multi-parish sites → midpoint of named parishes/villages with wide σ.

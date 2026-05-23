@@ -54,8 +54,8 @@ You have 6 offline geocoder tools:
 
 **Added (not in full, 6 lines):**
 ```
-  fall back to your best place hit with wide σ (~5000m) and confidence='low'.
-- "District-wide" cases (whole-borough policy zone) → use place to search for the district / borough name, with wide σ (~5000m).
+  fall back to your best place hit with wide σ and confidence='low'.
+- "District-wide" cases (whole-borough policy zone) → search via place for the district / borough name; pick σ to cover the district (small LAs: 2-5 km; large LAs like Cornwall / Highland: 20-30 km).
 3. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
 4. **CLUSTER & PICK:** 
 5. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema. **Be meticulous and avoid clerical errors when submitting your final pick.** Copy the lat/lon EXACTLY from your strongest tool result — don't paraphrase, don't round prematurely. The bugs we see most often: (a) dropping a minus sign that should be there (e.g. -0.14 emitted as 0.14), (b) adding a minus sign that shouldn't be (e.g. +1.4 emitted as -1.4), (c) swapping top_lat and top_lon. Before emitting, verify the sign and order of the values against the tool result you're using. If the coord you're about to emit isn't close to a coord any of your tool calls returned, you've made an entry error — fix it.

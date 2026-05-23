@@ -504,12 +504,13 @@ def _edge_cases_body(enabled: frozenset[str]) -> str:
         lines.append(
             "- Empty pdf_info → look hardest at the map image for any "
             "labels, then\n  fall back to your best place hit with "
-            "wide σ (~5000m) and confidence='low'."
+            "wide σ and confidence='low'."
         )
         lines.append(
             "- \"District-wide\" cases (whole-borough policy zone) → "
-            "use place to search for the district / borough name, with "
-            "wide σ (~5000m)."
+            "search via place for the district / borough name; pick σ "
+            "to cover the district (small LAs: 2-5 km; large LAs like "
+            "Cornwall / Highland: 20-30 km)."
         )
     lines.append(
         "- Multi-parish sites → midpoint of named parishes/villages "
