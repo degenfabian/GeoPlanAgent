@@ -1,26 +1,8 @@
-"""LIVE LLM-locate agent.
+"""Live locate sub-agent: pdf_info + map page → one (lat, lon, sigma) LocatePick.
 
-A pydantic_ai Agent that runs at runtime (inside the worker's propose_centers
-call) to produce ONE high-quality center (lat, lon, sigma, confidence) using:
-  - pdf_info (from the live reader phase — FRESH per case, not cached)
-  - the rendered primary match page (state.rendered_pages[map_pages[0]])
-  - up to 6 offline geocoder tools (postcode / grid_ref / place / road /
-    intersect / la_check)
-
-Called from the worker's propose_centers tool. Pydantic-ai enforces the
-LocatePick schema; on agent-loop failure run_locate emits an emergency
-LA-centroid LocatePick rather than returning None — the pipeline is
-guaranteed at least one candidate.
-
-The agent is built by ``make_locate_agent(disabled_tools)`` — a factory
-that returns an Agent with the given tools removed from BOTH the
-registered toolset AND the system prompt. Production callers pass
-``disabled_tools=frozenset()`` (or omit the kwarg) and get the cached
-default agent. The locate LOO ablation passes a non-empty frozenset to
-build a variant that genuinely doesn't know the disabled tool exists.
-
-Model: chosen at runtime via ``run_locate(model_name=...)``. The worker
-threads its CLI-configured ``locate_model`` through ``AgentState``.
+Six offline geocoder tools (postcode / grid_ref / place / road / intersect /
+la_check). ``make_locate_agent(disabled_tools)`` is a factory used by the
+locate LOO ablation; production callers omit the kwarg for the cached default.
 """
 from __future__ import annotations
 import json
@@ -35,10 +17,6 @@ from pydantic_ai.usage import UsageLimits
 
 from tools.agent._model import resolve_model
 
-# Repo root path used by the `road` / `intersect` tools below to locate
-# the OML index files at runtime. We no longer mutate sys.path on import
-# — the codebase is always launched from the repo root (so cwd is
-# already on sys.path) and import-time side effects are surprising.
 REPO = Path(__file__).resolve().parent.parent.parent
 
 
@@ -46,8 +24,14 @@ REPO = Path(__file__).resolve().parent.parent.parent
 
 class LocatePick(BaseModel):
     """Final locate output: one center coord + uncertainty + provenance."""
-    top_lat: float = Field(description="Final picked latitude (WGS84).")
-    top_lon: float = Field(description="Final picked longitude (WGS84).")
+    top_lat: float = Field(
+        description="Final picked latitude (WGS84). UK range: 49.5 to 61.0.",
+        ge=49.5, le=61.0,
+    )
+    top_lon: float = Field(
+        description="Final picked longitude (WGS84). UK range: -9.0 to 2.0.",
+        ge=-9.0, le=2.0,
+    )
     sigma_m: int = Field(
         description="Search radius in meters reflecting uncertainty. "
                     "200 = tight (multi-source agreement). "
@@ -92,10 +76,6 @@ class LocateState:
 
 
 # ── Tool implementations (registered conditionally by make_locate_agent) ──
-#
-# Each tool is a standalone module-level function — no @agent.tool_plain
-# decorator. ``make_locate_agent`` decides which ones to register on a
-# given agent instance via the ``_TOOL_IMPLS`` mapping below.
 
 
 def postcode(pc: str) -> dict:
@@ -608,20 +588,7 @@ def _build_locate_prompt(disabled: frozenset[str] = frozenset()) -> str:
 
 
 def make_locate_agent(disabled_tools=None) -> Agent:
-    """Build a locate sub-agent with ``disabled_tools`` removed from BOTH
-    the registered toolset AND the system prompt.
-
-    Cached by ``disabled_tools`` key — production calls (disabled=∅) hit
-    the cache after the first build; LOO ablation variants each build
-    once and stay cached for the duration of the process. ``Agent``
-    instances are not pickled across processes, so the cache is
-    per-process.
-
-    ``disabled_tools`` is normalised to a ``frozenset`` before the cache
-    lookup, so ``make_locate_agent()``, ``make_locate_agent(None)``,
-    ``make_locate_agent(set())``, and ``make_locate_agent(frozenset())``
-    all share one cache entry.
-    """
+    """Locate sub-agent with ``disabled_tools`` removed from tools + prompt. Cached."""
     return _make_locate_agent_cached(
         frozenset(disabled_tools) if disabled_tools else frozenset()
     )
@@ -629,8 +596,7 @@ def make_locate_agent(disabled_tools=None) -> Agent:
 
 @lru_cache(maxsize=16)
 def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
-    """Internal cached agent builder. Always called with a normalised
-    ``frozenset`` so lru_cache keys collapse predictably."""
+    """Cached builder; keyed on normalised frozenset."""
     unknown = disabled_tools - _LOCATE_TOOL_NAMES
     if unknown:
         raise ValueError(
@@ -648,10 +614,6 @@ def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
         instructions=_build_locate_prompt(disabled_tools),
     )
 
-    # Register only the enabled tools. pydantic-ai derives the tool
-    # name from the impl's ``__name__`` (already the public name —
-    # ``postcode``, ``grid_ref``, etc. at module level) and the
-    # argument schema from its annotations.
     for tool_name in [
         "postcode", "grid_ref", "place", "road", "intersect", "la_check"
     ]:
@@ -662,20 +624,14 @@ def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
     return agent
 
 
-# Default production singleton — equivalent to the previous module-level
-# _locate_agent. Built once on first call (lru_cache), reused thereafter.
+# Default production singleton (built lazily via lru_cache).
 _locate_agent = make_locate_agent()
 
 
 # ── Entry point ───────────────────────────────────────────────────────────
 
 def _emergency_la_centroid_pick(pdf_info: dict, reason: str) -> LocatePick:
-    """Emergency fallback: build a LocatePick at the LA centroid.
-
-    Used when the agent loop fails entirely (validation retries exhausted,
-    HTTP error, etc.). Guarantees run_locate never returns None — the
-    pipeline always has at least one candidate to feed to MINIMA.
-    """
+    """Fallback LocatePick at the LA centroid when the agent loop fails."""
     admin = (pdf_info.get("admin_region")
              or pdf_info.get("likely_town_or_city")
              or pdf_info.get("district_name") or "").strip()
@@ -687,13 +643,10 @@ def _emergency_la_centroid_pick(pdf_info: dict, reason: str) -> LocatePick:
     if poly is not None:
         c = poly.centroid
         minx, miny, maxx, maxy = poly.bounds
-        # Convert degree extent to a metres-radius. 1°lat ≈ 111 km but
-        # 1°lon ≈ 111·cos(lat) km — at UK lats that's ~68 km, so using
-        # 111 unconditionally over-states E-W extent by ~60% and
-        # inflates the search σ. Use lat-aware conversion per axis.
+        # Lat-aware degree → metres so E-W extent isn't inflated.
         cos_lat = math.cos(math.radians(c.y))
-        dx_m = (maxx - minx) * 111_000.0 * cos_lat  # lon extent
-        dy_m = (maxy - miny) * 111_000.0            # lat extent
+        dx_m = (maxx - minx) * 111_000.0 * cos_lat
+        dy_m = (maxy - miny) * 111_000.0
         radius_m = int(max(dx_m, dy_m) / 2)
         sigma = max(2000, min(radius_m, 50_000))
         return LocatePick(
@@ -721,59 +674,20 @@ def run_locate(
     extra_terms: Optional[List[str]] = None,
     disabled_tools: frozenset[str] = frozenset(),
 ) -> tuple:
-    """Run the live LLM-locate agent for one case.
+    """Run the locate sub-agent for one case; returns (LocatePick, all_messages).
 
-    Pydantic-ai enforces the LocatePick schema; if the agent loop fails
-    entirely (validation retries exhausted, HTTP error, budget exceeded),
-    we emit an emergency LA-centroid LocatePick rather than returning None.
-    The pipeline ALWAYS gets a valid pick.
-
-    When called a second time on the same case (after a poor match_at),
-    pass the prior call's message history via `prior_messages` so the
-    locate agent SEES its previous reasoning + tool calls + pick, and
-    `match_context` so it knows what went wrong. The agent then refines
-    rather than re-deriving from scratch.
-
-    Args:
-        pdf_info: live reader output (pdf_info dict).
-        map_img_bytes: PNG bytes of the rendered planning map page.
-        model_name: OpenRouter model identifier (or alias).
-        match_context: feedback from a prior pick. The worker passes
-            this in when re-calling propose_centers.
-        prior_messages: result.all_messages() from the previous run_locate
-            call on the same case. When set, the agent already has
-            pdf_info + map image in its history, so only a new user
-            message (with match_context and any extra_terms) is appended.
-        extra_terms: additional place / landmark strings the worker
-            spotted on the map and wants the locate agent to consider.
-            On the first call these are already merged into
-            ``pdf_info.place_names`` / ``visible_map_labels`` by the
-            caller, so the JSON serialisation surfaces them. On the
-            continuation path (prior_messages set), the pdf_info JSON
-            is NOT re-sent, so the new terms are spliced into the
-            follow-up user message instead.
-        disabled_tools: names of locate tools to omit from BOTH the
-            agent's registered toolset and its system prompt. Used by
-            the locate LOO ablation. Production callers pass
-            ``frozenset()`` (or omit the kwarg) and get the same
-            behaviour as before the factory refactor.
-
-    Returns:
-        (LocatePick, list_of_all_messages). The caller saves
-        list_of_all_messages on AgentState so a subsequent re-call can
-        pass it back as `prior_messages`.
+    On a re-pick, pass the prior call's `all_messages` as `prior_messages` and
+    feedback in `match_context`; the agent refines instead of starting over.
+    `disabled_tools` drops tools from both the agent and its prompt (used by
+    the locate LOO ablation).
     """
     model = resolve_model(model_name)
     agent = make_locate_agent(disabled_tools)
     deps = LocateState(pdf_info=pdf_info)
 
     if prior_messages:
-        # Continuation: the agent already has pdf_info + map image in its
-        # history. Just send a new user message with the feedback. Any
-        # ``extra_terms`` are folded in explicitly here because the
-        # follow-up does NOT re-send pdf_info, so a merge into
-        # pdf_info.place_names by the caller would be invisible to the
-        # model on this turn.
+        # Continuation: pdf_info already in history; just append feedback.
+        # extra_terms are spliced here since pdf_info isn't re-sent.
         ctx = (match_context or "").strip()
         new_terms = [t.strip() for t in (extra_terms or [])
                      if isinstance(t, str) and t.strip()]
