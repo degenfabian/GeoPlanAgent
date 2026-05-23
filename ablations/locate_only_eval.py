@@ -62,6 +62,7 @@ import cv2  # noqa: E402
 from tools.agent.locate_agent import (  # noqa: E402
     _LOCATE_TOOL_NAMES, _build_locate_prompt, run_locate,
 )
+from tools.agent.runtime import extract_message_log_from_msgs  # noqa: E402
 from tools.geo.coords import haversine_km  # noqa: E402
 from tools.io.eval_case import resolve_case_pdf  # noqa: E402
 from tools.io.map_page import render_map_page  # noqa: E402
@@ -226,10 +227,13 @@ def evaluate(args: argparse.Namespace) -> int:
     out_dir = out_root / label
     out_dir.mkdir(parents=True, exist_ok=True)
     out_csv = out_dir / "locate_picks.csv"
+    traj_dir = out_dir / "trajectories"
+    traj_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Config:        {label!r} (disabled={sorted(disabled) or 'none'})")
     print(f"Locate model:  {args.locate_model}")
     print(f"Output CSV:    {out_csv.relative_to(REPO_ROOT)}")
+    print(f"Trajectories:  {traj_dir.relative_to(REPO_ROOT)}/<case>.json")
 
     cache_path = Path(args.cache)
     if not cache_path.exists():
@@ -336,7 +340,7 @@ def evaluate(args: argparse.Namespace) -> int:
             png_bytes = buf.tobytes()
 
             try:
-                pick, _msgs = run_locate(
+                pick, msgs = run_locate(
                     pdf_info=pi,
                     map_img_bytes=png_bytes,
                     model_name=args.locate_model,
@@ -363,6 +367,39 @@ def evaluate(args: argparse.Namespace) -> int:
             })
             writer.writerow(row); f.flush()
             n_ok += 1
+
+            # Trajectory dump — per-case JSON capturing the full pick
+            # plus the locate sub-agent's tool-call trajectory. Binary
+            # content (e.g. the map PNG sent on the first user message)
+            # is summarised by extract_message_log_from_msgs, so the
+            # JSON stays small (~10-30 KB per case).
+            try:
+                trajectory, traj_stats = extract_message_log_from_msgs(msgs)
+                traj_payload = {
+                    "case": case,
+                    "config": {
+                        "disabled_tools": sorted(disabled),
+                        "locate_model": args.locate_model,
+                    },
+                    "pick": pick.model_dump(),
+                    "err_km": err,
+                    "gt_centroids": [
+                        {"lat": lat, "lon": lon} for lat, lon in centroids
+                    ],
+                    "trajectory_stats": traj_stats,
+                    "trajectory": trajectory,
+                }
+                # Filesystem safety: a few case names contain ':' which
+                # is illegal on some filesystems. Replace with '_'.
+                fs_case = case.replace("/", "_").replace(":", "_")
+                (traj_dir / f"{fs_case}.json").write_text(
+                    json.dumps(traj_payload, indent=2, default=str)
+                )
+            except Exception as _e:
+                # Don't fail the whole case if trajectory serialisation
+                # hiccups — the CSV row is already written. Note it so
+                # we can debug post-hoc.
+                print(f"  WARN: trajectory dump failed: {_e!s:.80}")
 
             if err is not None:
                 print(f"  -> ok | err={err:.2f} km | conf={pick.confidence} "

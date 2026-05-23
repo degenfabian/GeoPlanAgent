@@ -291,17 +291,35 @@ def cleanup_temp_pages(state: AgentState) -> None:
 
 def extract_message_log(result: Any) -> Tuple[list, dict]:
     """Walk pydantic-ai's message history and return (message_log,
-    extracted_stats). extracted_stats is a dict with keys: tool_calls,
-    total_tool_calls, n_turns, validator_retries.
+    extracted_stats). Convenience wrapper over
+    :func:`extract_message_log_from_msgs` for callers that have a
+    pydantic-ai ``result`` object handy.
+    """
+    return extract_message_log_from_msgs(result.all_messages())
 
-    Each message_log entry is {turn, role, kind, ...} where the extras
-    depend on the part kind (tool, args, return, text, etc.).
+
+def extract_message_log_from_msgs(messages: list) -> Tuple[list, dict]:
+    """Walk a list of pydantic-ai messages and return
+    ``(message_log, extracted_stats)``.
+
+    ``extracted_stats`` is a dict with keys: ``tool_calls`` (per-tool
+    call counts), ``total_tool_calls``, ``n_turns``,
+    ``validator_retries``.
+
+    Each ``message_log`` entry is ``{turn, role, kind, ...}`` where the
+    extras depend on the part kind (tool, args, return, text, etc.).
+    Binary content (e.g. PNG bytes from image attachments) is summarised
+    rather than serialised — safe to JSON-dump.
+
+    The split-off variant exists so the locate-only ablation harness can
+    pass the ``all_messages`` list it gets from :func:`run_locate`
+    directly, without needing the surrounding ``result`` object.
     """
     message_log: list = []
     tool_calls: Dict[str, int] = {}
     turn_idx = 0
 
-    for msg in result.all_messages():
+    for msg in messages:
         role = getattr(msg, 'kind', type(msg).__name__)
         parts = getattr(msg, 'parts', None)
         if not parts:
