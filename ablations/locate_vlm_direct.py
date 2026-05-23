@@ -49,11 +49,13 @@ from pydantic import BaseModel, Field  # noqa: E402
 from pydantic_ai import Agent, BinaryContent  # noqa: E402
 from pydantic_ai.usage import UsageLimits  # noqa: E402
 
+from ablations._shared import (  # noqa: E402
+    CSV_FIELDNAMES, gt_part_centroids, nearest_part_err_km,
+)
 from tools.agent._model import resolve_model  # noqa: E402
 from tools.agent.runtime import extract_message_log_from_msgs  # noqa: E402
-from tools.geo.coords import haversine_km  # noqa: E402
 from tools.io.eval_case import resolve_case_pdf  # noqa: E402
-from tools.metrics.geojson import geojson_to_shape, load_geojson  # noqa: E402
+from tools.metrics.geojson import load_geojson  # noqa: E402
 
 load_dotenv()
 
@@ -133,26 +135,10 @@ _vlm_agent = Agent(
 )
 
 
-# ── Helpers (duplicated from locate_only_eval to avoid coupling) ───────────
-
-
-def _gt_part_centroids(gt_geojson: dict) -> list[tuple[float, float]]:
-    """One (lat, lon) per polygon part. Multi-area GTs return multiple."""
-    shape = geojson_to_shape(gt_geojson)
-    if shape is None:
-        return []
-    polys = list(shape.geoms) if hasattr(shape, "geoms") else [shape]
-    return [(p.centroid.y, p.centroid.x) for p in polys]
-
-
-def _nearest_part_err_km(
-    pick_lat: float, pick_lon: float,
-    centroids: list[tuple[float, float]],
-) -> Optional[float]:
-    if not centroids:
-        return None
-    return min(haversine_km(pick_lat, pick_lon, c_lat, c_lon)
-               for c_lat, c_lon in centroids)
+# GT-centroid extraction + nearest-part scoring live in ablations._shared
+# so the locate / VLM-direct / aggregation harnesses agree on the metric
+# byte-for-byte. Imported above as gt_part_centroids and
+# nearest_part_err_km.
 
 
 def _model_label(model_name: str) -> str:
@@ -214,14 +200,11 @@ def evaluate(args: argparse.Namespace) -> int:
             print(f"--resume:      {len(already_done)} cases already in CSV",
                   flush=True)
 
-    # Same column schema as locate_only_eval so the aggregation step can
-    # union all CSVs cleanly. Fields VLM-direct has no value for stay
-    # empty (sigma_m, confidence, verified_inside_admin_region).
-    fieldnames = [
-        "case", "err_km", "picked_lat", "picked_lon",
-        "picked_source", "confidence", "sigma_m",
-        "verified_inside_admin_region", "n_gt_parts", "evidence", "error",
-    ]
+    # Same column schema as locate_only_eval (imported from _shared) so
+    # the aggregation step can union all CSVs cleanly. Fields VLM-direct
+    # has no value for stay empty (sigma_m, confidence,
+    # verified_inside_admin_region).
+    fieldnames = CSV_FIELDNAMES
 
     csv_mode = "a" if (args.resume and already_done) else "w"
     model = resolve_model(args.vlm_model)
@@ -248,7 +231,7 @@ def evaluate(args: argparse.Namespace) -> int:
             pdf_path = resolve_case_pdf(case_dir)
             gt_files = list(case_dir.glob("*.geojson"))
             gt_geojson = load_geojson(str(gt_files[0])) if gt_files else None
-            centroids = _gt_part_centroids(gt_geojson) if gt_geojson else []
+            centroids = gt_part_centroids(gt_geojson) if gt_geojson else []
 
             row = {fn: "" for fn in fieldnames}
             row["case"] = case
@@ -302,7 +285,7 @@ def evaluate(args: argparse.Namespace) -> int:
                 print(f"  -> ERROR ({e!s:.80})", flush=True)
                 continue
 
-            err = _nearest_part_err_km(pick.lat, pick.lon, centroids)
+            err = nearest_part_err_km(pick.lat, pick.lon, centroids)
             row.update({
                 "err_km": (f"{err:.3f}" if err is not None else ""),
                 "picked_lat": f"{pick.lat:.6f}",

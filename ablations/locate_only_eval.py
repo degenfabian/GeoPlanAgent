@@ -59,14 +59,16 @@ sys.path.insert(0, str(REPO_ROOT))
 
 import cv2  # noqa: E402
 
+from ablations._shared import (  # noqa: E402
+    CSV_FIELDNAMES, gt_part_centroids, nearest_part_err_km,
+)
 from tools.agent.locate_agent import (  # noqa: E402
     _LOCATE_TOOL_NAMES, _build_locate_prompt, run_locate,
 )
 from tools.agent.runtime import extract_message_log_from_msgs  # noqa: E402
-from tools.geo.coords import haversine_km  # noqa: E402
 from tools.io.eval_case import resolve_case_pdf  # noqa: E402
 from tools.io.map_page import render_map_page  # noqa: E402
-from tools.metrics.geojson import geojson_to_shape, load_geojson  # noqa: E402
+from tools.metrics.geojson import load_geojson  # noqa: E402
 
 
 DEFAULT_CACHE = (
@@ -102,39 +104,10 @@ def _parse_disabled(s: Optional[str]) -> frozenset[str]:
     return frozenset(tools)
 
 
-def _gt_part_centroids(gt_geojson: dict) -> list[tuple[float, float]]:
-    """Return one (lat, lon) per Polygon part of the GT geometry.
-
-    Multi-area planning documents have MultiPolygon GTs; the locate
-    first-pick scoring takes the MIN haversine distance over part
-    centroids, so a multi-area case is scored by whichever component
-    the agent landed nearest to.
-    """
-    shape = geojson_to_shape(gt_geojson)
-    if shape is None:
-        return []
-    polys = list(shape.geoms) if hasattr(shape, "geoms") else [shape]
-    out: list[tuple[float, float]] = []
-    for p in polys:
-        c = p.centroid
-        out.append((c.y, c.x))   # (lat, lon)
-    return out
-
-
-def _nearest_part_err_km(
-    pick_lat: float, pick_lon: float,
-    centroids: list[tuple[float, float]],
-) -> Optional[float]:
-    """Min haversine km from pick to any GT-part centroid.
-
-    Returns None when the GT has no parsable polygon parts (e.g. an
-    empty / malformed geojson) so the case row records the failure
-    instead of silently scoring as 0.
-    """
-    if not centroids:
-        return None
-    return min(haversine_km(pick_lat, pick_lon, c_lat, c_lon)
-               for c_lat, c_lon in centroids)
+# GT-centroid extraction + nearest-part scoring live in ablations._shared
+# so the locate / VLM-direct / aggregation harnesses all agree on the
+# metric byte-for-byte. Imported above as gt_part_centroids and
+# nearest_part_err_km.
 
 
 # ── Prompt dump (no LLM calls) ─────────────────────────────────────────────
@@ -264,11 +237,7 @@ def evaluate(args: argparse.Namespace) -> int:
             print(f"--resume:      {len(already_done)} cases already in CSV")
 
     eval_root = Path(args.eval_dir)
-    fieldnames = [
-        "case", "err_km", "picked_lat", "picked_lon",
-        "picked_source", "confidence", "sigma_m",
-        "verified_inside_admin_region", "n_gt_parts", "evidence", "error",
-    ]
+    fieldnames = CSV_FIELDNAMES
 
     # Open CSV in append mode when resuming, write+header when starting fresh.
     csv_mode = "a" if (args.resume and already_done) else "w"
@@ -295,7 +264,7 @@ def evaluate(args: argparse.Namespace) -> int:
             pdf_path = resolve_case_pdf(case_dir)
             gt_files = list(case_dir.glob("*.geojson"))
             gt_geojson = load_geojson(str(gt_files[0])) if gt_files else None
-            centroids = _gt_part_centroids(gt_geojson) if gt_geojson else []
+            centroids = gt_part_centroids(gt_geojson) if gt_geojson else []
 
             row = {fn: "" for fn in fieldnames}
             row["case"] = case
@@ -354,7 +323,7 @@ def evaluate(args: argparse.Namespace) -> int:
                 print(f"  -> ERROR (run_locate raised: {e!s:.80})")
                 continue
 
-            err = _nearest_part_err_km(pick.top_lat, pick.top_lon, centroids)
+            err = nearest_part_err_km(pick.top_lat, pick.top_lon, centroids)
             row.update({
                 "err_km": (f"{err:.3f}" if err is not None else ""),
                 "picked_lat": f"{pick.top_lat:.6f}",
