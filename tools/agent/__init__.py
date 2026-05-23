@@ -62,6 +62,7 @@ def run_agent(
     case_dir: Optional[Path] = None,
     enable_critic: bool = False,
     critic_max_iters: int = 2,
+    locate_model: str = "google/gemini-3-flash-preview",
 ) -> Dict[str, Any]:
     """Run reader → worker on one planning PDF.
 
@@ -85,6 +86,11 @@ def run_agent(
             from the same run (two-in-one ablation).
         critic_max_iters: max critic-rejection iterations before forcing
             accept. Ignored when enable_critic is False.
+        locate_model: Model alias or OpenRouter identifier for the
+            locate sub-agent (independent of ``model_name``, which
+            governs the reader + worker). Default
+            ``google/gemini-3-flash-preview`` matches the previous
+            hardcoded value.
 
     Returns:
         Dict with keys including geojson, mask, match_info, agent_accepted,
@@ -122,6 +128,7 @@ def run_agent(
     state, user_parts = _rt.prepare_worker_state(
         pdf_path=pdf_path, sam3=sam3, minima_matcher=models_state["minima"],
         pdf_info=pdf_info, dpi=dpi, case_name=case_name, verbose=verbose,
+        locate_model=locate_model,
     )
 
     if verbose:

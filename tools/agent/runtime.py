@@ -93,9 +93,15 @@ def prepare_worker_state(
     dpi: int,
     case_name: Optional[str],
     verbose: bool,
+    locate_model: str = "google/gemini-3-flash-preview",
 ) -> Tuple[AgentState, list]:
     """Create AgentState, pre-render every map_page from the reader, and
-    build the worker's user_parts (JSON summary + active page image)."""
+    build the worker's user_parts (JSON summary + active page image).
+
+    ``locate_model`` is threaded into AgentState so propose_centers can
+    forward it to run_locate — keeps the locate sub-agent's model choice
+    independent of the worker's ``model_name``.
+    """
     state = AgentState(
         pdf_path=str(pdf_path),
         sam3_processor=sam3["processor"],
@@ -105,6 +111,7 @@ def prepare_worker_state(
         dpi=dpi,
         sam3_state=sam3,
         case_name=case_name,
+        locate_model=locate_model,
     )
     state.pdf_info = {k: v for k, v in pdf_info.items() if not k.startswith("_")}
 

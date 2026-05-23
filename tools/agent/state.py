@@ -25,13 +25,18 @@ class AgentState:
     """Mutable state shared across all tool calls."""
 
     def __init__(self, pdf_path, sam3_processor, sam3_model, device,
-                 minima_matcher, dpi=200, sam3_state=None, case_name=None):
+                 minima_matcher, dpi=200, sam3_state=None, case_name=None,
+                 locate_model: str = "google/gemini-3-flash-preview"):
         self.pdf_path = pdf_path
         self.sam3_processor = sam3_processor
         self.sam3_model = sam3_model
         self.device = device
         self.minima_matcher = minima_matcher
         self.dpi = dpi
+        # Model alias / OpenRouter identifier for the locate sub-agent.
+        # propose_centers reads this and forwards to run_locate. CLI-
+        # configurable via benchmark_runner's --locate-model.
+        self.locate_model: str = locate_model
 
         # Full SAM3 loader output (incl. k-fold metadata when available),
         # used by tools.extraction.sam3.set_fold_for_case to switch the

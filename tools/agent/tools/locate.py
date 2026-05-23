@@ -68,7 +68,10 @@ def propose_centers(
 
     from tools.agent.locate_agent import run_locate
 
-    model_name = "google/gemini-3-flash-preview"
+    # Model is configured at run_agent time via the CLI --locate-model
+    # flag, threaded through AgentState. Default in AgentState is
+    # google/gemini-3-flash-preview (matches the previous hardcode).
+    model_name = state.locate_model
 
     # Locate sub-agent always sees the primary match page (the
     # reader's top-ranked one). Single image is sufficient — locate

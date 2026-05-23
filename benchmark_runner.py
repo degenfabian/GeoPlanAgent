@@ -102,17 +102,20 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                   dataset_path="evaluation_data/0_planning_dataset_list.xlsx",
                   eval_dir="evaluation_data",
                   only_cases=None, force=False,
-                  enable_critic=False, critic_max_iters=2):
+                  enable_critic=False, critic_max_iters=2,
+                  locate_model="google/gemini-3-flash-preview"):
     """Run benchmark using the unified tool-calling agent.
 
     Args:
-        model_name: OpenRouter model identifier.
+        model_name: OpenRouter model identifier (reader + worker).
         output_dir: Base output directory for results.
         max_cases: Limit number of cases to run.
         start_from: Skip first N cases.
         dpi: PDF rendering DPI.
         max_iterations: Max agent turns per case.
         only_cases: If set, only run these specific folder names.
+        locate_model: Model for the locate sub-agent (independent of
+            model_name). Default google/gemini-3-flash-preview.
     """
     from tools.agent import run_agent
 
@@ -235,6 +238,7 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                 case_dir=case_dir,
                 enable_critic=enable_critic,
                 critic_max_iters=critic_max_iters,
+                locate_model=locate_model,
             )
             dt = time.time() - t0
 
@@ -521,7 +525,12 @@ if __name__ == "__main__":
         description="Benchmark planning document GeoJSON extraction"
     )
     parser.add_argument("--model", default="gemini-pro",
-                        help="OpenRouter model identifier")
+                        help="OpenRouter model identifier (reader + worker)")
+    parser.add_argument(
+        "--locate-model", default="google/gemini-3-flash-preview",
+        help="Model alias or OpenRouter identifier for the locate "
+             "sub-agent (independent of --model). Default: "
+             "google/gemini-3-flash-preview.")
     parser.add_argument("--max-cases", type=int, default=None)
     parser.add_argument("--start-from", type=int, default=0)
     parser.add_argument("--dpi", type=int, default=200)
@@ -557,4 +566,5 @@ if __name__ == "__main__":
         force=args.force,
         enable_critic=args.enable_critic,
         critic_max_iters=args.critic_max_iters,
+        locate_model=args.locate_model,
     )
