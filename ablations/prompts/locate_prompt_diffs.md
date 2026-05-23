@@ -2,7 +2,7 @@
 
 Each section lists lines present in the FULL prompt but NOT in the LOO variant. Use this to sanity-check that disabling a tool actually removes all references to it (tool description, signal-priority bullets, protocol-step references).
 
-Full prompt: 2973 chars, 46 lines
+Full prompt: 3485 chars, 46 lines
 
 ## no_grid_ref
 
@@ -45,7 +45,7 @@ You have 5 offline geocoder tools:
 4. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
 5. **CLUSTER & PICK:** 
 6. **VALIDATE with la_check.** Final pick should be inside the admin_region polygon. Set verified_inside_admin_region=True if la_check confirms inside; leave at default False when admin_region is unknown or every candidate falls outside.
-7. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema.
+7. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema. **Be meticulous with the final coord entry.** Copy the lat/lon EXACTLY from your strongest tool result — don't paraphrase, don't round prematurely, don't drop the minus sign. UK longitude is almost always negative (e.g. -0.14 for central London, not 0.14; -2.61 for Bristol, not 2.61). Before emitting, double-check the sign of top_lon and that top_lat / top_lon haven't been swapped. If the coord you're about to emit isn't close to a coord any of your tool calls returned, you've made an entry error — fix it.
 You have 6 offline geocoder tools:
 ```
 
@@ -53,7 +53,7 @@ You have 6 offline geocoder tools:
 ```
 3. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
 4. **CLUSTER & PICK:** 
-5. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema.
+5. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema. **Be meticulous with the final coord entry.** Copy the lat/lon EXACTLY from your strongest tool result — don't paraphrase, don't round prematurely, don't drop the minus sign. UK longitude is almost always negative (e.g. -0.14 for central London, not 0.14; -2.61 for Bristol, not 2.61). Before emitting, double-check the sign of top_lon and that top_lat / top_lon haven't been swapped. If the coord you're about to emit isn't close to a coord any of your tool calls returned, you've made an entry error — fix it.
 You have 5 offline geocoder tools:
 ```
 
@@ -83,7 +83,7 @@ You have 5 offline geocoder tools:
 4. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
 5. **CLUSTER & PICK:** 
 6. **VALIDATE with la_check.** Final pick should be inside the admin_region polygon. Set verified_inside_admin_region=True if la_check confirms inside; leave at default False when admin_region is unknown or every candidate falls outside.
-7. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema.
+7. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema. **Be meticulous with the final coord entry.** Copy the lat/lon EXACTLY from your strongest tool result — don't paraphrase, don't round prematurely, don't drop the minus sign. UK longitude is almost always negative (e.g. -0.14 for central London, not 0.14; -2.61 for Bristol, not 2.61). Before emitting, double-check the sign of top_lon and that top_lat / top_lon haven't been swapped. If the coord you're about to emit isn't close to a coord any of your tool calls returned, you've made an entry error — fix it.
 You have 6 offline geocoder tools:
 ```
 
@@ -93,7 +93,7 @@ You have 6 offline geocoder tools:
 3. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
 4. **CLUSTER & PICK:** 
 5. **VALIDATE with la_check.** Final pick should be inside the admin_region polygon. Set verified_inside_admin_region=True if la_check confirms inside; leave at default False when admin_region is unknown or every candidate falls outside.
-6. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema.
+6. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema. **Be meticulous with the final coord entry.** Copy the lat/lon EXACTLY from your strongest tool result — don't paraphrase, don't round prematurely, don't drop the minus sign. UK longitude is almost always negative (e.g. -0.14 for central London, not 0.14; -2.61 for Bristol, not 2.61). Before emitting, double-check the sign of top_lon and that top_lat / top_lon haven't been swapped. If the coord you're about to emit isn't close to a coord any of your tool calls returned, you've made an entry error — fix it.
 You have 5 offline geocoder tools:
 ```
 

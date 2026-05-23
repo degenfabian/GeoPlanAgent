@@ -29,7 +29,7 @@ PROTOCOL (every case):
    - Single ambiguous (road name, common place) → σ=800-1500m, 'med'
    - LA-only fallback → σ from tool, 'low'
 
-5. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema.
+5. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema. **Be meticulous with the final coord entry.** Copy the lat/lon EXACTLY from your strongest tool result — don't paraphrase, don't round prematurely, don't drop the minus sign. UK longitude is almost always negative (e.g. -0.14 for central London, not 0.14; -2.61 for Bristol, not 2.61). Before emitting, double-check the sign of top_lon and that top_lat / top_lon haven't been swapped. If the coord you're about to emit isn't close to a coord any of your tool calls returned, you've made an entry error — fix it.
 
 BUDGET: ≤ 8 geocode tool calls per case. If you've made 8 calls, commit your best current guess with confidence='low'.
 
