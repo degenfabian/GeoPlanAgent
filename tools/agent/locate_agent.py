@@ -725,11 +725,19 @@ _locate_agent = make_locate_agent()
 # ── Helpers for transient-error handling ──────────────────────────────────
 
 
-# Gemini's image-input limit is generous (~20 MB) but big planning maps
-# at 200 DPI can exceed it (A3/A2/A0 paper sizes). Pre-downscale anything
-# over this threshold; ~10 MB is comfortably under the limit with room
-# for the JSON pdf_info plus headers on the request.
-_MAX_IMAGE_BYTES = 10_000_000
+# Gemini's image-input limit is ~20 MB. Big planning maps at 200 DPI
+# can exceed it (A3/A2/A0 scans → 25-35 MB PNGs). Pre-downscale anything
+# over this threshold to avoid HTTP 413.
+#
+# 25 MB threshold (~24 binary MB) chosen empirically:
+#   - Truly-failing cases (3 Dover cases, 30-31 binary MB → ~32-33 M
+#     decimal bytes) ARE downscaled — they fail HTTP 413 otherwise.
+#   - Currently-working cases (A4DA01 at 21 MB, 8609F3A9 at 17 MB) are
+#     NOT touched — preserves whatever it is about them that lets the
+#     LLM read them today.
+# 2048px max-edge keeps street-label text legible (UK planning maps
+# have labels at ~10-30px which downscale fine from 4000-9000px sources).
+_MAX_IMAGE_BYTES = 25_000_000
 _MAX_IMAGE_EDGE = 2048
 
 
