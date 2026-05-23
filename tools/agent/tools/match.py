@@ -138,7 +138,10 @@ def match_at(
     Args:
         page: 1-based page number. Must be a category='match' page from
             the reader's map_pages list.
-        name: Short label, e.g. "gpkg:Hampstead Heath".
+        name: Short label — pass the ``source`` field of the candidate
+            returned by propose_centers (e.g.
+            ``"live_locate:postcode:AL1 3JE"``,
+            ``"live_locate:intersect:Manor x Linden"``).
         lat / lon: Centre latitude / longitude (must come from
             propose_centers — fabricated coordinates are rejected).
         sigma_m: Search radius in metres (default: scale-aware).

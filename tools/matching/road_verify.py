@@ -4,10 +4,11 @@ A cross-check used by :func:`sliding_window_position` when picking between
 candidates that have similar inlier counts but plausibly different anchors:
 query the OS Zoomstack GeoPackage for road names near each candidate's
 predicted centre, fuzzy-match against the road names the reader extracted
-from the PDF, and prefer the candidate with the best road-name overlap.
-Overrides the metric-best candidate only when the override has at least
-60 % road-name match AND at least 2× the top candidate's ratio AND ≥70 %
-of the top candidate's metric.
+from the PDF, and re-rank the candidates by
+``metric * (1 + road_match_ratio) ** 2``. The quadratic boost gives a
+candidate with full road-name agreement a 4× advantage over one with
+zero agreement; candidates with no nearby OS roads (sparse cartography)
+get a neutral 1.0 multiplier.
 """
 
 from __future__ import annotations

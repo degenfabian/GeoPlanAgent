@@ -13,9 +13,7 @@ from tools.matching import (
     sliding_window_position,    # the main entry — search centres × zooms × windows
     mask_to_geojson_affine,     # project a binary mask through a committed affine
     sigma_from_scale,           # σ default given a map's stated scale
-    sigma_from_source,          # σ default given a geocode source label
-    effective_sigma,            # max(provided, source-default)
-    candidate_passes_la_filter, # locate-stage outside-LA filter (fail-open)
+    effective_sigma,            # fallback σ when the worker omits it
 )
 ```
 
@@ -62,18 +60,23 @@ package. Each `match_at` call covers ONE page (one area_group):
   removed after a 15-case ablation showed it provided zero mean
   benefit and was actively hurting the highest-inlier stress case.
 
-## Sigma / source-priority registry (`source_priorities.py`)
+## Sigma helpers (`source_priorities.py`)
 
-Each geocoded candidate carries a `source` prefix (e.g.
-`"code_point:AL1 3JE"`, `"gpkg:Camden (Town)"`,
-`"emergency_la_centroid"`). The registry centralises:
+The live locate sub-agent always supplies its own σ on every candidate,
+and `sliding_window_position` trusts that value directly. These helpers
+fire only on the fallback path when the worker passes `sigma_m=None` or
+a non-positive value:
 
 | Function | Returns |
 |---|---|
-| `sigma_from_source(name)` | Empirical p95 candidate→GT distance for this source. Postcode lookups → ~50-300 m; place names → ~800 m; LA centroid → kilometres. Used as the search-window radius when the worker didn't supply one. |
-| `source_priority(name)` | Lower = preferred. Postcodes / code_point rank 0; admin / parish rank 9. Used when capping candidate count. |
-| `effective_sigma(provided, source)` | `max(provided, default-for-source)` so a worker-supplied σ never goes below the source's empirical floor. |
-| `candidate_passes_la_filter(source, lat, lon, admin_region)` | Lazy-imports `tools.verification_checks._resolve_la` and checks LA-polygon containment. Returns True (fail-open) when no `admin_region` is provided or the source is exempt (postcodes, grid_refs, etc.). Used at the locate stage to drop catastrophic wrong-region picks. |
+| `sigma_from_scale(scale_ratio)` | Half-diagonal of the printed map's real-world extent (A4 landscape default). 1:1250 → 226 m, 1:2500 → 454 m, 1:25000 → 4540 m. Falls back to 2500 m when scale is unknown. |
+| `effective_sigma(scale_ratio)` | `max(_FALLBACK_SIGMA_M, sigma_from_scale(scale_ratio))` with `_FALLBACK_SIGMA_M = 5000`. Conservative floor used only when the worker omits σ. |
+
+The historical multi-candidate cascade (per-source σ tables,
+LA-polygon candidate filter, source-priority capping) was retired when
+the live locate sub-agent landed; its `la_check` tool already
+validates LA containment on the single pick, so the cascade helpers
+had no live callers and were removed.
 
 ## Output of `sliding_window_position`
 

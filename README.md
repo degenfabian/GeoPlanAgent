@@ -108,8 +108,6 @@ uv run benchmark_runner.py \
 ```bash
 uv run benchmark_runner.py --max-cases 10              # quick smoke test
 uv run benchmark_runner.py --cases 12:00116:ART4       # single case
-uv run benchmark_runner.py --hard-first \              # failing cases first
-    --prev-results results/benchmark_v0
 uv run benchmark_runner.py --start-from 50             # resume after N
 uv run benchmark_runner.py --force                     # bypass per-case cache
 ```

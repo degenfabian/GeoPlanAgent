@@ -1,4 +1,4 @@
-"""Locate-stage worker tools: geocode + propose_centers.
+"""Locate-stage worker tool: propose_centers.
 
 `propose_centers` always delegates to the live LLM-locate sub-agent
 (`tools.agent.locate_agent.run_locate`). The sub-agent reads pdf_info,
@@ -100,12 +100,18 @@ def propose_centers(
         pdf_info["place_names"] = merged_places
         pdf_info["visible_map_labels"] = merged_labels
 
+    # ``extra_terms`` is also forwarded explicitly: on the first call,
+    # the merge above already surfaces them via the pdf_info JSON, but
+    # on a continuation call run_locate does NOT re-send pdf_info, so
+    # the new terms have to be spliced into the follow-up user message
+    # to actually reach the sub-agent.
     pick, new_history = run_locate(
         pdf_info=pdf_info,
         map_img_bytes=map_bytes,
         model_name=model_name,
         match_context=match_context,
         prior_messages=state.locate_message_history or None,
+        extra_terms=extra_terms,
     )
     state.locate_message_history = new_history
 

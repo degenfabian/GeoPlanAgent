@@ -30,7 +30,7 @@ Top-level helpers:
 | File | Purpose |
 |---|---|
 | `scoring.py` | `composite_window_score(vanilla_metric, quadrant_coverage)` — picks the best sliding-window match within a candidate centre. |
-| `verification_checks.py` | OS BoundaryLine LA-polygon resolver (`_resolve_la`, `_load_la_polygons`). Used by `lookup_district`, the locate sub-agent's `la_check`, and the locate-stage LA filter (`candidate_passes_la_filter`). |
+| `verification_checks.py` | OS BoundaryLine LA-polygon resolver (`_resolve_la`, `_load_la_polygons`). Used by `lookup_district` and the locate sub-agent's `la_check`. |
 | `build_oml_road_index.py` | One-off script to regenerate `oml_road_index.json` + `oml_road_geom_subset.json` from OS OpenMap Local. Consumed by the locate sub-agent's `road` / `intersect` tools. |
 
 ## Worker tools

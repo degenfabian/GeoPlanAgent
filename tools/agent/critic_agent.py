@@ -548,12 +548,13 @@ def _run_critic_once(state: Any, model_name: str,
     except Exception as e:
         # Surface the failure: emit an approve directive (so the loop
         # exits cleanly) but tag it so downstream can distinguish a
-        # genuine approve from a critic-LLM crash.
+        # genuine approve from a critic-LLM crash. Pick an arbitrary
+        # committed_id when available; fall back to 0 (a valid id) when
+        # nothing has been committed yet.
         llm_error = f"{type(e).__name__}: {str(e)[:100]}"
         directive = CriticDirective(
-            # Explicit-None check matches the fix at the metrics-text
-            # site; candidate_id=0 is a valid value.
-            chosen_candidate_id=(committed_id if committed_id is not None else 0),
+            chosen_candidate_id=(next(iter(committed_ids))
+                                  if committed_ids else 0),
             action="approve",
             reasoning=f"CRITIC_LLM_ERROR (treated as approve): {llm_error}",
         )

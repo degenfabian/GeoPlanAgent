@@ -505,6 +505,7 @@ def run_locate(
     model_name: str,
     match_context: Optional[str] = None,
     prior_messages: Optional[list] = None,
+    extra_terms: Optional[List[str]] = None,
 ) -> tuple:
     """Run the live LLM-locate agent for one case.
 
@@ -526,8 +527,17 @@ def run_locate(
         match_context: feedback from a prior pick. The worker passes
             this in when re-calling propose_centers.
         prior_messages: result.all_messages() from the previous run_locate
-            call on the same case. When set, only the new user message
-            (with match_context) is appended.
+            call on the same case. When set, the agent already has
+            pdf_info + map image in its history, so only a new user
+            message (with match_context and any extra_terms) is appended.
+        extra_terms: additional place / landmark strings the worker
+            spotted on the map and wants the locate agent to consider.
+            On the first call these are already merged into
+            ``pdf_info.place_names`` / ``visible_map_labels`` by the
+            caller, so the JSON serialisation surfaces them. On the
+            continuation path (prior_messages set), the pdf_info JSON
+            is NOT re-sent, so the new terms are spliced into the
+            follow-up user message instead.
 
     Returns:
         (LocatePick, list_of_all_messages). The caller saves
@@ -539,18 +549,34 @@ def run_locate(
 
     if prior_messages:
         # Continuation: the agent already has pdf_info + map image in its
-        # history. Just send a new user message with the feedback.
+        # history. Just send a new user message with the feedback. Any
+        # ``extra_terms`` are folded in explicitly here because the
+        # follow-up does NOT re-send pdf_info, so a merge into
+        # pdf_info.place_names by the caller would be invisible to the
+        # model on this turn.
         ctx = (match_context or "").strip()
-        if ctx:
+        new_terms = [t.strip() for t in (extra_terms or [])
+                     if isinstance(t, str) and t.strip()]
+        extra_block = ""
+        if new_terms:
+            extra_block = (
+                "\n\nADDITIONAL CANDIDATE TERMS (the worker just surfaced "
+                "these from the map image; they are NOT in the pdf_info "
+                "you saw earlier — treat them as place / landmark anchors "
+                "you should try): " + ", ".join(new_terms)
+            )
+        if ctx or extra_block:
+            ctx_block = (f"PRIOR MATCH FEEDBACK:\n{ctx[:1200]}\n\n"
+                         if ctx else "")
             user_parts: List[object] = [
                 "Re-pick based on prior-match feedback (you already have "
                 "pdf_info + map image in this conversation):\n\n"
-                f"PRIOR MATCH FEEDBACK:\n{ctx[:1200]}\n\n"
+                f"{ctx_block}"
                 "Avoid sources that produced your prior pick; prefer a "
                 "different signal type (e.g. switch from postcode to "
                 "road/intersection, or from likely_town to a parish/"
-                "landmark). Apply the protocol again, then emit your "
-                "final LocatePick."
+                f"landmark).{extra_block}\n\n"
+                "Apply the protocol again, then emit your final LocatePick."
             ]
         else:
             user_parts = [

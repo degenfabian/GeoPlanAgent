@@ -101,7 +101,6 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                   dataset_path="evaluation_data/0_planning_dataset_list.xlsx",
                   eval_dir="evaluation_data",
                   only_cases=None, force=False,
-                  hard_first=False, prev_results_dir=None,
                   enable_critic=False, critic_max_iters=2):
     """Run benchmark using the unified tool-calling agent.
 
@@ -164,48 +163,6 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
         dataset = dataset.iloc[start_from:]
         if max_cases:
             dataset = dataset.head(max_cases)
-    # ── Hard-first ordering: prioritize previously failing cases ──────────
-    if hard_first:
-        # Find previous results to sort by IoU (worst first)
-        if prev_results_dir is None:
-            prev_results_dir = Path(output_dir) / model_name.replace("/", "_")
-        else:
-            prev_results_dir = Path(prev_results_dir)
-
-        # A previous run can have metrics.json with no `iou` key (the
-        # run crashed mid-case and only `error` was written). Default
-        # such cases to -1.0 so the sort_key buckets them as "hard"
-        # (i.e. retry FIRST), not as good cases (i.e. retry LAST). The
-        # bare-except fallback uses the same sentinel for the same
-        # reason.
-        prev_ious = {}
-        if prev_results_dir.exists():
-            for case_dir in prev_results_dir.iterdir():
-                mf = case_dir / "metrics.json"
-                if mf.exists():
-                    try:
-                        m = json.loads(mf.read_text())
-                        prev_ious[case_dir.name] = m.get("iou", -1.0)
-                    except Exception:
-                        prev_ious[case_dir.name] = -1.0
-
-        def _sort_key(row):
-            folder = str(row["Unique ID (Folder_Name)"])
-            iou = prev_ious.get(folder)
-            if iou is None:
-                return (1, 0.5)  # unseen cases go after failures but before successes
-            return (0 if iou < 0.5 else 2, iou)
-
-        dataset = dataset.assign(
-            _sort_key=dataset.apply(_sort_key, axis=1)
-        ).sort_values("_sort_key").drop(columns=["_sort_key"])
-
-        n_hard = sum(1 for f in dataset["Unique ID (Folder_Name)"]
-                     if prev_ious.get(str(f), -1.0) < 0.5)
-        n_unseen = sum(1 for f in dataset["Unique ID (Folder_Name)"]
-                       if str(f) not in prev_ious)
-        print(f"Hard-first ordering: {n_hard} hard cases (IoU<0.5 or crashed), "
-              f"{n_unseen} unseen, {len(dataset) - n_hard - n_unseen} good")
 
     print(f"Running: {len(dataset)} cases\n")
 
@@ -582,12 +539,6 @@ if __name__ == "__main__":
                         help="Only run these specific case folder names")
     parser.add_argument("--force", action="store_true",
                         help="Re-run even if cached results exist")
-    parser.add_argument("--hard-first", action="store_true",
-                        help="Run previously failing cases (IoU<0.5) first, "
-                             "then unseen, then successful cases last")
-    parser.add_argument("--prev-results", default=None,
-                        help="Path to previous results dir for --hard-first "
-                             "ordering (default: same as output-dir/model)")
     parser.add_argument("--enable-critic", action="store_true",
                         help="Run an independent LLM critic after the worker "
                              "submits. The critic compares all stored "
@@ -611,8 +562,6 @@ if __name__ == "__main__":
         max_iterations=args.max_iterations,
         only_cases=args.cases,
         force=args.force,
-        hard_first=args.hard_first,
-        prev_results_dir=args.prev_results,
         enable_critic=args.enable_critic,
         critic_max_iters=args.critic_max_iters,
     )

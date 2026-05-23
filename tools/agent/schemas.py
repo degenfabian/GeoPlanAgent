@@ -277,7 +277,11 @@ class BoundaryOutcome(BaseModel):
     )
     final_n_inliers: int = Field(
         default=0,
-        description="n_inliers from the committed match_at attempt (0 if none)."
+        description="Total RANSAC inliers across every committed area_group "
+                    "(sum over commits; equals the single attempt's "
+                    "n_inliers on the typical single-area document). "
+                    "0 when nothing was committed. Auto-corrected by the "
+                    "output validator from internal state — leave default."
     )
     rotation_checked: bool = Field(
         default=False,

@@ -180,20 +180,12 @@ from tools.geo.coords import (
 _latlon_to_global_tile_pixel = latlon_to_global_tile_pixel
 
 
-# Source-registry tables and lookups live in tools/matching/source_priorities.py
-# (matching config, not geocoding). Re-exported here so existing imports such
-# as `from tools.matching import sigma_from_source, _SOURCE_SIGMA_M,
-# _FILTERABLE_SOURCES` keep working.
+# Scale + fallback sigma helpers live in tools/matching/source_priorities.py.
+# Re-exported here so `from tools.matching import sigma_from_scale, ...`
+# keeps working.
 from tools.matching.source_priorities import (
-    _FILTERABLE_SOURCES,
-    _SOURCE_PRIORITY,
-    _SOURCE_SIGMA_M,
-    SOURCE_PRIORITY,
-    candidate_passes_la_filter,
     effective_sigma,
     sigma_from_scale,
-    sigma_from_source,
-    source_priority,
 )
 
 def resize_map_to_match_zoom(map_img, map_mpp, zoom, lat):
@@ -362,13 +354,13 @@ def sliding_window_position(
 
     # Respect the input σ — the locate sub-agent's σ has Spearman ρ=+0.629
     # against actual pick→GT error on v3 (tight σ → small error, wide σ →
-    # large error). The previous default-to-effective_sigma() overwrite
-    # always landed at the 5km fallback because `live_locate:*` isn't
-    # registered in _SOURCE_SIGMA_M. Fall back to effective_sigma only
-    # when σ is missing or non-positive.
+    # large error), so we trust it directly. Only fall back to
+    # effective_sigma when σ is missing or non-positive (which the
+    # live locate sub-agent never does — this path covers offline
+    # callers and test harnesses).
     name, lat, lon, sigma_in = centers[0]
     if sigma_in is None or float(sigma_in) <= 0:
-        sigma_in = effective_sigma(name, scale_ratio)
+        sigma_in = effective_sigma(scale_ratio)
     centers = [(name, lat, lon, float(sigma_in))]
 
     # Track top-N candidates for post-verification (road name check).
@@ -661,12 +653,12 @@ def sliding_window_position(
                   f"(V={top.get('_vanilla_metric',0):.2f} "
                   f"Q={top.get('_quadrant_cov',0)})")
 
-    # Road-name verifier: if the reader extracted road names, prefer the
-    # candidate whose nearby OSM road names overlap with them. Only fires
-    # under the triple-gated override (≥60% match AND ≥2× top ratio AND
-    # ≥70% top metric). Catches wrong-LA picks where MINIMA finds a
-    # high-inlier window in the wrong town. Directional verifier remains
-    # ripped — only road-name verification is wired here.
+    # Road-name verifier: if the reader extracted road names, re-rank
+    # the candidates by ``metric * (1 + road_match_ratio) ** 2`` —
+    # quadratic boost from how many of the reader's road names appear
+    # near each candidate's centre. Catches wrong-LA picks where MINIMA
+    # finds a high-inlier window in the wrong town. Candidates with no
+    # nearby OS roads (sparse cartography) get a neutral 1.0 multiplier.
     best_result = None
     if road_names and len(road_names) >= 1:
         best_result = _verify_candidates_with_road_names(ranked, road_names)

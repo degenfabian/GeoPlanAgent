@@ -201,8 +201,13 @@ WORKFLOW
      - candidate_id        integer handle
      - area_group, page    which group/page this attempt covers
      - n_inliers           RANSAC match strength (the primary signal)
-     - scale_consistency   per-axis (0..1)
-     - road_name_agreement per-axis (0..1)
+     - scale_consistency   range 0..1 (tiers below)
+     - road_name_agreement range 0..1 (tiers below)
+     - road_name_verdict   short textual explainer ("no OS roads
+                           within radius" etc.) — read with the score
+     - committed_groups    sorted list of area_groups already
+                           committed in this case (useful on multi-
+                           area documents)
      - budget_remaining    match_at calls left in this case
 
    SAM3 segmentation runs automatically on first need per page (cached

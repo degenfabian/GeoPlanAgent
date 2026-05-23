@@ -285,7 +285,7 @@ def cleanup_temp_pages(state: AgentState) -> None:
 def extract_message_log(result: Any) -> Tuple[list, dict]:
     """Walk pydantic-ai's message history and return (message_log,
     extracted_stats). extracted_stats is a dict with keys: tool_calls,
-    total_tool_calls, n_turns, geocode_types, validator_retries.
+    total_tool_calls, n_turns, validator_retries.
 
     Each message_log entry is {turn, role, kind, ...} where the extras
     depend on the part kind (tool, args, return, text, etc.).
@@ -334,14 +334,8 @@ def extract_message_log(result: Any) -> Tuple[list, dict]:
             message_log.append(entry)
         turn_idx += 1
 
-    geocode_types: Dict[str, int] = {}
     validator_retries = 0
     for e in message_log:
-        if e.get("tool") == "geocode":
-            args = e.get("args", {})
-            if isinstance(args, dict):
-                t = args.get("type", "?")
-                geocode_types[t] = geocode_types.get(t, 0) + 1
         if e.get("kind", "").lower().startswith("retryprompt"):
             validator_retries += 1
 
@@ -349,7 +343,6 @@ def extract_message_log(result: Any) -> Tuple[list, dict]:
         "tool_calls": tool_calls,
         "total_tool_calls": sum(tool_calls.values()),
         "n_turns": turn_idx,
-        "geocode_types": geocode_types,
         "validator_retries": validator_retries,
     }
     return message_log, extracted
