@@ -33,24 +33,47 @@ sys.path.insert(0, str(REPO_ROOT))
 from tools.geo.coords import haversine_km   # noqa: E402
 
 EVAL_ROOT = REPO_ROOT / "ablations" / "locate_only_eval"
-L2_THRESHOLD_KM = 1.0
+
+# Empirically calibrated (see investigate_bucket_b notebook): sign-flips
+# on UK lon produce drift > 20 km; "agent picked a different candidate
+# after la_check" cases stay < 5 km from at least one tool return. A 5 km
+# threshold cleanly separates them.
+L2_THRESHOLD_KM = 5.0
 
 
-def _last_la_check_coord(trajectory: list) -> tuple[float, float] | None:
-    """Return (lat, lon) from the most recent la_check tool call, or None."""
-    for entry in reversed(trajectory):
-        if "ToolCall" not in entry.get("kind", ""):
+def _collect_tool_return_coords(trajectory: list) -> list[tuple[float, float]]:
+    """Collect every (lat, lon) any locate tool returned in this trajectory.
+
+    Returns the union of:
+      - single-coord returns (postcode, grid_ref, la_check)
+      - multi-hit returns (place.hits, road.hits)
+      - intersection returns (intersect.intersections)
+    """
+    coords: list[tuple[float, float]] = []
+    for entry in trajectory:
+        if "ToolReturn" not in entry.get("kind", ""):
             continue
-        if entry.get("tool") != "la_check":
+        ret = entry.get("return") or {}
+        if not isinstance(ret, dict):
             continue
-        args = entry.get("args") or {}
-        if not isinstance(args, dict):
-            continue
-        try:
-            return float(args["lat"]), float(args["lon"])
-        except (KeyError, ValueError, TypeError):
-            continue
-    return None
+        if "lat" in ret and "lon" in ret:
+            try:
+                coords.append((float(ret["lat"]), float(ret["lon"])))
+            except (ValueError, TypeError):
+                pass
+        for h in ret.get("hits") or []:
+            if isinstance(h, dict):
+                try:
+                    coords.append((float(h["lat"]), float(h["lon"])))
+                except (KeyError, ValueError, TypeError):
+                    pass
+        for h in ret.get("intersections") or []:
+            if isinstance(h, dict):
+                try:
+                    coords.append((float(h["lat"]), float(h["lon"])))
+                except (KeyError, ValueError, TypeError):
+                    pass
+    return coords
 
 
 def audit_config(cfg_dir: Path) -> dict:
@@ -73,7 +96,11 @@ def audit_config(cfg_dir: Path) -> dict:
             bucket_a.append({"case": case, "err_km": err, "source": src[:60]})
             continue
 
-        # Bucket B requires trajectory inspection
+        # Bucket B: pick is far from EVERY coord any tool returned —
+        # almost certainly a sign-flip / lat-lon-swap / number-corruption
+        # bug on output. Cases where the agent legitimately picked a
+        # different candidate after la_check have pick close to at
+        # least one tool return, so they don't trigger.
         fs_case = case.replace("/", "_").replace(":", "_")
         traj_path = traj_dir / f"{fs_case}.json"
         if not traj_path.exists():
@@ -82,20 +109,24 @@ def audit_config(cfg_dir: Path) -> dict:
             j = json.loads(traj_path.read_text())
         except Exception:
             continue
-        last = _last_la_check_coord(j.get("trajectory") or [])
-        if last is None:
+        coords = _collect_tool_return_coords(j.get("trajectory") or [])
+        if not coords:
             continue
         try:
             pick_lat = float(r["picked_lat"])
             pick_lon = float(r["picked_lon"])
         except (KeyError, ValueError, TypeError):
             continue
-        drift = haversine_km(pick_lat, pick_lon, last[0], last[1])
-        if drift > L2_THRESHOLD_KM:
+        min_drift = min(
+            haversine_km(pick_lat, pick_lon, c_lat, c_lon)
+            for c_lat, c_lon in coords
+        )
+        if min_drift > L2_THRESHOLD_KM:
             bucket_b.append({
-                "case": case, "err_km": err, "drift_km": f"{drift:.2f}",
+                "case": case, "err_km": err,
+                "min_drift_km": f"{min_drift:.2f}",
+                "n_tool_coords": len(coords),
                 "pick": f"({pick_lat:.4f}, {pick_lon:.4f})",
-                "la_check": f"({last[0]:.4f}, {last[1]:.4f})",
             })
 
     return {
@@ -127,8 +158,8 @@ def main() -> int:
     md.append("- **A**: ``picked_source`` contains ``emergency_la_centroid`` "
               "(HTTP error fell back to LA centroid). Fix: HTTP retry + "
               "image downscale.\n")
-    md.append("- **B**: most recent la_check coord differs from final pick "
-              f"by >{L2_THRESHOLD_KM} km. Fix: L2 cross-check validator.\n\n")
+    md.append("- **B**: pick is > "
+              f"{L2_THRESHOLD_KM} km from EVERY coord any tool returned. Fix: L2 cross-check validator.\n\n")
     md.append("| Config | A (HTTP) | B (sign-flip) | Total to rerun |\n")
     md.append("|---|---:|---:|---:|\n")
 
@@ -159,8 +190,9 @@ def main() -> int:
             print(f"    ... + {a - 5} more")
         print(f"  Bucket B (L2-catchable):     {b:3d} cases")
         for x in r["bucket_b"][:5]:
-            print(f"    {x['case']:<42} err={x['err_km']} drift={x['drift_km']}km "
-                  f"pick={x['pick']} la_check={x['la_check']}")
+            print(f"    {x['case']:<42} err={x['err_km']} "
+                  f"min_drift_to_any_tool={x['min_drift_km']}km "
+                  f"pick={x['pick']} n_tool_coords={x['n_tool_coords']}")
         if b > 5:
             print(f"    ... + {b - 5} more")
         print(f"  Union to rerun:              {len(rerun_list):3d} cases "

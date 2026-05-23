@@ -623,47 +623,89 @@ def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
             continue
         agent.tool_plain(_TOOL_IMPLS[tool_name])
 
-    # L2 output validator: cross-check the agent's final LocatePick against
-    # the most recent la_check coord. Catches sign-flips, lat/lon swaps,
-    # and other LLM numerical-fidelity bugs that the schema bounds alone
-    # can't detect (e.g. (51.51, 0.33) when the verified coord was
-    # (51.51, -0.33) — both within UK bounds, but ~46km apart).
-    # Safe to register even when la_check is disabled — the validator
-    # just no-ops when no la_check call is found in history.
+    # L2 output validator: cross-check the agent's final LocatePick
+    # against the MIN distance to every coord-returning tool call in the
+    # trajectory. Catches sign-flip / lat-lon-swap / number-corruption
+    # bugs where the agent's reasoning was correct but the JSON output
+    # got mangled — e.g. final_result(top_lat=51.51, top_lon=0.33) when
+    # every tool returned coords near (51.51, -0.33).
+    #
+    # Trigger: pick is > L2_THRESHOLD_KM from EVERY tool return. We use
+    # MIN-distance-to-ANY (not last-la_check) because the agent may
+    # la_check a candidate it later rejects, picking a different coord
+    # from a place/road/intersect return. As long as the pick is close
+    # to SOMETHING the agent computed, it's a valid pick.
+    #
+    # Threshold 5 km empirically separates sign-flips (always >20 km
+    # from every tool return — flipping a UK lon doubles the distance)
+    # from "agent picked a different candidate after la_check" cases
+    # (always <5 km from at least one tool return). Safe to register
+    # on all configs — no-ops if there are no coord-returning tool
+    # calls in the trajectory.
+    L2_THRESHOLD_KM = 5.0
+
     @agent.output_validator
-    async def _validate_pick_matches_recent_la_check(
+    async def _validate_pick_against_tool_returns(
         ctx: RunContext[LocateState], pick: LocatePick
     ) -> LocatePick:
-        for msg in reversed(ctx.messages):
+        distances = []
+        for msg in ctx.messages:
             parts = getattr(msg, "parts", None) or []
             for part in parts:
-                if getattr(part, "tool_name", None) != "la_check":
+                kind = (getattr(part, "kind", "") or "").lower()
+                if "toolreturn" not in kind:
                     continue
-                args = getattr(part, "args", None)
-                if isinstance(args, str):
+                content = getattr(part, "content", None)
+                if isinstance(content, str):
                     try:
-                        args = json.loads(args)
+                        content = json.loads(content)
                     except Exception:
                         continue
-                if not isinstance(args, dict):
+                if not isinstance(content, dict):
                     continue
-                try:
-                    check_lat = float(args["lat"])
-                    check_lon = float(args["lon"])
-                except (KeyError, ValueError, TypeError):
-                    continue
-                d = haversine_km(pick.top_lat, pick.top_lon,
-                                 check_lat, check_lon)
-                if d > 1.0:
-                    raise ModelRetry(
-                        f"Your final pick ({pick.top_lat}, {pick.top_lon}) "
-                        f"is {d:.1f} km from the coord you just verified "
-                        f"with la_check ({check_lat}, {check_lon}). Likely "
-                        f"a sign flip or lat/lon swap. Re-emit using the "
-                        f"la_check'd coord."
-                    )
-                return pick   # validated against most recent la_check
-        return pick   # no la_check call found — can't validate, accept as-is
+                # Single-coord returns (postcode, grid_ref, la_check)
+                if "lat" in content and "lon" in content:
+                    try:
+                        distances.append(haversine_km(
+                            pick.top_lat, pick.top_lon,
+                            float(content["lat"]), float(content["lon"])))
+                    except (ValueError, TypeError):
+                        pass
+                # Multi-hit returns (place, road)
+                for h in (content.get("hits") or []):
+                    if not isinstance(h, dict):
+                        continue
+                    try:
+                        distances.append(haversine_km(
+                            pick.top_lat, pick.top_lon,
+                            float(h["lat"]), float(h["lon"])))
+                    except (KeyError, ValueError, TypeError):
+                        pass
+                # intersect returns
+                for h in (content.get("intersections") or []):
+                    if not isinstance(h, dict):
+                        continue
+                    try:
+                        distances.append(haversine_km(
+                            pick.top_lat, pick.top_lon,
+                            float(h["lat"]), float(h["lon"])))
+                    except (KeyError, ValueError, TypeError):
+                        pass
+
+        if not distances:
+            return pick   # nothing to validate against; accept as-is
+
+        min_d = min(distances)
+        if min_d > L2_THRESHOLD_KM:
+            raise ModelRetry(
+                f"Your final pick ({pick.top_lat:.4f}, {pick.top_lon:.4f}) "
+                f"is {min_d:.1f} km from the nearest coord any of your "
+                f"tools returned. This usually indicates a sign-flip or "
+                f"lat/lon swap on output. Re-emit using a coord from one "
+                f"of your tool calls (check the sign of the longitude "
+                f"carefully — UK lon is typically negative)."
+            )
+        return pick
 
     return agent
 
