@@ -1,11 +1,4 @@
-"""Runtime helpers for the main run_agent orchestrator.
-
-run_agent itself is a thin coordinator in tools.agent.__init__; the
-phase-specific logic (reader call, pre-render, prompt build, message
-log assembly, cleanup, return-dict packaging) lives here so the
-orchestrator stays under 100 lines and each phase is independently
-testable.
-"""
+"""Phase helpers for run_agent: reader call, pre-render, worker invoke, stats."""
 
 from __future__ import annotations
 
@@ -32,11 +25,7 @@ from tools.agent.state import AgentState
 # ── Phase 1: read the PDF ─────────────────────────────────────────────────
 
 def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict:
-    """Send the PDF to the reader agent, get a structured PDFInfo dict.
-
-    Returns the PDFInfo dict plus a "_reader_tokens" key. On reader
-    failure: an empty PDFInfo dict with an "error" key set.
-    """
+    """Reader → PDFInfo dict (+ _reader_tokens). Empty dict + 'error' on failure."""
     pdf_bytes = Path(pdf_path).read_bytes()
 
     if verbose:
@@ -95,13 +84,7 @@ def prepare_worker_state(
     verbose: bool,
     locate_model: str = "google/gemini-3-flash-preview",
 ) -> Tuple[AgentState, list]:
-    """Create AgentState, pre-render every map_page from the reader, and
-    build the worker's user_parts (JSON summary + active page image).
-
-    ``locate_model`` is threaded into AgentState so propose_centers can
-    forward it to run_locate — keeps the locate sub-agent's model choice
-    independent of the worker's ``model_name``.
-    """
+    """Build AgentState + worker user_parts (summary JSON + primary page image)."""
     state = AgentState(
         pdf_path=str(pdf_path),
         sam3_processor=sam3["processor"],
@@ -118,8 +101,6 @@ def prepare_worker_state(
     map_pages = pdf_info.get("map_pages", []) or []
     map_page_details = pdf_info.get("map_page_details", []) or []
 
-    # Pre-render only category='match' pages (others are reader-flagged
-    # discards). Auto-rotation classifier runs in render_map_page.
     if map_pages:
         from tools.io.map_page import render_map_page
         for page_1based in map_pages:
@@ -156,8 +137,6 @@ def prepare_worker_state(
             "rendered; pass the page number you want as match_at's "
             f"`page` argument): {roles}\n"
         )
-        # Group-ordered view of match pages — makes "next page in
-        # group G" lookups one-step for the worker.
         by_group: dict[int, list[int]] = {}
         page_to_group = {int(d["page"]): int(d.get("area_group", 0))
                          for d in map_page_details
@@ -203,11 +182,7 @@ def invoke_worker(
     state: AgentState, user_parts: list, model_name: str,
     max_iterations: int, verbose: bool,
 ):
-    """Run the worker agent's tool loop. Returns the pydantic-ai result
-    (BoundaryOutcome on success), or raises on a non-retryable error.
-
-    The caller handles UnexpectedModelBehavior / UsageLimitExceeded /
-    other exceptions and writes a partial_state.json dump."""
+    """Run the worker tool loop. Returns the pydantic-ai result or raises."""
     model = resolve_model(model_name)
     return _run_sync_with_retry(
         _agent,
@@ -223,8 +198,7 @@ def invoke_worker(
 
 def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
                         case_dir: Optional[Path], verbose: bool) -> dict:
-    """Build and write partial_state.json so post-hoc debugging works
-    when the worker errors mid-conversation."""
+    """Write partial_state.json for post-hoc debug on a mid-run worker error."""
     partial_stats = {
         "pdf_info": state.pdf_info,
         "method": "error",
@@ -237,9 +211,6 @@ def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
                 "lat": a.get("lat"), "lon": a.get("lon"),
                 "area_group": a.get("requested_group"),
                 "page": a.get("requested_page"),
-                # n_inliers lives in this candidate's only per_group
-                # entry. Best-effort: None if no per_group / no
-                # match_info.
                 "n_inliers": (
                     ((a.get("per_group") or [{}])[0].get("match_info") or {})
                     .get("n_inliers")
@@ -290,30 +261,14 @@ def cleanup_temp_pages(state: AgentState) -> None:
 # ── Message log + stats extraction ────────────────────────────────────────
 
 def extract_message_log(result: Any) -> Tuple[list, dict]:
-    """Walk pydantic-ai's message history and return (message_log,
-    extracted_stats). Convenience wrapper over
-    :func:`extract_message_log_from_msgs` for callers that have a
-    pydantic-ai ``result`` object handy.
-    """
     return extract_message_log_from_msgs(result.all_messages())
 
 
 def extract_message_log_from_msgs(messages: list) -> Tuple[list, dict]:
-    """Walk a list of pydantic-ai messages and return
-    ``(message_log, extracted_stats)``.
+    """Return (message_log, stats) for a pydantic-ai message list.
 
-    ``extracted_stats`` is a dict with keys: ``tool_calls`` (per-tool
-    call counts), ``total_tool_calls``, ``n_turns``,
-    ``validator_retries``.
-
-    Each ``message_log`` entry is ``{turn, role, kind, ...}`` where the
-    extras depend on the part kind (tool, args, return, text, etc.).
-    Binary content (e.g. PNG bytes from image attachments) is summarised
-    rather than serialised — safe to JSON-dump.
-
-    The split-off variant exists so the locate-only ablation harness can
-    pass the ``all_messages`` list it gets from :func:`run_locate`
-    directly, without needing the surrounding ``result`` object.
+    stats keys: tool_calls, total_tool_calls, n_turns, validator_retries.
+    Binary content is summarised so the log is JSON-safe.
     """
     message_log: list = []
     tool_calls: Dict[str, int] = {}

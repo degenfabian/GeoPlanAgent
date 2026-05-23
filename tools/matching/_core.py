@@ -22,51 +22,21 @@ from typing import Dict, List, Tuple
 import cv2
 import numpy as np
 
-# Repo root is three levels up from tools/matching/_core.py
-# (was two before the matching.py → tools/matching/ package split).
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# OS Zoomstack background-colour skip removed 2026-05-12: it regressed rural
-# cases where 100% of candidate windows have >=85% background pixels (the
-# loop body then never called MINIMA, so no matches were found at all). The
-# claimed "30% wall-time saving" came from the v19 simulation, but that sim
-# re-scored CACHED match attempts — it never exercised the live skip loop.
-# Restoring the full sliding-window search; live wall-clock cost is bearable.
 
+# Constants empirically tuned against the 211-case cached MINIMA sweep on v3
+# benchmark output. Per-case stats are in
+# results/benchmark_v3/gemini-flash/<case>/metrics.json.
 
-# ── Tuned constants (empirical) ──────────────────────────────────────────────
-#
-# These thresholds were empirically tuned against the 211-case cached MINIMA
-# sweep on v3 benchmark output. The original tuning scripts lived in
-# `overnight/` (gitignored, since deleted); the v3 per-case stats remain in
-# `results/benchmark_v3/gemini-flash/<case>/metrics.json` and the bands here
-# can be re-derived from them. See per-constant comments for the specific
-# regression / case the value was calibrated against.
-
-# (2026-05-21) 6-DOF affine fallback removed entirely after a 25-case
-# ablation showed it nets to -0.01 mean IoU and rescues only ~2 cases
-# (Ar4.15, Art4D04) at the cost of code complexity. The 4-DOF
-# similarity transform is the geometrically correct prior for
-# map-to-map matching anyway — shear is an artifact of photography or
-# photocopying, not of real-world geometry.
-
-# Sliding-window stride target: ~100 windows per (center, zoom, rotation).
-# Same coverage density independent of rotation; conditional rotation is
-# what bounds compute. 32-px floor below = ~48 m at z18, fine enough for
-# MINIMA's spatial accuracy. The prior 128-px floor evaluated only ~1
-# window per 192 m × 192 m square, leaving sub-tile match positions
-# untested.
+# Target sliding-window count per (center, zoom, rotation).
 WINDOW_STRIDE_TARGET = 100
 
 
 # ── MINIMA model management ──────────────────────────────────────────────────
 
 def load_minima(base_dir=None):
-    """Load MINIMA LoFTR matcher model.
-
-    Args:
-        base_dir: Repository root directory. Defaults to parent of tools/.
-    """
+    """Load MINIMA LoFTR matcher model."""
     from argparse import Namespace
 
     if base_dir is None:
@@ -87,16 +57,9 @@ def load_minima(base_dir=None):
 
 
 def run_minima(matcher, map_img, tile_img, grayscale=False):
-    """Run MINIMA matching between map and tile images.
+    """MINIMA match map↔tile. Returns (mkpts0, mkpts1, mconf).
 
-    Args:
-        matcher: MINIMA matcher from load_minima().
-        map_img: Map image (BGR, RGBA, or grayscale).
-        tile_img: Tile image (BGR or grayscale).
-        grayscale: If True, convert both images to grayscale before matching.
-            Improves matching for B&W or sepia-tinted maps against coloured tiles.
-
-    Returns (mkpts0, mkpts1, mconf) — matched keypoints and confidence.
+    `grayscale=True` helps B&W or sepia maps against coloured tiles.
     """
     if len(map_img.shape) == 2:
         map_bgr = cv2.cvtColor(map_img, cv2.COLOR_GRAY2BGR)
@@ -162,11 +125,6 @@ def estimate_affine(mkpts0, mkpts1, mconf=None, reproj_thresh=10.0):
 
 # ── Scale and zoom utilities ─────────────────────────────────────────────────
 
-# Web-Mercator math and lat/lon <-> tile-pixel projections moved to
-# `tools/geo/coords.py` (2026-05-11) to deduplicate the formula that was repeated
-# in 6 places across positioning, agent, and os_opendata_tiles. Re-exported
-# here so existing `from tools.matching import compute_map_mpp` callers
-# keep working.
 from tools.geo.coords import (
     WEB_MERCATOR_C,
     best_zoom_for_scale,
@@ -176,13 +134,8 @@ from tools.geo.coords import (
     tile_mpp as _tile_mpp_at,
 )
 
-# Legacy underscore-prefixed alias retained for internal callers.
 _latlon_to_global_tile_pixel = latlon_to_global_tile_pixel
 
-
-# Scale + fallback sigma helpers live in tools/matching/source_priorities.py.
-# Re-exported here so `from tools.matching import sigma_from_scale, ...`
-# keeps working.
 from tools.matching.source_priorities import (
     effective_sigma,
     sigma_from_scale,
@@ -202,21 +155,13 @@ def resize_map_to_match_zoom(map_img, map_mpp, zoom, lat):
     new_w = int(map_img.shape[1] * scale_factor)
     if new_h < 64 or new_w < 64:
         return None, scale_factor
-    # INTER_AREA optimal for downscale (sf<1); INTER_CUBIC for upscale (sf>1).
-    # The previous code always used INTER_AREA, which blurs upscaled output
-    # and hurts SuperPoint keypoint repeatability — per offline audit, roughly
-    # half of "unknown scale" configs upscale, and the 0.85 / 1.15 perturb
-    # paths often upscale too.
+    # AREA for downscale, CUBIC for upscale: blurry upscale hurts keypoint repeatability.
     interp = cv2.INTER_AREA if scale_factor < 1.0 else cv2.INTER_CUBIC
     resized = cv2.resize(map_img, (new_w, new_h), interpolation=interp)
     return resized, scale_factor
 
 
 # ── Coordinate transform and GeoJSON ─────────────────────────────────────────
-
-# `osm_pixel_to_latlon` moved to `tools/geo/coords.py` and re-imported above so
-# `from tools.matching import osm_pixel_to_latlon` keeps working.
-
 
 def affine_center_to_latlon(affine_H, map_h, map_w, tile_info):
     """Apply affine to map center, convert to lat/lon."""
@@ -228,19 +173,7 @@ def affine_center_to_latlon(affine_H, map_h, map_w, tile_info):
 
 
 def mask_to_geojson_affine(mask, affine_H, tile_info):
-    """Convert SAM3 mask to GeoJSON Feature using affine transform.
-
-    Args:
-        mask: Binary boundary mask (uint8). SAM3-FT outputs are already
-            clean — no morphological cleanup is applied before contour
-            extraction (a 177-case ablation 2026-05-22 showed the old
-            cleanup pipeline was a net +0.001 IoU wash with 2 wins / 2
-            losses, and removing it eliminates ~5 hand-tuned params).
-        affine_H: 2x3 affine matrix mapping mask pixels to tile canvas pixels.
-        tile_info: Dict with zoom, tx_min, ty_min from fetch_os_opendata_grid.
-
-    Returns GeoJSON Feature dict, or None if no valid contours.
-    """
+    """SAM3 mask → GeoJSON Feature via the 2x3 affine. None if no contours."""
     contours, _ = cv2.findContours(
         (mask > 0).astype(np.uint8), cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE,
@@ -313,34 +246,11 @@ def sliding_window_position(
     pdf_path=None,
     map_pages=None,
 ):
-    """Position a map on OS tiles using sliding-window MINIMA matching.
+    """Sliding-window MINIMA positioning on OS tiles. Production entry point.
 
-    This is the production entry point. No ground truth, no IoU computation.
-
-    Args:
-        matcher: MINIMA matcher from load_minima().
-        map_img: Map image (numpy array, BGR or RGBA).
-        sam3_mask: Binary boundary mask from SAM3 (uint8). Optional — if None,
-                   matching still runs but geojson will be None. Use
-                   mask_to_geojson_affine() afterwards to project masks.
-        tile_fetcher: Function(lat, lon, zoom, nx, ny) → tile_info dict.
-                      Default: fetch_os_opendata_grid (modern OS tiles).
-        centers: 1-element list ``[(name, lat, lon, sigma_m)]`` returned by
-                 the agentic locate sub-agent and passed through by the
-                 worker's ``match_at`` tool. The list shape is historical;
-                 only the first entry is used.
-        scale_ratio: Map scale ratio (e.g. 2500 for 1:2500). None = try common scales.
-        dpi: DPI used to render the PDF page.
-        rotations: List of rotation angles to try, e.g. [0] or [0, 90, 270].
-                   None defaults to [0].
-
-    Returns:
-        dict with keys:
-            geojson: GeoJSON Feature or None (None if sam3_mask not provided)
-            affine_H: final 2x3 affine matrix (or None)
-            tile_info: tile grid metadata dict
-            match_info: dict with center, zoom, rotation, n_inliers, score, etc.
-            n_windows: total windows evaluated
+    centers is `[(name, lat, lon, sigma_m)]` from the locate sub-agent (single
+    entry; list shape is historical). scale_ratio=None tries common scales.
+    Returns: geojson, affine_H, tile_info, match_info, n_windows.
     """
     if tile_fetcher is None:
         from tools.io.os_tiles import fetch_os_opendata_grid
@@ -352,29 +262,15 @@ def sliding_window_position(
             "match_info": {}, "n_windows": 0,
         }
 
-    # Respect the input σ — the locate sub-agent's σ has Spearman ρ=+0.629
-    # against actual pick→GT error on v3 (tight σ → small error, wide σ →
-    # large error), so we trust it directly. Only fall back to
-    # effective_sigma when σ is missing or non-positive (which the
-    # live locate sub-agent never does — this path covers offline
-    # callers and test harnesses).
+    # Trust the locate sub-agent's σ; fallback only for offline/test callers.
     name, lat, lon, sigma_in = centers[0]
     if sigma_in is None or float(sigma_in) <= 0:
         sigma_in = effective_sigma(scale_ratio)
     centers = [(name, lat, lon, float(sigma_in))]
 
-    # Track top-N candidates for post-verification (road name check).
-    # Per-(center, zoom) bucket caps to PER_BUCKET. Without this cap one
-    # (center, zoom) sweep can fill all 5 slots with near-duplicate
-    # wrong-area windows, hiding a correct-area window from a different
-    # config (seen in Ar4.17/Ar4.18/ED3ECD0D where the heap held 5
-    # variants of the same wrong window). Final top-5 is the union of
-    # buckets sorted by metric.
+    # Diversity-bucketed top-K: PER_BUCKET per (anchor, zoom), MAX_CANDIDATES global.
+    # Prevents one (center, zoom) sweep from filling every slot with near-duplicates.
     import heapq
-    # Top-K cap on diversity-bucketed candidates. PER_BUCKET=1 (top per
-    # (anchor, zoom)) + MAX_CANDIDATES=5 (global top) gives diverse pool
-    # without dup candidates from same location. Validated +5 cases at IoU≥0.8
-    # on the 211-case cached sweep vs old PB=2 baseline.
     MAX_CANDIDATES = 5
     PER_BUCKET = 1
     per_bucket: Dict[Tuple[str, int], List[Tuple[float, int, dict]]] = {}
@@ -395,12 +291,11 @@ def sliding_window_position(
             (z, map_mpp)
             for z in sorted(set([best_z, max(15, best_z - 1), min(19, best_z + 1)]))
         ]
-        # +/-15% scale perturbation at best zoom (handles DPI/metadata errors)
+        # ±15% scale perturbation handles DPI/metadata error.
         zoom_mpp_configs.append((best_z, map_mpp * 0.85))
         zoom_mpp_configs.append((best_z, map_mpp * 1.15))
     else:
-        # Unknown-scale path: sweep across common UK planning-map scales
-        # (1:1250 to 1:25000), one canonical zoom per scale.
+        # Unknown scale: sweep canonical UK planning-map scales 1:1250–1:25000.
         common_scales = [1250, 2500, 5000, 10000, 15000, 25000]
         zoom_mpp_configs = []
         seen = set()
@@ -411,22 +306,17 @@ def sliding_window_position(
                 seen.add(z)
                 zoom_mpp_configs.append((z, mpp))
 
-        # Add ±15% scale perturbations on the modal scale (1:2500 by default).
-        # Scales like 1:3500 or 1:7000 fall between the canonical grid points.
+        # Modal-scale ±15% catches between-grid scales (1:3500, 1:7000…).
         modal_mpp = compute_map_mpp(2500, dpi)
         modal_z = best_zoom_for_scale(modal_mpp, ref_lat)
         zoom_mpp_configs.append((modal_z, modal_mpp * 0.85))
         zoom_mpp_configs.append((modal_z, modal_mpp * 1.15))
 
     if rotations is None:
-        # Single orientation. Rotation detection happens upstream:
-        # tools.io.map_page.render_map_page runs the auto-rotation classifier
-        # (k-fold ResNet50, TTA) so by the time MINIMA sees the image it is
-        # already upright. There is no per-window rotation search at match time.
+        # Image arrives upright (auto-rotation runs in render_map_page).
         rotations = [0]
 
-    # Sort centers by sigma (tightest first) so the most-confident
-    # anchors are explored first.
+    # Tightest sigma first.
     centers = sorted(centers, key=lambda x: x[3] if x[3] is not None else 9e9)
     if centers:
         print(f"  Centers sorted by sigma: {centers[0][0]}(σ={centers[0][3]}) "
@@ -442,19 +332,11 @@ def sliding_window_position(
 
             rh, rw = resized_map.shape[:2]
 
-            # Tile grid: cover map + search margin. Use the center's sigma
-            # directly (NO hardcoded floor). For small-scale maps (plot-level)
-            # sigma is 300m, for large-area maps (rural/district) sigma is
-            # 2-4km. The 2000m floor that was here before negated scale-aware
-            # sigma entirely — MINIMA always searched a ~2km window regardless
-            # of map scale, causing wrong matches far from good geocoded centers.
+            # Tile grid sized by sigma — no hardcoded floor.
             search_m = sigma if sigma else 1000
             margin_tiles = max(2, int(math.ceil(search_m / (256 * tmpp))))
             nx_needed = int(math.ceil(rw / 256)) + 2 * margin_tiles
             ny_needed = int(math.ceil(rh / 256)) + 2 * margin_tiles
-            # Grid floor/ceiling. The 211-case sweep showed 3/17 is tight
-            # enough for all observed (zoom, sigma) combinations; ~5% wall
-            # time saved vs the loose 5/35 we originally used.
             nx = max(3, min(17, nx_needed))
             ny = max(3, min(17, ny_needed))
             if nx % 2 == 0:
@@ -494,30 +376,13 @@ def sliding_window_position(
                 if rot_h >= ch or rot_w >= cw:
                     continue
 
-                # Stride is determined by canvas size alone — target ~100
-                # windows per (center, zoom, rotation). Same sampling density
-                # regardless of rotation; the rotation angle doesn't change
-                # what "enough coverage" looks like. Conditional rotation
-                # (above) is what keeps compute bounded by only sweeping
-                # 90/180/270 when rotation=0 fails.
-                #
-                # Floor at 32 px (was 128). 128 px at z18 = ~192 m of ground;
-                # the previous floor meant we evaluated only ~1 window inside
-                # any 192 m × 192 m square, so sub-tile match positions were
-                # never tested. 32 px = ~48 m at z18, fine enough for the
-                # MINIMA matcher's spatial accuracy.
+                # Stride targets ~WINDOW_STRIDE_TARGET windows; 32 px floor
+                # (~48 m at z18) is the spatial-accuracy limit of MINIMA.
                 _area_available = max(1, (ch - rot_h) * (cw - rot_w))
                 _target_stride = int(math.sqrt(_area_available / WINDOW_STRIDE_TARGET))
                 step_x = max(32, min(_target_stride, max(1, cw - rot_w)))
                 step_y = max(32, min(_target_stride, max(1, ch - rot_h)))
 
-                # Background-window skipping removed 2026-05-12. The
-                # threshold (>=85% OS-background pixels) was excluding 100% of
-                # candidate windows for rural cases (e.g. 1D1 East Langdon),
-                # so the matcher tested zero windows and regressed. The v19
-                # sim that "validated" bg-skip was re-scoring cached match
-                # attempts and never exercised this loop. Skip the early-exit;
-                # let MINIMA evaluate every window.
                 for wy in range(0, ch - rot_h + 1, step_y):
                     for wx in range(0, cw - rot_w + 1, step_x):
                         window = os_canvas[wy:wy + rot_h, wx:wx + rot_w]
@@ -530,11 +395,7 @@ def sliding_window_position(
                         if affine_H is None or n_inliers < 5:
                             continue
 
-                        # avg_scale is the geometric mean of the affine's
-                        # column norms. With 4-DOF similarity (the only
-                        # path now) sx == sy and avg_scale equals the
-                        # uniform scale factor. Kept around because the
-                        # scale_consistency reward axis reads it.
+                        # avg_scale (column-norm mean) feeds the scale_consistency reward.
                         a, b = affine_H[0, 0], affine_H[0, 1]
                         c_a, d = affine_H[1, 0], affine_H[1, 1]
                         sx = math.sqrt(a * a + c_a * c_a)
@@ -551,20 +412,13 @@ def sliding_window_position(
                             center_ll = affine_center_to_latlon(
                                 scale_H, map_h, map_w, tile_info)
                             avg_scale = avg_scale_now
-                            # Inlier keypoints in MAP coords feed the live
-                            # composite reranker (quadrant coverage — see
-                            # the rescoring block at the bottom of this
-                            # function). Despite the leading underscore,
-                            # these fields are consumed on the live path,
-                            # not just offline.
+                            # Inlier keypoints (rot_map coords) for the composite reranker.
                             inlier_pts_map = None
                             if inlier_mask is not None:
                                 try:
                                     flag = inlier_mask.ravel().astype(bool)
                                     in0 = mkpts0[flag]
                                     if len(in0) > 0:
-                                        # in0 is in rot_map coords (post-resize,
-                                        # post-rotate); save as (x, y) pairs.
                                         inlier_pts_map = in0.tolist()
                                 except Exception:
                                     inlier_pts_map = None
@@ -583,9 +437,6 @@ def sliding_window_position(
                                     "window": (wx, wy),
                                     "center_latlon": center_ll,
                                     "anchor_latlon": (float(clat), float(clon)),
-                                    # Underscore-prefix marks "internal"
-                                    # (consumed by the live reranker),
-                                    # not "offline-only".
                                     "_inlier_pts_map": inlier_pts_map,
                                     "_rot_map_shape": (rot_h, rot_w),
                                 },
@@ -605,10 +456,7 @@ def sliding_window_position(
                 print(f"    z{zoom}:{cname}: {n_windows}w, "
                       f"best={best_metric:.1f}", flush=True)
 
-    # Flatten per-(center, zoom) buckets and take the global top-N.
-    # This is the "diversity-capped top-K" — at most PER_BUCKET (=1, set
-    # near the top of this function) entries from any one (center, zoom)
-    # sweep survive into post-verification.
+    # Flatten buckets → global top-K.
     all_candidates: List[Tuple[float, int, dict]] = []
     for bucket in per_bucket.values():
         all_candidates.extend(bucket)
@@ -624,10 +472,7 @@ def sliding_window_position(
     # Sort candidates best-first by raw metric
     ranked = sorted(top_candidates, key=lambda x: -x[0])
 
-    # Composite rescoring: pick by V × Q/4 instead of raw vanilla.
-    # See tools.scoring.composite_window_score for the formula and history.
-    # The km_to_anchor factor was dropped 2026-05-21 after the ablation
-    # showed it contributed zero mean Δ across the distance-stress sample.
+    # Composite rescore: pick by V × Q/4 (see tools.scoring.composite_window_score).
     if ranked:
         from tools.scoring import (
             composite_window_score,
@@ -653,22 +498,14 @@ def sliding_window_position(
                   f"(V={top.get('_vanilla_metric',0):.2f} "
                   f"Q={top.get('_quadrant_cov',0)})")
 
-    # Road-name verifier: if the reader extracted road names, re-rank
-    # the candidates by ``metric * (1 + road_match_ratio) ** 2`` —
-    # quadratic boost from how many of the reader's road names appear
-    # near each candidate's centre. Catches wrong-LA picks where MINIMA
-    # finds a high-inlier window in the wrong town. Candidates with no
-    # nearby OS roads (sparse cartography) get a neutral 1.0 multiplier.
+    # Road-name verifier: re-rank by metric * (1 + road_match_ratio)^2.
     best_result = None
     if road_names and len(road_names) >= 1:
         best_result = _verify_candidates_with_road_names(ranked, road_names)
     if best_result is None:
         _, _, best_result = ranked[0]
 
-    # Project mask now (deferred from inner loop for efficiency).
-    # When return_candidates=True we keep the per-candidate masks on `ranked`
-    # so the caller can project each one independently — so we take a ref
-    # to best_result's mask before popping it off.
+    # Project mask now (deferred from inner loop).
     cur_mask = best_result.get("_sam3_mask") if return_candidates \
         else best_result.pop("_sam3_mask", None)
     if not return_candidates:
@@ -680,10 +517,6 @@ def sliding_window_position(
     best_result["n_windows"] = total_windows
 
     if return_candidates:
-        # Offline/analysis hook: expose the top-K ranked candidates so callers
-        # can evaluate them externally (e.g. per-candidate IoU vs ground truth,
-        # or re-ranking with a verifier). Each candidate carries its own mask
-        # (already rotated) and affine. `ranked` is post-specificity re-rank.
         out_candidates = []
         for metric, _, cand in ranked:
             cand = dict(cand)

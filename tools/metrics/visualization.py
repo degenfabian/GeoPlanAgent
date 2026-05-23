@@ -1,14 +1,4 @@
-"""
-Visualization Tools for Planning Document Digitization
-
-This module provides tools for visualizing GeoJSON boundaries on maps,
-allowing the agent to verify and refine extracted boundaries by comparing
-them visually to the source map.
-
-The visualization uses OpenStreetMap tiles as a basemap, making it easy
-to see if the extracted boundary aligns correctly with real-world features
-like roads, rivers, and buildings.
-"""
+"""Render predicted/GT boundaries on OSM basemap tiles."""
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -29,30 +19,10 @@ def visualize_geojson_boundary(
     padding: float = 2.0,
     max_size: int = 1024,
 ) -> Dict[str, Any]:
-    """
-    Visualize a GeoJSON boundary on an OpenStreetMap basemap.
-
-    Uses GeoPandas and contextily for visualization with automatic
-    zoom level calculation.
-
-    Args:
-        geojson_data: GeoJSON Feature object containing the boundary polygon.
-        padding: Padding around boundary as fraction of boundary size (default: 2.0).
-                 A value of 1.0 means 100% extra space on each side.
-        max_size: Maximum dimension (width or height) in pixels (default: 1024).
-                  Images larger than this will be resized to fit API constraints.
-
-    Returns:
-        Dict containing:
-        - "success" (bool): Whether visualization succeeded
-        - "image_base64" (str): Base64-encoded PNG image of the map
-        - "bbox" (Dict): Bounding box with min/max lat/lon
-        - "error" (str): Error message if failed
-    """
+    """Render the GeoJSON polygon on an OSM basemap. Returns success/image_base64/bbox."""
     try:
         plt.close("all")
 
-        # Extract geometry and validate type
         geometry = geojson_data["geometry"]
         geom_type = geometry["type"]
 
@@ -62,24 +32,19 @@ def visualize_geojson_boundary(
                 "error": f"Unsupported geometry type: {geom_type}",
             }
 
-        # Create GeoDataFrame from GeoJSON (in WGS84 / EPSG:4326)
         geom = shape(geometry)
         gdf = gpd.GeoDataFrame({"geometry": [geom]}, crs="EPSG:4326")
 
-        # Get bounding box in original CRS for return value
-        bounds = gdf.total_bounds  # [minx, miny, maxx, maxy]
+        bounds = gdf.total_bounds
         lon_min, lat_min, lon_max, lat_max = bounds
 
         if lon_min == lon_max or lat_min == lat_max:
             return {"success": False, "error": "No valid extent found in GeoJSON"}
 
-        # Reproject to Web Mercator (EPSG:3857) for contextily
+        # Web Mercator for contextily.
         gdf_mercator = gdf.to_crs(epsg=3857)
 
-        # Create figure and axis
         fig, ax = plt.subplots(figsize=(14, 12))
-
-        # Plot the boundary
         gdf_mercator.plot(
             ax=ax,
             facecolor="red",
@@ -156,30 +121,10 @@ def visualize_comparison(
     title: Optional[str] = None,
     padding: float = 1.5,
 ) -> Dict[str, Any]:
-    """
-    Visualize predicted (and optionally ground truth) GeoJSON on OSM tiles.
-
-    Renders both boundaries on the same map:
-      - Green = predicted / extracted boundary
-      - Blue  = ground truth boundary (if provided)
-
-    Saves the result as a PNG file. Useful for quick visual verification
-    after running the pipeline.
-
-    Args:
-        predicted_geojson: Extracted GeoJSON Feature (MultiPolygon or Polygon).
-        ground_truth_geojson: Optional ground truth GeoJSON Feature.
-        output_path: Where to save the PNG. If None, saves to "results/comparison.png".
-        title: Optional title for the plot.
-        padding: Padding around boundaries as fraction of combined extent.
-
-    Returns:
-        Dict with "success", "output_path", and optionally "error".
-    """
+    """Render predicted (green) and optional GT (blue) on an OSM basemap; save PNG."""
     try:
         plt.close("all")
 
-        # Build GeoDataFrames
         pred_geom = shape(predicted_geojson["geometry"])
         pred_gdf = gpd.GeoDataFrame({"geometry": [pred_geom]}, crs="EPSG:4326")
 
@@ -188,42 +133,33 @@ def visualize_comparison(
             gt_geom = shape(ground_truth_geojson["geometry"])
             gt_gdf = gpd.GeoDataFrame({"geometry": [gt_geom]}, crs="EPSG:4326")
 
-        # Compute combined extent (union of both shapes for padding)
         all_shapes = [pred_geom]
         if gt_gdf is not None:
             all_shapes.append(gt_geom)
         combined = unary_union(all_shapes)
         combined_gdf = gpd.GeoDataFrame({"geometry": [combined]}, crs="EPSG:4326")
 
-        # Reproject to Web Mercator
         pred_merc = pred_gdf.to_crs(epsg=3857)
         combined_merc = combined_gdf.to_crs(epsg=3857)
         gt_merc = gt_gdf.to_crs(epsg=3857) if gt_gdf is not None else None
 
-        # Create figure
         fig, ax = plt.subplots(figsize=(14, 12))
 
-        # Plot ground truth first (blue, underneath)
         if gt_merc is not None:
             gt_merc.plot(ax=ax, facecolor="blue", edgecolor="blue", alpha=0.15, linewidth=2)
             gt_merc.boundary.plot(ax=ax, color="blue", linewidth=2.5)
 
-        # Plot predicted (green, on top)
         pred_merc.plot(ax=ax, facecolor="green", edgecolor="green", alpha=0.15, linewidth=2)
         pred_merc.boundary.plot(ax=ax, color="green", linewidth=2.5)
 
-        # Set extent with padding
-        bounds = combined_merc.total_bounds  # [minx, miny, maxx, maxy]
-        minx, miny, maxx, maxy = bounds
+        minx, miny, maxx, maxy = combined_merc.total_bounds
         x_pad = (maxx - minx) * padding
         y_pad = (maxy - miny) * padding
         ax.set_xlim(minx - x_pad, maxx + x_pad)
         ax.set_ylim(miny - y_pad, maxy + y_pad)
 
-        # Add OSM basemap
         ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik)
 
-        # Legend
         legend_handles = [
             mpatches.Patch(facecolor="green", edgecolor="green", alpha=0.4, label="Extracted"),
         ]
@@ -233,7 +169,6 @@ def visualize_comparison(
             )
         ax.legend(handles=legend_handles, loc="upper right", fontsize=12)
 
-        # Title
         if title:
             ax.set_title(title, fontsize=14, pad=10)
         elif gt_merc is not None:
@@ -244,7 +179,6 @@ def visualize_comparison(
         ax.set_axis_off()
         plt.tight_layout()
 
-        # Save
         if output_path is None:
             Path("results").mkdir(exist_ok=True)
             output_path = "results/comparison.png"

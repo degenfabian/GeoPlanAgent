@@ -161,10 +161,8 @@ def _load_kfold_state() -> Optional[dict]:
 
         device = _device()
         models: dict = {}
-        # Track each fold's img_size so we can detect inconsistency.
-        # Previously the loop overwrote a single `img_size` variable with
-        # whichever fold was loaded last, so a mismatched fold would
-        # silently use the wrong transform resolution for the others.
+        # Per-fold img_size: detect inconsistency rather than silently using
+        # whichever fold loaded last.
         per_fold_img_size: dict[int, int] = {}
         for fold_dir in sorted(_KFOLD_DIR.glob("fold_*")):
             ckpt_path = fold_dir / "best.pt"
@@ -184,10 +182,7 @@ def _load_kfold_state() -> Optional[dict]:
         if not models:
             return None
 
-        # Pick a single transform resolution for inference. All folds were
-        # trained at the same img_size in practice (768); if a future
-        # checkpoint disagrees, warn loudly rather than silently using
-        # whichever happened to load last. Use the most common value.
+        # Use the modal img_size; warn on mismatch.
         sizes = list(per_fold_img_size.values())
         img_size = max(set(sizes), key=sizes.count)
         mismatched = {f: s for f, s in per_fold_img_size.items() if s != img_size}
@@ -205,8 +200,6 @@ def _load_kfold_state() -> Optional[dict]:
             "transform": _make_transform(img_size),
             "fold_assignment": fa,
             "kind": "kfold",
-            # Set, not list — `_resolve_fold` does `fold not in available_folds`
-            # which is O(1) on sets, O(n) on lists. Matches tools.extraction.sam3.
             "available_folds": set(models.keys()),
         }
         print(f"  rotation_classifier: loaded {len(models)} k-fold adapter(s) "
@@ -215,21 +208,11 @@ def _load_kfold_state() -> Optional[dict]:
         return _kfold_state
 
 
-# Fold-routing helpers live in tools.core.fold_routing (shared with
-# tools.extraction.sam3). The module-level aliases below keep the
-# historical private names available to call sites in this file.
-from tools.core.fold_routing import (
-    resolve_fold as _resolve_fold,
-)
+from tools.core.fold_routing import resolve_fold as _resolve_fold
 
 
 def _model_for_case(case_name: Optional[str]) -> tuple[torch.nn.Module, dict]:
-    """Pick the right model for `case_name`. Routing order:
-       1. k-fold state (preferred when available + case_name given)
-       2. legacy single-checkpoint state
-
-    Returns (model, state_dict) where state_dict carries device/transform/
-    img_size for the prediction loop."""
+    """K-fold model for case_name, or the legacy single checkpoint."""
     if case_name is not None:
         kf = _load_kfold_state()
         if kf is not None:
@@ -257,33 +240,11 @@ def predict_rotation_with_confidence(
     case_name: Optional[str] = None,
     threshold: float = _DEFAULT_CONFIDENCE_THRESHOLD,
 ) -> dict:
-    """Predict CW rotation (0/90/180/270) needed to make `map_bgr` upright.
+    """CW rotation (0/90/180/270) to make `map_bgr` upright, with 4-view TTA.
 
-    Uses 4-view TTA + confidence threshold. If the ensemble's top class
-    probability is below `threshold`, returns 0 ("don't rotate") — safer
-    than risking a wrong rotation on a map that's already upright.
-
-    Args:
-        map_bgr: HxWx3 BGR uint8 numpy array (the format cv2 produces).
-        case_name: optional case identifier. When provided AND a k-fold
-            checkpoint dir is available, the case is routed to the fold
-            that did NOT see it during training (clean inference). When
-            absent the legacy single-checkpoint model is used.
-        threshold: confidence below which we abstain (return 0).
-
-    Returns:
-        {
-            "rotation_cw_degrees": int (0/90/180/270),
-            "applied": bool — true if we recommend rotating
-                       (rotation_cw_degrees != 0),
-            "confidence": float (top-class softmax prob 0..1),
-            "all_probs": list[float] of len 4 — class probabilities in
-                       original-frame order [0°, 90°, 180°, 270°],
-            "abstained_low_confidence": bool — true if confidence < threshold,
-            "raw_class": int — argmax class before threshold (for logging),
-            "fold": int | None — which k-fold model handled this case
-                       (or None if the legacy path was used),
-        }
+    Abstains (returns 0) when the top-class softmax prob is below `threshold`.
+    Returns dict: rotation_cw_degrees, applied, confidence, all_probs,
+    abstained_low_confidence, raw_class, fold.
     """
     model, state = _model_for_case(case_name)
     device = state["device"]
@@ -295,15 +256,7 @@ def predict_rotation_with_confidence(
 
     base = _preprocess(map_bgr, transform).unsqueeze(0).to(device)  # (1, 3, H, W)
 
-    # 4 TTA views: input + 90/180/270° CW rotations of the input.
-    # torch.rot90 conventions:
-    #   k=1 → 90° CCW
-    #   k=2 → 180°
-    #   k=3 → 270° CCW = 90° CW
-    # We want CW augmentations:
-    #   90° CW  = rot90(x, 3)
-    #   180°    = rot90(x, 2)
-    #   270° CW = rot90(x, 1)
+    # CW → torch.rot90 (CCW) k-arg mapping.
     aug_torch_k = {0: 0, 1: 3, 2: 2, 3: 1}
 
     ensemble = torch.zeros(1, 4, device=device)

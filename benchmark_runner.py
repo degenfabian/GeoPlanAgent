@@ -25,20 +25,13 @@ from datetime import datetime
 from tools.io.eval_case import resolve_case_pdf
 from tools.metrics.geojson import load_geojson, calculate_spatial_metrics
 
-# ── Legacy training-data list (historical, no longer enforced) ───────────────
-# Pre-v8 (single-adapter SAM3) these 27 cases were the LoRA's training set
-# and had to be excluded from evaluation to avoid leakage. v8 is k-fold, so
-# each case is held out from the fold that does its inference — no leakage
-# even when this set is included. As of 2026-05-14 the --include-training-cases
-# flag was retired and these cases are ALWAYS included. The constant is
-# retained for paper-reproducibility (documenting which cases used to be
-# the training-only subset for single-adapter ablations).
+# Pre-k-fold single-adapter training set. Retained as a manifest; k-fold
+# already holds each case out of its own inference fold, so this no longer
+# needs to be applied at eval time.
 EXCLUDE_SL_NOS = {1, 3, 5, 6, 11, 13, 15, 21, 22, 23, 33, 34, 49, 54, 59,
                   79, 84, 86, 88, 89, 125, 139, 230, 236, 246, 255, 256}
 
-# ── Removed cases (duplicates of other cases in the dataset) ─────────────────
-# Always filtered. Cases were physically removed from disk on 2026-05-13;
-# kept here as a manifest for paper-reproducibility.
+# Duplicates removed from disk; filtered out of the dataset at load time.
 DUPLICATE_SL_NOS = {9, 68, 83, 232, 253}
 
 
