@@ -121,8 +121,9 @@ def main() -> int:
     )
     parser.add_argument(
         "--only-cases", default=None,
-        help="Comma-separated case names; run only these. Preserves other "
-             "cached entries (does not wipe).",
+        help="Comma-separated case names; run only these. Wipes the cache "
+             "by default (clean subset output); combine with --resume to "
+             "preserve other entries.",
     )
     args = parser.parse_args()
 
@@ -143,14 +144,19 @@ def main() -> int:
     else:
         cases = all_cases
 
-    # Cache state:
-    #   default (no flags)   -> fresh full run, wipe stale cache
-    #   --resume             -> load, skip cases already present
-    #   --only-cases         -> load existing (preserve others), run subset
-    if args.resume or args.only_cases:
+    # Cache state — wipe semantics are the default; --resume is the
+    # explicit opt-in to incremental behavior:
+    #   default                       -> wipe, run all 208 fresh
+    #   --only-cases X                -> wipe, run only X (clean smoke output)
+    #   --resume                      -> load, skip cases already present
+    #   --resume --only-cases X       -> load, run X only if not cached
+    # The "force-update a few cases inside an otherwise-good cache" use
+    # case is intentionally not supported via a flag; manually delete
+    # those entries from the JSON and re-run with --resume.
+    if args.resume:
         cache = _load_existing(OUT_CACHE)
         if cache:
-            print(f"Loaded existing cache: {len(cache)} entries")
+            print(f"--resume: loaded existing cache ({len(cache)} entries)")
     else:
         cache = {}
 
