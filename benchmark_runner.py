@@ -22,6 +22,7 @@ import cv2
 from pathlib import Path, PurePosixPath
 from datetime import datetime
 
+from tools.io.eval_case import resolve_case_pdf
 from tools.metrics.geojson import load_geojson, calculate_spatial_metrics
 
 # ── Legacy training-data list (historical, no longer enforced) ───────────────
@@ -184,21 +185,13 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
         print(f"[{case_idx+1}/{len(dataset)}] Sl {sl_no}: {folder_name}")
 
         folder_path = eval_path / folder_name
-        pdf_files = list(folder_path.glob("*.pdf")) if folder_path.exists() else []
-        if not pdf_files:
+        pdf_path = resolve_case_pdf(folder_path)
+        if pdf_path is None:
             print("  SKIP: no PDF")
             all_results.append({
                 "folder": folder_name, "sl_no": sl_no, "error": "no PDF"
             })
             continue
-
-        # Prefer PDFs whose filename hints at a map/plan (dedicated diagram).
-        # "plan" catches cases like A4Da2 where the map PDF is named
-        # "..._Direction_Plan.pdf" and the other PDF is a notice.
-        _MAP_TOKENS = ("map", "plan")
-        map_pdfs = [p for p in pdf_files
-                    if any(t in p.name.lower() for t in _MAP_TOKENS)]
-        pdf_path = map_pdfs[0] if map_pdfs else pdf_files[0]
         gt_files = list(folder_path.glob(geojson_file))
         if not gt_files:
             gt_files = list(folder_path.glob("*.geojson"))
