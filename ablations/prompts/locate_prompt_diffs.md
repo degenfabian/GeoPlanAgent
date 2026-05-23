@@ -37,10 +37,12 @@ You have 5 offline geocoder tools:
 
 ## no_la_check
 
-**Removed from full (9 lines):**
+**Removed from full (11 lines):**
 ```
    - LA centroid (last resort)
    - LA-only fallback → σ from tool, 'low'
+  fall back to LA centroid with wide σ and confidence='low'.
+- "District-wide" cases (whole-borough policy zone) → LA centroid with σ=LA_radius_m.
 - la_check(lat, lon, la) — verify coord falls inside LA polygon
 3. **LETTERHEAD CHECK postcodes:** for each postcode in pdf_info.postcodes, if it's NOT in site_address, treat as POSSIBLE letterhead. Run la_check to verify it's inside admin_region; if it falls outside admin_region, drop unless no other signal is available.
 4. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
@@ -50,8 +52,10 @@ You have 5 offline geocoder tools:
 You have 6 offline geocoder tools:
 ```
 
-**Added (not in full, 4 lines):**
+**Added (not in full, 6 lines):**
 ```
+  fall back to your best place hit with wide σ (~5000m) and confidence='low'.
+- "District-wide" cases (whole-borough policy zone) → use place to search for the district / borough name, with wide σ (~5000m).
 3. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
 4. **CLUSTER & PICK:** 
 5. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema. **Be meticulous and avoid clerical errors when submitting your final pick.** Copy the lat/lon EXACTLY from your strongest tool result — don't paraphrase, don't round prematurely. The bugs we see most often: (a) dropping a minus sign that should be there (e.g. -0.14 emitted as 0.14), (b) adding a minus sign that shouldn't be (e.g. +1.4 emitted as -1.4), (c) swapping top_lat and top_lon. Before emitting, verify the sign and order of the values against the tool result you're using. If the coord you're about to emit isn't close to a coord any of your tool calls returned, you've made an entry error — fix it.

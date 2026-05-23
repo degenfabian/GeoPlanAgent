@@ -481,13 +481,41 @@ _LOCATE_BUDGET = (
     "commit your best current guess with confidence='low'."
 )
 
-_LOCATE_EDGE_CASES = (
-    "EDGE CASES:\n"
-    "- Empty pdf_info → look hardest at the map image for any labels, then\n"
-    "  fall back to LA centroid with wide σ and confidence='low'.\n"
-    "- \"District-wide\" cases (whole-borough policy zone) → LA centroid with σ=LA_radius_m.\n"
-    "- Multi-parish sites → midpoint of named parishes/villages with wide σ."
-)
+def _edge_cases_body(enabled: frozenset[str]) -> str:
+    """EDGE CASES section, adapted to whether la_check is available.
+
+    The LA-centroid fallback (Empty pdf_info / District-wide cases) only
+    makes sense when la_check is enabled — that's the tool that returns
+    the LA polygon centroid + radius. When la_check is disabled, advise
+    the agent to use its best place hit instead.
+    """
+    lines = ["EDGE CASES:"]
+    if "la_check" in enabled:
+        lines.append(
+            "- Empty pdf_info → look hardest at the map image for any "
+            "labels, then\n  fall back to LA centroid with wide σ and "
+            "confidence='low'."
+        )
+        lines.append(
+            "- \"District-wide\" cases (whole-borough policy zone) → "
+            "LA centroid with σ=LA_radius_m."
+        )
+    else:
+        lines.append(
+            "- Empty pdf_info → look hardest at the map image for any "
+            "labels, then\n  fall back to your best place hit with "
+            "wide σ (~5000m) and confidence='low'."
+        )
+        lines.append(
+            "- \"District-wide\" cases (whole-borough policy zone) → "
+            "use place to search for the district / borough name, with "
+            "wide σ (~5000m)."
+        )
+    lines.append(
+        "- Multi-parish sites → midpoint of named parishes/villages "
+        "with wide σ."
+    )
+    return "\n".join(lines)
 
 
 def _cluster_step_body(enabled: frozenset[str]) -> str:
@@ -621,7 +649,7 @@ def _build_locate_prompt(disabled: frozenset[str] = frozenset()) -> str:
 
     parts.append(_LOCATE_BUDGET)
     parts.append("")
-    parts.append(_LOCATE_EDGE_CASES)
+    parts.append(_edge_cases_body(enabled_set))
 
     return "\n".join(parts)
 
