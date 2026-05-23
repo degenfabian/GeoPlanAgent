@@ -21,8 +21,8 @@ set -u
 cd "$(dirname "$0")/.."
 
 CONFIGS=(
-    "min_3_tool|grid_ref,road,intersect"
     "min_2_tool|grid_ref,postcode,road,intersect"
+    "min_3_tool|grid_ref,road,intersect"
 )
 
 START_TS=$(date '+%Y-%m-%d %H:%M:%S')
