@@ -195,7 +195,10 @@ def dump_prompts(out_dir: Path) -> None:
 
 def evaluate(args: argparse.Namespace) -> int:
     disabled = _parse_disabled(args.disabled_tools)
-    label = _config_label(disabled)
+    # Allow caller to override the auto-derived dir name. Useful for
+    # named subset ablations (e.g. "min_3_tool" instead of the verbose
+    # "no_grid_ref_intersect_road").
+    label = args.config_label or _config_label(disabled)
     out_root = Path(args.out_root)
     out_dir = out_root / label
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -424,6 +427,13 @@ def main() -> int:
         help="Comma-separated locate tool names to disable. Valid: "
              "postcode, grid_ref, place, road, intersect, la_check. "
              "Empty / omitted = full baseline.",
+    )
+    parser.add_argument(
+        "--config-label", default=None,
+        help="Override the auto-derived output dir name. Default: "
+             "'full' / 'no_<tool>' / 'no_<tool1>_<tool2>'. Set this "
+             "(e.g. 'min_3_tool') when running multi-tool subsets so "
+             "the output path is human-readable.",
     )
     parser.add_argument(
         "--out-root", default=str(DEFAULT_OUT_ROOT),
