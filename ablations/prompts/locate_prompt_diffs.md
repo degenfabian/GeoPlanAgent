@@ -37,9 +37,10 @@ You have 5 offline geocoder tools:
 
 ## no_la_check
 
-**Removed from full (8 lines):**
+**Removed from full (9 lines):**
 ```
    - LA centroid (last resort)
+   - LA-only fallback → σ from tool, 'low'
 - la_check(lat, lon, la) — verify coord falls inside LA polygon
 3. **LETTERHEAD CHECK postcodes:** for each postcode in pdf_info.postcodes, if it's NOT in site_address, treat as POSSIBLE letterhead. Run la_check to verify it's inside admin_region; if it falls outside admin_region, drop unless no other signal is available.
 4. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
@@ -59,16 +60,18 @@ You have 5 offline geocoder tools:
 
 ## no_place
 
-**Removed from full (4 lines):**
+**Removed from full (5 lines):**
 ```
    - Named place / landmark from pdf_info OR from the map image
    - Parish name
+   - Single ambiguous (road name, common place) → σ=800-1500m, 'med'
 - place(q, la=None) — OS Open Names search (villages, schools, churches, named buildings)
 You have 6 offline geocoder tools:
 ```
 
-**Added (not in full, 1 lines):**
+**Added (not in full, 2 lines):**
 ```
+   - Single ambiguous (road name) → σ=800-1500m, 'med'
 You have 5 offline geocoder tools:
 ```
 
@@ -99,14 +102,16 @@ You have 5 offline geocoder tools:
 
 ## no_road
 
-**Removed from full (3 lines):**
+**Removed from full (4 lines):**
 ```
    - Road name (when LA-filtered)
+   - Single ambiguous (road name, common place) → σ=800-1500m, 'med'
 - road(q, la=None) — OML road centroid in LA bbox
 You have 6 offline geocoder tools:
 ```
 
-**Added (not in full, 1 lines):**
+**Added (not in full, 2 lines):**
 ```
+   - Single ambiguous (common place) → σ=800-1500m, 'med'
 You have 5 offline geocoder tools:
 ```

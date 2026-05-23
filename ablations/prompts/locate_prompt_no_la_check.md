@@ -27,7 +27,6 @@ PROTOCOL (every case):
    - 2+ candidates within 500m → tight consensus, σ=200m, confidence='high'
    - Clean single confident signal (SITE postcode, grid_ref, intersect) → σ=300-500m, 'high'
    - Single ambiguous (road name, common place) → σ=800-1500m, 'med'
-   - LA-only fallback → σ from tool, 'low'
 
 5. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema. **Be meticulous and avoid clerical errors when submitting your final pick.** Copy the lat/lon EXACTLY from your strongest tool result — don't paraphrase, don't round prematurely. The bugs we see most often: (a) dropping a minus sign that should be there (e.g. -0.14 emitted as 0.14), (b) adding a minus sign that shouldn't be (e.g. +1.4 emitted as -1.4), (c) swapping top_lat and top_lon. Before emitting, verify the sign and order of the values against the tool result you're using. If the coord you're about to emit isn't close to a coord any of your tool calls returned, you've made an entry error — fix it.
 

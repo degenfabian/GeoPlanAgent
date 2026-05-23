@@ -491,9 +491,21 @@ _LOCATE_EDGE_CASES = (
 
 
 def _cluster_step_body(enabled: frozenset[str]) -> str:
-    """Step 5 body, listing only confident-signal examples whose tools
-    are still enabled. Falls back to a generic phrasing when all the
-    sub-500m-precision tools are disabled."""
+    """CLUSTER & PICK body, adapted to the enabled tools.
+
+    The four confidence tiers are gated on which tools are available:
+      - Multi-candidate consensus → always applicable (any tool can be
+        called repeatedly)
+      - "Clean single confident signal" tier → only if at least one
+        sub-500m-precision tool is enabled (postcode / grid_ref /
+        intersect). Dropped entirely otherwise — there's no clean
+        confident signal to point at.
+      - "Single ambiguous" tier → names only the enabled
+        ambiguous-precision tools (road / place). Dropped if neither
+        is enabled.
+      - LA-only fallback → only if la_check is enabled (it's the tool
+        that returns the LA centroid).
+    """
     confident: list[str] = []
     if "postcode" in enabled:
         confident.append("SITE postcode")
@@ -501,15 +513,33 @@ def _cluster_step_body(enabled: frozenset[str]) -> str:
         confident.append("grid_ref")
     if "intersect" in enabled:
         confident.append("intersect")
-    examples = (", ".join(confident)
-                if confident else "any sub-500m-precision tool")
-    return (
-        "\n"
-        "   - 2+ candidates within 500m → tight consensus, σ=200m, confidence='high'\n"
-        f"   - Clean single confident signal ({examples}) → σ=300-500m, 'high'\n"
-        "   - Single ambiguous (road name, common place) → σ=800-1500m, 'med'\n"
-        "   - LA-only fallback → σ from tool, 'low'"
-    )
+
+    ambiguous: list[str] = []
+    if "road" in enabled:
+        ambiguous.append("road name")
+    if "place" in enabled:
+        ambiguous.append("common place")
+
+    lines = [
+        "",
+        "   - 2+ candidates within 500m → tight consensus, σ=200m, "
+        "confidence='high'",
+    ]
+    if confident:
+        lines.append(
+            f"   - Clean single confident signal "
+            f"({', '.join(confident)}) → σ=300-500m, 'high'"
+        )
+    if ambiguous:
+        lines.append(
+            f"   - Single ambiguous ({', '.join(ambiguous)}) → σ=800-"
+            f"1500m, 'med'"
+        )
+    if "la_check" in enabled:
+        lines.append(
+            "   - LA-only fallback → σ from tool, 'low'"
+        )
+    return "\n".join(lines)
 
 
 def _build_locate_prompt(disabled: frozenset[str] = frozenset()) -> str:

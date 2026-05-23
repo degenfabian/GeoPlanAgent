@@ -20,8 +20,7 @@ PROTOCOL (every case):
 
 4. **CLUSTER & PICK:** 
    - 2+ candidates within 500m → tight consensus, σ=200m, confidence='high'
-   - Clean single confident signal (any sub-500m-precision tool) → σ=300-500m, 'high'
-   - Single ambiguous (road name, common place) → σ=800-1500m, 'med'
+   - Single ambiguous (common place) → σ=800-1500m, 'med'
    - LA-only fallback → σ from tool, 'low'
 
 5. **VALIDATE with la_check.** Final pick should be inside the admin_region polygon. Set verified_inside_admin_region=True if la_check confirms inside; leave at default False when admin_region is unknown or every candidate falls outside.
