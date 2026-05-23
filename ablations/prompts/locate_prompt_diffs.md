@@ -2,7 +2,7 @@
 
 Each section lists lines present in the FULL prompt but NOT in the LOO variant. Use this to sanity-check that disabling a tool actually removes all references to it (tool description, signal-priority bullets, protocol-step references).
 
-Full prompt: 2929 chars, 46 lines
+Full prompt: 2973 chars, 46 lines
 
 ## no_grid_ref
 
@@ -44,17 +44,16 @@ You have 5 offline geocoder tools:
 3. **LETTERHEAD CHECK postcodes:** for each postcode in pdf_info.postcodes, if it's NOT in site_address, treat as POSSIBLE letterhead. Run la_check to verify it's inside admin_region; if it falls outside admin_region, drop unless no other signal is available.
 4. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
 5. **CLUSTER & PICK:** 
-6. **VALIDATE with la_check.** Final pick should be inside the admin_region polygon. Set la_check_passed accordingly (False is OK when admin_region is unknown or every candidate falls outside).
+6. **VALIDATE with la_check.** Final pick should be inside the admin_region polygon. Set verified_inside_admin_region=True if la_check confirms inside; leave at default False when admin_region is unknown or every candidate falls outside.
 7. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema.
 You have 6 offline geocoder tools:
 ```
 
-**Added (not in full, 5 lines):**
+**Added (not in full, 4 lines):**
 ```
 3. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
 4. **CLUSTER & PICK:** 
 5. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema.
-NOTE: la_check is unavailable in this configuration. Set la_check_passed=False in your final LocatePick — there is no tool to verify the pick against admin_region.
 You have 5 offline geocoder tools:
 ```
 
@@ -83,7 +82,7 @@ You have 5 offline geocoder tools:
 3. **LETTERHEAD CHECK postcodes:** for each postcode in pdf_info.postcodes, if it's NOT in site_address, treat as POSSIBLE letterhead. Run la_check to verify it's inside admin_region; if it falls outside admin_region, drop unless no other signal is available.
 4. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
 5. **CLUSTER & PICK:** 
-6. **VALIDATE with la_check.** Final pick should be inside the admin_region polygon. Set la_check_passed accordingly (False is OK when admin_region is unknown or every candidate falls outside).
+6. **VALIDATE with la_check.** Final pick should be inside the admin_region polygon. Set verified_inside_admin_region=True if la_check confirms inside; leave at default False when admin_region is unknown or every candidate falls outside.
 7. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema.
 You have 6 offline geocoder tools:
 ```
@@ -93,7 +92,7 @@ You have 6 offline geocoder tools:
    - Clean single confident signal (grid_ref, intersect) → σ=300-500m, 'high'
 3. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
 4. **CLUSTER & PICK:** 
-5. **VALIDATE with la_check.** Final pick should be inside the admin_region polygon. Set la_check_passed accordingly (False is OK when admin_region is unknown or every candidate falls outside).
+5. **VALIDATE with la_check.** Final pick should be inside the admin_region polygon. Set verified_inside_admin_region=True if la_check confirms inside; leave at default False when admin_region is unknown or every candidate falls outside.
 6. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema.
 You have 5 offline geocoder tools:
 ```

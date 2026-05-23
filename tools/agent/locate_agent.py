@@ -69,10 +69,12 @@ class LocatePick(BaseModel):
         description="1-2 sentence explanation of WHY this pick. "
                     "Mention letterhead/LA-consistency checks done.",
     )
-    la_check_passed: bool = Field(
-        description="True if la_check confirms the pick is inside (or near) "
-                    "the named admin_region; False otherwise. Set to False "
-                    "when la_check is unavailable (LOO ablation).",
+    verified_inside_admin_region: bool = Field(
+        default=False,
+        description="True if the pick has been verified to fall inside (or "
+                    "near) the named admin_region polygon, False otherwise. "
+                    "Stays at the default False when no verification was "
+                    "performed.",
     )
 
 
@@ -469,8 +471,9 @@ _STEP_BUILD_POOL_BODY = (
 
 _STEP_VALIDATE_BODY = (
     "Final pick should be inside the admin_region polygon. Set "
-    "la_check_passed accordingly (False is OK when admin_region is unknown "
-    "or every candidate falls outside)."
+    "verified_inside_admin_region=True if la_check confirms inside; "
+    "leave at default False when admin_region is unknown or every "
+    "candidate falls outside."
 )
 
 _STEP_EMIT_BODY = (
@@ -581,22 +584,15 @@ def _build_locate_prompt(disabled: frozenset[str] = frozenset()) -> str:
 
     if "la_check" in enabled_set:
         steps.append(("**VALIDATE with la_check.**", _STEP_VALIDATE_BODY))
-    # When la_check is unavailable the agent has no validator — the
-    # output schema still requires la_check_passed, so we mention
-    # explicitly that it should be False in that case.
+    # When la_check is disabled, ``verified_inside_admin_region`` simply
+    # stays at its schema default (False) — no extra prompt note needed
+    # since the field is no longer tool-named. Other LOO variants
+    # (no_postcode etc.) are already invisible by the same logic.
 
     steps.append(("**Emit the LocatePick to terminate.**", _STEP_EMIT_BODY))
 
     for i, (header, body) in enumerate(steps, start=1):
         parts.append(f"{i}. {header} {body}")
-        parts.append("")
-
-    if "la_check" not in enabled_set:
-        parts.append(
-            "NOTE: la_check is unavailable in this configuration. Set "
-            "la_check_passed=False in your final LocatePick — there is "
-            "no tool to verify the pick against admin_region."
-        )
         parts.append("")
 
     parts.append(_LOCATE_BUDGET)
@@ -703,14 +699,14 @@ def _emergency_la_centroid_pick(pdf_info: dict, reason: str) -> LocatePick:
             sigma_m=sigma, confidence="low",
             picked_source=f"emergency_la_centroid:{admin[:30]}",
             evidence=f"LA centroid fallback ({reason[:80]})",
-            la_check_passed=True,
+            verified_inside_admin_region=True,
         )
     return LocatePick(
         top_lat=54.0, top_lon=-2.0,
         sigma_m=50_000, confidence="low",
         picked_source="emergency_uk_centroid",
         evidence=f"UK centroid fallback (no admin_region; {reason[:60]})",
-        la_check_passed=False,
+        verified_inside_admin_region=False,
     )
 
 
@@ -872,7 +868,7 @@ def run_locate(
     pick = result.output
     print(f"  [locate] picked: {pick.picked_source[:50]} → "
           f"({pick.top_lat:.5f}, {pick.top_lon:.5f}) σ={pick.sigma_m}m "
-          f"conf={pick.confidence} la_ok={pick.la_check_passed}")
+          f"conf={pick.confidence} la_ok={pick.verified_inside_admin_region}")
     print(f"  [locate] evidence: {pick.evidence[:200]}")
 
     try:

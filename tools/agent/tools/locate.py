@@ -58,7 +58,7 @@ def propose_centers(
     Returns:
         {"success": True, "n_candidates": 1, "candidates": [{...}],
          "engine": "live_llm_locate", "evidence": str,
-         "la_check_passed": bool}
+         "verified_inside_admin_region": bool}
         — "candidates" is always a one-element list (this call returns
         exactly one pick).
     """
@@ -135,5 +135,5 @@ def propose_centers(
         "candidates": [cand],
         "engine": "live_llm_locate",
         "evidence": pick.evidence,
-        "la_check_passed": pick.la_check_passed,
+        "verified_inside_admin_region": pick.verified_inside_admin_region,
     }

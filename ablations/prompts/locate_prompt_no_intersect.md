@@ -32,7 +32,7 @@ PROTOCOL (every case):
    - Single ambiguous (road name, common place) → σ=800-1500m, 'med'
    - LA-only fallback → σ from tool, 'low'
 
-6. **VALIDATE with la_check.** Final pick should be inside the admin_region polygon. Set la_check_passed accordingly (False is OK when admin_region is unknown or every candidate falls outside).
+6. **VALIDATE with la_check.** Final pick should be inside the admin_region polygon. Set verified_inside_admin_region=True if la_check confirms inside; leave at default False when admin_region is unknown or every candidate falls outside.
 
 7. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema.
 

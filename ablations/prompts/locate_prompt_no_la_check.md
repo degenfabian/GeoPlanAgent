@@ -31,8 +31,6 @@ PROTOCOL (every case):
 
 5. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema.
 
-NOTE: la_check is unavailable in this configuration. Set la_check_passed=False in your final LocatePick — there is no tool to verify the pick against admin_region.
-
 BUDGET: ≤ 8 geocode tool calls per case. If you've made 8 calls, commit your best current guess with confidence='low'.
 
 EDGE CASES:

@@ -19,7 +19,7 @@ Inputs:
 Outputs (per --disabled-tools config):
   ablations/locate_only_eval/<config>/locate_picks.csv
     one row per case: err_km, picked coord, source, confidence,
-    sigma, la_check_passed, evidence.
+    sigma, verified_inside_admin_region, evidence.
 
 The harness has a ``--dump-prompts`` mode that writes all 7 prompt
 variants to disk and exits without LLM calls. Use this for pre-run
@@ -263,7 +263,7 @@ def evaluate(args: argparse.Namespace) -> int:
     fieldnames = [
         "case", "err_km", "picked_lat", "picked_lon",
         "picked_source", "confidence", "sigma_m",
-        "la_check_passed", "n_gt_parts", "evidence", "error",
+        "verified_inside_admin_region", "n_gt_parts", "evidence", "error",
     ]
 
     # Open CSV in append mode when resuming, write+header when starting fresh.
@@ -358,7 +358,7 @@ def evaluate(args: argparse.Namespace) -> int:
                 "picked_source": pick.picked_source[:120],
                 "confidence": pick.confidence,
                 "sigma_m": pick.sigma_m,
-                "la_check_passed": pick.la_check_passed,
+                "verified_inside_admin_region": pick.verified_inside_admin_region,
                 "evidence": pick.evidence[:240],
             })
             writer.writerow(row); f.flush()
