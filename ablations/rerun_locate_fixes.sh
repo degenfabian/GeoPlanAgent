@@ -40,8 +40,13 @@ for cfg in "${CONFIGS[@]}"; do
         continue
     fi
 
-    # Read non-empty case lines
-    mapfile -t cases < <(grep -v '^[[:space:]]*$' "$rerun_file" || true)
+    # Read non-empty case lines (bash 3.2 compatible — macOS default bash
+    # doesn't have ``mapfile``).
+    cases=()
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        [[ -z "${line//[[:space:]]/}" ]] && continue
+        cases+=("$line")
+    done < "$rerun_file"
     n=${#cases[@]}
     if [[ "$n" == "0" ]]; then
         echo "  [$cfg] rerun list is empty, skipping"
