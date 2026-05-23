@@ -732,30 +732,34 @@ _locate_agent = make_locate_agent()
 # ── Helpers for transient-error handling ──────────────────────────────────
 
 
-# Gemini's image-input limit is ~20 MB. Big planning maps at 200 DPI
-# can exceed it (A3/A2/A0 scans → 25-35 MB PNGs). Pre-downscale anything
-# over this threshold to avoid HTTP 413.
+# Triggers: downscale if EITHER byte size or pixel dimensions exceed
+# the threshold. Both are observed failure modes — HTTP 413 from bytes,
+# pixel-area limit errors (reported as HTTP 400) from dimensions.
 #
-# 25 MB threshold (~24 binary MB) chosen empirically:
-#   - Truly-failing cases (3 Dover cases, 30-31 binary MB → ~32-33 M
-#     decimal bytes) ARE downscaled — they fail HTTP 413 otherwise.
-#   - Currently-working cases (A4DA01 at 21 MB, 8609F3A9 at 17 MB) are
-#     NOT touched — preserves whatever it is about them that lets the
-#     LLM read them today.
-# 2048px max-edge keeps street-label text legible (UK planning maps
-# have labels at ~10-30px which downscale fine from 4000-9000px sources).
+# 25 MB byte threshold (~24 binary MB): catches the 3 Dover scans
+# (30 MB at 9000 px) without disturbing 15-22 MB cases that currently
+# succeed.
+# 5000 px dimension threshold: catches sparse high-resolution scans
+# like Ar4.5 (6314×4222 px, only 2 MB bytes — but hit HTTP 400 in the
+# locate full config). Leaves typical A4 maps (2338-3307 px) untouched.
+# 2048 px downscale target: when we resize, this is the new max-edge.
+# Keeps street-label text legible while comfortably under any provider
+# pixel-area limit.
 _MAX_IMAGE_BYTES = 25_000_000
-_MAX_IMAGE_EDGE = 2048
+_MAX_IMAGE_EDGE = 5000
+_DOWNSCALE_TARGET_EDGE = 2048
 
 
 def _downscale_image_if_oversized(img_bytes: bytes) -> bytes:
-    """If img_bytes exceeds the size threshold, downscale and re-encode
-    to PNG. Otherwise return img_bytes unchanged.
+    """Downscale if EITHER bytes > 25 MB or max pixel edge > 5000 px.
+    Returns unchanged bytes when both checks pass.
 
-    Catches the HTTP 413 failure mode where the rendered planning map
-    page is too large for gemini's image input.
+    Catches both failure modes observed during the locate LOO run:
+      - HTTP 413 "payload too large" from oversized byte count
+      - HTTP 400 from oversized pixel area (sparse maps that compress
+        small in bytes but stress provider-side pixel processing)
     """
-    if not img_bytes or len(img_bytes) <= _MAX_IMAGE_BYTES:
+    if not img_bytes:
         return img_bytes
     try:
         import cv2
@@ -765,21 +769,25 @@ def _downscale_image_if_oversized(img_bytes: bytes) -> bytes:
         if img is None:
             return img_bytes
         h, w = img.shape[:2]
-        scale = _MAX_IMAGE_EDGE / max(h, w)
-        if scale >= 1.0:
-            # Edge is already small but byte size is high — try heavier
-            # PNG compression as a fallback before giving up.
-            _, buf = cv2.imencode(".png", img, [cv2.IMWRITE_PNG_COMPRESSION, 9])
-            return buf.tobytes()
-        new_w, new_h = int(round(w * scale)), int(round(h * scale))
-        resized = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_AREA)
-        _, buf = cv2.imencode(".png", resized,
-                              [cv2.IMWRITE_PNG_COMPRESSION, 6])
+        max_edge = max(h, w)
+        bytes_oversized = len(img_bytes) > _MAX_IMAGE_BYTES
+        dims_oversized = max_edge > _MAX_IMAGE_EDGE
+        if not bytes_oversized and not dims_oversized:
+            return img_bytes
+        if dims_oversized:
+            scale = _DOWNSCALE_TARGET_EDGE / max_edge
+            new_w, new_h = int(round(w * scale)), int(round(h * scale))
+            img = cv2.resize(img, (new_w, new_h),
+                              interpolation=cv2.INTER_AREA)
+        # Use heavier PNG compression when only bytes were oversized
+        # (we couldn't reduce by resizing, so squeeze the encoding).
+        compression = 9 if (bytes_oversized and not dims_oversized) else 6
+        _, buf = cv2.imencode(".png", img,
+                              [cv2.IMWRITE_PNG_COMPRESSION, compression])
         return buf.tobytes()
     except Exception:
         # On any decode/encode failure, return the original — the
-        # downstream request will fail with HTTP 413, then the retry
-        # path (now with a more aggressive downscale) will try again.
+        # downstream request will surface the real error.
         return img_bytes
 
 
