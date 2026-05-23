@@ -732,34 +732,30 @@ _locate_agent = make_locate_agent()
 # ── Helpers for transient-error handling ──────────────────────────────────
 
 
-# Triggers: downscale if EITHER byte size or pixel dimensions exceed
-# the threshold. Both are observed failure modes — HTTP 413 from bytes,
-# pixel-area limit errors (reported as HTTP 400) from dimensions.
+# Downscale trigger: bytes > 25 MB. Catches the 3 Dover scans (30 MB
+# at 9000 px) without disturbing 15-22 MB cases that currently succeed.
 #
-# 25 MB byte threshold (~24 binary MB): catches the 3 Dover scans
-# (30 MB at 9000 px) without disturbing 15-22 MB cases that currently
-# succeed.
-# 5000 px dimension threshold: catches sparse high-resolution scans
-# like Ar4.5 (6314×4222 px, only 2 MB bytes — but hit HTTP 400 in the
-# locate full config). Leaves typical A4 maps (2338-3307 px) untouched.
-# 2048 px downscale target: when we resize, this is the new max-edge.
-# Keeps street-label text legible while comfortably under any provider
-# pixel-area limit.
+# We previously also gated on max-edge > 5000 px, but JPEG-encoded
+# segmentation experiments confirmed Gemini doesn't have a strict
+# pixel-area limit at those dimensions — HTTP 400s we saw on small-
+# byte / high-dim cases (e.g. Ar4.5 at 2 MB / 6314 px) were transient,
+# better handled by the HTTP retry path than by preemptive resizing.
+# Bytes are the only deterministic failure mode worth pre-empting.
+#
+# 2048 px downscale target keeps street-label text legible while
+# producing files comfortably under the provider limit.
 _MAX_IMAGE_BYTES = 25_000_000
-_MAX_IMAGE_EDGE = 5000
 _DOWNSCALE_TARGET_EDGE = 2048
 
 
 def _downscale_image_if_oversized(img_bytes: bytes) -> bytes:
-    """Downscale if EITHER bytes > 25 MB or max pixel edge > 5000 px.
-    Returns unchanged bytes when both checks pass.
+    """Downscale if bytes > 25 MB. Returns unchanged otherwise.
 
-    Catches both failure modes observed during the locate LOO run:
-      - HTTP 413 "payload too large" from oversized byte count
-      - HTTP 400 from oversized pixel area (sparse maps that compress
-        small in bytes but stress provider-side pixel processing)
+    Catches HTTP 413 "payload too large" from genuinely oversized
+    images (30 MB+ A2/A1 scans at 200 DPI). Pixel-area HTTP 400s are
+    left to the retry path — they're transient, not deterministic.
     """
-    if not img_bytes:
+    if not img_bytes or len(img_bytes) <= _MAX_IMAGE_BYTES:
         return img_bytes
     try:
         import cv2
@@ -770,24 +766,22 @@ def _downscale_image_if_oversized(img_bytes: bytes) -> bytes:
             return img_bytes
         h, w = img.shape[:2]
         max_edge = max(h, w)
-        bytes_oversized = len(img_bytes) > _MAX_IMAGE_BYTES
-        dims_oversized = max_edge > _MAX_IMAGE_EDGE
-        if not bytes_oversized and not dims_oversized:
-            return img_bytes
-        if dims_oversized:
+        if max_edge > _DOWNSCALE_TARGET_EDGE:
             scale = _DOWNSCALE_TARGET_EDGE / max_edge
             new_w, new_h = int(round(w * scale)), int(round(h * scale))
             img = cv2.resize(img, (new_w, new_h),
                               interpolation=cv2.INTER_AREA)
-        # Use heavier PNG compression when only bytes were oversized
-        # (we couldn't reduce by resizing, so squeeze the encoding).
-        compression = 9 if (bytes_oversized and not dims_oversized) else 6
-        _, buf = cv2.imencode(".png", img,
-                              [cv2.IMWRITE_PNG_COMPRESSION, compression])
+            _, buf = cv2.imencode(".png", img,
+                                  [cv2.IMWRITE_PNG_COMPRESSION, 6])
+        else:
+            # Edge already small but bytes high — try heavier compression
+            # as a last-ditch.
+            _, buf = cv2.imencode(".png", img,
+                                  [cv2.IMWRITE_PNG_COMPRESSION, 9])
         return buf.tobytes()
     except Exception:
-        # On any decode/encode failure, return the original — the
-        # downstream request will surface the real error.
+        # On any decode/encode failure, return original — let the
+        # downstream HTTP error surface naturally.
         return img_bytes
 
 
