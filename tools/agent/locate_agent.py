@@ -732,28 +732,33 @@ _locate_agent = make_locate_agent()
 # ── Helpers for transient-error handling ──────────────────────────────────
 
 
-# Downscale trigger: bytes > 25 MB. Catches the 3 Dover scans (30 MB
-# at 9000 px) without disturbing 15-22 MB cases that currently succeed.
+# When the rendered PNG exceeds this threshold, re-encode the same
+# image (FULL RESOLUTION) as JPEG-90 to shrink bytes for the HTTP send.
+# JPEG-90 takes a 30 MB Dover scan to ~4-6 MB without resizing — the
+# agent still sees the original 9354×3306 px, just slightly lossier.
 #
-# We previously also gated on max-edge > 5000 px, but JPEG-encoded
-# segmentation experiments confirmed Gemini doesn't have a strict
-# pixel-area limit at those dimensions — HTTP 400s we saw on small-
-# byte / high-dim cases (e.g. Ar4.5 at 2 MB / 6314 px) were transient,
-# better handled by the HTTP retry path than by preemptive resizing.
-# Bytes are the only deterministic failure mode worth pre-empting.
+# Why JPEG re-encode beats PNG-downscale here:
+#   - Preserves resolution → text labels stay legible
+#   - Only fires on 3 cases (1.4%) — the truly-oversized A2/A1 scans
+#   - JPEG-90 quality is fine for label-reading (already validated by
+#     Fabian's segmentation-ablation experience)
 #
-# 2048 px downscale target keeps street-label text legible while
-# producing files comfortably under the provider limit.
+# Other cases stay PNG. We don't switch to JPEG globally because some
+# sparse maps (e.g. Ar4.5: 2 MB PNG, 6.3 MB JPEG-90) GROW under JPEG —
+# JPEG handles white-space less efficiently than PNG's RLE.
 _MAX_IMAGE_BYTES = 25_000_000
-_DOWNSCALE_TARGET_EDGE = 2048
+_JPEG_FALLBACK_QUALITY = 90
 
 
-def _downscale_image_if_oversized(img_bytes: bytes) -> bytes:
-    """Downscale if bytes > 25 MB. Returns unchanged otherwise.
+def _shrink_image_if_oversized(img_bytes: bytes) -> bytes:
+    """If bytes > 25 MB, re-encode as JPEG-90 (preserves resolution).
 
-    Catches HTTP 413 "payload too large" from genuinely oversized
-    images (30 MB+ A2/A1 scans at 200 DPI). Pixel-area HTTP 400s are
-    left to the retry path — they're transient, not deterministic.
+    Returns unchanged otherwise. Pixel-area HTTP 400s are left to the
+    retry path — they're transient per JPEG segmentation experience.
+
+    The returned bytes may be JPEG or PNG — callers should detect via
+    magic bytes (use ``_image_media_type``) and set BinaryContent's
+    media_type accordingly.
     """
     if not img_bytes or len(img_bytes) <= _MAX_IMAGE_BYTES:
         return img_bytes
@@ -764,25 +769,31 @@ def _downscale_image_if_oversized(img_bytes: bytes) -> bytes:
         img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
         if img is None:
             return img_bytes
-        h, w = img.shape[:2]
-        max_edge = max(h, w)
-        if max_edge > _DOWNSCALE_TARGET_EDGE:
-            scale = _DOWNSCALE_TARGET_EDGE / max_edge
-            new_w, new_h = int(round(w * scale)), int(round(h * scale))
-            img = cv2.resize(img, (new_w, new_h),
-                              interpolation=cv2.INTER_AREA)
-            _, buf = cv2.imencode(".png", img,
-                                  [cv2.IMWRITE_PNG_COMPRESSION, 6])
-        else:
-            # Edge already small but bytes high — try heavier compression
-            # as a last-ditch.
-            _, buf = cv2.imencode(".png", img,
-                                  [cv2.IMWRITE_PNG_COMPRESSION, 9])
+        _, buf = cv2.imencode(".jpg", img,
+                              [cv2.IMWRITE_JPEG_QUALITY, _JPEG_FALLBACK_QUALITY])
+        jpeg_bytes = buf.tobytes()
+        if len(jpeg_bytes) <= _MAX_IMAGE_BYTES:
+            return jpeg_bytes
+        # JPEG-90 still too big — try a lower quality before giving up.
+        _, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 80])
         return buf.tobytes()
     except Exception:
         # On any decode/encode failure, return original — let the
         # downstream HTTP error surface naturally.
         return img_bytes
+
+
+# Backwards-compat alias for existing call sites.
+_downscale_image_if_oversized = _shrink_image_if_oversized
+
+
+def _image_media_type(img_bytes: bytes) -> str:
+    """Detect PNG vs JPEG from the magic bytes."""
+    if len(img_bytes) >= 3 and img_bytes[:3] == b"\xff\xd8\xff":
+        return "image/jpeg"
+    if len(img_bytes) >= 4 and img_bytes[:4] == b"\x89PNG":
+        return "image/png"
+    return "image/png"   # default — pydantic-ai expects something
 
 
 _TRANSIENT_HTTP_MARKERS = (
@@ -929,17 +940,20 @@ def run_locate(
             user_parts.insert(
                 0, BinaryContent(data=map_img_bytes, media_type="image/png"))
 
-    # Pre-downscale oversized map images so we don't hit HTTP 413 on the
+    # Pre-shrink oversized map images so we don't hit HTTP 413 on the
     # first attempt. Catches A3/A2/A0 planning maps rendered at 200 DPI.
+    # The shrink may re-encode as JPEG (preserves resolution) — we
+    # detect the resulting format and set BinaryContent's media_type
+    # accordingly.
     if map_img_bytes is not None:
         original_size = len(map_img_bytes)
-        map_img_bytes = _downscale_image_if_oversized(map_img_bytes)
+        map_img_bytes = _shrink_image_if_oversized(map_img_bytes)
         if len(map_img_bytes) != original_size:
-            # Rebuild user_parts with the downscaled image in place.
+            new_media_type = _image_media_type(map_img_bytes)
             for i, p in enumerate(user_parts):
                 if isinstance(p, BinaryContent):
                     user_parts[i] = BinaryContent(
-                        data=map_img_bytes, media_type="image/png")
+                        data=map_img_bytes, media_type=new_media_type)
                     break
 
     admin = pdf_info.get("admin_region") or "?"
