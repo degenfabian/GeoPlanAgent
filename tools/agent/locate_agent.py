@@ -72,9 +72,11 @@ class LocatePick(BaseModel):
     verified_inside_admin_region: bool = Field(
         default=False,
         description="True if the pick has been verified to fall inside (or "
-                    "near) the named admin_region polygon, False otherwise. "
-                    "Stays at the default False when no verification was "
-                    "performed.",
+                    "near) the polygon for the named admin_region "
+                    "(pdf_info.admin_region — the Local Authority polygon "
+                    "the pick is supposed to belong to). Set False if not "
+                    "verified, if verification returned outside-or-far, or "
+                    "if no verification tool is available.",
     )
 
 
