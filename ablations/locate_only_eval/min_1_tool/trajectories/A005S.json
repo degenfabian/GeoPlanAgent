@@ -1,0 +1,303 @@
+{
+  "case": "A005S",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6356222750603,
+    "top_lon": -0.41031459063972,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:PE9 3DU",
+    "evidence": "The postcode PE9 3DU (52.6356, -0.4103) is located in Barnack and aligns perfectly with the map features: it is just north of Barnack Primary School (52.6330, -0.4122) and the intersection of Bainton Road and Uffington Road.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14243064265407532,
+  "gt_centroids": [
+    {
+      "lat": 52.63435668460138,
+      "lon": -0.4099891454679219
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "17 Linden Close, Barnack"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "The Grange, Uffington Road, Barnack"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Barnack C of E Primary School",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "PE9 3DU",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "17 Linden Close, Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Grange, Uffington Road, Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barnack C of E Primary School",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "PE9 3DU",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "PE9 3DU",
+            "type": "postcode",
+            "lat": 52.635622275060285,
+            "lon": -0.41031459063971953,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Linden Close, Barnack"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Bainton Road, Barnack"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Linden Close, Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bainton Road, Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Barnack"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Barnack",
+            "type": "village",
+            "lat": 52.63225751588454,
+            "lon": -0.4094760662085537,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Road",
+            "type": "named road",
+            "lat": 52.63974337696178,
+            "lon": -0.3886023441220477,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Hills and Holes",
+            "type": "other landcover",
+            "lat": 52.62872748491194,
+            "lon": -0.41173173146351194,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Road",
+            "type": "section of named road",
+            "lat": 52.640415078687326,
+            "lon": -0.38576956450195304,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Church of England (Controlled) Primary School",
+            "type": "primary education",
+            "lat": 52.633004872373085,
+            "lon": -0.41224179741321654,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.41031459063972,
+        "sigma_m": 200,
+        "picked_source": "postcode:PE9 3DU",
+        "top_lat": 52.6356222750603,
+        "evidence": "The postcode PE9 3DU (52.6356, -0.4103) is located in Barnack and aligns perfectly with the map features: it is just north of Barnack Primary School (52.6330, -0.4122) and the intersection of Bainton Road and Uffington Road.",
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

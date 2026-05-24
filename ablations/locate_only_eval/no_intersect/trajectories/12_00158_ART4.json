@@ -1,0 +1,496 @@
+{
+  "case": "12:00158:ART4",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.3938,
+    "top_lon": 1.1916,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "intersect:Harvey Lane x Langmere Road",
+    "evidence": "The site is bounded by Harvey Lane (Road), Langmere Road, Hall Lane, and Common Road in Dickleburgh. Geocoding Harvey Lane and Langmere Road in South Norfolk places the site at approximately 52.3938, 1.1916, which matches the map layout and village context.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2424371059262444,
+  "gt_centroids": [
+    {
+      "lat": 52.39189082051901,
+      "lon": 1.1933254503458417
+    },
+    {
+      "lat": 52.38883861498935,
+      "lon": 1.1928920415656288
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 2,
+      "road": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Dickleburgh",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Langmere Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Common Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Dickleburgh",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Dickleburgh",
+            "type": "village",
+            "lat": 52.397165317543816,
+            "lon": 1.185652399881159,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Dickleburgh Moor",
+            "type": "hamlet",
+            "lat": 52.40667320332661,
+            "lon": 1.1925877378154983,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Dickleburgh (Voluntary Controlled) Primary School",
+            "type": "primary education",
+            "lat": 52.39521090453466,
+            "lon": 1.1874227534937847,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Dickleburgh Road",
+            "type": "named road",
+            "lat": 52.40259501093398,
+            "lon": 1.171707332658384,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Dickleburgh Road",
+            "type": "section of named road",
+            "lat": 52.402260637074455,
+            "lon": 1.169757114881649,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Langmere Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Langmere Road",
+            "lat": 52.39309112446028,
+            "lon": 1.2188409953318753,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Langmere Road",
+            "lat": 52.39326273034466,
+            "lon": 1.219998857159598,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Langmere Road",
+            "lat": 52.39372443274932,
+            "lon": 1.192164894930385,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Langmere Road",
+            "lat": 52.39197861199945,
+            "lon": 1.1986260973425453,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Langmere Road",
+            "lat": 52.39198140771017,
+            "lon": 1.2060127123042654,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Common Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Common Road",
+            "lat": 52.613566700166324,
+            "lon": 1.4203046343259464,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Common Road",
+            "lat": 52.644089784848745,
+            "lon": 1.0396451447534707,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Common Road",
+            "lat": 52.47692394882398,
+            "lon": 1.6260213622437358,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Common Road",
+            "lat": 52.482676008924535,
+            "lon": 1.6249612772482687,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Common Road",
+            "lat": 52.47961363399306,
+            "lon": 1.6254297929741812,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Hall Lane"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Harvey Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hall Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Hall Lane",
+            "lat": 52.578924692213654,
+            "lon": 0.986196878028479,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Hall Lane",
+            "lat": 52.577936234970686,
+            "lon": 1.030881644469779,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Hall Lane",
+            "lat": 52.57696130285456,
+            "lon": 0.9873527383068641,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Hall Lane",
+            "lat": 52.57742057361682,
+            "lon": 0.986793502366552,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Hall Lane",
+            "lat": 52.57824406921333,
+            "lon": 0.9863549775106304,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Harvey Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Harvey Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Harvey Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Harvey Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Harvey Lane",
+            "type": "named road",
+            "lat": 52.631798804619315,
+            "lon": 1.328737021321238,
+            "admin_district": "Norwich",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Harvey Lane",
+            "type": "named road",
+            "lat": 52.64685259869347,
+            "lon": 1.7262593988181614,
+            "admin_district": "Great Yarmouth",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Harvey Lane",
+            "type": "named road",
+            "lat": 52.15146140568382,
+            "lon": 0.09335919538226056,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "Harvey Lane",
+            "type": "named road",
+            "lat": 52.394699657026244,
+            "lon": 1.1883708866536793,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Harvey Close",
+            "type": "named road",
+            "lat": 54.986902901449895,
+            "lon": -1.438811854877182,
+            "admin_district": "South Tyneside",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Harvey Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Harvey Lane",
+            "lat": 52.39383582788319,
+            "lon": 1.1916154691339726,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Harvey Lane",
+            "lat": 52.39485133622436,
+            "lon": 1.187957688151435,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.3938,
+        "la": "South Norfolk",
+        "lon": 1.1916
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.3938,
+        "lon": 1.1916,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is bounded by Harvey Lane (Road), Langmere Road, Hall Lane, and Common Road in Dickleburgh. Geocoding Harvey Lane and Langmere Road in South Norfolk places the site at approximately 52.3938, 1.1916, which matches the map layout and village context.",
+        "picked_source": "intersect:Harvey Lane x Langmere Road",
+        "sigma_m": 400,
+        "top_lon": 1.1916,
+        "verified_inside_admin_region": true,
+        "top_lat": 52.3938,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

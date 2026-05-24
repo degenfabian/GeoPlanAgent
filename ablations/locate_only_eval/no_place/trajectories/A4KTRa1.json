@@ -1,0 +1,176 @@
+{
+  "case": "A4KTRa1",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5450685298508,
+    "top_lon": -0.14192738168126,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "grid_ref:528942 E 184544 N",
+    "evidence": "The grid reference (528942, 184544) is explicitly printed on the map as the 'Centre' and aligns perfectly with the site address (147 Kentish Town Road) and postcode NW1 8PB. Verified inside Camden.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0024599603872435412,
+  "gt_centroids": [
+    {
+      "lat": 51.54506071936761,
+      "lon": -0.14189409918903167
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "grid_ref": 1,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NW1 8PB"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "528942 E 184544 N"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Kentish Town Road",
+        "road_b": "Castle Place",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "NW1 8PB",
+        "lat": 51.544345944375735,
+        "lon": -0.14172606748056557,
+        "admin_district": "Camden London Boro"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "528942 E 184544 N",
+        "lat": 51.54506852985083,
+        "lon": -0.14192738168126026
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Camden for: ['Castle Place']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Camden",
+        "lat": 51.5450685298508,
+        "lon": -0.14192738168126
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5450685298508,
+        "lon": -0.14192738168126,
+        "la": "Camden",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.546390811083704,
+        "la_centroid_lon": -0.15742226323007869
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "sigma_m": 200,
+        "picked_source": "grid_ref:528942 E 184544 N",
+        "top_lat": 51.5450685298508,
+        "verified_inside_admin_region": true,
+        "top_lon": -0.14192738168126,
+        "evidence": "The grid reference (528942, 184544) is explicitly printed on the map as the 'Centre' and aligns perfectly with the site address (147 Kentish Town Road) and postcode NW1 8PB. Verified inside Camden."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

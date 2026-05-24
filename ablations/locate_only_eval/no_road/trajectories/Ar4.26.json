@@ -1,0 +1,344 @@
+{
+  "case": "Ar4.26",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.8167267110411,
+    "top_lon": -0.357077203368061,
+    "sigma_m": 1500,
+    "confidence": "med",
+    "picked_source": "place:Harpenden",
+    "evidence": "Located via Harpenden town center. The site is the Southdown Industrial Estate, which is a well-known area in the southern part of Harpenden, though specific road intersections failed to resolve in the geocoder. \u03c3 reflects the town-scale search.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.1595819597109387,
+  "gt_centroids": [
+    {
+      "lat": 51.808926191972226,
+      "lon": -0.3458820829280019
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 8,
+      "intersect": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Southdown Industrial Estate, Harpenden",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Meadow Walk",
+        "road_b": "Marlborough Park",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Marlborough Park, Harpenden",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Southdown Industrial Estate, Harpenden",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Meadow Walk",
+          "Marlborough Park"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Marlborough Park, Harpenden",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Meadow Walk, Harpenden",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Queens Road, Harpenden",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Southdown Industrial Estate",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Meadow Walk, Harpenden",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Queens Road, Harpenden",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Southdown Industrial Estate",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Southdown Industrial Estate"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Meadow Walk, Harpenden"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Southdown Industrial Estate",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Meadow Walk, Harpenden",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Harpenden"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Harpenden",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Harpenden",
+            "type": "town",
+            "lat": 51.81672671104109,
+            "lon": -0.35707720336806087,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden",
+            "type": "railway station",
+            "lat": 51.81445410792542,
+            "lon": -0.35082003033856496,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden Walk",
+            "type": "named road",
+            "lat": 54.56064093729937,
+            "lon": -1.199356070341199,
+            "admin_district": null,
+            "county": "Middlesbrough"
+          },
+          {
+            "name": "Harpenden Close",
+            "type": "named road",
+            "lat": 53.56927610649841,
+            "lon": -1.0184794945004745,
+            "admin_district": "Doncaster",
+            "county": null
+          },
+          {
+            "name": "Harpenden Square",
+            "type": "named road",
+            "lat": 52.98365668121285,
+            "lon": -1.204243729056542,
+            "admin_district": null,
+            "county": "City of Nottingham"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "med",
+        "sigma_m": 1500,
+        "verified_inside_admin_region": true,
+        "evidence": "Located via Harpenden town center. The site is the Southdown Industrial Estate, which is a well-known area in the southern part of Harpenden, though specific road intersections failed to resolve in the geocoder. \u03c3 reflects the town-scale search.",
+        "top_lon": -0.357077203368061,
+        "top_lat": 51.8167267110411,
+        "picked_source": "place:Harpenden"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

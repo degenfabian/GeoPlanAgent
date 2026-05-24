@@ -1,0 +1,168 @@
+{
+  "case": "CPA4(1a)",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5618448838046,
+    "top_lon": 0.584868163949162,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:SS7 1TF",
+    "evidence": "The postcode SS7 1TF from pdf_info resolves to Florence Gardens in Hadleigh, which matches the map labels and site address perfectly. Verified inside Castle Point.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.5634617022683317,
+  "gt_centroids": [
+    {
+      "lat": 51.55376851197057,
+      "lon": 0.6033805620421716
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Florence Gardens, Hadleigh"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "SS7 1TF",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Florence Gardens, Hadleigh",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "SS7 1TF",
+        "la_filter": "Castle Point",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "SS7 1TF",
+            "type": "postcode",
+            "lat": 51.56184488380458,
+            "lon": 0.5848681639491619,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.5618448838046,
+        "lon": 0.584868163949162,
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5618448838046,
+        "lon": 0.584868163949162,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 0.584868163949162,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.5618448838046,
+        "confidence": "high",
+        "picked_source": "postcode:SS7 1TF",
+        "sigma_m": 200,
+        "evidence": "The postcode SS7 1TF from pdf_info resolves to Florence Gardens in Hadleigh, which matches the map labels and site address perfectly. Verified inside Castle Point."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

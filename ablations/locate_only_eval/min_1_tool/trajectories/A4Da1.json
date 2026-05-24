@@ -1,0 +1,303 @@
+{
+  "case": "A4Da1",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.3827364808621,
+    "top_lon": -4.13403263890665,
+    "sigma_m": 2500,
+    "confidence": "high",
+    "picked_source": "place:Mutley",
+    "evidence": "The map covers a large central area of Plymouth. The centroid of the labeled neighborhoods (Peverell, Mutley, Central Park) falls consistently around 50.385, -4.138. Mutley and Peverell are central to the red boundary.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1968752645975162,
+  "gt_centroids": [
+    {
+      "lat": 50.38123361171922,
+      "lon": -4.132564697066778
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Central Park",
+        "la": "Plymouth"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Central Park",
+        "la_filter": "Plymouth",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Central Park Avenue",
+            "type": "named road",
+            "lat": 50.37871789198462,
+            "lon": -4.144682754100963,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Plymouth",
+        "query": "Mutley Plain"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mutley Plain",
+        "la_filter": "Plymouth",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Mutley Plain",
+            "type": "named road",
+            "lat": 50.382003678546496,
+            "lon": -4.133774673038509,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          },
+          {
+            "name": "Mutley Plain Lane",
+            "type": "named road",
+            "lat": 50.38345418917496,
+            "lon": -4.133642853064901,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Plymouth City Centre",
+        "la": "Plymouth"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Plymouth City Centre",
+        "la_filter": "Plymouth",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Plymouth",
+        "query": "Peverell"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Peverell",
+        "la_filter": "Plymouth",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Peverell",
+            "type": "suburban area",
+            "lat": 50.39146112207583,
+            "lon": -4.143316306013104,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          },
+          {
+            "name": "Peverell Park Road",
+            "type": "named road",
+            "lat": 50.39053226773576,
+            "lon": -4.142472469173609,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          },
+          {
+            "name": "Peverell Terrace",
+            "type": "named road",
+            "lat": 50.38614592572759,
+            "lon": -4.140361498599418,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Plymouth",
+        "query": "Mutley"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mutley",
+        "la_filter": "Plymouth",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Mutley",
+            "type": "suburban area",
+            "lat": 50.38273648086205,
+            "lon": -4.134032638906647,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          },
+          {
+            "name": "Mutley Road",
+            "type": "named road",
+            "lat": 50.386768906463644,
+            "lon": -4.132891316668755,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          },
+          {
+            "name": "Mutley Plain Lane",
+            "type": "named road",
+            "lat": 50.38345418917496,
+            "lon": -4.133642853064901,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          },
+          {
+            "name": "Mutley Plain",
+            "type": "named road",
+            "lat": 50.382003678546496,
+            "lon": -4.133774673038509,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 2500,
+        "verified_inside_admin_region": true,
+        "evidence": "The map covers a large central area of Plymouth. The centroid of the labeled neighborhoods (Peverell, Mutley, Central Park) falls consistently around 50.385, -4.138. Mutley and Peverell are central to the red boundary.",
+        "confidence": "high",
+        "picked_source": "place:Mutley",
+        "top_lat": 50.3827364808621,
+        "top_lon": -4.13403263890665
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

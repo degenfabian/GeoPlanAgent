@@ -1,0 +1,431 @@
+{
+  "case": "Art4D05",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.6860035191737,
+    "top_lon": -2.10989295829466,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Wareham",
+    "evidence": "The map shows the entire historic center of Wareham, Dorset. The town centroid for Wareham (50.686, -2.1098) aligns perfectly with the intersection of North, South, East, and West Streets shown on the map. \u03c3=500m covers the conservation area boundary.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.08224423415843087,
+  "gt_centroids": [
+    {
+      "lat": 50.68673641754148,
+      "lon": -2.1100502225839315
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 17,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wareham",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wareham",
+        "la_filter": "Purbeck",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Wareham",
+            "type": "town",
+            "lat": 50.68600351917367,
+            "lon": -2.1098929582946635,
+            "admin_district": null,
+            "county": "Dorset"
+          },
+          {
+            "name": "Wareham",
+            "type": "railway station",
+            "lat": 50.69275205433661,
+            "lon": -2.115062084964544,
+            "admin_district": null,
+            "county": "Dorset"
+          },
+          {
+            "name": "Wareham Way",
+            "type": "named road",
+            "lat": 54.702602704822574,
+            "lon": -1.6984128682417754,
+            "admin_district": null,
+            "county": "County Durham"
+          },
+          {
+            "name": "Wareham Road",
+            "type": "named road",
+            "lat": 53.83706633841845,
+            "lon": -3.0223602606410522,
+            "admin_district": null,
+            "county": "Blackpool"
+          },
+          {
+            "name": "Wareham Close",
+            "type": "named road",
+            "lat": 53.790609393163884,
+            "lon": -2.7536731515242887,
+            "admin_district": "Preston",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "East Street",
+        "la": "Purbeck",
+        "road_a": "North Street"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "North Street",
+          "East Street"
+        ],
+        "la_filter": "Purbeck",
+        "n_intersections": 43,
+        "intersections": [
+          {
+            "lat": 58.20588,
+            "lon": -6.354991,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.78373,
+            "lon": -2.315045,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.802513,
+            "lon": -2.319028,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.620746,
+            "lon": -2.149042,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.494372,
+            "lon": -2.623661,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.53658,
+            "lon": -1.378871,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.641949,
+            "lon": -0.607693,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 52.67626,
+            "lon": -2.028931,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.191236,
+            "lon": -1.313753,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 52.601023,
+            "lon": -1.083222,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Purbeck",
+        "query": "The Quay, Wareham"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Quay, Wareham",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Purbeck",
+        "query": "St Mary's Church, Wareham"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church, Wareham",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Purbeck",
+        "query": "Westport House, Wareham"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Westport House, Wareham",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "North Street",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "North Street",
+        "la_filter": "Purbeck",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "North Street",
+            "lat": 58.208272723202086,
+            "lon": -6.35215826998312,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "North Street",
+            "lat": 58.20601093128158,
+            "lon": -6.354823805983767,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "North Street",
+            "lat": 57.881487832153624,
+            "lon": -4.02911263907028,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "North Street",
+            "lat": 57.63843903347955,
+            "lon": -3.3064530816515587,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "North Street",
+            "lat": 57.638607332660655,
+            "lon": -3.305814223024209,
+            "in_la": "Purbeck"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.1098,
+        "la": "Purbeck",
+        "lat": 50.686
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": false,
+        "error": "No polygon for LA 'Purbeck'"
+      }
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Wareham",
+        "sigma_m": 500,
+        "top_lat": 50.6860035191737,
+        "confidence": "high",
+        "verified_inside_admin_region": false,
+        "top_lon": -2.10989295829466,
+        "evidence": "The map shows the entire historic center of Wareham, Dorset. The town centroid for Wareham (50.686, -2.1098) aligns perfectly with the intersection of North, South, East, and West Streets shown on the map. \u03c3=500m covers the conservation area boundary."
+      }
+    },
+    {
+      "turn": 16,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

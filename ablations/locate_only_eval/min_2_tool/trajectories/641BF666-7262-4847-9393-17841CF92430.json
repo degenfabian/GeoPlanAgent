@@ -1,0 +1,177 @@
+{
+  "case": "641BF666-7262-4847-9393-17841CF92430",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.2748787834997,
+    "top_lon": 1.33964552532809,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "place:Sandwich",
+    "evidence": "The map shows the Sandwich Walled Town Conservation Area. The 'Sandwich' town center coordinate from OS Open Names falls exactly within the Dover district and matches the grid references (TR32/33 57/58) and map visual.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1155236676309626,
+  "gt_centroids": [
+    {
+      "lat": 51.27589222175795,
+      "lon": 1.340011153800493
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 3,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandwich",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandwich",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Sandwich",
+            "type": "town",
+            "lat": 51.27487878349973,
+            "lon": 1.339645525328093,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sandwich",
+            "type": "railway station",
+            "lat": 51.269601201081876,
+            "lon": 1.3430194575279453,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sandwich Bay Estate",
+            "type": "village",
+            "lat": 51.266146317085045,
+            "lon": 1.384951756073922,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sandwich Road",
+            "type": "named road",
+            "lat": 51.22781542457786,
+            "lon": 1.2464098698834851,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sandwich Road",
+            "type": "section of named road",
+            "lat": 51.24094997096471,
+            "lon": 1.3521894500848424,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lon": 1.33964552532809,
+        "lat": 51.2748787834997
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.2748787834997,
+        "lon": 1.33964552532809,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Sandwich",
+        "sigma_m": 1000,
+        "evidence": "The map shows the Sandwich Walled Town Conservation Area. The 'Sandwich' town center coordinate from OS Open Names falls exactly within the Dover district and matches the grid references (TR32/33 57/58) and map visual.",
+        "top_lon": 1.33964552532809,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.2748787834997,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

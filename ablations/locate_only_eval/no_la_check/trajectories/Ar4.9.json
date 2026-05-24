@@ -1,0 +1,353 @@
+{
+  "case": "Ar4.9",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.73684,
+    "top_lon": -0.25115,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Roestock",
+    "evidence": "The site is Colney Heath Farm, located between Coursers Road and the Roestock area. Geocoding 'Roestock' and 'Fellowes Lane' places the site precisely at the southern edge of the Roestock suburban area in Colney Heath.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1546241750936398,
+  "gt_centroids": [
+    {
+      "lat": 51.73563545921934,
+      "lon": -0.25227196148451597
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 1,
+      "road": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colney Heath Farm",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colney Heath",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Coursers Road",
+        "la": "St Albans",
+        "road_b": "Fellowes Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Coursers Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney Heath Farm",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney Heath",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Colney Heath",
+            "type": "village",
+            "lat": 51.74017015859061,
+            "lon": -0.26208935629229957,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Colney Heath",
+            "type": "other landcover",
+            "lat": 51.73322247750252,
+            "lon": -0.257446573161603,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Colney Heath Lane",
+            "type": "section of named road",
+            "lat": 51.747897315851844,
+            "lon": -0.2861734171940435,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Colney Heath Lane",
+            "type": "named road",
+            "lat": 51.746436883474956,
+            "lon": -0.28160768163178257,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Colney Heath Lakes",
+            "type": "inland water",
+            "lat": 51.742793676274786,
+            "lon": -0.260120148225823,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Fellowes Lane']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Coursers Road",
+        "la_filter": "St Albans",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Coursers Road",
+            "lat": 51.73561525170265,
+            "lon": -0.2558181591656008,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Coursers Road",
+            "lat": 51.73726975167276,
+            "lon": -0.255040152173795,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Coursers Road",
+            "lat": 51.733691830656134,
+            "lon": -0.2554807791787432,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Coursers Road",
+            "lat": 51.73451000184401,
+            "lon": -0.2553948208103064,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Roestock",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Mill House",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Fellowes Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Roestock",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Roestock",
+            "type": "suburban area",
+            "lat": 51.73684269400088,
+            "lon": -0.2511520850322036,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Roestock Gardens",
+            "type": "named road",
+            "lat": 51.740496615738905,
+            "lon": -0.24653542576753495,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Roestock Lane",
+            "type": "named road",
+            "lat": 51.74037513879142,
+            "lon": -0.248640314439276,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Mill House",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Fellowes Lane",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Fellowes Lane",
+            "lat": 51.73692657454903,
+            "lon": -0.25026307059603686,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Fellowes Lane",
+            "lat": 51.73702772713334,
+            "lon": -0.2484818862138411,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Fellowes Lane",
+            "lat": 51.736844975680015,
+            "lon": -0.24725544284359222,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.73684,
+        "evidence": "The site is Colney Heath Farm, located between Coursers Road and the Roestock area. Geocoding 'Roestock' and 'Fellowes Lane' places the site precisely at the southern edge of the Roestock suburban area in Colney Heath.",
+        "sigma_m": 400,
+        "confidence": "high",
+        "picked_source": "place:Roestock",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.25115
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

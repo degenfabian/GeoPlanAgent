@@ -1,0 +1,279 @@
+{
+  "case": "12:00161:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5566759174407,
+    "top_lon": 1.43312587450857,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Thurton",
+    "evidence": "The map shows St Ethelbert's Close in Thurton. The geocoder for 'Thurton' village returns a point at 52.5566, 1.4331, which aligns perfectly with the village center and the road layout shown on the map (Loddon Road/A146). Verified inside South Norfolk.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.15258539676214566,
+  "gt_centroids": [
+    {
+      "lat": 52.55621778771914,
+      "lon": 1.435253412922537
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Ethelbert's Close, Thurton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Thurton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Ethelbert's Close, Thurton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thurton",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Thurton",
+            "type": "village",
+            "lat": 52.55667591744069,
+            "lon": 1.4331258745085702,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Thurton Primary School",
+            "type": "primary education",
+            "lat": 52.55779720235161,
+            "lon": 1.43198866253166,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Vale Road, Thurton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "St Ethelbert's Church, Thurton"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Vale Road, Thurton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Ethelbert's Church, Thurton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Ethelbert's Close",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.5566759174407,
+        "lon": 1.43312587450857,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Ethelbert's Close",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5566759174407,
+        "lon": 1.43312587450857,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Ethelbert's Close, Norwich"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Ethelbert's Close, Norwich",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Thurton",
+        "evidence": "The map shows St Ethelbert's Close in Thurton. The geocoder for 'Thurton' village returns a point at 52.5566, 1.4331, which aligns perfectly with the village center and the road layout shown on the map (Loddon Road/A146). Verified inside South Norfolk.",
+        "sigma_m": 300,
+        "top_lat": 52.5566759174407,
+        "verified_inside_admin_region": true,
+        "top_lon": 1.43312587450857,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

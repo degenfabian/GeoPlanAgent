@@ -1,0 +1,295 @@
+{
+  "case": "SSA404",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.656224,
+    "top_lon": -2.082063,
+    "sigma_m": 1500,
+    "confidence": "med",
+    "picked_source": "place:Shareshill",
+    "evidence": "The map shows a site adjacent to a 'Filling Station' on the A460 near Shareshill. While specific building names didn't return hits, the village centroid for Shareshill is the primary anchor. The site is likely just north or south of the village on the A460.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 11.563083701696495,
+  "gt_centroids": [
+    {
+      "lat": 52.758470568397684,
+      "lon": -2.050772840424936
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bell View Farm",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Shareshill",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "The Old School House Shareshill"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bell View Farm",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shareshill",
+        "la_filter": "South Staffordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Shareshill",
+            "type": "village",
+            "lat": 52.6562240829951,
+            "lon": -2.0820631442914683,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Old School House Shareshill",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "A460 Shareshill",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "New Road Shareshill",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "A460 Shareshill",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "New Road Shareshill",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Old Rectory Shareshill",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Filling Station Shareshill"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Old Rectory Shareshill",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Filling Station Shareshill",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Staffordshire",
+        "lat": 52.656224,
+        "lon": -2.082063
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.656224,
+        "lon": -2.082063,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Shareshill",
+        "verified_inside_admin_region": true,
+        "top_lat": 52.656224,
+        "confidence": "med",
+        "top_lon": -2.082063,
+        "sigma_m": 1500,
+        "evidence": "The map shows a site adjacent to a 'Filling Station' on the A460 near Shareshill. While specific building names didn't return hits, the village centroid for Shareshill is the primary anchor. The site is likely just north or south of the village on the A460."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

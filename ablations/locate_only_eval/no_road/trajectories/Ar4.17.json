@@ -1,0 +1,339 @@
+{
+  "case": "Ar4.17",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.776679570069,
+    "top_lon": -0.336803310109648,
+    "sigma_m": 1000,
+    "confidence": "med",
+    "picked_source": "place:Harpenden Road",
+    "evidence": "The site is located on Harpenden Road in St Albans. The map shows a large hatched area adjacent to the road with residential development to the south and east. The coordinates correspond to a central section of Harpenden Road within the St Albans district.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.18707339264773262,
+  "gt_centroids": [
+    {
+      "lat": 51.77509274833537,
+      "lon": -0.3377066978567879
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 17,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Harpenden Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Childwickbury Estate",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Harpenden Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Harpenden Road",
+            "type": "section of named road",
+            "lat": 51.807996281936695,
+            "lon": -0.30143215039001275,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden Road",
+            "type": "named road",
+            "lat": 51.77667957006904,
+            "lon": -0.3368033101096478,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden Road",
+            "type": "named road",
+            "lat": 51.80939869726702,
+            "lon": -0.30764605036200976,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden Road",
+            "type": "section of named road",
+            "lat": 51.76645258821865,
+            "lon": -0.33530971395461395,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden",
+            "type": "town",
+            "lat": 51.81672671104109,
+            "lon": -0.35707720336806087,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Childwickbury Estate",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Childwickbury"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Childwickbury",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Childwickbury"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Childwickbury",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Childwick Bury"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Childwick Bury",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Childwickbury House"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Childwickbury House",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Ancient Briton"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ancient Briton",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.776679570069,
+        "la": "St Albans",
+        "lon": -0.336803310109648
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.776679570069,
+        "lon": -0.336803310109648,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is located on Harpenden Road in St Albans. The map shows a large hatched area adjacent to the road with residential development to the south and east. The coordinates correspond to a central section of Harpenden Road within the St Albans district.",
+        "sigma_m": 1000,
+        "picked_source": "place:Harpenden Road",
+        "confidence": "med",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.336803310109648,
+        "top_lat": 51.776679570069
+      }
+    },
+    {
+      "turn": 16,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

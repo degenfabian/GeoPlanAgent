@@ -1,0 +1,260 @@
+{
+  "case": "ARTICLE:210",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.173543,
+    "top_lon": 0.044275,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "postcode:CB23 7AE",
+    "evidence": "The map shows a site on the A603 (Wimpole Road) near Barton. Postcode CB23 7AE (Wimpole Road, Barton) aligns perfectly with the road geometry and the location of Orchard Farm relative to the village center.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.38548045249179075,
+  "gt_centroids": [
+    {
+      "lat": 52.17631773644746,
+      "lon": 0.04766381246197953
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 2,
+      "intersect": 1,
+      "postcode": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "Wimpole Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "A603",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Cambridgeshire",
+        "road_b": "A603",
+        "road_a": "Wimpole Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Wimpole Road",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Wimpole Road",
+            "lat": 52.176464295832496,
+            "lon": 0.05781329997235445,
+            "in_la": "South Cambridgeshire"
+          },
+          {
+            "name": "Wimpole Road",
+            "lat": 52.17722984350852,
+            "lon": 0.05966382928145556,
+            "in_la": "South Cambridgeshire"
+          },
+          {
+            "name": "Wimpole Road",
+            "lat": 52.178016725305966,
+            "lon": 0.06192034485238889,
+            "in_la": "South Cambridgeshire"
+          },
+          {
+            "name": "Wimpole Road",
+            "lat": 52.173947457556565,
+            "lon": 0.04817724849277382,
+            "in_la": "South Cambridgeshire"
+          },
+          {
+            "name": "Wimpole Road",
+            "lat": 52.171200717733726,
+            "lon": 0.0386769386873909,
+            "in_la": "South Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "A603",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Cambridgeshire for: ['A603']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CB23 7AY"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CB23 7AE"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CB23 7AY",
+        "lat": 52.18340087985945,
+        "lon": 0.0591220610303019,
+        "admin_district": "South Cambridgeshire District"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CB23 7AE",
+        "lat": 52.17354329645944,
+        "lon": 0.04427574059066301,
+        "admin_district": "South Cambridgeshire District"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 0.044275,
+        "la": "South Cambridgeshire",
+        "lat": 52.173543
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.173543,
+        "lon": 0.044275,
+        "la": "South Cambridgeshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.17283510081104,
+        "la_centroid_lon": 0.08123824327654822
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 400,
+        "evidence": "The map shows a site on the A603 (Wimpole Road) near Barton. Postcode CB23 7AE (Wimpole Road, Barton) aligns perfectly with the road geometry and the location of Orchard Farm relative to the village center.",
+        "top_lat": 52.173543,
+        "top_lon": 0.044275,
+        "verified_inside_admin_region": true,
+        "picked_source": "postcode:CB23 7AE",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

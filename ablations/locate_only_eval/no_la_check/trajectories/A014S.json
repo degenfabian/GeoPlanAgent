@@ -1,0 +1,184 @@
+{
+  "case": "A014S",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.577973,
+    "top_lon": -0.353028,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:PE5 7AG",
+    "evidence": "The site address '2a Maffit Road' and postcode PE5 7AG align perfectly with the map labels. The postcode centroid is within 150m of the Maffit Road/Main Street intersection in Ailsworth.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.04310778830172786,
+  "gt_centroids": [
+    {
+      "lat": 52.57763879297042,
+      "lon": -0.3527046937621966
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 1,
+      "intersect": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 5,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "PE5 7AG"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Ailsworth",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Main Street",
+        "road_a": "Maffit Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "PE5 7AG",
+        "lat": 52.57797337985324,
+        "lon": -0.3530275907381686,
+        "admin_district": "City of Peterborough (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ailsworth",
+        "la_filter": "Peterborough",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Ailsworth",
+            "type": "village",
+            "lat": 52.57578709203318,
+            "lon": -0.35291767222683723,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Ailsworth Heath",
+            "type": "woodland or forest",
+            "lat": 52.60323622687576,
+            "lon": -0.35423606392363627,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Maffit Road",
+          "Main Street"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.576518,
+            "lon": -0.352588,
+            "roads": [
+              "Maffit Road",
+              "Main Street"
+            ]
+          },
+          {
+            "lat": 52.580088,
+            "lon": -0.351856,
+            "roads": [
+              "Maffit Road",
+              "Main Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site address '2a Maffit Road' and postcode PE5 7AG align perfectly with the map labels. The postcode centroid is within 150m of the Maffit Road/Main Street intersection in Ailsworth.",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lon": -0.353028,
+        "top_lat": 52.577973,
+        "picked_source": "postcode:PE5 7AG",
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

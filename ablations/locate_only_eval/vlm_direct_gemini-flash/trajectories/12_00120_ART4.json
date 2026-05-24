@@ -1,0 +1,60 @@
+{
+  "case": "12:00120:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.5715,
+    "lon": 1.1085,
+    "reasoning": "The document describes land at Beckettswell Road, Wymondham, and the provided map shows the site (Westfield) immediately north of the Abbey Church of St Mary and St Thomas of Canterbury."
+  },
+  "err_km": 0.14059804991241773,
+  "gt_centroids": [
+    {
+      "lat": 52.57109670203766,
+      "lon": 1.1065282354951604
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document describes land at Beckettswell Road, Wymondham, and the provided map shows the site (Westfield) immediately north of the Abbey Church of St Mary and St Thomas of Canterbury.",
+        "lon": 1.1085,
+        "lat": 52.5715
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

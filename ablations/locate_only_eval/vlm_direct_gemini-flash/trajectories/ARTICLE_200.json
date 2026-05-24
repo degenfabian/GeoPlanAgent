@@ -1,0 +1,60 @@
+{
+  "case": "ARTICLE:200",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.0485,
+    "lon": 0.0915,
+    "reasoning": "The document describes land in the parish of Great Chishill, specifically Ordnance Survey Parcel No. 14 at Copley Hill, which corresponds to the area shown on the map between Great Chishill and Heydon."
+  },
+  "err_km": 2.807177290616757,
+  "gt_centroids": [
+    {
+      "lat": 52.053896808827176,
+      "lon": 0.05139645012944373
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": 0.0915,
+        "lat": 52.0485,
+        "reasoning": "The document describes land in the parish of Great Chishill, specifically Ordnance Survey Parcel No. 14 at Copley Hill, which corresponds to the area shown on the map between Great Chishill and Heydon."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

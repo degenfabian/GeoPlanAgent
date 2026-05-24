@@ -1,0 +1,60 @@
+{
+  "case": "23:00006:REG_4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.4998,
+    "lon": -0.1348,
+    "reasoning": "The document is an Article 4 direction covering the entire area of the City of Westminster, so the coordinates represent the central area of the borough near City Hall."
+  },
+  "err_km": 2.334921966767087,
+  "gt_centroids": [
+    {
+      "lat": 51.51344560997917,
+      "lon": -0.16044222960568932
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -0.1348,
+        "reasoning": "The document is an Article 4 direction covering the entire area of the City of Westminster, so the coordinates represent the central area of the borough near City Hall.",
+        "lat": 51.4998
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

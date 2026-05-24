@@ -1,0 +1,282 @@
+{
+  "case": "Ar4.19",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.8207,
+    "top_lon": -0.3258,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Lower Luton Road x Valley Rise",
+    "evidence": "The map shows the site at the junction of Lower Luton Road and Valley Road (labeled Valley Rise in OS Open Names). The intersection of Lower Luton Road (51.82077) and Valley Rise (51.82056) provides a precise location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.16026469494481552,
+  "gt_centroids": [
+    {
+      "lat": 51.820129145557885,
+      "lon": -0.3279410214592815
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Lower Luton Road, Wheathampstead"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Valley Road, Wheathampstead"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lower Luton Road, Wheathampstead",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Valley Road, Wheathampstead",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lower Luton Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Valley Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lower Luton Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.819368304791034,
+            "lon": -0.3206500532710065,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.82445398030757,
+            "lon": -0.3400215739838582,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.81664311784696,
+            "lon": -0.3061849579987683,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "named road",
+            "lat": 51.82077334288012,
+            "lon": -0.32648874393529254,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.815364167986104,
+            "lon": -0.29422029700242824,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Valley Road",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Valley Road",
+            "type": "section of named road",
+            "lat": 51.769136411353465,
+            "lon": -0.32610930869861904,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Valley Road",
+            "type": "named road",
+            "lat": 51.76948947388199,
+            "lon": -0.3269078681724741,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Valley Rise",
+            "type": "named road",
+            "lat": 51.82056644575612,
+            "lon": -0.32521956374231614,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Valley Rise",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Valley Rise",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Valley Rise",
+            "type": "named road",
+            "lat": 51.82056644575612,
+            "lon": -0.32521956374231614,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "sigma_m": 200,
+        "evidence": "The map shows the site at the junction of Lower Luton Road and Valley Road (labeled Valley Rise in OS Open Names). The intersection of Lower Luton Road (51.82077) and Valley Rise (51.82056) provides a precise location.",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.8207,
+        "top_lon": -0.3258,
+        "picked_source": "intersect:Lower Luton Road x Valley Rise"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

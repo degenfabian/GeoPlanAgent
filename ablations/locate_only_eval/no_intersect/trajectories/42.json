@@ -1,0 +1,209 @@
+{
+  "case": "42",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4875528823499,
+    "top_lon": -0.165368239393529,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:SW3 4BA",
+    "evidence": "The site address '43 Shawfield Street' matches the postcode SW3 4BA, which is located on Shawfield Street within the correct Local Authority (Kensington and Chelsea). The road centroid for Shawfield Street also aligns perfectly with this location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.032017694598395326,
+  "gt_centroids": [
+    {
+      "lat": 51.48731926229509,
+      "lon": -0.1650979234972669
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 2,
+      "place": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SW3 4BA"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "W8 7NX"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "43 Shawfield Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SW3 4BA",
+        "lat": 51.48755288234987,
+        "lon": -0.16536823939352874,
+        "admin_district": "Kensington and Chelsea London Boro"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "W8 7NX",
+        "lat": 51.50238715550191,
+        "lon": -0.19528981656192676,
+        "admin_district": "Kensington and Chelsea London Boro"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "43 Shawfield Street",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Shawfield Street",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "lon": -0.165368239393529,
+        "lat": 51.4875528823499
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Shawfield Street",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Shawfield Street",
+            "lat": 51.48754592229355,
+            "lon": -0.16549815369441173,
+            "in_la": "Kensington and Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.4875528823499,
+        "lon": -0.165368239393529,
+        "la": "Kensington and Chelsea",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.50120516305225,
+        "la_centroid_lon": -0.19222073817151708
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site address '43 Shawfield Street' matches the postcode SW3 4BA, which is located on Shawfield Street within the correct Local Authority (Kensington and Chelsea). The road centroid for Shawfield Street also aligns perfectly with this location.",
+        "sigma_m": 200,
+        "picked_source": "postcode:SW3 4BA",
+        "top_lon": -0.165368239393529,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.4875528823499,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

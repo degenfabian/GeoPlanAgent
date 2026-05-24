@@ -1,0 +1,277 @@
+{
+  "case": "22",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5001,
+    "top_lon": -0.1895,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Kensington Square",
+    "evidence": "The site is 17 Kensington Square, located between Kensington Square and South End. Geocoding Kensington Square and Ansdell Terrace places the site at approximately 51.5001, -0.1895, which is consistent with the map layout.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.022945979387645834,
+  "gt_centroids": [
+    {
+      "lat": 51.499906536446645,
+      "lon": -0.18961534201466854
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "17 Kensington Square"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Kensington Square",
+        "road_b": "South End",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Esmond Court"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "17 Kensington Square",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Kensington Square",
+          "South End"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Esmond Court",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kensington Square",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Ansdell Terrace"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Maria Assumpta College",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kensington Square",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Kensington Square",
+            "type": "named road",
+            "lat": 51.5008161005758,
+            "lon": -0.19020821727341394,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ansdell Terrace",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Ansdell Terrace",
+            "type": "named road",
+            "lat": 51.4995457949044,
+            "lon": -0.18888981433696203,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Maria Assumpta College",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.1895,
+        "la": "Kensington and Chelsea",
+        "lat": 51.5001
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5001,
+        "lon": -0.1895,
+        "la": "Kensington and Chelsea",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.50120516305225,
+        "la_centroid_lon": -0.19222073817151708
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "evidence": "The site is 17 Kensington Square, located between Kensington Square and South End. Geocoding Kensington Square and Ansdell Terrace places the site at approximately 51.5001, -0.1895, which is consistent with the map layout.",
+        "top_lon": -0.1895,
+        "confidence": "high",
+        "picked_source": "place:Kensington Square",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.5001
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

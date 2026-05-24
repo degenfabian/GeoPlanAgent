@@ -1,0 +1,219 @@
+{
+  "case": "Ar4.16",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.777942,
+    "top_lon": -0.319985,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Sandridgebury Lane",
+    "evidence": "The map shows a site on Sandridgebury Lane, St Albans, adjacent to a railway line. Geocoding Sandridgebury Lane in St Albans provides a consistent set of coordinates. The picked point is on the lane near the railway crossing visible on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.19976744383925846,
+  "gt_centroids": [
+    {
+      "lat": 51.77618696062137,
+      "lon": -0.32060558921712295
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 1,
+      "place": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Sandridgebury Lane"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Sandridgebury Lane",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Sandridgebury Lane",
+            "lat": 51.78195123008695,
+            "lon": -0.30910713276599033,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "lat": 51.781700707603704,
+            "lon": -0.3134509340415194,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "lat": 51.780797369969925,
+            "lon": -0.315209456495657,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "lat": 51.781276622912095,
+            "lon": -0.3143394689755643,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "lat": 51.781101044292974,
+            "lon": -0.3053292560364684,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandridgebury Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandridgebury Lane",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Sandridgebury Lane",
+            "type": "named road",
+            "lat": 51.77794207602556,
+            "lon": -0.31998509789863505,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "type": "section of named road",
+            "lat": 51.77126545704176,
+            "lon": -0.33229186021128776,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "type": "section of named road",
+            "lat": 51.781167203546985,
+            "lon": -0.3053683110238039,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.319985,
+        "lat": 51.777942,
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.777942,
+        "lon": -0.319985,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.319985,
+        "verified_inside_admin_region": true,
+        "sigma_m": 400,
+        "top_lat": 51.777942,
+        "confidence": "high",
+        "picked_source": "road:Sandridgebury Lane",
+        "evidence": "The map shows a site on Sandridgebury Lane, St Albans, adjacent to a railway line. Geocoding Sandridgebury Lane in St Albans provides a consistent set of coordinates. The picked point is on the lane near the railway crossing visible on the map."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

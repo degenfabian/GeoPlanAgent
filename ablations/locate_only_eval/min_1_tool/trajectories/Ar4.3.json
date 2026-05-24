@@ -1,0 +1,254 @@
+{
+  "case": "Ar4.3",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.75455,
+    "top_lon": -0.34632,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Hill Street",
+    "evidence": "The map shows an Article 4 area covering Fishpool Street, Verulam Road, and Hill Street in St Albans. Geocoding these roads places the center of the area around Hill Street and Fishpool Street. Picked Hill Street as a central point within the cluster.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2080296244902989,
+  "gt_centroids": [
+    {
+      "lat": 51.75286113030965,
+      "lon": -0.34762018722537785
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Fishpool Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Verulam Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Romeland Hill"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fishpool Street",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Fishpool Street",
+            "type": "named road",
+            "lat": 51.75238587440385,
+            "lon": -0.34846025654132984,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Verulam Road",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Verulam Road",
+            "type": "named road",
+            "lat": 51.75481647026237,
+            "lon": -0.3448219093007125,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Verulam School",
+            "type": "secondary education",
+            "lat": 51.75563982134087,
+            "lon": -0.31606055313154313,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Romeland Hill",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Romeland Hill",
+            "type": "named road",
+            "lat": 51.75165357019148,
+            "lon": -0.3437061004847717,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Hill Street"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hill Street",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Hill Street",
+            "type": "named road",
+            "lat": 51.75454987091043,
+            "lon": -0.3463239621217417,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Hilltop Walk",
+            "type": "named road",
+            "lat": 51.81216192111825,
+            "lon": -0.33555541650011805,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Hilltop",
+            "type": "named road",
+            "lat": 51.80251543045121,
+            "lon": -0.4070950744592815,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Hillside Road",
+            "type": "named road",
+            "lat": 51.82531917766219,
+            "lon": -0.36261257913892825,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Hillside Road",
+            "type": "named road",
+            "lat": 51.75640738885074,
+            "lon": -0.3295212972791756,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lat": 51.75455,
+        "verified_inside_admin_region": true,
+        "top_lon": -0.34632,
+        "evidence": "The map shows an Article 4 area covering Fishpool Street, Verulam Road, and Hill Street in St Albans. Geocoding these roads places the center of the area around Hill Street and Fishpool Street. Picked Hill Street as a central point within the cluster.",
+        "picked_source": "place:Hill Street",
+        "sigma_m": 400
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

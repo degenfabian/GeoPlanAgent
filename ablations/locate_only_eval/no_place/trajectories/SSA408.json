@@ -1,0 +1,206 @@
+{
+  "case": "SSA408",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5574,
+    "top_lon": -2.2283,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Ebstree Road",
+    "evidence": "The site is 'Greenacres' on Ebstree Road in Seisdon. The road search in South Staffordshire returned multiple segments of Ebstree Road near Seisdon. Postcode WV8 1PX is the council office (letterhead). The road centroid provides a reliable location for this specific address.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06184689277214748,
+  "gt_centroids": [
+    {
+      "lat": 52.557952191605786,
+      "lon": -2.228190329645824
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 2,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "WV8 1PX"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "B1 2DT"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Ebstree Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "WV8 1PX",
+        "lat": 52.62566656951965,
+        "lon": -2.191960842481458,
+        "admin_district": "South Staffordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'B1 2DT' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Ebstree Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ebstree Road",
+            "lat": 52.554020881302456,
+            "lon": -2.23219510444193,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Ebstree Road",
+            "lat": 52.55649809933203,
+            "lon": -2.229584884150747,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Ebstree Road",
+            "lat": 52.55742761305777,
+            "lon": -2.228304054764972,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Ebstree Road",
+            "lat": 52.557453221778125,
+            "lon": -2.228217310085956,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Ebstree Road",
+            "lat": 52.55823517262802,
+            "lon": -2.2253271409121194,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.5574,
+        "la": "South Staffordshire",
+        "lon": -2.2283
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5574,
+        "lon": -2.2283,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -2.2283,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 52.5574,
+        "evidence": "The site is 'Greenacres' on Ebstree Road in Seisdon. The road search in South Staffordshire returned multiple segments of Ebstree Road near Seisdon. Postcode WV8 1PX is the council office (letterhead). The road centroid provides a reliable location for this specific address.",
+        "picked_source": "road:Ebstree Road",
+        "sigma_m": 500
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

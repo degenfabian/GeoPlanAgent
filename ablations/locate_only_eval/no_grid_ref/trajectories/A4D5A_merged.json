@@ -1,0 +1,374 @@
+{
+  "case": "A4D5A_merged",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.58694,
+    "top_lon": -0.229978,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:The Burroughs x Burroughs Gardens",
+    "evidence": "The site is located at the junction of The Burroughs and Burroughs Gardens in Hendon. The intersection tool provided a precise coordinate for this junction, which aligns with the map labels and the site address. Verified inside Barnet.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06043446121016549,
+  "gt_centroids": [
+    {
+      "lat": 51.587244496142766,
+      "lon": -0.23070257148186343
+    },
+    {
+      "lat": 51.58769572001404,
+      "lon": -0.22960789809379725
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "The Burroughs, Hendon"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Burroughs Gardens",
+        "la": "Barnet",
+        "road_a": "The Burroughs"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hendon Methodist Church",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Burroughs, Hendon",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Burroughs",
+          "Burroughs Gardens"
+        ],
+        "la_filter": "Barnet",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.58694,
+            "lon": -0.229978,
+            "roads": [
+              "The Burroughs",
+              "Burroughs Gardens"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hendon Methodist Church",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Hendon Library"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Hendon Town Hall"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Brampton Court",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hendon Library",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hendon Town Hall",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Brampton Court",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Brampton Court",
+            "type": "named road",
+            "lat": 55.093765911362645,
+            "lon": -1.5712395897711031,
+            "admin_district": null,
+            "county": "Northumberland"
+          },
+          {
+            "name": "Brampton Court",
+            "type": "named road",
+            "lat": 54.783916666190926,
+            "lon": -1.3522175106294547,
+            "admin_district": null,
+            "county": "County Durham"
+          },
+          {
+            "name": "Brampton Court",
+            "type": "named road",
+            "lat": 53.60409680122557,
+            "lon": -1.2861034470072883,
+            "admin_district": "Wakefield",
+            "county": null
+          },
+          {
+            "name": "Brampton Court",
+            "type": "named road",
+            "lat": 53.451861033235154,
+            "lon": -2.6851229582537086,
+            "admin_district": "St. Helens",
+            "county": null
+          },
+          {
+            "name": "Brampton Court",
+            "type": "named road",
+            "lat": 53.02758436392887,
+            "lon": -1.4539415797976196,
+            "admin_district": "Amber Valley",
+            "county": "Derbyshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Barnet",
+        "query": "The Burroughs"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Burroughs",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Burroughs",
+            "lat": 51.58763195713867,
+            "lon": -0.22932329924211506,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "The Burroughs",
+            "lat": 51.588371125692916,
+            "lon": -0.22862019884645288,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "The Burroughs",
+            "lat": 51.58899894003767,
+            "lon": -0.2282132290441737,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "The Burroughs",
+            "lat": 51.589551706245864,
+            "lon": -0.22782670807119795,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "The Burroughs",
+            "lat": 51.586206778124,
+            "lon": -0.23061491709890847,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.229978,
+        "la": "Barnet",
+        "lat": 51.58694
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.58694,
+        "lon": -0.229978,
+        "la": "Barnet",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.616028526273034,
+        "la_centroid_lon": -0.21000945769264093
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.58694,
+        "top_lon": -0.229978,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is located at the junction of The Burroughs and Burroughs Gardens in Hendon. The intersection tool provided a precise coordinate for this junction, which aligns with the map labels and the site address. Verified inside Barnet.",
+        "picked_source": "intersect:The Burroughs x Burroughs Gardens",
+        "confidence": "high",
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,267 @@
+{
+  "case": "ART4:15:00001",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.933808,
+    "top_lon": -1.805977,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Marl Lane x Puddleslosh Lane",
+    "evidence": "The site is bounded by Marl Lane and Puddleslosh Lane. The intersection of these two roads matches the map geometry perfectly. Postcode SP6 1AS is nearby in Fordingbridge, while SO43 7PA is the council office (Lyndhurst).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.40117503720346825,
+  "gt_centroids": [
+    {
+      "lat": 50.935590098936395,
+      "lon": -1.8009992695298243
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 2,
+      "place": 3,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SP6 1AS"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SO43 7PA"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Forres Sandle Manor School",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Puddleslosh Lane",
+        "road_a": "Marl Lane",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SP6 1AS",
+        "lat": 50.92693213792325,
+        "lon": -1.791103693214475,
+        "admin_district": "New Forest District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SO43 7PA",
+        "lat": 50.87013594749979,
+        "lon": -1.570529769750998,
+        "admin_district": "New Forest District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Forres Sandle Manor School",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Marl Lane",
+          "Puddleslosh Lane"
+        ],
+        "la_filter": "New Forest",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 50.933808,
+            "lon": -1.805977,
+            "roads": [
+              "Marl Lane",
+              "Puddleslosh Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandle Dairy Farm",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Arch Farm Industrial Site",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandle Dairy Farm",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Arch Farm Industrial Site",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 50.933808,
+        "lon": -1.805977,
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.933808,
+        "lon": -1.805977,
+        "la": "New Forest",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.85856472927001,
+        "la_centroid_lon": -1.625406857223459
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is bounded by Marl Lane and Puddleslosh Lane. The intersection of these two roads matches the map geometry perfectly. Postcode SP6 1AS is nearby in Fordingbridge, while SO43 7PA is the council office (Lyndhurst).",
+        "verified_inside_admin_region": true,
+        "sigma_m": 300,
+        "top_lon": -1.805977,
+        "confidence": "high",
+        "picked_source": "intersect:Marl Lane x Puddleslosh Lane",
+        "top_lat": 50.933808
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

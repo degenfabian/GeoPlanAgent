@@ -1,0 +1,209 @@
+{
+  "case": "SSA402",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.665653,
+    "top_lon": -2.052449,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "grid_ref:SJ 965 075",
+    "evidence": "The map explicitly labels 'Blacklees Farm, Saredon'. A grid reference for the Saredon area (SJ 965 075) aligns perfectly with the road layout (Saredon Road) and farm locations shown on the map. Verified inside South Staffordshire.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.2409264119533965,
+  "gt_centroids": [
+    {
+      "lat": 52.65489163017929,
+      "lon": -2.0475757928271063
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 2,
+      "grid_ref": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Blacklees Farm",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Saredon"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SJ 965 075"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Blacklees Farm",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Saredon",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Saredon Road",
+            "lat": 52.661964914242404,
+            "lon": -2.042136737253228,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Saredon Road",
+            "lat": 52.662189715413874,
+            "lon": -2.042844946393609,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Saredon Road",
+            "lat": 52.66412952491533,
+            "lon": -2.0459037664599937,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Saredon Road",
+            "lat": 52.66628826178714,
+            "lon": -2.049134332675043,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Saredon Road",
+            "lat": 52.666907746159715,
+            "lon": -2.049869493574252,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SJ 965 075",
+        "lat": 52.665653151892755,
+        "lon": -2.0524488791852424
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.6656531518928,
+        "la": "South Staffordshire",
+        "lon": -2.05244887918524
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6656531518928,
+        "lon": -2.05244887918524,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 400,
+        "picked_source": "grid_ref:SJ 965 075",
+        "top_lat": 52.665653,
+        "evidence": "The map explicitly labels 'Blacklees Farm, Saredon'. A grid reference for the Saredon area (SJ 965 075) aligns perfectly with the road layout (Saredon Road) and farm locations shown on the map. Verified inside South Staffordshire.",
+        "top_lon": -2.052449,
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

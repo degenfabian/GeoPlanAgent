@@ -1,0 +1,337 @@
+{
+  "case": "A4D9",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4053032055937,
+    "top_lon": -2.63002740096942,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Sherrin Way",
+    "evidence": "The site is 'Land at Sherrin Way' in Bristol. Multiple road centroids for Sherrin Way and Peart Drive (visible on map) cluster tightly around 51.405, -2.630. Postcode BS1 5TR is a letterhead (Bristol City Council). Picked the central Sherrin Way road centroid.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.17467272500381278,
+  "gt_centroids": [
+    {
+      "lat": 51.40610223670786,
+      "lon": -2.63219551263015
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "road": 2,
+      "postcode": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Sherrin Way"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Sherrin Way"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "BS1 2QN"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "BS1 5TR"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Prospect Place",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Bristol",
+        "road_a": "Highridge Road",
+        "road_b": "Sherrin Way"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sherrin Way",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sherrin Way",
+            "type": "named road",
+            "lat": 51.40558322618498,
+            "lon": -2.628953001015419,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Sherrin Way",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Sherrin Way",
+            "lat": 51.404873732652,
+            "lon": -2.6304671665226262,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sherrin Way",
+            "lat": 51.40424996190376,
+            "lon": -2.6294163080667174,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sherrin Way",
+            "lat": 51.405303205593675,
+            "lon": -2.6300274009694227,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sherrin Way",
+            "lat": 51.40552785174248,
+            "lon": -2.629218208945213,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sherrin Way",
+            "lat": 51.4042308955746,
+            "lon": -2.627942482059319,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'BS1 2QN' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "BS1 5TR",
+        "lat": 51.452607108240244,
+        "lon": -2.6020684520374964,
+        "admin_district": "City of Bristol (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Prospect Place",
+        "la_filter": "Bristol",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Prospect Place",
+            "type": "named road",
+            "lat": 51.468144459630814,
+            "lon": -2.5932897241727373,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Prospect Place",
+            "type": "named road",
+            "lat": 51.46335333214239,
+            "lon": -2.556333759719148,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Highridge Road",
+          "Sherrin Way"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Peart Drive",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.63046716652263,
+        "lat": 51.404873732652,
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Peart Drive",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Peart Drive",
+            "lat": 51.406212236404215,
+            "lon": -2.6321034804247727,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.404873732652,
+        "lon": -2.63046716652263,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "road:Sherrin Way",
+        "top_lat": 51.4053032055937,
+        "sigma_m": 300,
+        "confidence": "high",
+        "top_lon": -2.63002740096942,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is 'Land at Sherrin Way' in Bristol. Multiple road centroids for Sherrin Way and Peart Drive (visible on map) cluster tightly around 51.405, -2.630. Postcode BS1 5TR is a letterhead (Bristol City Council). Picked the central Sherrin Way road centroid."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

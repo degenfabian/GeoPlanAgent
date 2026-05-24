@@ -1,0 +1,202 @@
+{
+  "case": "A4D10A1",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.61015,
+    "top_lon": -0.18125,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Moss Hall Crescent",
+    "evidence": "The site is the Moss Hall Crescent Conservation Area. The road 'Moss Hall Crescent' and its intersection with 'Alexandra Grove' were found in Barnet, matching the map and pdf_info perfectly. Verified inside Barnet LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.02124784864770618,
+  "gt_centroids": [
+    {
+      "lat": 51.61021500280466,
+      "lon": -0.1815393527594067
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Moss Hall Crescent",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Alexandra Grove",
+        "la": "Barnet",
+        "road_a": "Moss Hall Crescent"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Beatrice Lodge",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Moss Hall Crescent",
+        "la_filter": "Barnet",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Moss Hall Crescent",
+            "type": "named road",
+            "lat": 51.61015111262201,
+            "lon": -0.1812559807416544,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Moss Hall Crescent",
+          "Alexandra Grove"
+        ],
+        "la_filter": "Barnet",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.610624,
+            "lon": -0.180428,
+            "roads": [
+              "Moss Hall Crescent",
+              "Alexandra Grove"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beatrice Lodge",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.61015,
+        "lon": -0.18125,
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.61015,
+        "lon": -0.18125,
+        "la": "Barnet",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.616028526273034,
+        "la_centroid_lon": -0.21000945769264093
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Moss Hall Crescent",
+        "sigma_m": 200,
+        "top_lat": 51.61015,
+        "confidence": "high",
+        "top_lon": -0.18125,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is the Moss Hall Crescent Conservation Area. The road 'Moss Hall Crescent' and its intersection with 'Alexandra Grove' were found in Barnet, matching the map and pdf_info perfectly. Verified inside Barnet LA."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

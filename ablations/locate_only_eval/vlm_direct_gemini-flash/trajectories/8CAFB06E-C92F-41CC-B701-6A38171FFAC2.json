@@ -1,0 +1,60 @@
+{
+  "case": "8CAFB06E-C92F-41CC-B701-6A38171FFAC2",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.125,
+    "lon": 1.275,
+    "reasoning": "The document describes land at Elms Vale, Dover, specifically south of Long Wood and extending to Elms Vale Road, as shown on the provided map from OS sheet TR24SE."
+  },
+  "err_km": 0.294464585235235,
+  "gt_centroids": [
+    {
+      "lat": 51.12420041163268,
+      "lon": 1.2709775812117592
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document describes land at Elms Vale, Dover, specifically south of Long Wood and extending to Elms Vale Road, as shown on the provided map from OS sheet TR24SE.",
+        "lat": 51.125,
+        "lon": 1.275
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

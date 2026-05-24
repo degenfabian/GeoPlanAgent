@@ -1,0 +1,324 @@
+{
+  "case": "A4aSHP1",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.557,
+    "top_lon": -0.164,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:South Hill Park",
+    "evidence": "The site is located along South Hill Park, bordering Hampstead No. 1 Pond. The intersection of South Hill Park and Parliament Hill (51.5557, -0.1653) and the centroid of Hampstead Ponds (51.5584, -0.1657) bracket the site. The picked coordinate (51.557, -0.164) sits centrally on the terrace of 32-90 South Hill Park as shown on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.05403035235684006,
+  "gt_centroids": [
+    {
+      "lat": 51.55823490456909,
+      "lon": -0.16447646242657094
+    },
+    {
+      "lat": 51.55726326920307,
+      "lon": -0.1646568805145372
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Hill Park Gardens",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Camden",
+        "query": "South Hill Mansions"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Camden",
+        "road_a": "South Hill Park",
+        "road_b": "Parliament Hill"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Hill Park Gardens",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Hill Mansions",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "South Hill Park",
+          "Parliament Hill"
+        ],
+        "la_filter": "Camden",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.555685,
+            "lon": -0.1653,
+            "roads": [
+              "South Hill Park",
+              "Parliament Hill"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hampstead Ponds",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "South Hill Park",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Parliament Court",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hampstead Ponds",
+        "la_filter": "Camden",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Hampstead Ponds",
+            "type": "inland water",
+            "lat": 51.558373401973085,
+            "lon": -0.1656790265988243,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "South Hill Park",
+        "la_filter": "Camden",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "South Hill Park",
+            "lat": 51.5558480532435,
+            "lon": -0.16528453610990426,
+            "in_la": "Camden"
+          },
+          {
+            "name": "South Hill Park",
+            "lat": 51.55669797993459,
+            "lon": -0.16470720506593767,
+            "in_la": "Camden"
+          },
+          {
+            "name": "South Hill Park",
+            "lat": 51.55822273150397,
+            "lon": -0.16359206157474554,
+            "in_la": "Camden"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Parliament Court",
+        "la_filter": "Camden",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Parliament Court",
+            "type": "named road",
+            "lat": 53.073408200840724,
+            "lon": -0.8172372970049965,
+            "admin_district": "Newark and Sherwood",
+            "county": "Nottinghamshire"
+          },
+          {
+            "name": "Parliament Court",
+            "type": "named road",
+            "lat": 52.63901027245901,
+            "lon": 1.362519557883494,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Parliament Court",
+            "type": "named road",
+            "lat": 51.51852229288341,
+            "lon": -0.07772806265508941,
+            "admin_district": "Tower Hamlets",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Camden",
+        "lon": -0.164,
+        "lat": 51.557
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.557,
+        "lon": -0.164,
+        "la": "Camden",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.546390811083704,
+        "la_centroid_lon": -0.15742226323007869
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is located along South Hill Park, bordering Hampstead No. 1 Pond. The intersection of South Hill Park and Parliament Hill (51.5557, -0.1653) and the centroid of Hampstead Ponds (51.5584, -0.1657) bracket the site. The picked coordinate (51.557, -0.164) sits centrally on the terrace of 32-90 South Hill Park as shown on the map.",
+        "top_lat": 51.557,
+        "top_lon": -0.164,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "sigma_m": 300,
+        "picked_source": "road:South Hill Park"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

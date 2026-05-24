@@ -1,0 +1,269 @@
+{
+  "case": "Ar4.3",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7523858744038,
+    "top_lon": -0.34846025654133,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Fishpool Street",
+    "evidence": "The map covers a large conservation area in St Albans. The centroid of Fishpool Street (51.7524, -0.3485) and Romeland Hill (51.7517, -0.3437) provide a consistent central location for the Article 4 area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.07833695333271459,
+  "gt_centroids": [
+    {
+      "lat": 51.75286113030965,
+      "lon": -0.34762018722537785
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Fishpool Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Verulam Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Fishpool Street",
+        "road_b": "St Michaels Street",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "George Street",
+        "road_a": "Fishpool Street",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fishpool Street",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Fishpool Street",
+            "type": "named road",
+            "lat": 51.75238587440385,
+            "lon": -0.34846025654132984,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Verulam Road",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Verulam Road",
+            "type": "named road",
+            "lat": 51.75481647026237,
+            "lon": -0.3448219093007125,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Verulam School",
+            "type": "secondary education",
+            "lat": 51.75563982134087,
+            "lon": -0.31606055313154313,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Fishpool Street', 'St Michaels Street']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Fishpool Street']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Romeland Hill",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Abbey Mill Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Romeland Hill",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Romeland Hill",
+            "type": "named road",
+            "lat": 51.75165357019148,
+            "lon": -0.3437061004847717,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Abbey Mill Lane",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Abbey Mill Lane",
+            "type": "named road",
+            "lat": 51.749979031775936,
+            "lon": -0.3454768135124914,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Abbey Mill End",
+            "type": "named road",
+            "lat": 51.748679515464445,
+            "lon": -0.34642246043575947,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.34846025654133,
+        "picked_source": "place:Fishpool Street",
+        "sigma_m": 500,
+        "evidence": "The map covers a large conservation area in St Albans. The centroid of Fishpool Street (51.7524, -0.3485) and Romeland Hill (51.7517, -0.3437) provide a consistent central location for the Article 4 area.",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 51.7523858744038
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

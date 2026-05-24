@@ -1,0 +1,253 @@
+{
+  "case": "Ar4.20",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.744095,
+    "top_lon": -0.323689,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Cunningham Avenue",
+    "evidence": "The map shows Cunningham Avenue and its junction with London Road. The 'place' search for Cunningham Avenue and the 'intersect' of Cunningham Avenue x London Road are within 100m of each other. Verified inside St Albans.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09150788205071135,
+  "gt_centroids": [
+    {
+      "lat": 51.74462455605985,
+      "lon": -0.3226716168656488
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Cunningham Avenue"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Cunningham Hill Road",
+        "la": "St Albans",
+        "road_a": "Cunningham Avenue"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Cunningham Avenue Conservation Area"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cunningham Avenue",
+        "la_filter": "St Albans",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Cunningham Avenue",
+            "type": "named road",
+            "lat": 51.74409526890503,
+            "lon": -0.3236889343029011,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Cunningham Hill Road",
+            "type": "named road",
+            "lat": 51.74438560335475,
+            "lon": -0.31946299652502425,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Cunningham Hill Junior School",
+            "type": "primary education",
+            "lat": 51.744417024397755,
+            "lon": -0.31537700107190786,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Cunningham Hill Infants School",
+            "type": "primary education",
+            "lat": 51.74447509773355,
+            "lon": -0.3156645455369936,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Cunningham Hill Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cunningham Avenue Conservation Area",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Cunningham Avenue",
+        "la": "St Albans",
+        "road_b": "London Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Cunningham Avenue",
+          "London Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.743645,
+            "lon": -0.324285,
+            "roads": [
+              "Cunningham Avenue",
+              "London Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.744095,
+        "lon": -0.323689,
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.744095,
+        "lon": -0.323689,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Cunningham Avenue",
+        "sigma_m": 300,
+        "top_lat": 51.744095,
+        "evidence": "The map shows Cunningham Avenue and its junction with London Road. The 'place' search for Cunningham Avenue and the 'intersect' of Cunningham Avenue x London Road are within 100m of each other. Verified inside St Albans.",
+        "top_lon": -0.323689,
+        "confidence": "high",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "case": "A4D14A1",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.615,
+    "lon": -0.2,
+    "reasoning": "The document is an Article 4 direction covering the entire London Borough of Barnet, so the coordinates represent the approximate centroid of the borough as shown on the provided map."
+  },
+  "err_km": 0.6990667655956624,
+  "gt_centroids": [
+    {
+      "lat": 51.61603279913152,
+      "lon": -0.20998726016036837
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 51.615,
+        "reasoning": "The document is an Article 4 direction covering the entire London Borough of Barnet, so the coordinates represent the approximate centroid of the borough as shown on the provided map.",
+        "lon": -0.2
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

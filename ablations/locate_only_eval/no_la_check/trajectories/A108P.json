@@ -1,0 +1,274 @@
+{
+  "case": "A108P",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.560752,
+    "top_lon": -0.251805,
+    "sigma_m": 800,
+    "confidence": "high",
+    "picked_source": "place:Woodston",
+    "evidence": "The map shows a large area in Woodston, Peterborough, bounded by Oundle Road, New Road, and London Road. The intersection of Oundle Road and New Road (52.564, -0.255) and Woodston Primary School (52.558, -0.253) provide a consistent cluster for the site center.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2570081670040288,
+  "gt_centroids": [
+    {
+      "lat": 52.5348614532122,
+      "lon": -0.269282392317978
+    },
+    {
+      "lat": 52.559365781249205,
+      "lon": -0.2548472907921313
+    },
+    {
+      "lat": 52.5876828775095,
+      "lon": -0.24108131416269787
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "place": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Oundle Road",
+        "la": "Peterborough",
+        "road_b": "New Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Peterborough",
+        "road_a": "London Road",
+        "road_b": "New Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Woodston Primary School"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fletton & Woodston Ward",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Oundle Road",
+          "New Road"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.564055,
+            "lon": -0.255052,
+            "roads": [
+              "Oundle Road",
+              "New Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "New Road"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.559042,
+            "lon": -0.249261,
+            "roads": [
+              "London Road",
+              "New Road"
+            ]
+          },
+          {
+            "lat": 52.50347,
+            "lon": -0.291163,
+            "roads": [
+              "London Road",
+              "New Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Woodston Primary School",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Woodston Primary School",
+            "type": "primary education",
+            "lat": 52.55823204406162,
+            "lon": -0.253453722384669,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fletton & Woodston Ward",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Woodston"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Woodston",
+        "la_filter": "Peterborough",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Woodston",
+            "type": "suburban area",
+            "lat": 52.56075213415963,
+            "lon": -0.2518045693257792,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Woodstone Gate",
+            "type": "named road",
+            "lat": 52.556070942861815,
+            "lon": -0.2642342567725194,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Woodston Primary School",
+            "type": "primary education",
+            "lat": 52.55823204406162,
+            "lon": -0.253453722384669,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lat": 52.560752,
+        "picked_source": "place:Woodston",
+        "evidence": "The map shows a large area in Woodston, Peterborough, bounded by Oundle Road, New Road, and London Road. The intersection of Oundle Road and New Road (52.564, -0.255) and Woodston Primary School (52.558, -0.253) provide a consistent cluster for the site center.",
+        "sigma_m": 800,
+        "confidence": "high",
+        "top_lon": -0.251805
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

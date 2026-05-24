@@ -1,0 +1,282 @@
+{
+  "case": "Ar4.2",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.820278,
+    "top_lon": -0.335314,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Marquis Lane x Lower Luton Road",
+    "evidence": "The site is located at the intersection of Marquis Lane and Lower Luton Road, adjacent to the River Lea and a sewage works. Marquis Lane geocodes to 51.8202, -0.3353, which aligns perfectly with the map features (river, road junction, sewage works).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.29816576841461123,
+  "gt_centroids": [
+    {
+      "lat": 51.82011225687632,
+      "lon": -0.33098426996254776
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Batford Mill"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Marquis Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Gottshill Lane"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Batford Mill",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Marquis Lane",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Marquis Lane",
+            "type": "named road",
+            "lat": 51.8202781652636,
+            "lon": -0.3353143691359541,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Marquis Close",
+            "type": "named road",
+            "lat": 51.8195758869157,
+            "lon": -0.33461478868418937,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Gottshill Lane",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lower Luton Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lower Luton Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.819368304791034,
+            "lon": -0.3206500532710065,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.82445398030757,
+            "lon": -0.3400215739838582,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.81664311784696,
+            "lon": -0.3061849579987683,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "named road",
+            "lat": 51.82077334288012,
+            "lon": -0.32648874393529254,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.815364167986104,
+            "lon": -0.29422029700242824,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Batford"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Batford",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Batford",
+            "type": "suburban area",
+            "lat": 51.824677450619,
+            "lon": -0.3405647742080749,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Batford Road",
+            "type": "named road",
+            "lat": 51.823208642808225,
+            "lon": -0.3358883406679408,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.820278,
+        "evidence": "The site is located at the intersection of Marquis Lane and Lower Luton Road, adjacent to the River Lea and a sewage works. Marquis Lane geocodes to 51.8202, -0.3353, which aligns perfectly with the map features (river, road junction, sewage works).",
+        "picked_source": "intersect:Marquis Lane x Lower Luton Road",
+        "sigma_m": 200,
+        "verified_inside_admin_region": true,
+        "top_lon": -0.335314,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

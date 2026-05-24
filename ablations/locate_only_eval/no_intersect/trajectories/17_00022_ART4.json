@@ -1,0 +1,350 @@
+{
+  "case": "17:00022:ART4",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6137086802398,
+    "top_lon": 1.31798111112634,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Trowse Newton",
+    "evidence": "The map shows the Trowse with Newton Conservation Area. The 'Trowse Newton' village place name hit aligns perfectly with the map labels (The Street, Whitlingham Lane, River Yare) and is verified inside South Norfolk.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.11009944968060797,
+  "gt_centroids": [
+    {
+      "lat": 52.61105312903899,
+      "lon": 1.322298662877032
+    },
+    {
+      "lat": 52.61141522910877,
+      "lon": 1.3171242076872
+    },
+    {
+      "lat": 52.611939208460214,
+      "lon": 1.319267122353719
+    },
+    {
+      "lat": 52.612849673449894,
+      "lon": 1.3171700928468109
+    },
+    {
+      "lat": 52.61313061541371,
+      "lon": 1.3163717885571247
+    },
+    {
+      "lat": 52.61244236325709,
+      "lon": 1.3179609503668532
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 3,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Trowse with Newton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Trowse Common"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trowse with Newton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trowse Common",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Trowse Newton"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "The Street",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Whitlingham Lane"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trowse Newton",
+        "la_filter": null,
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Trowse Newton",
+            "type": "village",
+            "lat": 52.613708680239775,
+            "lon": 1.3179811111263393,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Trowse Newton Solar Farm",
+            "type": "electricity production",
+            "lat": 52.607261365650764,
+            "lon": 1.3121601953553796,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Street",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Street",
+            "lat": 52.66409319712527,
+            "lon": 1.2167152888955535,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "The Street",
+            "lat": 52.6654974419005,
+            "lon": 1.218675767509771,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "The Street",
+            "lat": 52.667293687828014,
+            "lon": 1.219261722481858,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "The Street",
+            "lat": 52.6598025289297,
+            "lon": 1.210948196354533,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "The Street",
+            "lat": 52.66176370188535,
+            "lon": 1.213438607511571,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Whitlingham Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.61987600819574,
+            "lon": 1.3595598473011066,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.620626316312666,
+            "lon": 1.3591685458606872,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.61549914635781,
+            "lon": 1.320371795040046,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.617777791786004,
+            "lon": 1.3230090663039051,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.61906960910882,
+            "lon": 1.324155431535626,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Norfolk",
+        "lon": 1.31798111112634,
+        "lat": 52.6137086802398
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6137086802398,
+        "lon": 1.31798111112634,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.31798111112634,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "picked_source": "place:Trowse Newton",
+        "top_lat": 52.6137086802398,
+        "sigma_m": 500,
+        "evidence": "The map shows the Trowse with Newton Conservation Area. The 'Trowse Newton' village place name hit aligns perfectly with the map labels (The Street, Whitlingham Lane, River Yare) and is verified inside South Norfolk."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

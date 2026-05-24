@@ -1,0 +1,257 @@
+{
+  "case": "REG_4:36880",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.529576568085,
+    "top_lon": -0.211486496644068,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Fifth Avenue",
+    "evidence": "The map shows the Queen's Park Estate conservation area. Multiple road searches (Ilbert St, Droop St, Fifth Ave) cluster tightly around this location in Westminster. Fifth Avenue runs through the center of the estate.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1213075203612578,
+  "gt_centroids": [
+    {
+      "lat": 51.529931352984015,
+      "lon": -0.2095670050172309
+    },
+    {
+      "lat": 51.53058959142631,
+      "lon": -0.2121373530730833
+    },
+    {
+      "lat": 51.53052568930428,
+      "lon": -0.21409395356591002
+    },
+    {
+      "lat": 51.52735401793875,
+      "lon": -0.20665182733592177
+    },
+    {
+      "lat": 51.52846407065304,
+      "lon": -0.2130202716336745
+    },
+    {
+      "lat": 51.52831176230989,
+      "lon": -0.21098814690784012
+    },
+    {
+      "lat": 51.527440207098294,
+      "lon": -0.2053301387439153
+    },
+    {
+      "lat": 51.52759150094849,
+      "lon": -0.20932793914151238
+    },
+    {
+      "lat": 51.52794131429626,
+      "lon": -0.20877825083214407
+    },
+    {
+      "lat": 51.531308601420655,
+      "lon": -0.20976986638023498
+    },
+    {
+      "lat": 51.52926397739682,
+      "lon": -0.21577464238047708
+    },
+    {
+      "lat": 51.53086529399142,
+      "lon": -0.20957443106223164
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Westminster",
+        "query": "Queen's Park Estate"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Ilbert Street",
+        "la": "Westminster"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Droop Street",
+        "la": "Westminster"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Queen's Park Estate",
+        "la_filter": "Westminster",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ilbert Street",
+        "la_filter": "Westminster",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Ilbert Street",
+            "type": "named road",
+            "lat": 51.5291017929019,
+            "lon": -0.21160602090139585,
+            "admin_district": "City of Westminster",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Droop Street",
+        "la_filter": "Westminster",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Droop Street",
+            "type": "named road",
+            "lat": 51.527540225563754,
+            "lon": -0.21122030052818672,
+            "admin_district": "City of Westminster",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fifth Avenue",
+        "la": "Westminster"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fifth Avenue",
+        "la_filter": "Westminster",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Fifth Avenue",
+            "type": "named road",
+            "lat": 51.52957656808499,
+            "lon": -0.21148649664406766,
+            "admin_district": "City of Westminster",
+            "county": "Greater London"
+          },
+          {
+            "name": "Fifth Avenue",
+            "type": "section of named road",
+            "lat": 51.53195964804479,
+            "lon": -0.2109028931165205,
+            "admin_district": "City of Westminster",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Fifth Avenue",
+        "top_lat": 51.529576568085,
+        "top_lon": -0.211486496644068,
+        "sigma_m": 400,
+        "confidence": "high",
+        "evidence": "The map shows the Queen's Park Estate conservation area. Multiple road searches (Ilbert St, Droop St, Fifth Ave) cluster tightly around this location in Westminster. Fifth Avenue runs through the center of the estate.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

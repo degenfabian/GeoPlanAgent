@@ -1,0 +1,64 @@
+{
+  "case": "A4DA06",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 53.703,
+    "lon": -2.199,
+    "reasoning": "The document defines an Article 4 Direction for the Bacup Town Centre Conservation Area, and the provided map shows the town centre including St James Square and the intersection of the A681 and A671."
+  },
+  "err_km": 0.12803394966009302,
+  "gt_centroids": [
+    {
+      "lat": 53.701105000000005,
+      "lon": -2.202859333333333
+    },
+    {
+      "lat": 53.70282194230591,
+      "lon": -2.2009216885939944
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document defines an Article 4 Direction for the Bacup Town Centre Conservation Area, and the provided map shows the town centre including St James Square and the intersection of the A681 and A671.",
+        "lat": 53.703,
+        "lon": -2.199
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

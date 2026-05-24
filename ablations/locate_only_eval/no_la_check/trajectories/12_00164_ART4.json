@@ -1,0 +1,277 @@
+{
+  "case": "12:00164:ART4",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.47735,
+    "top_lon": 1.40383,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TM 312 920",
+    "evidence": "The map shows a site at Smith's Knoll on Church Road in Hedenham. The grid reference TM 312 920 (derived from the map's TM 3092-3192 label) aligns perfectly with the village of Hedenham and the intersection of Church Road and Rectory Lane.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.0881462848813923,
+  "gt_centroids": [
+    {
+      "lat": 52.48713591022921,
+      "lon": 1.403865893792992
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "place": 4,
+      "intersect": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TM 312 918"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Smith's Knoll, Hedenham",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_b": "Rectory Lane",
+        "road_a": "Church Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TM 312 918",
+        "lat": 52.475555186889764,
+        "lon": 1.4036917716621073
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Smith's Knoll, Hedenham",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Church Road",
+          "Rectory Lane"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.485738,
+            "lon": 1.404327,
+            "roads": [
+              "Church Road",
+              "Rectory Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hedenham Park",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Mary's Church, Hedenham",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TM 312 920"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hedenham Park",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church, Hedenham",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TM 312 920",
+        "lat": 52.47735000513178,
+        "lon": 1.4038304149597511
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hedenham",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hedenham",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Hedenham",
+            "type": "village",
+            "lat": 52.483457885059444,
+            "lon": 1.4041108213170919,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Hedenham Wood",
+            "type": "woodland or forest",
+            "lat": 52.50029621466189,
+            "lon": 1.4071811470488265,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows a site at Smith's Knoll on Church Road in Hedenham. The grid reference TM 312 920 (derived from the map's TM 3092-3192 label) aligns perfectly with the village of Hedenham and the intersection of Church Road and Rectory Lane.",
+        "top_lat": 52.47735,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "sigma_m": 300,
+        "top_lon": 1.40383,
+        "picked_source": "grid_ref:TM 312 920"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

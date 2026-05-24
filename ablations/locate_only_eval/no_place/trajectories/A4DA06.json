@@ -1,0 +1,347 @@
+{
+  "case": "A4DA06",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.703033,
+    "top_lon": -2.201115,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Market Street",
+    "evidence": "The map shows Bacup Town Centre. Road centroids for Market Street and Yorkshire Street in Rossendale cluster tightly around 53.703, -2.200. This point is the heart of the conservation area shown.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.026696210438879396,
+  "gt_centroids": [
+    {
+      "lat": 53.701105000000005,
+      "lon": -2.202859333333333
+    },
+    {
+      "lat": 53.70282194230591,
+      "lon": -2.2009216885939944
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "road": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "St James Street",
+        "road_a": "Market Street",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "St James Street",
+        "road_a": "Yorkshire Street",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Market Street, Bacup",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Rossendale for: ['St James Street']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Rossendale for: ['St James Street']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Market Street, Bacup",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Market Street",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Rossendale",
+        "query": "Yorkshire Street"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Rossendale",
+        "query": "Rochdale Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "St James Square",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Market Street",
+        "la_filter": "Rossendale",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Market Street",
+            "lat": 53.70303314580407,
+            "lon": -2.201114907757995,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Market Street",
+            "lat": 53.703223033588856,
+            "lon": -2.2010531786328693,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Market Street",
+            "lat": 53.70214341859498,
+            "lon": -2.2010576448502133,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Market Street",
+            "lat": 53.70231868545429,
+            "lon": -2.201058481303874,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Market Street",
+            "lat": 53.702673662268325,
+            "lon": -2.2010904704021974,
+            "in_la": "Rossendale"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Yorkshire Street",
+        "la_filter": "Rossendale",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Yorkshire Street",
+            "lat": 53.70376899463241,
+            "lon": -2.1998860655408103,
+            "in_la": "Rossendale"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Rochdale Road",
+        "la_filter": "Rossendale",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Rochdale Road",
+            "lat": 53.69908824096715,
+            "lon": -2.1978926576505167,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Rochdale Road",
+            "lat": 53.70215530845378,
+            "lon": -2.199323336508767,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Rochdale Road",
+            "lat": 53.70180516557087,
+            "lon": -2.19908689879439,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Rochdale Road",
+            "lat": 53.66840312875651,
+            "lon": -2.304148836615822,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Rochdale Road",
+            "lat": 53.66792412336821,
+            "lon": -2.3035037338359525,
+            "in_la": "Rossendale"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "St James Square",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 53.703,
+        "la": "Rossendale",
+        "lon": -2.2
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 53.703,
+        "lon": -2.2,
+        "la": "Rossendale",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 53.69381770640495,
+        "la_centroid_lon": -2.2673137098881666
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 53.703033,
+        "top_lon": -2.201115,
+        "sigma_m": 500,
+        "picked_source": "road:Market Street",
+        "confidence": "high",
+        "evidence": "The map shows Bacup Town Centre. Road centroids for Market Street and Yorkshire Street in Rossendale cluster tightly around 53.703, -2.200. This point is the heart of the conservation area shown.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

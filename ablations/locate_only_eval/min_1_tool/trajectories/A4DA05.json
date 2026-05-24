@@ -1,0 +1,259 @@
+{
+  "case": "A4DA05",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.709,
+    "top_lon": -2.291,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Collinge Fold Lane x Hazel Grove",
+    "evidence": "Consensus between Collinge Fold Lane, Hazel Grove (Rawtenstall), and Margaret Street. The site is the field between Collinge Fold Farm and the river Limy Water.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.04713639386015097,
+  "gt_centroids": [
+    {
+      "lat": 53.70932867676488,
+      "lon": -2.291452303601004
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Collinge Fold Farm",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Collinge Fold Lane",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Constable Lee Bridge",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hazel Grove Rawtenstall",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Collinge Fold Farm",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Collinge Fold Lane",
+        "la_filter": "Rossendale",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Collinge Fold Lane",
+            "type": "named road",
+            "lat": 53.70873070096022,
+            "lon": -2.29115387349506,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Constable Lee Bridge",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hazel Grove Rawtenstall",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Rossendale",
+        "query": "Hazel Grove"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Rossendale",
+        "query": "Margaret Street"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hazel Grove",
+        "la_filter": "Rossendale",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Hazel Grove",
+            "type": "named road",
+            "lat": 53.70602797502834,
+            "lon": -2.1861244363827015,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Hazel Grove",
+            "type": "named road",
+            "lat": 53.709730830457225,
+            "lon": -2.2901457315228453,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Margaret Street",
+        "la_filter": "Rossendale",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Margaret Street",
+            "type": "named road",
+            "lat": 53.708779645763094,
+            "lon": -2.2895028940792637,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lon": -2.291,
+        "evidence": "Consensus between Collinge Fold Lane, Hazel Grove (Rawtenstall), and Margaret Street. The site is the field between Collinge Fold Farm and the river Limy Water.",
+        "top_lat": 53.709,
+        "picked_source": "intersect:Collinge Fold Lane x Hazel Grove",
+        "confidence": "high",
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,289 @@
+{
+  "case": "Ar4.15",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.810746,
+    "top_lon": -0.404701,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Dunstable Road, Redbourn",
+    "evidence": "The site is 'land at Bylands Meadow at the rear of Bylands House, Dunstable Road, Redbourn'. Dunstable Road in Redbourn (St Albans) provides a precise location. The map shows the site adjacent to Bylands House and Dunstable Road.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.535061029949309,
+  "gt_centroids": [
+    {
+      "lat": 51.80765936804887,
+      "lon": -0.3987304032130273
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Bylands Meadow"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Bylands House"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Redbourn",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bylands Meadow",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bylands House",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redbourn",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Redbourn",
+            "type": "village",
+            "lat": 51.79985015958444,
+            "lon": -0.39623936286968947,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Redbourn Lane",
+            "type": "named road",
+            "lat": 51.802145116383834,
+            "lon": -0.3708781488873065,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Redbourn Road",
+            "type": "named road",
+            "lat": 51.7692599315637,
+            "lon": -0.37333778937453427,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Redbournbury Lane",
+            "type": "named road",
+            "lat": 51.78334958694383,
+            "lon": -0.3804568009578076,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Redbourn Primary School",
+            "type": "primary education",
+            "lat": 51.80029044701435,
+            "lon": -0.4028225967552787,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Dunstable Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Byroad",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Dunstable Road",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Dunstable Road",
+            "type": "named road",
+            "lat": 51.810746452764555,
+            "lon": -0.40470148758227614,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Dunstable Road",
+            "type": "section of named road",
+            "lat": 51.804056990759214,
+            "lon": -0.399440547881846,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Byroad",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.810746,
+        "la": "St Albans",
+        "lon": -0.404701
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.810746,
+        "lon": -0.404701,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "picked_source": "place:Dunstable Road, Redbourn",
+        "top_lon": -0.404701,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.810746,
+        "evidence": "The site is 'land at Bylands Meadow at the rear of Bylands House, Dunstable Road, Redbourn'. Dunstable Road in Redbourn (St Albans) provides a precise location. The map shows the site adjacent to Bylands House and Dunstable Road.",
+        "sigma_m": 400
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

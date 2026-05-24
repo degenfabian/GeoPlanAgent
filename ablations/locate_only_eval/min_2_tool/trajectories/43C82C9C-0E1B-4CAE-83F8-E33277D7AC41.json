@@ -1,0 +1,291 @@
+{
+  "case": "43C82C9C-0E1B-4CAE-83F8-E33277D7AC41",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1525,
+    "top_lon": 1.376,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Sea Street x Droveway Gardens",
+    "evidence": "The site is bounded by Sea Street and Droveway Gardens in St Margaret's at Cliffe. Geocoding both roads and the adjacent Primary School yields a tight cluster. Verified inside Dover LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0750586652293172,
+  "gt_centroids": [
+    {
+      "lat": 51.1519486995278,
+      "lon": 1.3766209773135476
+    },
+    {
+      "lat": 51.15331504731796,
+      "lon": 1.3779144721309602
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Droveway Gardens, St Margaret's at Cliffe",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sea Street, St Margaret's at Cliffe",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Margaret's-at-Cliffe Primary School",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Droveway Gardens, St Margaret's at Cliffe",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sea Street, St Margaret's at Cliffe",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Margaret's-at-Cliffe Primary School",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "St Margaret's-at-Cliffe Primary School",
+            "type": "primary education",
+            "lat": 51.153001179368104,
+            "lon": 1.375084946515249,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Sea Street"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Droveway Gardens",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.375,
+        "lat": 51.153,
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sea Street",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Sea Street",
+            "type": "named road",
+            "lat": 51.151411852744644,
+            "lon": 1.3752978490544006,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sea View Close",
+            "type": "named road",
+            "lat": 51.10092509232507,
+            "lon": 1.209190248556156,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sea View Road",
+            "type": "section of named road",
+            "lat": 51.14652324217375,
+            "lon": 1.3754414368608618,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sea View Road",
+            "type": "named road",
+            "lat": 51.14465769077717,
+            "lon": 1.3727597305210908,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Seaths Corner",
+            "type": "named road",
+            "lat": 51.26942763360078,
+            "lon": 1.2157479019379596,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Droveway Gardens",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Droveway Gardens",
+            "type": "named road",
+            "lat": 51.15389653043254,
+            "lon": 1.374606803436595,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.153,
+        "lon": 1.375,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.1525,
+        "picked_source": "intersect:Sea Street x Droveway Gardens",
+        "verified_inside_admin_region": true,
+        "sigma_m": 200,
+        "confidence": "high",
+        "evidence": "The site is bounded by Sea Street and Droveway Gardens in St Margaret's at Cliffe. Geocoding both roads and the adjacent Primary School yields a tight cluster. Verified inside Dover LA.",
+        "top_lon": 1.376
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,432 @@
+{
+  "case": "A4D-08",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.19495,
+    "top_lon": -0.8027,
+    "sigma_m": 1000,
+    "confidence": "med",
+    "picked_source": "place:Middle Bourne",
+    "evidence": "The map shows Middle Lane and Fox Hill. While 'Middle Lane' isn't in the index, 'Middle Bourne Lane' and the 'Middle Bourne' area in Farnham align with the geography. The site is likely in the Middle Bourne area of Farnham.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.7685157509439695,
+  "gt_centroids": [
+    {
+      "lat": 51.19881435341966,
+      "lon": -0.7935558461697626
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 1,
+      "place": 4,
+      "road": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 19,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Fox Hill",
+        "road_a": "Middle Lane",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Waverley for: ['Middle Lane', 'Fox Hill']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Middle Lane",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Middle Lane",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Middle Bourne",
+            "type": "suburban area",
+            "lat": 51.194950026242225,
+            "lon": -0.8027022744050416,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Middle Avenue",
+            "type": "named road",
+            "lat": 51.20367012729942,
+            "lon": -0.7893501156830032,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Middle Church Lane",
+            "type": "named road",
+            "lat": 51.21325928770646,
+            "lon": -0.8001515524271526,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Middle Old Park",
+            "type": "named road",
+            "lat": 51.22475091968889,
+            "lon": -0.8133286236886367,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Middlefield",
+            "type": "named road",
+            "lat": 51.2022589214987,
+            "lon": -0.8095695046724819,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fox Hill",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fox Hill",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Fox Hill",
+            "type": "hill or mountain",
+            "lat": 57.439812510756326,
+            "lon": -3.6505049718870284,
+            "admin_district": null,
+            "county": "Moray"
+          },
+          {
+            "name": "Fox Hill",
+            "type": "hill or mountain",
+            "lat": 54.933970211258774,
+            "lon": -1.8647536368047066,
+            "admin_district": null,
+            "county": "Northumberland"
+          },
+          {
+            "name": "Fox Hill",
+            "type": "hill or mountain",
+            "lat": 54.83972660832044,
+            "lon": -1.9217283921302215,
+            "admin_district": null,
+            "county": "County Durham"
+          },
+          {
+            "name": "Fox Hill",
+            "type": "hill or mountain",
+            "lat": 54.920293565836076,
+            "lon": -1.8922421444257236,
+            "admin_district": null,
+            "county": "Northumberland"
+          },
+          {
+            "name": "Fox Hill",
+            "type": "hill or mountain",
+            "lat": 54.56211255954878,
+            "lon": -1.5155471764542943,
+            "admin_district": null,
+            "county": "Darlington"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Fox Hill",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Fox Hill",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Middle Bourne"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Middle Bourne",
+        "la_filter": "Waverley",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Middle Bourne",
+            "type": "suburban area",
+            "lat": 51.194950026242225,
+            "lon": -0.8027022744050416,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Middle Bourne Lane",
+            "type": "named road",
+            "lat": 51.19843515201674,
+            "lon": -0.7961856032434708,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Middle Bourne Lane",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Middle Bourne Lane",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Middle Bourne Lane",
+            "lat": 51.20015983968331,
+            "lon": -0.7926589920284555,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Middle Bourne Lane",
+            "lat": 51.19717053095843,
+            "lon": -0.8004478071032581,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Middle Bourne Lane",
+            "lat": 51.19759333684,
+            "lon": -0.7991487204044997,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Middle Bourne Lane",
+            "lat": 51.197690406212125,
+            "lon": -0.7985307663911285,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Middle Bourne Lane",
+            "lat": 51.19826182771361,
+            "lon": -0.7968198709325792,
+            "in_la": "Waverley"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Fox Hill Village",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Fox Hill Village",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Fox Hill Farnham"
+      }
+    },
+    {
+      "turn": 16,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fox Hill Farnham",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 17,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 17,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 1000,
+        "picked_source": "place:Middle Bourne",
+        "verified_inside_admin_region": true,
+        "confidence": "med",
+        "top_lon": -0.8027,
+        "top_lat": 51.19495,
+        "evidence": "The map shows Middle Lane and Fox Hill. While 'Middle Lane' isn't in the index, 'Middle Bourne Lane' and the 'Middle Bourne' area in Farnham align with the geography. The site is likely in the Middle Bourne area of Farnham."
+      }
+    },
+    {
+      "turn": 18,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

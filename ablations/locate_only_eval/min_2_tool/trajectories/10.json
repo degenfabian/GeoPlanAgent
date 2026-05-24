@@ -1,0 +1,298 @@
+{
+  "case": "10",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.312283,
+    "top_lon": -2.957901,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Eastham Village Road x Rivacre Road",
+    "evidence": "The site is at the junction of Eastham Village Road and Rivacre Road. Geocoding both roads in Wirral places the site at approximately 53.312, -2.958. The map shows Hooton Mount Cottage adjacent to Rivacre Road.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.19790092238915605,
+  "gt_centroids": [
+    {
+      "lat": 53.313933708785186,
+      "lon": -2.959014710460763
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Wirral",
+        "query": "Hooton Mount Cottage"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Eastham Village Road",
+        "la": "Wirral"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Rivacre Road",
+        "la": "Wirral"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hooton Mount Cottage",
+        "la_filter": "Wirral",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Eastham Village Road",
+        "la_filter": "Wirral",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Eastham Village Road",
+            "type": "named road",
+            "lat": 53.313806694043556,
+            "lon": -2.9606973874047298,
+            "admin_district": "Wirral",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Rivacre Road",
+        "la_filter": "Wirral",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Rivacre Road",
+            "type": "section of named road",
+            "lat": 53.31228306763532,
+            "lon": -2.9579014187019514,
+            "admin_district": "Wirral",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Wirral",
+        "query": "Dawnacre"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.95790141870195,
+        "la": "Wirral",
+        "lat": 53.3122830676353
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Dawnacre",
+        "la_filter": "Wirral",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 53.3122830676353,
+        "lon": -2.95790141870195,
+        "la": "Wirral",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 53.36836475621285,
+        "la_centroid_lon": -3.092689487184164
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Wirral",
+        "query": "Eastham Village Road, Eastham"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Eastham Village Road, Eastham",
+        "la_filter": "Wirral",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Wirral",
+        "query": "Vicarage Row"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Vicarage Row",
+        "la_filter": "Wirral",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Vicarage Row",
+            "type": "named road",
+            "lat": 54.64045667161732,
+            "lon": -1.2372534173428884,
+            "admin_district": null,
+            "county": "Hartlepool"
+          },
+          {
+            "name": "Vicarage Row",
+            "type": "other settlement",
+            "lat": 50.83003596371439,
+            "lon": -1.0743527987972494,
+            "admin_district": null,
+            "county": "City of Portsmouth"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 200,
+        "evidence": "The site is at the junction of Eastham Village Road and Rivacre Road. Geocoding both roads in Wirral places the site at approximately 53.312, -2.958. The map shows Hooton Mount Cottage adjacent to Rivacre Road.",
+        "top_lon": -2.957901,
+        "confidence": "high",
+        "picked_source": "intersect:Eastham Village Road x Rivacre Road",
+        "verified_inside_admin_region": true,
+        "top_lat": 53.312283
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

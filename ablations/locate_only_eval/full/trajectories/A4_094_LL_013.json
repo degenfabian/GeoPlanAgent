@@ -1,0 +1,412 @@
+{
+  "case": "A4_094:LL:013",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.658,
+    "top_lon": -1.143,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Dersingham Road",
+    "evidence": "The site is St Patrick's RC Church on Beaumont Leys Lane. While the church itself wasn't in the gazetteer, the surrounding roads (Dersingham Road, Billington Close, and Norwich Road) form a tight cluster in Leicester. The church is located between Beaumont Leys Lane and Norwich Road.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0520206650668115,
+  "gt_centroids": [
+    {
+      "lat": 52.65835621291477,
+      "lon": -1.1425000035348176
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Patrick's RC Church",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Leicester",
+        "road_a": "Beaumont Leys Lane",
+        "road_b": "Norwich Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Beaumont Hall"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Patrick's RC Church",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Beaumont Leys Lane",
+          "Norwich Road"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beaumont Hall",
+        "la_filter": "Leicester",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Beaumont Hall Lane",
+            "type": "named road",
+            "lat": 51.785143765341594,
+            "lon": -0.39062823783798767,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Beaumont Hall Brook (North Arm)",
+            "type": "inland water",
+            "lat": 51.87627248851056,
+            "lon": 1.191019906608143,
+            "admin_district": "Tendring",
+            "county": "Essex"
+          },
+          {
+            "name": "Beaumont Hall Covert",
+            "type": "woodland or forest",
+            "lat": 51.959906907280676,
+            "lon": 1.2089564517705529,
+            "admin_district": "Babergh",
+            "county": "Suffolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Beaumont Leys Lane",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Norwich Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Patrick's Church",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Beaumont Leys Lane",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.671783950857325,
+            "lon": -1.1528049662425381,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.671740523479755,
+            "lon": -1.1525714020004618,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.67196087534609,
+            "lon": -1.1525223291925784,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.671962706569026,
+            "lon": -1.1522126126944379,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.67216017044183,
+            "lon": -1.1521749246424275,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Norwich Road",
+        "la_filter": "Leicester",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Norwich Road",
+            "lat": 52.65813641827716,
+            "lon": -1.1448787040827162,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.65788946833489,
+            "lon": -1.143671214888365,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.657655935689554,
+            "lon": -1.1424560846232967,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Patrick's Church",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "St Patrick's Church of England Primary Academy",
+            "type": "primary education",
+            "lat": 52.3708489550636,
+            "lon": -1.8204268468861158,
+            "admin_district": "Solihull",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Dersingham Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Billington Close",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Dersingham Road",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Dersingham Road",
+            "type": "named road",
+            "lat": 52.6564534142475,
+            "lon": -1.1439949435064038,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Billington Close",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Billington Close",
+            "type": "named road",
+            "lat": 52.659023017325694,
+            "lon": -1.1412983153891896,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.658,
+        "lon": -1.143,
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.658,
+        "lon": -1.143,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is St Patrick's RC Church on Beaumont Leys Lane. While the church itself wasn't in the gazetteer, the surrounding roads (Dersingham Road, Billington Close, and Norwich Road) form a tight cluster in Leicester. The church is located between Beaumont Leys Lane and Norwich Road.",
+        "sigma_m": 300,
+        "picked_source": "place:Dersingham Road",
+        "top_lon": -1.143,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 52.658
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

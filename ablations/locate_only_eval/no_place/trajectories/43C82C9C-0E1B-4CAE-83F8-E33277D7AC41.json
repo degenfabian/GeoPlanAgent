@@ -1,0 +1,253 @@
+{
+  "case": "43C82C9C-0E1B-4CAE-83F8-E33277D7AC41",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.15086,
+    "top_lon": 1.38032,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR3644",
+    "evidence": "The grid reference TR3644 (51.1508, 1.3803) aligns perfectly with the map labels for St Margaret's at Cliffe and the intersection of Sea Street and Bay Hill (51.1504, 1.3783). Postcode CT16 3PJ is the council office (letterhead).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.28499111410367145,
+  "gt_centroids": [
+    {
+      "lat": 51.1519486995278,
+      "lon": 1.3766209773135476
+    },
+    {
+      "lat": 51.15331504731796,
+      "lon": 1.3779144721309602
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "postcode": 1,
+      "intersect": 2,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3644"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PJ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Droveway Gardens",
+        "la": "Dover",
+        "road_a": "Sea Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Bay Hill",
+        "la": "Dover",
+        "road_a": "Sea Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3644",
+        "lat": 51.15086186292679,
+        "lon": 1.3803207606075063
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CT16 3PJ",
+        "lat": 51.15436636168577,
+        "lon": 1.294785094400513,
+        "admin_district": "Dover District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Sea Street",
+          "Droveway Gardens"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Sea Street",
+          "Bay Hill"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.150456,
+            "lon": 1.378336,
+            "roads": [
+              "Sea Street",
+              "Bay Hill"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Droveway Gardens",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.15086,
+        "la": "Dover",
+        "lon": 1.38032
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Droveway Gardens",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Droveway Gardens",
+            "lat": 51.15374349385958,
+            "lon": 1.3746419718224936,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.15086,
+        "lon": 1.38032,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.38032,
+        "picked_source": "grid_ref:TR3644",
+        "top_lat": 51.15086,
+        "sigma_m": 300,
+        "evidence": "The grid reference TR3644 (51.1508, 1.3803) aligns perfectly with the map labels for St Margaret's at Cliffe and the intersection of Sea Street and Bay Hill (51.1504, 1.3783). Postcode CT16 3PJ is the council office (letterhead).",
+        "confidence": "high",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,440 @@
+{
+  "case": "SSA410",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.77785,
+    "top_lon": -2.13201,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Hyde Lea",
+    "evidence": "The site is located in Hyde Lea, Stafford, specifically on Bradley Lane. The map shows the site 'Land rear of Kevina' which is adjacent to Bradley Lane. The village of Hyde Lea was found at the provided coordinates. Although the admin_region is listed as South Staffordshire, Hyde Lea falls just inside the Stafford district boundary.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.24304269835977055,
+  "gt_centroids": [
+    {
+      "lat": 52.77638928961494,
+      "lon": -2.134697914890217
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Hyde Lea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Kevina"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Bradley Lane"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hyde Lea",
+        "la_filter": "South Staffordshire",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Hyde Lea",
+            "type": "village",
+            "lat": 52.777853122229125,
+            "lon": -2.1320135458590608,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hyde Lea Bank",
+            "type": "section of named road",
+            "lat": 52.781416271842694,
+            "lon": -2.1290147460408786,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hyde Lea Bank",
+            "type": "named road",
+            "lat": 52.780065882634,
+            "lon": -2.1308045904440487,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hyde Lea Bank",
+            "type": "section of named road",
+            "lat": 52.77914877578164,
+            "lon": -2.1309649088409883,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kevina",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bradley Lane",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Stafford",
+        "query": "Bradley Lane"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Thaxted",
+        "la": "Stafford"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Stafford",
+        "query": "Tanglemere"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bradley Lane",
+        "la_filter": "Stafford",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Bradley Lane",
+            "type": "named road",
+            "lat": 52.76932425367889,
+            "lon": -2.184248405114154,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Bradley Lane",
+            "type": "section of named road",
+            "lat": 52.763963760429306,
+            "lon": -2.180179965560829,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Bradley Lane",
+            "type": "named road",
+            "lat": 52.77784999946748,
+            "lon": -2.1347857029101123,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Bradley Lane",
+            "type": "section of named road",
+            "lat": 52.777530203243806,
+            "lon": -2.1908651030225577,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Bradley",
+            "type": "village",
+            "lat": 52.76030710671464,
+            "lon": -2.178801553150121,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thaxted",
+        "la_filter": "Stafford",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Thaxted",
+            "type": "town",
+            "lat": 51.9537091952334,
+            "lon": 0.3437585059999962,
+            "admin_district": "Uttlesford",
+            "county": "Essex"
+          },
+          {
+            "name": "Thaxted Place",
+            "type": "named road",
+            "lat": 53.58465695848917,
+            "lon": -2.4506426941383865,
+            "admin_district": "Bolton",
+            "county": null
+          },
+          {
+            "name": "Thaxted Walk",
+            "type": "named road",
+            "lat": 53.3697006499676,
+            "lon": -2.266967589323087,
+            "admin_district": "Manchester",
+            "county": null
+          },
+          {
+            "name": "Thaxted Drive",
+            "type": "named road",
+            "lat": 53.391859548764174,
+            "lon": -2.103850669133658,
+            "admin_district": "Stockport",
+            "county": null
+          },
+          {
+            "name": "Thaxted Close",
+            "type": "named road",
+            "lat": 52.961544635909995,
+            "lon": -1.2332783982516975,
+            "admin_district": null,
+            "county": "City of Nottingham"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Tanglemere",
+        "la_filter": "Stafford",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.77785,
+        "la": "South Staffordshire",
+        "lon": -2.13201
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.77785,
+        "lon": -2.13201,
+        "la": "South Staffordshire",
+        "inside_la": false,
+        "distance_km_approx": 0.21,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Knot",
+        "la": "Stafford"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Knot",
+        "la_filter": "Stafford",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Knott",
+            "type": "hill or mountain",
+            "lat": 54.50613055332656,
+            "lon": -2.8708306779032453,
+            "admin_district": null,
+            "county": "Westmorland and Furness"
+          },
+          {
+            "name": "The Knott",
+            "type": "hill or mountain",
+            "lat": 54.34467187085162,
+            "lon": -3.318655500207416,
+            "admin_district": null,
+            "county": "Cumberland"
+          },
+          {
+            "name": "The Knott",
+            "type": "hill or mountain",
+            "lat": 54.31732364566629,
+            "lon": -3.1942236449968786,
+            "admin_district": null,
+            "county": "Westmorland and Furness"
+          },
+          {
+            "name": "The Knott",
+            "type": "hill or mountain",
+            "lat": 54.35601827381352,
+            "lon": -3.2164888378464433,
+            "admin_district": null,
+            "county": "Cumberland"
+          },
+          {
+            "name": "The Knott",
+            "type": "hill or mountain",
+            "lat": 54.309618587678465,
+            "lon": -3.1604159630469835,
+            "admin_district": null,
+            "county": "Westmorland and Furness"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Hyde Lea",
+        "sigma_m": 400,
+        "top_lon": -2.13201,
+        "verified_inside_admin_region": false,
+        "top_lat": 52.77785,
+        "confidence": "high",
+        "evidence": "The site is located in Hyde Lea, Stafford, specifically on Bradley Lane. The map shows the site 'Land rear of Kevina' which is adjacent to Bradley Lane. The village of Hyde Lea was found at the provided coordinates. Although the admin_region is listed as South Staffordshire, Hyde Lea falls just inside the Stafford district boundary."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

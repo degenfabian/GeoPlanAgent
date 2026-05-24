@@ -1,0 +1,149 @@
+{
+  "case": "79",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.501205,
+    "top_lon": -0.192221,
+    "sigma_m": 5000,
+    "confidence": "high",
+    "picked_source": "la_centroid",
+    "evidence": "The document explicitly states it covers the 'entire borough of the Royal Borough of Kensington and Chelsea'. I have used the LA centroid as the center point for this district-wide case.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.001728644497343404,
+  "gt_centroids": [
+    {
+      "lat": 51.50120974197261,
+      "lon": -0.19219721646724833
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 3,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kensington and Chelsea",
+        "la_filter": null,
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Kensington and Chelsea College",
+            "type": "further education",
+            "lat": 51.48151540404674,
+            "lon": -0.18537003190623502,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "Kensington and Chelsea College",
+            "type": "further education",
+            "lat": 51.522864190626784,
+            "lon": -0.2082754959876561,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.501,
+        "la": "Kensington and Chelsea",
+        "lon": -0.191
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.501,
+        "lon": -0.191,
+        "la": "Kensington and Chelsea",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.50120516305225,
+        "la_centroid_lon": -0.19222073817151708
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lon": -0.192221,
+        "confidence": "high",
+        "picked_source": "la_centroid",
+        "top_lat": 51.501205,
+        "sigma_m": 5000,
+        "evidence": "The document explicitly states it covers the 'entire borough of the Royal Borough of Kensington and Chelsea'. I have used the LA centroid as the center point for this district-wide case."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

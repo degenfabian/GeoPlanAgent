@@ -1,0 +1,269 @@
+{
+  "case": "Ar4.28",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7518,
+    "top_lon": -0.334,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Bricket Rd x Victoria St",
+    "evidence": "The map shows the 'St Albans City Core' centered around the intersection of Bricket Road and Victoria Street. Geocoding Bricket Road and Victoria Street in St Albans yields coordinates (51.7525, -0.3354) and (51.7510, -0.3326) respectively, which align perfectly with the map's layout.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09681269139492339,
+  "gt_centroids": [
+    {
+      "lat": 51.752352670583264,
+      "lon": -0.33508672710519627
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "St Albans Law Courts"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bricket Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "St Peter's Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans Law Courts",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bricket Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Bricket Road",
+            "type": "named road",
+            "lat": 51.752516582193415,
+            "lon": -0.33541650334235346,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Bricket Wood",
+            "type": "village",
+            "lat": 51.705722534692974,
+            "lon": -0.36877207516757105,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Bricket Wood Common",
+            "type": "woodland or forest",
+            "lat": 51.69757064433785,
+            "lon": -0.3645215807025134,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Bricket Wood",
+            "type": "woodland or forest",
+            "lat": 51.70927615292123,
+            "lon": -0.3766917260953945,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Bricket Wood",
+            "type": "railway station",
+            "lat": 51.70554859024625,
+            "lon": -0.35886452645965156,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Peter's Street",
+        "la_filter": "St Albans",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "St Peter's Street",
+            "type": "named road",
+            "lat": 51.75497075868712,
+            "lon": -0.336007230067585,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "St Peter's Close",
+            "type": "named road",
+            "lat": 51.75620529553509,
+            "lon": -0.3361936754056225,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "St Peter's School",
+            "type": "primary education",
+            "lat": 51.74602321517396,
+            "lon": -0.3346991344519924,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "St Peter's Road",
+            "type": "named road",
+            "lat": 51.75441364204632,
+            "lon": -0.3315942618260264,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Victoria Street"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Street",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Victoria Street",
+            "type": "named road",
+            "lat": 51.75095729908661,
+            "lon": -0.3326198352656088,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Victoria Road",
+            "type": "named road",
+            "lat": 51.81555036728089,
+            "lon": -0.35333340983678874,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.334,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 51.7518,
+        "evidence": "The map shows the 'St Albans City Core' centered around the intersection of Bricket Road and Victoria Street. Geocoding Bricket Road and Victoria Street in St Albans yields coordinates (51.7525, -0.3354) and (51.7510, -0.3326) respectively, which align perfectly with the map's layout.",
+        "picked_source": "intersect:Bricket Rd x Victoria St",
+        "sigma_m": 300
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

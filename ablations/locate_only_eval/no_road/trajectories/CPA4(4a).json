@@ -1,0 +1,342 @@
+{
+  "case": "CPA4(4a)",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.567,
+    "top_lon": 0.572,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Kingston Primary School",
+    "evidence": "The site is located in Coombe Wood, Thundersley. Geocoding 'Kingston Primary School' and 'Coombe Wood' (both on map) places the site at approx 51.567, 0.572. The postcode SS7 1TF is ~1km away but within the same LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.052642642028021214,
+  "gt_centroids": [
+    {
+      "lat": 51.567398880193345,
+      "lon": 0.5715897583827427
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "postcode": 1,
+      "place": 3,
+      "intersect": 1,
+      "la_check": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ7888SW"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SS7 1TF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Kingston Primary School"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Thundersley Church Road",
+        "road_b": "Church Road",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'TQ7888SW'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SS7 1TF",
+        "lat": 51.56184488380458,
+        "lon": 0.5848681639491619,
+        "admin_district": "Castle Point District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kingston Primary School",
+        "la_filter": "Castle Point",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Kingston Primary School",
+            "type": "primary education",
+            "lat": 51.56812898135592,
+            "lon": 0.5735211746729008,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Thundersley Church Road",
+          "Church Road"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "St Peter's Church"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Coombe Wood",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Castle Point",
+        "lat": 51.5618448838046,
+        "lon": 0.584868163949162
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Peter's Church",
+        "la_filter": "Castle Point",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "St Peter's Church of England (Voluntary Controlled) Primary School",
+            "type": "primary education",
+            "lat": 54.57131846599634,
+            "lon": -0.9501982318652599,
+            "admin_district": null,
+            "county": "Redcar and Cleveland"
+          },
+          {
+            "name": "St Peter's Church of England Primary School",
+            "type": "primary education",
+            "lat": 53.661734524398206,
+            "lon": -2.6172314727673194,
+            "admin_district": "Chorley",
+            "county": "Lancashire"
+          },
+          {
+            "name": "St Peter's Church of England Primary School",
+            "type": "primary education",
+            "lat": 53.53313656337149,
+            "lon": -2.5852149555725967,
+            "admin_district": "Wigan",
+            "county": null
+          },
+          {
+            "name": "St Peter's Church of England Primary School",
+            "type": "primary education",
+            "lat": 53.54313857932929,
+            "lon": -2.3950302673398567,
+            "admin_district": "Bolton",
+            "county": null
+          },
+          {
+            "name": "St Peter's Church of England Primary School",
+            "type": "primary education",
+            "lat": 53.511839660156376,
+            "lon": -2.34304673187897,
+            "admin_district": "Salford",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coombe Wood",
+        "la_filter": "Castle Point",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Coombe Wood",
+            "type": "woodland or forest",
+            "lat": 51.56542370364884,
+            "lon": 0.5713914382920157,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5618448838046,
+        "lon": 0.584868163949162,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.5681289813559,
+        "lon": 0.573521174672901,
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5681289813559,
+        "lon": 0.573521174672901,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "picked_source": "place:Kingston Primary School",
+        "top_lat": 51.567,
+        "top_lon": 0.572,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is located in Coombe Wood, Thundersley. Geocoding 'Kingston Primary School' and 'Coombe Wood' (both on map) places the site at approx 51.567, 0.572. The postcode SS7 1TF is ~1km away but within the same LA.",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

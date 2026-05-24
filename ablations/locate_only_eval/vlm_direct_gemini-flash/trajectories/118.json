@@ -1,0 +1,60 @@
+{
+  "case": "118",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.4654,
+    "lon": -0.0538,
+    "reasoning": "The document specifies the site as 41 Linden Grove, London SE15 3LF, which is clearly outlined on the provided map at the intersection of Linden Grove and Nunhead Grove."
+  },
+  "err_km": 0.3425880867568116,
+  "gt_centroids": [
+    {
+      "lat": 51.4627976102254,
+      "lon": -0.05644720665059693
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -0.0538,
+        "reasoning": "The document specifies the site as 41 Linden Grove, London SE15 3LF, which is clearly outlined on the provided map at the intersection of Linden Grove and Nunhead Grove.",
+        "lat": 51.4654
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,247 @@
+{
+  "case": "A4D16",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.484316,
+    "top_lon": -2.614943,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Henleaze Avenue",
+    "evidence": "The site is a large block bounded by Westbury Road, Henleaze Avenue, Henleaze Gardens, and Henleaze Road. Intersections of these roads in Bristol confirm the location. The picked coordinate is the centroid of Henleaze Avenue which runs through the middle of the site.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.059438316987338,
+  "gt_centroids": [
+    {
+      "lat": 51.48387396219555,
+      "lon": -2.614460349745082
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "place": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Henleaze Avenue",
+        "road_a": "Westbury Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Henleaze Road",
+        "road_a": "Henleaze Avenue",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Henleaze Avenue",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Westbury Road",
+          "Henleaze Avenue"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.484436,
+            "lon": -2.61627,
+            "roads": [
+              "Westbury Road",
+              "Henleaze Avenue"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Henleaze Avenue",
+          "Henleaze Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.484122,
+            "lon": -2.612651,
+            "roads": [
+              "Henleaze Avenue",
+              "Henleaze Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Henleaze Avenue",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Henleaze Avenue",
+            "type": "named road",
+            "lat": 51.48431667477151,
+            "lon": -2.614943332150991,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Henleaze",
+            "type": "suburban area",
+            "lat": 51.48433522127838,
+            "lon": -2.5974458828736853,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Henleaze Road",
+            "type": "named road",
+            "lat": 51.48688947348572,
+            "lon": -2.6095483235840717,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Henleaze Terrace",
+            "type": "named road",
+            "lat": 51.49196741280022,
+            "lon": -2.6082621138933897,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Henleaze Park",
+            "type": "named road",
+            "lat": 51.48500153258694,
+            "lon": -2.604280954952658,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Bristol",
+        "lat": 51.484316,
+        "lon": -2.614943
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.484316,
+        "lon": -2.614943,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "picked_source": "place:Henleaze Avenue",
+        "verified_inside_admin_region": true,
+        "top_lon": -2.614943,
+        "top_lat": 51.484316,
+        "evidence": "The site is a large block bounded by Westbury Road, Henleaze Avenue, Henleaze Gardens, and Henleaze Road. Intersections of these roads in Bristol confirm the location. The picked coordinate is the centroid of Henleaze Avenue which runs through the middle of the site.",
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

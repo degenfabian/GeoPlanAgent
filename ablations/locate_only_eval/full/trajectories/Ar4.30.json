@@ -1,0 +1,329 @@
+{
+  "case": "Ar4.30",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.8281278091962,
+    "top_lon": -0.344176194892007,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Lower Luton Road",
+    "evidence": "The site is 'Land North of Lower Luton Road, Wheathampstead'. Road search for Lower Luton Road in St Albans returned a cluster of points around 51.828, -0.344. This location is consistent with the map showing the road and nearby sewage works (visible in the tool results for the road's extent). AL1 3JE is a council letterhead postcode.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.3015030065394155,
+  "gt_centroids": [
+    {
+      "lat": 51.821604949911254,
+      "lon": -0.3284519275050382
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "postcode": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Lower Luton Road, Wheathampstead"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL1 3JE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CB2 2DF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SG14 1UB"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Lower Luton Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wheathampstead Sewage Works",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lower Luton Road, Wheathampstead",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL1 3JE",
+        "lat": 51.75336285595908,
+        "lon": -0.33612427907835657,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CB2 2DF' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SG14 1UB",
+        "lat": 51.7978525244101,
+        "lon": -0.0788218474392787,
+        "admin_district": "East Hertfordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Lower Luton Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.8281278091962,
+            "lon": -0.3441761948920069,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.828809732483904,
+            "lon": -0.3445837243686501,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.826346249928314,
+            "lon": -0.3428543025085218,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.826546622480215,
+            "lon": -0.3427163454621062,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.82563033005167,
+            "lon": -0.3421405030932388,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wheathampstead Sewage Works",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wheathampstead",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.8281278091962,
+        "lon": -0.344176194892007,
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wheathampstead",
+        "la_filter": "St Albans",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Wheathampstead",
+            "type": "village",
+            "lat": 51.81176242947492,
+            "lon": -0.29387756385607416,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Wheathampstead Road",
+            "type": "section of named road",
+            "lat": 51.81009056451133,
+            "lon": -0.32898786514033157,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Wheathampstead Road",
+            "type": "named road",
+            "lat": 51.81069496220408,
+            "lon": -0.32470061663211647,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Wheathampstead House",
+            "type": "non state primary education",
+            "lat": 51.8175400870189,
+            "lon": -0.29049644080922576,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.8281278091962,
+        "lon": -0.344176194892007,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lon": -0.344176194892007,
+        "picked_source": "road:Lower Luton Road",
+        "confidence": "high",
+        "sigma_m": 500,
+        "evidence": "The site is 'Land North of Lower Luton Road, Wheathampstead'. Road search for Lower Luton Road in St Albans returned a cluster of points around 51.828, -0.344. This location is consistent with the map showing the road and nearby sewage works (visible in the tool results for the road's extent). AL1 3JE is a council letterhead postcode.",
+        "top_lat": 51.8281278091962
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

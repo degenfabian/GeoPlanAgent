@@ -1,0 +1,278 @@
+{
+  "case": "A4D-21",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.171712,
+    "top_lon": -0.628876,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "postcode:GU7 2JR",
+    "evidence": "The site address postcode GU7 2JR is verified inside Waverley and aligns with the map labels (Portsmouth Road, Tuesley). The grid reference SU9542SE (SU 95 42) also places the site in this immediate vicinity.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1000295466745309,
+  "gt_centroids": [
+    {
+      "lat": 51.17081586058412,
+      "lon": -0.6290014972656658
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 3,
+      "grid_ref": 2,
+      "la_check": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "GU7 2JR"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU9542SE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "GU7 1HR"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "GU1 4GA"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "GU7 2JR",
+        "lat": 51.171712174612765,
+        "lon": -0.6288763001305293,
+        "admin_district": "Waverley District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'SU9542SE'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "GU7 1HR",
+        "lat": 51.187070295865894,
+        "lon": -0.6097327533849907,
+        "admin_district": "Waverley District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "GU1 4GA",
+        "lat": 51.23655732349279,
+        "lon": -0.5791484133991346,
+        "admin_district": "Guildford District (B)"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU 950 420"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.628876300130529,
+        "lat": 51.1717121746128,
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SU 950 420",
+        "lat": 51.16980420803778,
+        "lon": -0.6418493001590146
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1717121746128,
+        "lon": -0.628876300130529,
+        "la": "Waverley",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.14979708109079,
+        "la_centroid_lon": -0.6327293391700743
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Portsmouth Road",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Portsmouth Road",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Portsmouth Road",
+            "lat": 51.10284268808072,
+            "lon": -0.7495989137462612,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Portsmouth Road",
+            "lat": 51.103789691474596,
+            "lon": -0.7482078764586814,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Portsmouth Road",
+            "lat": 51.09900949831989,
+            "lon": -0.7554330588933272,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Portsmouth Road",
+            "lat": 51.147370947633405,
+            "lon": -0.702977523721846,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Portsmouth Road",
+            "lat": 51.14870976440462,
+            "lon": -0.7006977548158188,
+            "in_la": "Waverley"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site address postcode GU7 2JR is verified inside Waverley and aligns with the map labels (Portsmouth Road, Tuesley). The grid reference SU9542SE (SU 95 42) also places the site in this immediate vicinity.",
+        "picked_source": "postcode:GU7 2JR",
+        "sigma_m": 400,
+        "top_lat": 51.171712,
+        "top_lon": -0.628876,
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

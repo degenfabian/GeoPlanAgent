@@ -1,0 +1,211 @@
+{
+  "case": "A008S",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.577435,
+    "top_lon": -0.352472,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:PE5 7AF",
+    "evidence": "The site postcode PE5 7AF matches the address '37a Main Street' and falls within the Peterborough admin region. The location is further confirmed by the intersection of Main Street and Maffit Road nearby.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06897700806908909,
+  "gt_centroids": [
+    {
+      "lat": 52.57802002996029,
+      "lon": -0.35213258037569056
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "PE5 7AF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Maffit Road",
+        "la": "Peterborough",
+        "road_a": "Main Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Main Street",
+        "la": "Peterborough",
+        "road_b": "Helpston Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "PE5 7AF",
+        "lat": 52.57743519776086,
+        "lon": -0.352472186360468,
+        "admin_district": "City of Peterborough (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Main Street",
+          "Maffit Road"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.576518,
+            "lon": -0.352588,
+            "roads": [
+              "Main Street",
+              "Maffit Road"
+            ]
+          },
+          {
+            "lat": 52.580088,
+            "lon": -0.351856,
+            "roads": [
+              "Main Street",
+              "Maffit Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Main Street",
+          "Helpston Road"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.575787,
+            "lon": -0.352918,
+            "roads": [
+              "Main Street",
+              "Helpston Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Peterborough",
+        "lon": -0.352472,
+        "lat": 52.577435
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.577435,
+        "lon": -0.352472,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.352472,
+        "confidence": "high",
+        "top_lat": 52.577435,
+        "picked_source": "postcode:PE5 7AF",
+        "sigma_m": 300,
+        "evidence": "The site postcode PE5 7AF matches the address '37a Main Street' and falls within the Peterborough admin region. The location is further confirmed by the intersection of Main Street and Maffit Road nearby.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

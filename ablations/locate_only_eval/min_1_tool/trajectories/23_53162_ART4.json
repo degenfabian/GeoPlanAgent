@@ -1,0 +1,259 @@
+{
+  "case": "23:53162:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6566380095707,
+    "top_lon": 1.30277595023848,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Grange Close",
+    "evidence": "The map shows Grange Close, Lucerne Close, and Beeches in Old Catton. Geocoding Grange Close and Lucerne Close in Broadland yields coordinates within 100m of each other, perfectly matching the site address and map labels.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.03157697627782797,
+  "gt_centroids": [
+    {
+      "lat": 52.65635676434843,
+      "lon": 1.3027111523503783
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "Grange Close, Old Catton"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Christopher's School, Old Catton",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lucerne Close, Old Catton",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Grange Close, Old Catton",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Christopher's School, Old Catton",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lucerne Close, Old Catton",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Grange Close",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "Lucerne Close"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Old Catton",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Grange Close",
+        "la_filter": "Broadland",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Grange Close",
+            "type": "named road",
+            "lat": 52.656638009570656,
+            "lon": 1.3027759502384788,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lucerne Close",
+        "la_filter": "Broadland",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Lucerne Close",
+            "type": "named road",
+            "lat": 52.65693054128558,
+            "lon": 1.3042178555354789,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Old Catton",
+        "la_filter": "Broadland",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Old Catton",
+            "type": "suburban area",
+            "lat": 52.66248283855855,
+            "lon": 1.2970043977574544,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Old Catton Church of England (Voluntary Controlled) Junior School",
+            "type": "primary education",
+            "lat": 52.6618954642605,
+            "lon": 1.300332644618455,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.30277595023848,
+        "sigma_m": 200,
+        "confidence": "high",
+        "evidence": "The map shows Grange Close, Lucerne Close, and Beeches in Old Catton. Geocoding Grange Close and Lucerne Close in Broadland yields coordinates within 100m of each other, perfectly matching the site address and map labels.",
+        "top_lat": 52.6566380095707,
+        "verified_inside_admin_region": true,
+        "picked_source": "place:Grange Close"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,341 @@
+{
+  "case": "115",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.502,
+    "top_lon": -0.095,
+    "sigma_m": 1500,
+    "confidence": "med",
+    "picked_source": "place:Southwark Central Activities Zone",
+    "evidence": "The map shows the Southwark Central Activities Zone (CAZ), a large area in the north of the borough. The pick is a central point within the red boundary, verified to be in Southwark and consistent with the locations of Borough High Street and Blackfriars Road.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.20766521514846323,
+  "gt_centroids": [
+    {
+      "lat": 51.50042737620308,
+      "lon": -0.09338180307829284
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 3,
+      "intersect": 2,
+      "postcode": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Southwark Central Activities Zone",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Borough High Street",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Blackfriars Road",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Southwark Central Activities Zone",
+        "la_filter": "Southwark",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Borough High Street",
+        "la_filter": "Southwark",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Borough High Street",
+            "lat": 51.505194301905696,
+            "lon": -0.08949970236578574,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Borough High Street",
+            "lat": 51.505452031636885,
+            "lon": -0.08920454716426525,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Borough High Street",
+            "lat": 51.50578315757548,
+            "lon": -0.08883045009243212,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Borough High Street",
+            "lat": 51.5059846508444,
+            "lon": -0.08861062653442989,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Borough High Street",
+            "lat": 51.5061245215866,
+            "lon": -0.08846939226716731,
+            "in_la": "Southwark"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Blackfriars Road",
+        "la_filter": "Southwark",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Blackfriars Road",
+            "lat": 51.50012612917275,
+            "lon": -0.10466533856841796,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Blackfriars Road",
+            "lat": 51.50135552106188,
+            "lon": -0.10461361137409592,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Blackfriars Road",
+            "lat": 51.501819080877866,
+            "lon": -0.10459927647760209,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Blackfriars Road",
+            "lat": 51.49904309186004,
+            "lon": -0.10471711378979665,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Blackfriars Road",
+            "lat": 51.506905021840566,
+            "lon": -0.10444463544989618,
+            "in_la": "Southwark"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Southwark",
+        "road_a": "Borough High Street",
+        "road_b": "Southwark Street"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Blackfriars Road",
+        "road_b": "The Cut",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Southwark for: ['Borough High Street', 'Southwark Street']"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Southwark for: ['Blackfriars Road', 'The Cut']"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SE1 1AA"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SE1 0AA"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SE1 1AA",
+        "lat": 51.50209080673441,
+        "lon": -0.09192047166601544,
+        "admin_district": "Southwark London Boro"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SE1 0AA",
+        "lat": 51.49870761301099,
+        "lon": -0.10177244775247894,
+        "admin_district": "Southwark London Boro"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.095,
+        "la": "Southwark",
+        "lat": 51.502
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.502,
+        "lon": -0.095,
+        "la": "Southwark",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.47423890487611,
+        "la_centroid_lon": -0.07405678270101093
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Southwark Central Activities Zone",
+        "sigma_m": 1500,
+        "top_lat": 51.502,
+        "confidence": "med",
+        "evidence": "The map shows the Southwark Central Activities Zone (CAZ), a large area in the north of the borough. The pick is a central point within the red boundary, verified to be in Southwark and consistent with the locations of Borough High Street and Blackfriars Road.",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.095
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

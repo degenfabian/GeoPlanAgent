@@ -1,0 +1,237 @@
+{
+  "case": "DEEADDA2-0FC2-422B-B738-F5D274549610",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.153354,
+    "top_lon": 1.302937,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Honeywood Parkway x Kedleston Road",
+    "evidence": "The site is located at the junction of Honeywood Parkway and Kedleston Road in Dover, as clearly shown on the map and confirmed by the intersection tool. The postcode SW1P 4DF is a London letterhead (Defra).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.19283743545350424,
+  "gt_centroids": [
+    {
+      "lat": 51.152011369112046,
+      "lon": 1.3011870113036934
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 3,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SW1P 4DF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Bastion Point"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "White Cliffs Business Park"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Kedleston Road",
+        "la": "Dover",
+        "road_a": "Honeywood Parkway"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SW1P 4DF",
+        "lat": 51.49586682423398,
+        "lon": -0.1298104532064385,
+        "admin_district": "City of Westminster London Boro"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bastion Point",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "White Cliffs Business Park",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Honeywood Parkway",
+          "Kedleston Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.153354,
+            "lon": 1.302937,
+            "roads": [
+              "Honeywood Parkway",
+              "Kedleston Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "The Glenmore Centre"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.302937,
+        "la": "Dover",
+        "lat": 51.153354
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Glenmore Centre",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.153354,
+        "lon": 1.302937,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is located at the junction of Honeywood Parkway and Kedleston Road in Dover, as clearly shown on the map and confirmed by the intersection tool. The postcode SW1P 4DF is a London letterhead (Defra).",
+        "sigma_m": 300,
+        "top_lon": 1.302937,
+        "confidence": "high",
+        "top_lat": 51.153354,
+        "picked_source": "intersect:Honeywood Parkway x Kedleston Road",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

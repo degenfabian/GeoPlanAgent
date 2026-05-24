@@ -1,0 +1,103 @@
+{
+  "case": "23:00006:REG_4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.513444,
+    "top_lon": -0.160463,
+    "sigma_m": 5000,
+    "confidence": "high",
+    "picked_source": "la_centroid:Westminster",
+    "evidence": "The document explicitly states it covers the 'entire City of Westminster'. I used the LA centroid provided by the la_check tool for Westminster.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0014484181905240739,
+  "gt_centroids": [
+    {
+      "lat": 51.51344560997917,
+      "lon": -0.16044222960568932
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 2,
+    "n_turns": 5,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.1423,
+        "lat": 51.4988,
+        "la": "Westminster"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.4988,
+        "lon": -0.1423,
+        "la": "Westminster",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.51344361696313,
+        "la_centroid_lon": -0.16046326615032958
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.160463,
+        "evidence": "The document explicitly states it covers the 'entire City of Westminster'. I used the LA centroid provided by the la_check tool for Westminster.",
+        "picked_source": "la_centroid:Westminster",
+        "top_lat": 51.513444,
+        "sigma_m": 5000
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,222 @@
+{
+  "case": "Ar4.22",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7476210301578,
+    "top_lon": -0.303697781006587,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Brick Knoll Park",
+    "evidence": "The site is located at Brick Knoll Park, east of Ashley Road. Geocoding 'Brick Knoll Park' in St Albans returns a precise location (51.7476, -0.3037) which aligns perfectly with the intersection of Ashley Road and Camp Road shown on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.07354939598633399,
+  "gt_centroids": [
+    {
+      "lat": 51.7488485424684,
+      "lon": -0.3056777855799243
+    },
+    {
+      "lat": 51.748182076396866,
+      "lon": -0.30313191742434364
+    },
+    {
+      "lat": 51.7497568853022,
+      "lon": -0.30582842634337476
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Brick Knoll Park",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Ashley Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Brick Knoll Park",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Brick Knoll Park",
+            "type": "named road",
+            "lat": 51.747621030157816,
+            "lon": -0.30369778100658706,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ashley Road",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Ashley Road",
+            "type": "named road",
+            "lat": 51.74941677044113,
+            "lon": -0.3053834159387839,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Ashley Gardens",
+            "type": "named road",
+            "lat": 51.82471778562103,
+            "lon": -0.3795685770666685,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Camp Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Camp Road",
+        "la_filter": "St Albans",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Camp Road",
+            "type": "named road",
+            "lat": 51.74834506722783,
+            "lon": -0.3127681700364623,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Camp View Road",
+            "type": "named road",
+            "lat": 51.74869436713236,
+            "lon": -0.312045311964605,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Campfield Road",
+            "type": "named road",
+            "lat": 51.75018555688051,
+            "lon": -0.3150754671758214,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Camp Primary and Nursery School",
+            "type": "primary education",
+            "lat": 51.746514144967776,
+            "lon": -0.3105041588889034,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is located at Brick Knoll Park, east of Ashley Road. Geocoding 'Brick Knoll Park' in St Albans returns a precise location (51.7476, -0.3037) which aligns perfectly with the intersection of Ashley Road and Camp Road shown on the map.",
+        "top_lat": 51.7476210301578,
+        "top_lon": -0.303697781006587,
+        "verified_inside_admin_region": true,
+        "picked_source": "place:Brick Knoll Park",
+        "sigma_m": 200,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

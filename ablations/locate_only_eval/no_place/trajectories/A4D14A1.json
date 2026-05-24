@@ -1,0 +1,103 @@
+{
+  "case": "A4D14A1",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.616028526273,
+    "top_lon": -0.210009457692641,
+    "sigma_m": 8000,
+    "confidence": "high",
+    "picked_source": "la_centroid:Barnet",
+    "evidence": "The document is a district-wide Article 4 Direction covering the entire London Borough of Barnet. The pick is the centroid of the Barnet Local Authority polygon.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.001604564823872347,
+  "gt_centroids": [
+    {
+      "lat": 51.61603279913152,
+      "lon": -0.20998726016036837
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 2,
+    "n_turns": 5,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.615,
+        "la": "Barnet",
+        "lon": -0.2
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.615,
+        "lon": -0.2,
+        "la": "Barnet",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.616028526273034,
+        "la_centroid_lon": -0.21000945769264093
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.210009457692641,
+        "sigma_m": 8000,
+        "verified_inside_admin_region": true,
+        "picked_source": "la_centroid:Barnet",
+        "top_lat": 51.616028526273,
+        "confidence": "high",
+        "evidence": "The document is a district-wide Article 4 Direction covering the entire London Borough of Barnet. The pick is the centroid of the Barnet Local Authority polygon."
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

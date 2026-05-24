@@ -1,0 +1,316 @@
+{
+  "case": "12:00126:ART4",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.473646,
+    "top_lon": 1.515292,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Geldeston Hill x Yarmouth Road",
+    "evidence": "The map shows a development at the junction of Geldeston Hill and Yarmouth Road, with internal roads Kell's Walk and Kell's Way. The intersection of Geldeston Hill and Yarmouth Road was found at 52.474968, 1.51622, and the road Geldeston Hill itself is centered nearby. The site is clearly in Geldeston, South Norfolk.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0717672205970139,
+  "gt_centroids": [
+    {
+      "lat": 52.47382141827659,
+      "lon": 1.514126917824604
+    },
+    {
+      "lat": 52.47428111326806,
+      "lon": 1.515103412976047
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Geldeston Hill",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Wherry Inn, Geldeston",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kell's Way, Geldeston",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_b": "Yarmouth Road",
+        "road_a": "Geldeston Hill"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Geldeston Hill",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Geldeston Hill",
+            "type": "section of named road",
+            "lat": 52.473646287364076,
+            "lon": 1.5152925043807601,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Wherry Inn, Geldeston",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kell's Way, Geldeston",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Geldeston Hill",
+          "Yarmouth Road"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.474968,
+            "lon": 1.51622,
+            "roads": [
+              "Geldeston Hill",
+              "Yarmouth Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Knowle, Geldeston",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Geldeston"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.473646,
+        "lon": 1.515292,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Knowle, Geldeston",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Geldeston",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Geldeston",
+            "type": "village",
+            "lat": 52.47260397793106,
+            "lon": 1.5209977699610395,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Geldeston Hill",
+            "type": "section of named road",
+            "lat": 52.473646287364076,
+            "lon": 1.5152925043807601,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Geldeston Road",
+            "type": "section of named road",
+            "lat": 52.46963447809639,
+            "lon": 1.506828041875233,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Geldeston Road",
+            "type": "named road",
+            "lat": 52.47229143284089,
+            "lon": 1.4960813857734596,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Geldeston Marshes",
+            "type": "wetland",
+            "lat": 52.466071603836504,
+            "lon": 1.5174569617247615,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.473646,
+        "lon": 1.515292,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Geldeston Hill x Yarmouth Road",
+        "top_lat": 52.473646,
+        "evidence": "The map shows a development at the junction of Geldeston Hill and Yarmouth Road, with internal roads Kell's Walk and Kell's Way. The intersection of Geldeston Hill and Yarmouth Road was found at 52.474968, 1.51622, and the road Geldeston Hill itself is centered nearby. The site is clearly in Geldeston, South Norfolk.",
+        "top_lon": 1.515292,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,234 @@
+{
+  "case": "23:53135:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.621125,
+    "top_lon": 1.442191,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:The Street x Strumpshaw Road",
+    "evidence": "The site is the White Horse Inn at the junction of The Street and Strumpshaw Road in Brundall. The intersection tool pinpointed this junction, which matches the map layout perfectly. Verified inside Broadland.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06682554462148167,
+  "gt_centroids": [
+    {
+      "lat": 52.62163825078993,
+      "lon": 1.4416760025806294
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "intersect": 2,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR7 0DU"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Broadland",
+        "road_b": "Station Road",
+        "road_a": "The Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Strumpshaw Road",
+        "la": "Broadland",
+        "road_a": "The Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "The Street, Brundall",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR7 0DU' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Street",
+          "Station Road"
+        ],
+        "la_filter": "Broadland",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.825188,
+            "lon": 1.033666,
+            "roads": [
+              "The Street",
+              "Station Road"
+            ]
+          },
+          {
+            "lat": 52.621496,
+            "lon": 1.441186,
+            "roads": [
+              "The Street",
+              "Station Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Street",
+          "Strumpshaw Road"
+        ],
+        "la_filter": "Broadland",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.621125,
+            "lon": 1.442191,
+            "roads": [
+              "The Street",
+              "Strumpshaw Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Street, Brundall",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.442191,
+        "lat": 52.621125,
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.621125,
+        "lon": 1.442191,
+        "la": "Broadland",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.70119443642098,
+        "la_centroid_lon": 1.3101886931294198
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.442191,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "evidence": "The site is the White Horse Inn at the junction of The Street and Strumpshaw Road in Brundall. The intersection tool pinpointed this junction, which matches the map layout perfectly. Verified inside Broadland.",
+        "picked_source": "intersect:The Street x Strumpshaw Road",
+        "top_lat": 52.621125,
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

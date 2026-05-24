@@ -1,0 +1,242 @@
+{
+  "case": "A014S",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.577973,
+    "top_lon": -0.353028,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:PE5 7AG",
+    "evidence": "The postcode PE5 7AG and Maffit Road both geolocate to the same small area in Ailsworth. The map shows the site at 2a Maffit Road, which aligns perfectly with these coordinates.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.04310778830172786,
+  "gt_centroids": [
+    {
+      "lat": 52.57763879297042,
+      "lon": -0.3527046937621966
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "2a Maffit Road, Ailsworth",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Maffit Road, Ailsworth"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "PE5 7AG",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "2a Maffit Road, Ailsworth",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Maffit Road, Ailsworth",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "PE5 7AG",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "PE5 7AG",
+            "type": "postcode",
+            "lat": 52.57797337985324,
+            "lon": -0.3530275907381686,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Maffit Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Maffit Road",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Maffit Road",
+            "type": "named road",
+            "lat": 52.57843757887817,
+            "lon": -0.35278881360344083,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Ailsworth",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ailsworth",
+        "la_filter": "Peterborough",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Ailsworth",
+            "type": "village",
+            "lat": 52.57578709203318,
+            "lon": -0.35291767222683723,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Ailsworth Heath",
+            "type": "woodland or forest",
+            "lat": 52.60323622687576,
+            "lon": -0.35423606392363627,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "sigma_m": 200,
+        "top_lat": 52.577973,
+        "picked_source": "postcode:PE5 7AG",
+        "top_lon": -0.353028,
+        "confidence": "high",
+        "evidence": "The postcode PE5 7AG and Maffit Road both geolocate to the same small area in Ailsworth. The map shows the site at 2a Maffit Road, which aligns perfectly with these coordinates."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

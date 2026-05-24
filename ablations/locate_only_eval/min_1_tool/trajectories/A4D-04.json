@@ -1,0 +1,254 @@
+{
+  "case": "A4D-04",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.168,
+    "top_lon": -0.765,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Frensham Common",
+    "evidence": "The map shows a large area covering Frensham Common, Tilford Reeds, and Hankley Common. Geocoding these landmarks places the center of the hatched area near Frensham Common. Millbridge and Tilford Reeds provide northern bounds, while Hankley Common provides the eastern bound. The centroid of these features aligns with the hatched site.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.9867933588501226,
+  "gt_centroids": [
+    {
+      "lat": 51.16017788702342,
+      "lon": -0.7716843425634584
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Frensham Common",
+        "la": "Hambledon"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Hambledon",
+        "query": "Tilford Reeds"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Hambledon",
+        "query": "Millbridge"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Frensham Common",
+        "la_filter": "Hambledon",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Frensham Common",
+            "type": "other landcover",
+            "lat": 51.16047421089795,
+            "lon": -0.7784396680930405,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Tilford Reeds",
+        "la_filter": "Hambledon",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Tilford Reeds",
+            "type": "hamlet",
+            "lat": 51.182458639011806,
+            "lon": -0.7653967762619992,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Millbridge",
+        "la_filter": "Hambledon",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Millbridge",
+            "type": "named road",
+            "lat": 56.202645586017496,
+            "lon": -3.4203070112417837,
+            "admin_district": null,
+            "county": "Perth and Kinross"
+          },
+          {
+            "name": "Millbridge",
+            "type": "section of named road",
+            "lat": 53.34503496196842,
+            "lon": -1.775780920797968,
+            "admin_district": "High Peak",
+            "county": "Derbyshire"
+          },
+          {
+            "name": "Millbridge",
+            "type": "named road",
+            "lat": 53.34616027728044,
+            "lon": -1.7767063154000533,
+            "admin_district": "High Peak",
+            "county": "Derbyshire"
+          },
+          {
+            "name": "Millbridge",
+            "type": "village",
+            "lat": 51.1745387563114,
+            "lon": -0.7871232916321811,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Millbridge Plantation",
+            "type": "woodland or forest",
+            "lat": 54.366429277192125,
+            "lon": -3.3963590571807076,
+            "admin_district": null,
+            "county": "Cumberland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hankley Common",
+        "la": "Hambledon"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hankley Common",
+        "la_filter": "Hambledon",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Hankley Common",
+            "type": "other landcover",
+            "lat": 51.16628105631108,
+            "lon": -0.7400695852994964,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Hankley Common",
+            "type": "named road",
+            "lat": 51.426934989524106,
+            "lon": -0.7787421351284054,
+            "admin_district": null,
+            "county": "Bracknell Forest"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lat": 51.168,
+        "picked_source": "place:Frensham Common",
+        "top_lon": -0.765,
+        "evidence": "The map shows a large area covering Frensham Common, Tilford Reeds, and Hankley Common. Geocoding these landmarks places the center of the hatched area near Frensham Common. Millbridge and Tilford Reeds provide northern bounds, while Hankley Common provides the eastern bound. The centroid of these features aligns with the hatched site.",
+        "verified_inside_admin_region": true,
+        "sigma_m": 1500
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

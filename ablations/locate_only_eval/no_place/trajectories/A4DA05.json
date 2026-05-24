@@ -1,0 +1,213 @@
+{
+  "case": "A4DA05",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.708432,
+    "top_lon": -2.291537,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "road:Collinge Fold Lane",
+    "evidence": "The site is Collinge Fold Farm on Collinge Fold Lane. The road centroid for Collinge Fold Lane aligns perfectly with the intersection of Burnley Road and Hazel Grove/Margaret Street seen on the map. Verified inside Rossendale.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09986160739172065,
+  "gt_centroids": [
+    {
+      "lat": 53.70932867676488,
+      "lon": -2.291452303601004
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 1,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Collinge Fold Lane",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Rossendale",
+        "road_a": "Burnley Road",
+        "road_b": "Hazel Grove"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Margaret Street",
+        "la": "Rossendale",
+        "road_a": "Burnley Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Collinge Fold Lane",
+        "la_filter": "Rossendale",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Collinge Fold Lane",
+            "lat": 53.70843194756601,
+            "lon": -2.2915367599388476,
+            "in_la": "Rossendale"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Burnley Road",
+          "Hazel Grove"
+        ],
+        "la_filter": "Rossendale",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 53.709813,
+            "lon": -2.289661,
+            "roads": [
+              "Burnley Road",
+              "Hazel Grove"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Burnley Road",
+          "Margaret Street"
+        ],
+        "la_filter": "Rossendale",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 53.708879,
+            "lon": -2.289246,
+            "roads": [
+              "Burnley Road",
+              "Margaret Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Rossendale",
+        "lon": -2.29153675993885,
+        "lat": 53.708431947566
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 53.708431947566,
+        "lon": -2.29153675993885,
+        "la": "Rossendale",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 53.69381770640495,
+        "la_centroid_lon": -2.2673137098881666
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 200,
+        "top_lat": 53.708432,
+        "evidence": "The site is Collinge Fold Farm on Collinge Fold Lane. The road centroid for Collinge Fold Lane aligns perfectly with the intersection of Burnley Road and Hazel Grove/Margaret Street seen on the map. Verified inside Rossendale.",
+        "top_lon": -2.291537,
+        "verified_inside_admin_region": true,
+        "picked_source": "road:Collinge Fold Lane",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

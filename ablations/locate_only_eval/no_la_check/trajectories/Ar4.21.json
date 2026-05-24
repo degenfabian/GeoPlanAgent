@@ -1,0 +1,281 @@
+{
+  "case": "Ar4.21",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.751,
+    "top_lon": -0.278,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Alban Park",
+    "evidence": "The site is an industrial estate bounded by Alban Park, Acrewood Way, and Lyon Way in St Albans. Geocoding these three roads yielded a tight cluster of coordinates around 51.751, -0.278, which matches the map layout perfectly.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.04197281035458423,
+  "gt_centroids": [
+    {
+      "lat": 51.75091032000251,
+      "lon": -0.27859226944040427
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "road": 2,
+      "intersect": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Alban Park"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Acrewood Way",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Lyon Way",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Alban Park",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Alban Park",
+            "type": "named road",
+            "lat": 51.750586680227904,
+            "lon": -0.2819137840311341,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Acrewood Way",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Acrewood Way",
+            "lat": 51.75200990173824,
+            "lon": -0.27894600953259546,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Acrewood Way",
+            "lat": 51.75169081285526,
+            "lon": -0.2786323851140724,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Acrewood Way",
+            "lat": 51.751009604729745,
+            "lon": -0.2778485835975672,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Lyon Way",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Lyon Way",
+            "lat": 51.75221898578474,
+            "lon": -0.2754844648884506,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lyon Way",
+            "lat": 51.75154794576714,
+            "lon": -0.27537652125406104,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lyon Way",
+            "lat": 51.750805058553354,
+            "lon": -0.2743006663031698,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Acrewood Way",
+        "road_a": "Alban Park",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Alban Park",
+          "Acrewood Way"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Industrial Estate",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Industrial Estate",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Industrial Estate",
+            "type": "other landcover",
+            "lat": 53.7246324600181,
+            "lon": -2.6465693801562837,
+            "admin_district": "South Ribble",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Industrial Estate",
+            "type": "named road",
+            "lat": 53.7880612956322,
+            "lon": -1.7322952217104772,
+            "admin_district": "Bradford",
+            "county": null
+          },
+          {
+            "name": "Industrial Estate Road",
+            "type": "named road",
+            "lat": 53.25095817327454,
+            "lon": -4.307212422326209,
+            "admin_district": null,
+            "county": "Sir Ynys Mon - Isle of Anglesey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.751,
+        "top_lon": -0.278,
+        "picked_source": "place:Alban Park",
+        "sigma_m": 300,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "evidence": "The site is an industrial estate bounded by Alban Park, Acrewood Way, and Lyon Way in St Albans. Geocoding these three roads yielded a tight cluster of coordinates around 51.751, -0.278, which matches the map layout perfectly."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

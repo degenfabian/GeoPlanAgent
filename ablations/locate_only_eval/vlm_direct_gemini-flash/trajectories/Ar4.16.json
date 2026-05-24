@@ -1,0 +1,60 @@
+{
+  "case": "Ar4.16",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.7765,
+    "lon": -0.3185,
+    "reasoning": "The document describes land at Sandridgebury Lane, St Albans, and the provided map shows a specific field bounded by the railway line to the west and Sandridgebury Lane to the north and east."
+  },
+  "err_km": 0.14898767617559736,
+  "gt_centroids": [
+    {
+      "lat": 51.77618696062137,
+      "lon": -0.32060558921712295
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 51.7765,
+        "reasoning": "The document describes land at Sandridgebury Lane, St Albans, and the provided map shows a specific field bounded by the railway line to the west and Sandridgebury Lane to the north and east.",
+        "lon": -0.3185
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

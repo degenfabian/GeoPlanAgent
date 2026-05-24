@@ -1,0 +1,314 @@
+{
+  "case": "A4_088:LL:016",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6542575697452,
+    "top_lon": -1.13377841168233,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Exploration Drive",
+    "evidence": "The site is the National Space Centre on Exploration Drive. Geocoding 'Exploration Drive' in Leicester provides a precise location that matches the map's road layout and landmarks. Verified inside Leicester admin region.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.11905176142695345,
+  "gt_centroids": [
+    {
+      "lat": 52.6536908931723,
+      "lon": -1.132280955180471
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "National Space Centre"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Exploration Drive",
+        "la": "Leicester",
+        "road_b": "Wallingford Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Leicestershire Museum of Technology",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "National Space Centre",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Exploration Drive",
+          "Wallingford Road"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Leicestershire Museum of Technology",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "National Space Centre"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Exploration Drive"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Abbey Park Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "National Space Centre",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Exploration Drive",
+        "la_filter": null,
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Exploration Drive",
+            "type": "named road",
+            "lat": 57.1883229359346,
+            "lon": -2.0838810330296496,
+            "admin_district": null,
+            "county": "Aberdeen City"
+          },
+          {
+            "name": "Exploration Drive",
+            "type": "named road",
+            "lat": 52.65425756974516,
+            "lon": -1.1337784116823328,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Abbey Park Road",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Abbey Park Road",
+            "type": "named road",
+            "lat": 52.648179086217674,
+            "lon": -1.1323760571769312,
+            "admin_district": null,
+            "county": "City of Leicester"
+          },
+          {
+            "name": "Abbey Park Road",
+            "type": "named road",
+            "lat": 53.5595119394813,
+            "lon": -0.08784000235989736,
+            "admin_district": null,
+            "county": "North East Lincolnshire"
+          },
+          {
+            "name": "Abbey Park",
+            "type": "named road",
+            "lat": 58.51133360722013,
+            "lon": -3.485686590088336,
+            "admin_district": null,
+            "county": "Highland"
+          },
+          {
+            "name": "Abbey Park",
+            "type": "named road",
+            "lat": 56.29595104925047,
+            "lon": -3.695148240229883,
+            "admin_district": null,
+            "county": "Perth and Kinross"
+          },
+          {
+            "name": "Abbey Park",
+            "type": "named road",
+            "lat": 56.56167151742883,
+            "lon": -2.581951356270865,
+            "admin_district": null,
+            "county": "Angus"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.6542575697452,
+        "la": "Leicester",
+        "lon": -1.13377841168233
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6542575697452,
+        "lon": -1.13377841168233,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -1.13377841168233,
+        "top_lat": 52.6542575697452,
+        "picked_source": "place:Exploration Drive",
+        "sigma_m": 300,
+        "confidence": "high",
+        "evidence": "The site is the National Space Centre on Exploration Drive. Geocoding 'Exploration Drive' in Leicester provides a precise location that matches the map's road layout and landmarks. Verified inside Leicester admin region.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

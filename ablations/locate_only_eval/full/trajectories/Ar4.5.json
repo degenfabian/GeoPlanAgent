@@ -1,0 +1,350 @@
+{
+  "case": "Ar4.5",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.718015,
+    "top_lon": -0.334845,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Frogmore",
+    "evidence": "The site is Radlett Airfield (Aerodrome), located between Park Street and Frogmore. Tool results for Frogmore (51.718, -0.334) and Park Street (51.722, -0.338) align perfectly with the map's 'Article Four Boundary' which encompasses the airfield area between these settlements. Verified inside St. Albans.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.5332929581103553,
+  "gt_centroids": [
+    {
+      "lat": 51.719450458383996,
+      "lon": -0.3274584042474716
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "postcode": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Radlett Aerodrome",
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St. Albans",
+        "query": "Radlett Airfield"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL1 3TZ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St. Albans",
+        "query": "Frogmore"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Radlett Aerodrome",
+        "la_filter": "St. Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Radlett Airfield",
+        "la_filter": "St. Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'AL1 3TZ' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Frogmore",
+        "la_filter": "St. Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Frogmore",
+            "type": "village",
+            "lat": 51.71801524555577,
+            "lon": -0.3348451465401833,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Frogmore",
+            "type": "section of named road",
+            "lat": 51.72088457079475,
+            "lon": -0.33744706153190435,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Frogmore Home Park",
+            "type": "named road",
+            "lat": 51.718561333388294,
+            "lon": -0.33721377741572756,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Park Street",
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colney Street",
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.718015,
+        "lon": -0.334845,
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Park Street",
+        "la_filter": "St. Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Park Street",
+            "type": "named road",
+            "lat": 53.45423356356581,
+            "lon": -2.718848663818787,
+            "admin_district": "St. Helens",
+            "county": null
+          },
+          {
+            "name": "Park Street",
+            "type": "named road",
+            "lat": 53.46577628793232,
+            "lon": -2.692773296245826,
+            "admin_district": "St. Helens",
+            "county": null
+          },
+          {
+            "name": "Park Street",
+            "type": "village",
+            "lat": 51.72248639877629,
+            "lon": -0.33880716549966977,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Park Street",
+            "type": "railway station",
+            "lat": 51.725651600008895,
+            "lon": -0.34008114777626247,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Park Street",
+            "type": "named road",
+            "lat": 51.72322378213885,
+            "lon": -0.3394461453594831,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney Street",
+        "la_filter": "St. Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Colney Street",
+            "type": "other settlement",
+            "lat": 51.706958340885436,
+            "lon": -0.3293750398963479,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Colney Heath Lane",
+            "type": "section of named road",
+            "lat": 51.747897315851844,
+            "lon": -0.2861734171940435,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Colney Heath Lane",
+            "type": "named road",
+            "lat": 51.746436883474956,
+            "lon": -0.28160768163178257,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Colney Heath",
+            "type": "village",
+            "lat": 51.74017015859061,
+            "lon": -0.26208935629229957,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Colney Heath",
+            "type": "other landcover",
+            "lat": 51.73322247750252,
+            "lon": -0.257446573161603,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.718015,
+        "lon": -0.334845,
+        "la": "St. Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.718015,
+        "evidence": "The site is Radlett Airfield (Aerodrome), located between Park Street and Frogmore. Tool results for Frogmore (51.718, -0.334) and Park Street (51.722, -0.338) align perfectly with the map's 'Article Four Boundary' which encompasses the airfield area between these settlements. Verified inside St. Albans.",
+        "picked_source": "place:Frogmore",
+        "sigma_m": 500,
+        "top_lon": -0.334845
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

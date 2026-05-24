@@ -1,0 +1,257 @@
+{
+  "case": "A084S",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.635006,
+    "top_lon": -0.346911,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:West Street x Crossberry Way",
+    "evidence": "The intersection of West Street and Crossberry Way in Helpston perfectly matches the map layout. The site is identified as 27 West Street, which is adjacent to this junction.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.05723675848334246,
+  "gt_centroids": [
+    {
+      "lat": 52.63495411444385,
+      "lon": -0.3477548435993574
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "27 West Street, Helpston",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Quarry Farm, Helpston"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "West Street",
+        "road_b": "Crossberry Way",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "27 West Street, Helpston",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Quarry Farm, Helpston",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "West Street",
+          "Crossberry Way"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.635006,
+            "lon": -0.346911,
+            "roads": [
+              "West Street",
+              "Crossberry Way"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Helpston",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.635006,
+        "la": "Peterborough",
+        "lon": -0.346911
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Helpston",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Helpston",
+            "type": "village",
+            "lat": 52.63524448135052,
+            "lon": -0.34400588689895034,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "type": "named road",
+            "lat": 52.63768958163383,
+            "lon": -0.30834135807023,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "type": "section of named road",
+            "lat": 52.63829909639045,
+            "lon": -0.302554076611096,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "type": "section of named road",
+            "lat": 52.577521471262735,
+            "lon": -0.35091932635714346,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "type": "named road",
+            "lat": 52.581609959413065,
+            "lon": -0.3488176033137188,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.635006,
+        "lon": -0.346911,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 200,
+        "top_lon": -0.346911,
+        "picked_source": "intersect:West Street x Crossberry Way",
+        "top_lat": 52.635006,
+        "evidence": "The intersection of West Street and Crossberry Way in Helpston perfectly matches the map layout. The site is identified as 27 West Street, which is adjacent to this junction.",
+        "confidence": "high",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

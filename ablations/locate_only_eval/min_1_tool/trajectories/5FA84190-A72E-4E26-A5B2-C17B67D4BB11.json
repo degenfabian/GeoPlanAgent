@@ -1,0 +1,235 @@
+{
+  "case": "5FA84190-A72E-4E26-A5B2-C17B67D4BB11",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.28,
+    "top_lon": 1.38,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Sandwich Bay Estate",
+    "evidence": "The map shows Prince's Golf Links and Sandwich Bay. The grid reference TR3559-60 places it on the coast east of Sandwich. The 'Sandwich Bay Estate' hit aligns perfectly with the location of the golf club and the foreshore shown.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.9478974955672299,
+  "gt_centroids": [
+    {
+      "lat": 51.28834833481014,
+      "lon": 1.3772423523363058
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Prince's Golf Club",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandwich Bay",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Prince's Golf Club",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandwich Bay",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sandwich Bay Estate",
+            "type": "village",
+            "lat": 51.266146317085045,
+            "lon": 1.384951756073922,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Worth",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Worth",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Worth",
+            "type": "village",
+            "lat": 51.25559411454889,
+            "lon": 1.3427622229679996,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Worthington Street",
+            "type": "named road",
+            "lat": 51.12645355077843,
+            "lon": 1.3107223457585444,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Worth Hill",
+            "type": "hill or mountain",
+            "lat": 51.25894582502547,
+            "lon": 1.34571505325278,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Worth Primary School",
+            "type": "primary education",
+            "lat": 51.25665080768268,
+            "lon": 1.3485873720506143,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandwich Bay Estate",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandwich Bay Estate",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sandwich Bay Estate",
+            "type": "village",
+            "lat": 51.266146317085045,
+            "lon": 1.384951756073922,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows Prince's Golf Links and Sandwich Bay. The grid reference TR3559-60 places it on the coast east of Sandwich. The 'Sandwich Bay Estate' hit aligns perfectly with the location of the golf club and the foreshore shown.",
+        "sigma_m": 500,
+        "picked_source": "place:Sandwich Bay Estate",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lon": 1.38,
+        "top_lat": 51.28
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

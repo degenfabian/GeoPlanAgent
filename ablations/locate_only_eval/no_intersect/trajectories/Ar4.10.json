@@ -1,0 +1,330 @@
+{
+  "case": "Ar4.10",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7336,
+    "top_lon": -0.3603,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Ragged Hall Lane x Stanley Avenue",
+    "evidence": "The site is located at the junction of Ragged Hall Lane and Stanley Avenue in Chiswell Green. Geocoding both roads in St Albans yields a tight cluster around 51.733, -0.360. AL1 3JE is a council letterhead postcode.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.10246549939054975,
+  "gt_centroids": [
+    {
+      "lat": 51.73504241055877,
+      "lon": -0.35787113906398915
+    },
+    {
+      "lat": 51.734506221082235,
+      "lon": -0.3605697806397629
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 2,
+      "place": 3,
+      "la_check": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL1 3JE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "MK40 3LL"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Ragged Hall Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Chiswell Green",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL1 3JE",
+        "lat": 51.75336285595908,
+        "lon": -0.33612427907835657,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'MK40 3LL' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ragged Hall Lane",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Ragged Hall Lane",
+            "type": "named road",
+            "lat": 51.73384928037495,
+            "lon": -0.36941051517153795,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "type": "section of named road",
+            "lat": 51.73362373755929,
+            "lon": -0.36030965727562425,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "type": "section of named road",
+            "lat": 51.73476345363486,
+            "lon": -0.3835120673153656,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Chiswell Green",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Chiswell Green",
+            "type": "village",
+            "lat": 51.728460410922374,
+            "lon": -0.35952633123399735,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Chiswell Green Lane",
+            "type": "named road",
+            "lat": 51.727931244957524,
+            "lon": -0.37125969123805563,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Chiswell Green Lane",
+            "type": "section of named road",
+            "lat": 51.728455328518116,
+            "lon": -0.36303068269003874,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Cuckmans Farm",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "St Albans",
+        "lat": 51.733849,
+        "lon": -0.36941
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cuckmans Farm",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.733849,
+        "lon": -0.36941,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Stanley Avenue",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Stanley Avenue",
+        "la_filter": "St Albans",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Stanley Avenue",
+            "lat": 51.72905211555997,
+            "lon": -0.3610108536484178,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Stanley Avenue",
+            "lat": 51.7304062871347,
+            "lon": -0.36022321411772695,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Stanley Avenue",
+            "lat": 51.73200806165753,
+            "lon": -0.3590212333694984,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Stanley Avenue",
+            "lat": 51.73352909590059,
+            "lon": -0.35803946230548267,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.3603,
+        "evidence": "The site is located at the junction of Ragged Hall Lane and Stanley Avenue in Chiswell Green. Geocoding both roads in St Albans yields a tight cluster around 51.733, -0.360. AL1 3JE is a council letterhead postcode.",
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Ragged Hall Lane x Stanley Avenue",
+        "top_lat": 51.7336,
+        "confidence": "high",
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

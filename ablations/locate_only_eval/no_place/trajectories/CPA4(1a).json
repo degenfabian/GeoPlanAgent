@@ -1,0 +1,326 @@
+{
+  "case": "CPA4(1a)",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.553969,
+    "top_lon": 0.602267,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Florence Gardens x Florence Close",
+    "evidence": "The intersection of Florence Gardens and Florence Close matches the map layout perfectly. The postcode SS7 1TF is nearby (approx 1.5km) but the road intersection and road centroids for Florence Gardens and Chapel Lane (Hadleigh) provide a precise cluster for the site.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.08015280078644352,
+  "gt_centroids": [
+    {
+      "lat": 51.55376851197057,
+      "lon": 0.6033805620421716
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "intersect": 2,
+      "road": 2,
+      "la_check": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SS7 1TF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Florence Close",
+        "road_a": "Florence Gardens",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Chapel Lane",
+        "road_b": "Florence Close",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SS7 1TF",
+        "lat": 51.56184488380458,
+        "lon": 0.5848681639491619,
+        "admin_district": "Castle Point District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Florence Gardens",
+          "Florence Close"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.553969,
+            "lon": 0.602267,
+            "roads": [
+              "Florence Gardens",
+              "Florence Close"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Chapel Lane",
+          "Florence Close"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Florence Gardens",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 0.584868163949162,
+        "lat": 51.5618448838046,
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Florence Gardens",
+        "la_filter": "Castle Point",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Florence Gardens",
+            "lat": 51.55417032147502,
+            "lon": 0.6016871198034267,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Florence Gardens",
+            "lat": 51.55378660993736,
+            "lon": 0.603172787057564,
+            "in_la": "Castle Point"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5618448838046,
+        "lon": 0.584868163949162,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Castle Point",
+        "lat": 51.553969,
+        "lon": 0.602267
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.553969,
+        "lon": 0.602267,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Castle Point",
+        "query": "Chapel Lane"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Chapel Lane",
+        "la_filter": "Castle Point",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Chapel Lane",
+            "lat": 51.553702329719215,
+            "lon": 0.6002826784640338,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Chapel Lane",
+            "lat": 51.55424516324115,
+            "lon": 0.6009484195653139,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Chapel Lane",
+            "lat": 51.554764453314945,
+            "lon": 0.6023509087203122,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Chapel Lane",
+            "lat": 51.55106695989374,
+            "lon": 0.5967253703945574,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Chapel Lane",
+            "lat": 51.55210805393862,
+            "lon": 0.5975128290874642,
+            "in_la": "Castle Point"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 0.602267,
+        "verified_inside_admin_region": true,
+        "evidence": "The intersection of Florence Gardens and Florence Close matches the map layout perfectly. The postcode SS7 1TF is nearby (approx 1.5km) but the road intersection and road centroids for Florence Gardens and Chapel Lane (Hadleigh) provide a precise cluster for the site.",
+        "confidence": "high",
+        "sigma_m": 200,
+        "top_lat": 51.553969,
+        "picked_source": "intersect:Florence Gardens x Florence Close"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

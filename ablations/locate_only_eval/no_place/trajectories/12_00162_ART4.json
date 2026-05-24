@@ -1,0 +1,261 @@
+{
+  "case": "12:00162:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.554,
+    "top_lon": 1.0,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Stalland Lane",
+    "evidence": "The map shows the former Deopham Airfield. Stalland Lane and Halffield Lane are clearly visible on the eastern edge. Geocoding Stalland Lane and Halffield Lane in South Norfolk places the site at approximately 52.554, 1.000. This is consistent with the parish names Hingham and Deopham.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3927971652661426,
+  "gt_centroids": [
+    {
+      "lat": 52.55425096040126,
+      "lon": 0.994204743122648
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 3,
+      "intersect": 1,
+      "grid_ref": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Stalland Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Halffield Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Halffield Lane",
+        "road_a": "Stalland Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Deopham Airfield",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Stalland Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Stalland Lane",
+            "lat": 52.55482359033597,
+            "lon": 1.0139310377202189,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Stalland Lane",
+            "lat": 52.554756064120745,
+            "lon": 1.0139182183523325,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Stalland Lane",
+            "lat": 52.55423339211154,
+            "lon": 0.9984844287814126,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Stalland Lane",
+            "lat": 52.554195304820574,
+            "lon": 0.9986281918594981,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Stalland Lane",
+            "lat": 52.55389377077809,
+            "lon": 1.000025634613399,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Halffield Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Halffield Lane",
+            "lat": 52.551019720631665,
+            "lon": 1.01350114189335,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Halffield Lane']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Deopham Airfield",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 000 000"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.554,
+        "lon": 1,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG 000 000",
+        "lat": 52.56149283398743,
+        "lon": 0.9499187628780547
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.554,
+        "lon": 1.0,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 52.554,
+        "top_lon": 1,
+        "sigma_m": 500,
+        "picked_source": "road:Stalland Lane",
+        "evidence": "The map shows the former Deopham Airfield. Stalland Lane and Halffield Lane are clearly visible on the eastern edge. Geocoding Stalland Lane and Halffield Lane in South Norfolk places the site at approximately 52.554, 1.000. This is consistent with the parish names Hingham and Deopham."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

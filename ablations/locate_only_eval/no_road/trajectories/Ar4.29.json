@@ -1,0 +1,229 @@
+{
+  "case": "Ar4.29",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.749896,
+    "top_lon": -0.326922,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Station Way x Grimston Road",
+    "evidence": "The site is St Albans City Station. Intersection of Station Way and Grimston Road (51.749896, -0.326922) is at the heart of the red-hatched boundary. Verified inside St Albans LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.056332203965461895,
+  "gt_centroids": [
+    {
+      "lat": 51.75036311726996,
+      "lon": -0.3266052558047421
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Albans City Station",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Grimston Road",
+        "road_a": "Station Way",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Stanhope Road",
+        "road_b": "Granville Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans City Station",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Station Way",
+          "Grimston Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.749896,
+            "lon": -0.326922,
+            "roads": [
+              "Station Way",
+              "Grimston Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Stanhope Road",
+          "Granville Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.750004,
+            "lon": -0.325687,
+            "roads": [
+              "Stanhope Road",
+              "Granville Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Albans City Railway Station",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.326922,
+        "lat": 51.749896,
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans City Railway Station",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.749896,
+        "lon": -0.326922,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is St Albans City Station. Intersection of Station Way and Grimston Road (51.749896, -0.326922) is at the heart of the red-hatched boundary. Verified inside St Albans LA.",
+        "sigma_m": 200,
+        "picked_source": "intersect:Station Way x Grimston Road",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.326922,
+        "confidence": "high",
+        "top_lat": 51.749896
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

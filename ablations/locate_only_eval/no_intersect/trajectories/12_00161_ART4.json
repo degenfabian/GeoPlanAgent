@@ -1,0 +1,356 @@
+{
+  "case": "12:00161:ART4",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.55655,
+    "top_lon": 1.43372,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:The Crescent x Vale Road",
+    "evidence": "The map shows St Ethelbert's Close in Thurton. Road centroids for Vale Road and The Crescent in Thurton cluster around 52.5565, 1.4337. The grid reference TG 3201-3301 on the map header corresponds to this area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.11005041974964623,
+  "gt_centroids": [
+    {
+      "lat": 52.55621778771914,
+      "lon": 1.435253412922537
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 3,
+      "road": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 3201 0101"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Ethelbert's Close, Thurton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Thurton"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG 3201 0101",
+        "lat": 52.55747660858563,
+        "lon": 1.4213238928813738
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Ethelbert's Close, Thurton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thurton",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Thurton",
+            "type": "village",
+            "lat": 52.55667591744069,
+            "lon": 1.4331258745085702,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Thurton Primary School",
+            "type": "primary education",
+            "lat": 52.55779720235161,
+            "lon": 1.43198866253166,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "St Ethelbert's Close",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Vale Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Norfolk",
+        "lat": 52.55747,
+        "lon": 1.42132
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "St Ethelbert's Close",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Vale Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Vale Road",
+            "lat": 52.55650225048035,
+            "lon": 1.4374018285430967,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Vale Road",
+            "lat": 52.55656074992989,
+            "lon": 1.43568725774705,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Vale Road",
+            "lat": 52.556319603521054,
+            "lon": 1.4339814321478965,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Vale Road",
+            "lat": 52.556447147603684,
+            "lon": 1.434699717137669,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Vale Road",
+            "lat": 52.55630725169933,
+            "lon": 1.4387958968752748,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.55747,
+        "lon": 1.42132,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Ethelbert's Church, Thurton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "The Crescent",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Ethelbert's Church, Thurton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Crescent",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Crescent",
+            "lat": 52.55655478117129,
+            "lon": 1.4337217990351723,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "The Crescent",
+            "lat": 52.59418177668587,
+            "lon": 1.1683980750548013,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "The Crescent",
+            "lat": 52.538375364034486,
+            "lon": 1.2601972469830611,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "The Crescent",
+            "lat": 52.53398375503925,
+            "lon": 1.1563241363316434,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "The Crescent",
+            "lat": 52.53424386918387,
+            "lon": 1.1563501784313552,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows St Ethelbert's Close in Thurton. Road centroids for Vale Road and The Crescent in Thurton cluster around 52.5565, 1.4337. The grid reference TG 3201-3301 on the map header corresponds to this area.",
+        "verified_inside_admin_region": true,
+        "top_lat": 52.55655,
+        "sigma_m": 200,
+        "picked_source": "intersect:The Crescent x Vale Road",
+        "top_lon": 1.43372,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

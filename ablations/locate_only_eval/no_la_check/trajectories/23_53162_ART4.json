@@ -1,0 +1,340 @@
+{
+  "case": "23:53162:ART4",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6564813550255,
+    "top_lon": 1.30274963814317,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Grange Close",
+    "evidence": "The road 'Grange Close' was found in Broadland (Old Catton). The map shows the site boundary centered on this cul-de-sac, adjacent to 'The Grange' and 'George House'. The road centroid aligns perfectly with the site address.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.014094954282419888,
+  "gt_centroids": [
+    {
+      "lat": 52.65635676434843,
+      "lon": 1.3027111523503783
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 4,
+      "road": 2,
+      "intersect": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR7 0DU"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "Grange Close, Old Catton"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "George House (St Christopher's School)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR7 0DU' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Grange Close, Old Catton",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "George House (St Christopher's School)",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Grange Close",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Old Catton",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "The Grange"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Grange Close",
+        "la_filter": "Broadland",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Grange Close",
+            "lat": 52.656481355025456,
+            "lon": 1.3027496381431662,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Old Catton",
+        "la_filter": "Broadland",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Old Catton",
+            "type": "suburban area",
+            "lat": 52.66248283855855,
+            "lon": 1.2970043977574544,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Old Catton Church of England (Voluntary Controlled) Junior School",
+            "type": "primary education",
+            "lat": 52.6618954642605,
+            "lon": 1.300332644618455,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Grange",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Grange",
+            "type": "named road",
+            "lat": 56.99505685008013,
+            "lon": -2.2299939415500436,
+            "admin_district": null,
+            "county": "Aberdeenshire"
+          },
+          {
+            "name": "The Grange",
+            "type": "named road",
+            "lat": 55.63310491452759,
+            "lon": -4.61585208797525,
+            "admin_district": null,
+            "county": "North Ayrshire"
+          },
+          {
+            "name": "The Grange",
+            "type": "named road",
+            "lat": 55.98044579000626,
+            "lon": -3.713276275346873,
+            "admin_district": null,
+            "county": "Falkirk"
+          },
+          {
+            "name": "The Grange",
+            "type": "suburban area",
+            "lat": 55.93366873444046,
+            "lon": -3.193480986600811,
+            "admin_district": null,
+            "county": "City of Edinburgh"
+          },
+          {
+            "name": "The Grange",
+            "type": "named road",
+            "lat": 54.54274378660886,
+            "lon": -3.5700236318652943,
+            "admin_district": null,
+            "county": "Cumberland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Broadland",
+        "road_a": "Grange Close",
+        "road_b": "Beeches"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Broadland for: ['Beeches']"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Broadland",
+        "query": "Beeches"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Beeches",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.6564813550255,
+        "picked_source": "road:Grange Close",
+        "top_lon": 1.30274963814317,
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "evidence": "The road 'Grange Close' was found in Broadland (Old Catton). The map shows the site boundary centered on this cul-de-sac, adjacent to 'The Grange' and 'George House'. The road centroid aligns perfectly with the site address.",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

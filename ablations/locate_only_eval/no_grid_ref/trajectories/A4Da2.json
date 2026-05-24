@@ -1,0 +1,353 @@
+{
+  "case": "A4Da2",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.491184,
+    "top_lon": -1.961369,
+    "sigma_m": 500,
+    "confidence": "med",
+    "picked_source": "place:Victoria Park Primary School",
+    "evidence": "The map shows Victoria Park and the intersection of High Street and Crocketts Lane in Smethwick. While specific road tools failed, Victoria Park Primary School and Victoria Park Road in Sandwell provide a reliable cluster for this well-known Smethwick landmark.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.43753108082051284,
+  "gt_centroids": [
+    {
+      "lat": 52.48972826799353,
+      "lon": -1.967372715739662
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 1,
+      "place": 6,
+      "road": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Crocketts Lane",
+        "road_a": "High Street",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Victoria Park",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Sandwell",
+        "query": "1-11 High Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Sandwell for: ['Crocketts Lane']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Park",
+        "la_filter": "Sandwell",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Victoria Park Road",
+            "type": "named road",
+            "lat": 52.4930906505062,
+            "lon": -1.9623397211978013,
+            "admin_district": "Sandwell",
+            "county": null
+          },
+          {
+            "name": "Victoria Park Primary School",
+            "type": "primary education",
+            "lat": 52.491184472612915,
+            "lon": -1.9613693009783872,
+            "admin_district": "Sandwell",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "1-11 High Street",
+        "la_filter": "Sandwell",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Crocketts Lane",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "High Street",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Crocketts Lane",
+        "la_filter": "Sandwell",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "High Street",
+        "la_filter": "Sandwell",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "High Street",
+            "lat": 52.522763270169705,
+            "lon": -2.0012238852351993,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.52341052235424,
+            "lon": -2.002373518596827,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.5237206587939,
+            "lon": -2.0029704550357814,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.475567317604224,
+            "lon": -2.0396963251643907,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.47554579966261,
+            "lon": -2.040579588828016,
+            "in_la": "Sandwell"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Smethwick High Street",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Sandwell",
+        "query": "Crocketts Lane Smethwick"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Smethwick High Street",
+        "la_filter": "Sandwell",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Crocketts Lane Smethwick",
+        "la_filter": "Sandwell",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Crocketts Lane, Smethwick"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Crocketts Lane, Smethwick",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Victoria Park, Smethwick"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Park, Smethwick",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.491184,
+        "evidence": "The map shows Victoria Park and the intersection of High Street and Crocketts Lane in Smethwick. While specific road tools failed, Victoria Park Primary School and Victoria Park Road in Sandwell provide a reliable cluster for this well-known Smethwick landmark.",
+        "picked_source": "place:Victoria Park Primary School",
+        "sigma_m": 500,
+        "verified_inside_admin_region": true,
+        "confidence": "med",
+        "top_lon": -1.961369
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

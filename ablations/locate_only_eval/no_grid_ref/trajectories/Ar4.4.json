@@ -1,0 +1,404 @@
+{
+  "case": "Ar4.4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7355,
+    "top_lon": -0.3125,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Herons Way",
+    "evidence": "The site is the Whitecroft Estate, bounded by London Road, Herons Way, and New House Park. Geocoding Herons Way and New House Park places the site at these coordinates, consistent with the map layout.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.04530614038968373,
+  "gt_centroids": [
+    {
+      "lat": 51.73521318285795,
+      "lon": -0.31203270150973883
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 2,
+      "road": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Whitecroft Estate",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Birklands College"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Herons Way",
+        "la": "St Albans",
+        "road_a": "London Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_a": "London Road",
+        "road_b": "New House Park"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Whitecroft Estate",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Birklands College",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "Herons Way"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "New House Park"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "New House Park"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Herons Way",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "London Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Birklands"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "New House Park",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "New House Park",
+            "lat": 51.73656613360819,
+            "lon": -0.31430614637011917,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "New House Park",
+            "lat": 51.73511151200655,
+            "lon": -0.31076288263968,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "New House Park",
+            "lat": 51.73518480107553,
+            "lon": -0.31023154706970407,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "New House Park",
+            "lat": 51.735198625063596,
+            "lon": -0.31275818791664306,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "New House Park",
+            "lat": 51.735114285743826,
+            "lon": -0.3128337401806933,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Herons Way",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Herons Way",
+            "lat": 51.736643008259215,
+            "lon": -0.3130429986153527,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "London Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "London Road",
+            "lat": 51.750720089881156,
+            "lon": -0.33905921983037024,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "London Road",
+            "lat": 51.74900797692352,
+            "lon": -0.3340243875704742,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "London Road",
+            "lat": 51.74873076494631,
+            "lon": -0.33351770598488983,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "London Road",
+            "lat": 51.74945944858308,
+            "lon": -0.33486090436564586,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "London Road",
+            "lat": 51.75003267164383,
+            "lon": -0.33628852217286853,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Birklands",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Birklands Lane",
+            "type": "section of named road",
+            "lat": 51.731771941577286,
+            "lon": -0.30895415594688597,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Birklands Park",
+            "type": "named road",
+            "lat": 51.73376605537198,
+            "lon": -0.3088073171808726,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Birklands Lane",
+            "type": "section of named road",
+            "lat": 51.73303210166954,
+            "lon": -0.3071693316569464,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.312,
+        "la": "St Albans",
+        "lat": 51.735
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.735,
+        "lon": -0.312,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "picked_source": "road:Herons Way",
+        "evidence": "The site is the Whitecroft Estate, bounded by London Road, Herons Way, and New House Park. Geocoding Herons Way and New House Park places the site at these coordinates, consistent with the map layout.",
+        "top_lat": 51.7355,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.3125
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

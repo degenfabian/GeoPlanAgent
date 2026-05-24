@@ -1,0 +1,293 @@
+{
+  "case": "A4_101:LL:069",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.617127,
+    "top_lon": -1.163594,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Narborough Road x Coninsby Close",
+    "evidence": "The site is bounded by Narborough Road, Hallam Crescent East, and Coninsby Close. Geocoding Coninsby Close and Hallam Crescent East provides a tight cluster in Leicester. The map shows the site at the junction of these roads.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.10204802919931177,
+  "gt_centroids": [
+    {
+      "lat": 52.61728979722075,
+      "lon": -1.1621063868218067
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "317 Narborough Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Trinity Methodist Church Narborough Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Hallam Crescent East"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "317 Narborough Road",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trinity Methodist Church Narborough Road",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hallam Crescent East",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Hallam Crescent East",
+            "type": "named road",
+            "lat": 52.618027968779806,
+            "lon": -1.1676539376132804,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Narborough Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Coninsby Close"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Narborough Road",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Narborough Road",
+            "type": "named road",
+            "lat": 52.62148171066731,
+            "lon": -1.1564356285144413,
+            "admin_district": null,
+            "county": "City of Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "type": "section of named road",
+            "lat": 52.56073719042256,
+            "lon": -1.1993477775848795,
+            "admin_district": "Blaby",
+            "county": "Leicestershire"
+          },
+          {
+            "name": "Narborough Road",
+            "type": "section of named road",
+            "lat": 52.55493072611961,
+            "lon": -1.19685752373015,
+            "admin_district": "Blaby",
+            "county": "Leicestershire"
+          },
+          {
+            "name": "Narborough Road",
+            "type": "named road",
+            "lat": 52.556458849066914,
+            "lon": -1.1968296283465973,
+            "admin_district": "Blaby",
+            "county": "Leicestershire"
+          },
+          {
+            "name": "Narborough Road",
+            "type": "named road",
+            "lat": 52.571252989521454,
+            "lon": -1.2357044584917365,
+            "admin_district": "Blaby",
+            "county": "Leicestershire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coninsby Close",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Coninsby Close",
+            "type": "named road",
+            "lat": 52.617127355260415,
+            "lon": -1.1635943639016861,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Leicester",
+        "lon": -1.163594,
+        "lat": 52.617127
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.617127,
+        "lon": -1.163594,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -1.163594,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "evidence": "The site is bounded by Narborough Road, Hallam Crescent East, and Coninsby Close. Geocoding Coninsby Close and Hallam Crescent East provides a tight cluster in Leicester. The map shows the site at the junction of these roads.",
+        "picked_source": "intersect:Narborough Road x Coninsby Close",
+        "sigma_m": 200,
+        "top_lat": 52.617127
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

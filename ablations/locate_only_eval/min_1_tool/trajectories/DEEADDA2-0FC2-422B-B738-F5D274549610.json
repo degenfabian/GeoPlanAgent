@@ -1,0 +1,219 @@
+{
+  "case": "DEEADDA2-0FC2-422B-B738-F5D274549610",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1529284018641,
+    "top_lon": 1.30270649647271,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Kedleston Road",
+    "evidence": "The map shows the site at the junction of Kedleston Road and Honeywood Parkway. Geocoding Kedleston Road in Dover provides a precise location that matches the map's road layout and the 'White Cliffs Business Park' context.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14706946304802934,
+  "gt_centroids": [
+    {
+      "lat": 51.152011369112046,
+      "lon": 1.3011870113036934
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bastion Point",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Glenmore Centre",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kedleston Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Honeywood Parkway",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bastion Point",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Glenmore Centre",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kedleston Road",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Kedleston Road",
+            "type": "named road",
+            "lat": 51.15292840186414,
+            "lon": 1.3027064964727149,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Honeywood Parkway",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Honeywood Parkway",
+            "type": "section of named road",
+            "lat": 51.15304326884316,
+            "lon": 1.3008696289128203,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "White Cliffs Business Park",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "White Cliffs Business Park",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Kedleston Road",
+        "sigma_m": 200,
+        "verified_inside_admin_region": true,
+        "top_lon": 1.30270649647271,
+        "confidence": "high",
+        "top_lat": 51.1529284018641,
+        "evidence": "The map shows the site at the junction of Kedleston Road and Honeywood Parkway. Geocoding Kedleston Road in Dover provides a precise location that matches the map's road layout and the 'White Cliffs Business Park' context."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

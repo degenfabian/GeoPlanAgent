@@ -1,0 +1,341 @@
+{
+  "case": "Ar4.30",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.819368,
+    "top_lon": -0.32065,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Lower Luton Road",
+    "evidence": "The site is 'Land North of Lower Luton Road, Wheathampstead'. Geocoding 'Lower Luton Road' in St Albans returns a cluster in Wheathampstead. The map shows the site adjacent to a sewage works and residential roads (Manor Road), consistent with the eastern end of Lower Luton Road in Wheathampstead.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.5911270191567193,
+  "gt_centroids": [
+    {
+      "lat": 51.821604949911254,
+      "lon": -0.3284519275050382
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 3,
+      "place": 4,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL1 3JE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CB2 2DF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SG14 1UB"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Lower Luton Road, Wheathampstead"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Manor Road",
+        "la": "St Albans",
+        "road_a": "Lower Luton Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL1 3JE",
+        "lat": 51.75336285595908,
+        "lon": -0.33612427907835657,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CB2 2DF' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SG14 1UB",
+        "lat": 51.7978525244101,
+        "lon": -0.0788218474392787,
+        "admin_district": "East Hertfordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lower Luton Road, Wheathampstead",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Lower Luton Road",
+          "Manor Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Wheathampstead Sewage Works"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lower Luton Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Manor Road, Wheathampstead"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wheathampstead Sewage Works",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lower Luton Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.819368304791034,
+            "lon": -0.3206500532710065,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.82445398030757,
+            "lon": -0.3400215739838582,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.81664311784696,
+            "lon": -0.3061849579987683,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "named road",
+            "lat": 51.82077334288012,
+            "lon": -0.32648874393529254,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.815364167986104,
+            "lon": -0.29422029700242824,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Manor Road, Wheathampstead",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "St Albans District (B)",
+        "lon": -0.320650053271006,
+        "lat": 51.819368304791
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.819368304791,
+        "lon": -0.320650053271006,
+        "la": "St Albans District (B)",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is 'Land North of Lower Luton Road, Wheathampstead'. Geocoding 'Lower Luton Road' in St Albans returns a cluster in Wheathampstead. The map shows the site adjacent to a sewage works and residential roads (Manor Road), consistent with the eastern end of Lower Luton Road in Wheathampstead.",
+        "confidence": "high",
+        "top_lon": -0.32065,
+        "sigma_m": 400,
+        "verified_inside_admin_region": true,
+        "picked_source": "place:Lower Luton Road",
+        "top_lat": 51.819368
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

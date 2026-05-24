@@ -1,0 +1,310 @@
+{
+  "case": "Ar4.8",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7897956464977,
+    "top_lon": -0.363493319616695,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Beesonend Lane",
+    "evidence": "The map shows Beesonend Lane and Beesonend Cottages (1-6). Geocoding Beesonend Lane in St. Albans returns two segments; the southern segment (51.7898, -0.3635) aligns with the rural layout and proximity to Redbourn Parish. The site is specifically identified as Beesonend Cottages on Beesonend Lane.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.71415634299408,
+  "gt_centroids": [
+    {
+      "lat": 51.7930711577738,
+      "lon": -0.35456156569625635
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 8,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St. Albans",
+        "query": "Beesonend Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St. Albans",
+        "query": "Beesonend Cottages"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Childwick Bury Wood",
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St. Albans",
+        "query": "Harpenden Common"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beesonend Lane",
+        "la_filter": "St. Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Beesonend Lane",
+            "type": "section of named road",
+            "lat": 51.793812427245605,
+            "lon": -0.3536467721254711,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Beesonend Lane",
+            "type": "named road",
+            "lat": 51.78979564649765,
+            "lon": -0.3634933196166948,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beesonend Cottages",
+        "la_filter": "St. Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Childwick Bury Wood",
+        "la_filter": "St. Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Harpenden Common",
+        "la_filter": "St. Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Beesonend",
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Childwickbury",
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St. Albans",
+        "query": "Harpenden Common Golf Club"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beesonend",
+        "la_filter": "St. Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Beesonend Lane",
+            "type": "section of named road",
+            "lat": 51.793812427245605,
+            "lon": -0.3536467721254711,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Beesonend Lane",
+            "type": "named road",
+            "lat": 51.78979564649765,
+            "lon": -0.3634933196166948,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Childwickbury",
+        "la_filter": "St. Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Harpenden Common Golf Club",
+        "la_filter": "St. Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Childwick Stud",
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Childwick Stud",
+        "la_filter": "St. Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Beesonend Lane",
+        "top_lon": -0.363493319616695,
+        "confidence": "high",
+        "sigma_m": 300,
+        "evidence": "The map shows Beesonend Lane and Beesonend Cottages (1-6). Geocoding Beesonend Lane in St. Albans returns two segments; the southern segment (51.7898, -0.3635) aligns with the rural layout and proximity to Redbourn Parish. The site is specifically identified as Beesonend Cottages on Beesonend Lane.",
+        "top_lat": 51.7897956464977,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

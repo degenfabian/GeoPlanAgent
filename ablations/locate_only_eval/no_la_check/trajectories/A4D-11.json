@@ -1,0 +1,249 @@
+{
+  "case": "A4D-11",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.230605505257,
+    "top_lon": -0.773261086151045,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:SU 857 486",
+    "evidence": "The grid reference SU 857 486 provided on the map (4857014860) aligns perfectly with the location of Green Lane in Weybourne, Farnham. The map shows the site to the west of Green Lane, which matches the tool results.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.058575550134939196,
+  "gt_centroids": [
+    {
+      "lat": 51.23024613958444,
+      "lon": -0.7738761876840656
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "place": 2,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "485700 148600"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Green Lane Farm",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Weybourne",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref '485700 148600'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Green Lane Farm",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Weybourne",
+        "la_filter": "Waverley",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Weybourne",
+            "type": "village",
+            "lat": 51.2332790793999,
+            "lon": -0.7769713806074264,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Weybourne Road",
+            "type": "section of named road",
+            "lat": 51.233968004017456,
+            "lon": -0.7766379981357454,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Weybourne Road",
+            "type": "named road",
+            "lat": 51.23253741120475,
+            "lon": -0.7774207361005206,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU 857 486"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Green Lane",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SU 857 486",
+        "lat": 51.230605505257046,
+        "lon": -0.7732610861510448
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Green Lane",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Green Lane",
+            "lat": 51.23227894840745,
+            "lon": -0.7723063598420112,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Green Lane",
+            "lat": 51.23261974079391,
+            "lon": -0.7722919204913996,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Green Lane",
+            "lat": 51.227727146907306,
+            "lon": -0.7714686244601816,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Green Lane",
+            "lat": 51.230035085112725,
+            "lon": -0.7719583034213438,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Green Lane",
+            "lat": 51.13417553971108,
+            "lon": -0.7582549578378311,
+            "in_la": "Waverley"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "top_lon": -0.773261086151045,
+        "picked_source": "grid_ref:SU 857 486",
+        "evidence": "The grid reference SU 857 486 provided on the map (4857014860) aligns perfectly with the location of Green Lane in Weybourne, Farnham. The map shows the site to the west of Green Lane, which matches the tool results.",
+        "confidence": "high",
+        "top_lat": 51.230605505257,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

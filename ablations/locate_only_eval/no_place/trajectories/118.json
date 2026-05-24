@@ -1,0 +1,228 @@
+{
+  "case": "118",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.462757,
+    "top_lon": -0.055786,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Linden Grove x Nunhead Grove",
+    "evidence": "The site is at 41 Linden Grove. The intersection of Linden Grove and Nunhead Grove (found at 51.462757, -0.055786) is immediately adjacent to the site shown on the map (which sits between Nunhead Grove and Abbotsbury Mews).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.046028447122580474,
+  "gt_centroids": [
+    {
+      "lat": 51.4627976102254,
+      "lon": -0.05644720665059693
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Linden Grove",
+        "road_b": "Nunhead Grove",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Southwark",
+        "road_b": "Abbotsbury Mews",
+        "road_a": "Linden Grove"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Linden Grove",
+          "Nunhead Grove"
+        ],
+        "la_filter": "Southwark",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.462757,
+            "lon": -0.055786,
+            "roads": [
+              "Linden Grove",
+              "Nunhead Grove"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Southwark for: ['Abbotsbury Mews']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Southwark",
+        "query": "Linden Grove"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Linden Grove",
+        "la_filter": "Southwark",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Linden Grove",
+            "lat": 51.46351541780512,
+            "lon": -0.05951931794224047,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Linden Grove",
+            "lat": 51.46405750282209,
+            "lon": -0.06019355259101455,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Linden Grove",
+            "lat": 51.462528004441246,
+            "lon": -0.05706677529096344,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Linden Grove",
+            "lat": 51.46258022868715,
+            "lon": -0.057705764492149945,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Linden Grove",
+            "lat": 51.46267381033936,
+            "lon": -0.05802138762466711,
+            "in_la": "Southwark"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.055786,
+        "la": "Southwark",
+        "lat": 51.462757
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.462757,
+        "lon": -0.055786,
+        "la": "Southwark",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.47423890487611,
+        "la_centroid_lon": -0.07405678270101093
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lat": 51.462757,
+        "confidence": "high",
+        "top_lon": -0.055786,
+        "evidence": "The site is at 41 Linden Grove. The intersection of Linden Grove and Nunhead Grove (found at 51.462757, -0.055786) is immediately adjacent to the site shown on the map (which sits between Nunhead Grove and Abbotsbury Mews).",
+        "picked_source": "intersect:Linden Grove x Nunhead Grove",
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

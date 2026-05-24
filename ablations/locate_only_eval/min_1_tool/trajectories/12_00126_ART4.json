@@ -1,0 +1,336 @@
+{
+  "case": "12:00126:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.4736462873641,
+    "top_lon": 1.51529250438076,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Geldeston Hill",
+    "evidence": "The map shows a site bounded by Geldeston Hill, Kell's Way, and Kell's Walk in Geldeston. The geocoder returned 'Geldeston Hill' as a road section in South Norfolk, which matches the map labels perfectly.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.07174186836570277,
+  "gt_centroids": [
+    {
+      "lat": 52.47382141827659,
+      "lon": 1.514126917824604
+    },
+    {
+      "lat": 52.47428111326806,
+      "lon": 1.515103412976047
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 8,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Kell's Way, Geldeston"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Geldeston Hill, Geldeston",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Wherry Inn, Geldeston",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kell's Way, Geldeston",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Geldeston Hill, Geldeston",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Wherry Inn, Geldeston",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Geldeston"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Yarmouth Road, Geldeston",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Geldeston",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Geldeston",
+            "type": "village",
+            "lat": 52.47260397793106,
+            "lon": 1.5209977699610395,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Geldeston Hill",
+            "type": "section of named road",
+            "lat": 52.473646287364076,
+            "lon": 1.5152925043807601,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Geldeston Road",
+            "type": "section of named road",
+            "lat": 52.46963447809639,
+            "lon": 1.506828041875233,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Geldeston Road",
+            "type": "named road",
+            "lat": 52.47229143284089,
+            "lon": 1.4960813857734596,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Geldeston Marshes",
+            "type": "wetland",
+            "lat": 52.466071603836504,
+            "lon": 1.5174569617247615,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Yarmouth Road, Geldeston",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "The Knowle, Geldeston"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Kells Way"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Knowle, Geldeston",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kells Way",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Kellsway",
+            "type": "section of named road",
+            "lat": 54.96211811150731,
+            "lon": -1.502752623059616,
+            "admin_district": "South Tyneside",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Wherry, Geldeston",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Wherry, Geldeston",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 300,
+        "top_lat": 52.4736462873641,
+        "picked_source": "place:Geldeston Hill",
+        "top_lon": 1.51529250438076,
+        "evidence": "The map shows a site bounded by Geldeston Hill, Kell's Way, and Kell's Walk in Geldeston. The geocoder returned 'Geldeston Hill' as a road section in South Norfolk, which matches the map labels perfectly."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,237 @@
+{
+  "case": "Ar4.4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.73388,
+    "top_lon": -0.3123,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:The Poplars",
+    "evidence": "The map shows the Whitecroft Estate bounded by London Road, Herons Way, and New House Park. Road searches for 'The Poplars' and 'The Willows' (internal estate roads) consistently point to this cluster in St Albans.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1493815942390097,
+  "gt_centroids": [
+    {
+      "lat": 51.73521318285795,
+      "lon": -0.31203270150973883
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Herons Way",
+        "la": "St Albans",
+        "road_a": "London Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "New House Park",
+        "la": "St Albans",
+        "road_a": "London Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "The Poplars",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "The Willows",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "Herons Way"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "New House Park"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Poplars",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "The Poplars",
+            "lat": 51.733879899227595,
+            "lon": -0.3123039828334616,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "The Poplars",
+            "lat": 51.73351723659955,
+            "lon": -0.31214016354874413,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "The Poplars",
+            "lat": 51.73395773676019,
+            "lon": -0.3118196333660984,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Willows",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "The Willows",
+            "lat": 51.735002231316244,
+            "lon": -0.31317100397333586,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.734,
+        "lon": -0.312,
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.734,
+        "lon": -0.312,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "road:The Poplars",
+        "top_lon": -0.3123,
+        "confidence": "high",
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.73388,
+        "evidence": "The map shows the Whitecroft Estate bounded by London Road, Herons Way, and New House Park. Road searches for 'The Poplars' and 'The Willows' (internal estate roads) consistently point to this cluster in St Albans."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

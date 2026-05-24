@@ -1,0 +1,290 @@
+{
+  "case": "A4Sa1",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.544781,
+    "top_lon": -0.183555,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "intersect:Canfield Gardens x Fairhazel Gardens",
+    "evidence": "The map shows the Swiss Cottage Conservation Area. The intersection of Canfield Gardens and Fairhazel Gardens is centrally located within the red-dotted area. This point was verified to be inside Camden.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.22321630850158208,
+  "gt_centroids": [
+    {
+      "lat": 51.54385609390288,
+      "lon": -0.18641983354549843
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Camden",
+        "query": "Swiss Cottage CA"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Hampstead Station",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Finchley Road Station",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Canfield Gardens",
+        "road_b": "Fairhazel Gardens",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Swiss Cottage CA",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Hampstead Station",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Finchley Road Station",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Canfield Gardens",
+          "Fairhazel Gardens"
+        ],
+        "la_filter": "Camden",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.544781,
+            "lon": -0.183555,
+            "roads": [
+              "Canfield Gardens",
+              "Fairhazel Gardens"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Hampstead Station"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Finchley Road Station"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Greencroft Gardens",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.544781,
+        "la": "Camden",
+        "lon": -0.183555
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Hampstead Station",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Finchley Road Station",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Greencroft Gardens",
+        "la_filter": "Camden",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Greencroft Gardens",
+            "type": "named road",
+            "lat": 51.543599258021096,
+            "lon": -0.183622362194122,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.544781,
+        "lon": -0.183555,
+        "la": "Camden",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.546390811083704,
+        "la_centroid_lon": -0.15742226323007869
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the Swiss Cottage Conservation Area. The intersection of Canfield Gardens and Fairhazel Gardens is centrally located within the red-dotted area. This point was verified to be inside Camden.",
+        "picked_source": "intersect:Canfield Gardens x Fairhazel Gardens",
+        "confidence": "high",
+        "top_lat": 51.544781,
+        "verified_inside_admin_region": true,
+        "sigma_m": 500,
+        "top_lon": -0.183555
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

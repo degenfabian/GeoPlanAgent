@@ -1,0 +1,349 @@
+{
+  "case": "A4Da2",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.4907368754754,
+    "top_lon": -1.96776150565898,
+    "sigma_m": 1500,
+    "confidence": "med",
+    "picked_source": "place:Smethwick",
+    "evidence": "The map shows the High Street & Crocketts Lane Conservation Area in Smethwick, Sandwell, adjacent to Victoria Park. While specific road geometry was not found, the town centroid for Smethwick provides a reliable base for this district-specific conservation area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.11519984973836206,
+  "gt_centroids": [
+    {
+      "lat": 52.48972826799353,
+      "lon": -1.967372715739662
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 1,
+      "place": 6,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "High Street",
+        "road_b": "Crocketts Lane",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Victoria Park Smethwick",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Crocketts Lane",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Sandwell for: ['Crocketts Lane']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Park Smethwick",
+        "la_filter": "Sandwell",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Crocketts Lane",
+        "la_filter": "Sandwell",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Victoria Park Smethwick"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Crocketts Lane Smethwick"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "High Street Smethwick"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Park Smethwick",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Crocketts Lane Smethwick",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "High Street Smethwick",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Victoria Park"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Smethwick"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Park",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Victoria Park",
+            "type": "named road",
+            "lat": 56.11839431509429,
+            "lon": -5.2518701260885665,
+            "admin_district": null,
+            "county": "Argyll and Bute"
+          },
+          {
+            "name": "Victoria Park",
+            "type": "named road",
+            "lat": 55.95660432134522,
+            "lon": -4.933915389646347,
+            "admin_district": null,
+            "county": "Argyll and Bute"
+          },
+          {
+            "name": "Victoria Park",
+            "type": "named road",
+            "lat": 55.45060960050433,
+            "lon": -4.636240355123302,
+            "admin_district": null,
+            "county": "South Ayrshire"
+          },
+          {
+            "name": "Victoria Park",
+            "type": "named road",
+            "lat": 55.97668521524449,
+            "lon": -4.0695357818469455,
+            "admin_district": null,
+            "county": "North Lanarkshire"
+          },
+          {
+            "name": "Victoria Park",
+            "type": "named road",
+            "lat": 55.831384386589974,
+            "lon": -3.6981249495449884,
+            "admin_district": null,
+            "county": "West Lothian"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Smethwick",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Smethwick",
+            "type": "town",
+            "lat": 52.49073687547536,
+            "lon": -1.9677615056589783,
+            "admin_district": "Sandwell",
+            "county": null
+          },
+          {
+            "name": "Smethwick Walk",
+            "type": "named road",
+            "lat": 53.49278190867906,
+            "lon": -2.9588453200693206,
+            "admin_district": "Sefton",
+            "county": null
+          },
+          {
+            "name": "Smethwick Green",
+            "type": "hamlet",
+            "lat": 53.169334911424166,
+            "lon": -2.296013183013279,
+            "admin_district": null,
+            "county": "Cheshire East"
+          },
+          {
+            "name": "Smethwick Lane",
+            "type": "named road",
+            "lat": 53.16758795219938,
+            "lon": -2.293637719479506,
+            "admin_district": null,
+            "county": "Cheshire East"
+          },
+          {
+            "name": "Smethwick Lane",
+            "type": "section of named road",
+            "lat": 53.16802629628473,
+            "lon": -2.2944933533425114,
+            "admin_district": null,
+            "county": "Cheshire East"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the High Street & Crocketts Lane Conservation Area in Smethwick, Sandwell, adjacent to Victoria Park. While specific road geometry was not found, the town centroid for Smethwick provides a reliable base for this district-specific conservation area.",
+        "top_lat": 52.4907368754754,
+        "top_lon": -1.96776150565898,
+        "confidence": "med",
+        "picked_source": "place:Smethwick",
+        "verified_inside_admin_region": true,
+        "sigma_m": 1500
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

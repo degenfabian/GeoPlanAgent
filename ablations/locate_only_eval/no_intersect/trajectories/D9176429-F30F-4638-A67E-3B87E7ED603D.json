@@ -1,0 +1,315 @@
+{
+  "case": "D9176429-F30F-4638-A67E-3B87E7ED603D",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1854203282604,
+    "top_lon": 1.23600030145613,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Moon Hill",
+    "evidence": "The site is located on Moon Hill in Shepherdswell. The road tool for 'Moon Hill' in Dover returned a coordinate that falls within the grid squares TR2647 and TR2648 mentioned on the map. The postcode CT16 3PJ is for the council offices (letterhead).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.10231295477656996,
+  "gt_centroids": [
+    {
+      "lat": 51.18608588228924,
+      "lon": 1.2349866648082048
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "grid_ref": 2,
+      "place": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PJ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2647"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2648"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Moon Hill, Shepherdswell"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Chryslyn, Shepherdswell",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CT16 3PJ",
+        "lat": 51.15436636168577,
+        "lon": 1.294785094400513,
+        "admin_district": "Dover District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2647",
+        "lat": 51.181836552427015,
+        "lon": 1.2394693745345564
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2648",
+        "lat": 51.19081411619527,
+        "lon": 1.240099387664391
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Moon Hill, Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Chryslyn, Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "Moon Hill"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Shepherdswell",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Moon Hill",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Moon Hill",
+            "lat": 51.18542032826042,
+            "lon": 1.2360003014561336,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Shepherdswell",
+            "type": "railway station",
+            "lat": 51.187821443462965,
+            "lon": 1.2299271424683944,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell",
+            "type": "railway station",
+            "lat": 51.18961223558278,
+            "lon": 1.2302242122526912,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell Road",
+            "type": "section of named road",
+            "lat": 51.19958033556873,
+            "lon": 1.2615893603883515,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell Road",
+            "type": "named road",
+            "lat": 51.19768617242354,
+            "lon": 1.252736654834536,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lon": 1.23600030145613,
+        "lat": 51.1854203282604
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1854203282604,
+        "lon": 1.23600030145613,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "road:Moon Hill",
+        "top_lat": 51.1854203282604,
+        "top_lon": 1.23600030145613,
+        "confidence": "high",
+        "evidence": "The site is located on Moon Hill in Shepherdswell. The road tool for 'Moon Hill' in Dover returned a coordinate that falls within the grid squares TR2647 and TR2648 mentioned on the map. The postcode CT16 3PJ is for the council offices (letterhead).",
+        "sigma_m": 400,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

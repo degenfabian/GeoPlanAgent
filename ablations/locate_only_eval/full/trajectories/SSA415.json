@@ -1,0 +1,356 @@
+{
+  "case": "SSA415",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.728163,
+    "top_lon": -2.110748,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Teddesley Road x Hatherton Road",
+    "evidence": "The site is located at the junction of Teddesley Road and Hatherton Road in Penkridge, as clearly shown on the map and confirmed by the intersection tool. This point is verified to be within South Staffordshire.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.15744902115159784,
+  "gt_centroids": [
+    {
+      "lat": 52.72797553153459,
+      "lon": -2.1130655551501647
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Marsh Brook Infants School, Penkridge",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "The Roll Mill, Penkridge"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Hatherton Road",
+        "road_a": "Teddesley Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Penkridge"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Marsh Brook Infants School, Penkridge",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Roll Mill, Penkridge",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Teddesley Road",
+          "Hatherton Road"
+        ],
+        "la_filter": "South Staffordshire",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.728163,
+            "lon": -2.110748,
+            "roads": [
+              "Teddesley Road",
+              "Hatherton Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Penkridge",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Penkridge",
+            "type": "town",
+            "lat": 52.72469961436062,
+            "lon": -2.1130041247865456,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Penkridge",
+            "type": "railway station",
+            "lat": 52.72315577303996,
+            "lon": -2.119736793319612,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Penkridge Road",
+            "type": "named road",
+            "lat": 52.75441715050772,
+            "lon": -2.0947680451954414,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Penkridge Road",
+            "type": "section of named road",
+            "lat": 52.75630435489731,
+            "lon": -2.0955130072304717,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Penkridge Wharf",
+            "type": "named road",
+            "lat": 52.72362609288653,
+            "lon": -2.1073898607125443,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Marsh Brook School"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "St Michael's School, Penkridge"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Teddesley Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Staffordshire",
+        "lon": -2.110748,
+        "lat": 52.728163
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Marsh Brook School",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Michael's School, Penkridge",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Teddesley Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Teddesley Road",
+            "lat": 52.75752522875809,
+            "lon": -2.0869393828305247,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Teddesley Road",
+            "lat": 52.75836261625271,
+            "lon": -2.084503972258601,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Teddesley Road",
+            "lat": 52.76027992647865,
+            "lon": -2.0817219008200274,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Teddesley Road",
+            "lat": 52.762269889253204,
+            "lon": -2.078747809348365,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Teddesley Road",
+            "lat": 52.76308594086832,
+            "lon": -2.0774133915895274,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.728163,
+        "lon": -2.110748,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -2.110748,
+        "top_lat": 52.728163,
+        "picked_source": "intersect:Teddesley Road x Hatherton Road",
+        "verified_inside_admin_region": true,
+        "evidence": "The site is located at the junction of Teddesley Road and Hatherton Road in Penkridge, as clearly shown on the map and confirmed by the intersection tool. This point is verified to be within South Staffordshire.",
+        "confidence": "high",
+        "sigma_m": 300
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,257 @@
+{
+  "case": "A105H",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.585222,
+    "top_lon": -0.22801,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:College Park",
+    "evidence": "The site is at 270 Eastfield Road. The map shows the site at the junction of Eastfield Road, Broadway, and College Park. The 'College Park' road centroid and the Eastfield Road/Broadway intersection cluster tightly.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06600134893444501,
+  "gt_centroids": [
+    {
+      "lat": 52.5846312029081,
+      "lon": -0.2281042243805459
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "road": 1,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "270 Eastfield Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Eastfield Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Eastfield Road",
+        "la": "Peterborough",
+        "road_b": "Broadway"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "College Park"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "270 Eastfield Road",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Eastfield Road",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Eastfield Road",
+            "lat": 52.58931805261855,
+            "lon": -0.2187438895316068,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Eastfield Road",
+            "lat": 52.589271064481615,
+            "lon": -0.21771241601287492,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Eastfield Road",
+            "lat": 52.589317463177416,
+            "lon": -0.21631546994503523,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Eastfield Road",
+            "lat": 52.585622785132436,
+            "lon": -0.22655529497660246,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Eastfield Road",
+            "lat": 52.58642295389366,
+            "lon": -0.22562947328448824,
+            "in_la": "Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Eastfield Road",
+          "Broadway"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.583765,
+            "lon": -0.22798,
+            "roads": [
+              "Eastfield Road",
+              "Broadway"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "College Park",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "College Park",
+            "type": "named road",
+            "lat": 52.58522235250887,
+            "lon": -0.22801023192375905,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Peterborough",
+        "lat": 52.585222,
+        "lon": -0.22801
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.585222,
+        "lon": -0.22801,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lon": -0.22801,
+        "picked_source": "place:College Park",
+        "confidence": "high",
+        "evidence": "The site is at 270 Eastfield Road. The map shows the site at the junction of Eastfield Road, Broadway, and College Park. The 'College Park' road centroid and the Eastfield Road/Broadway intersection cluster tightly.",
+        "top_lat": 52.585222,
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

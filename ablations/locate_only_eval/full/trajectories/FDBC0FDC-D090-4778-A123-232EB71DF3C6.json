@@ -1,0 +1,300 @@
+{
+  "case": "FDBC0FDC-D090-4778-A123-232EB71DF3C6",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.15598,
+    "top_lon": 1.37425,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:St Margaret's at Cliffe village",
+    "evidence": "The site is at Townsend Farm in St Margaret's at Cliffe. The grid reference TR 34 (from the map sheet) combined with the village location and Townsend Farm Road provides a tight cluster. The red-hatched area is immediately north-east of the village center.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3870418278495698,
+  "gt_centroids": [
+    {
+      "lat": 51.156640153613864,
+      "lon": 1.379698958987455
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "grid_ref": 1,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Townsend Farm, St Margaret's at Cliffe"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "St Margaret's at Cliffe village"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 360 450"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Kingsdown Road",
+        "la": "Dover",
+        "road_b": "Dover Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Townsend Farm, St Margaret's at Cliffe",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Margaret's at Cliffe village",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "St Margaret's at Cliffe",
+            "type": "village",
+            "lat": 51.154223031313414,
+            "lon": 1.3713980535583459,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 360 450",
+        "lat": 51.15598450361305,
+        "lon": 1.374258631981666
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Kingsdown Road",
+          "Dover Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Townsend Farm",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Kingsdown Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lon": 1.37425,
+        "lat": 51.15598
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Townsend Farm",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Townsend Farm Road",
+            "type": "named road",
+            "lat": 51.15442668248337,
+            "lon": 1.3696392692563522,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Kingsdown Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.205509874311005,
+            "lon": 1.4024808272492049,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.20228111458364,
+            "lon": 1.4023069872330225,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.200397324541484,
+            "lon": 1.4025476384451352,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.18916870039809,
+            "lon": 1.4024972389384933,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.19212553735629,
+            "lon": 1.4024516088494872,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.15598,
+        "lon": 1.37425,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lon": 1.37425,
+        "picked_source": "place:St Margaret's at Cliffe village",
+        "confidence": "high",
+        "evidence": "The site is at Townsend Farm in St Margaret's at Cliffe. The grid reference TR 34 (from the map sheet) combined with the village location and Townsend Farm Road provides a tight cluster. The red-hatched area is immediately north-east of the village center.",
+        "top_lat": 51.15598,
+        "sigma_m": 400
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

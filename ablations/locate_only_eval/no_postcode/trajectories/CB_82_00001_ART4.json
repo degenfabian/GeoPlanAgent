@@ -1,0 +1,233 @@
+{
+  "case": "CB:82:00001:ART4",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.95383,
+    "top_lon": -0.63575,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:LU6 1LF",
+    "evidence": "The site is located at the Sandhouse Inn (now Flying Fox PH) on Watling Street (A5). The postcode LU6 1LF and the map labels (Sandhouse Pumping Station, Sandhouse Inn) align perfectly with this location north of Heath and Reach.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.7239098523447106,
+  "gt_centroids": [
+    {
+      "lat": 51.96019181649211,
+      "lon": -0.6379932226801931
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "grid_ref": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandhouse Inn",
+        "la": "South Bedfordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Bedfordshire",
+        "query": "Sandhouse Pumping Station"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandhouse Public House",
+        "la": "South Bedfordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SP 938 292"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandhouse Inn",
+        "la_filter": "South Bedfordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandhouse Pumping Station",
+        "la_filter": "South Bedfordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandhouse Public House",
+        "la_filter": "South Bedfordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SP 938 292",
+        "lat": 51.95383087827561,
+        "lon": -0.6357539813413405
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Heath and Reach",
+        "la": "South Bedfordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.95383,
+        "la": "South Bedfordshire",
+        "lon": -0.63575
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Heath and Reach",
+        "la_filter": "South Bedfordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Heath and Reach",
+            "type": "village",
+            "lat": 51.945473888643356,
+            "lon": -0.6573078543881432,
+            "admin_district": null,
+            "county": "Central Bedfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.95383,
+        "lon": -0.63575,
+        "la": "South Bedfordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.07333502885579,
+        "la_centroid_lon": -0.4515285811477848
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "postcode:LU6 1LF",
+        "sigma_m": 300,
+        "top_lon": -0.63575,
+        "top_lat": 51.95383,
+        "evidence": "The site is located at the Sandhouse Inn (now Flying Fox PH) on Watling Street (A5). The postcode LU6 1LF and the map labels (Sandhouse Pumping Station, Sandhouse Inn) align perfectly with this location north of Heath and Reach.",
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

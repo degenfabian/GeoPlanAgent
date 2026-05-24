@@ -1,0 +1,453 @@
+{
+  "case": "ARTICLE:210",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.175,
+    "top_lon": 0.04,
+    "sigma_m": 1000,
+    "confidence": "med",
+    "picked_source": "place:Barton (offset)",
+    "evidence": "The site is Orchard Farm on Wimpole Road (A603) southwest of Barton village. The map shows the site adjacent to the A603, between Barton and Lord's Bridge. Barton village center is at 52.182, 0.056. The site is approx 1.5km SW of the village center along the A603.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.5427443883958827,
+  "gt_centroids": [
+    {
+      "lat": 52.17631773644746,
+      "lon": 0.04766381246197953
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 11,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 14,
+    "n_turns": 17,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Orchard Farm, Barton",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bird's Farm, Barton",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lord's Bridge Station",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Wimpole Road",
+        "road_b": "A603",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Orchard Farm, Barton",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bird's Farm, Barton",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lord's Bridge Station",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Cambridgeshire for: ['A603']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Barton",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lord's Bridge",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "Manor Farm, Barton"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barton",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Barton",
+            "type": "village",
+            "lat": 52.18209003364535,
+            "lon": 0.055916514595135976,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "Bartons Close",
+            "type": "named road",
+            "lat": 53.675656691443805,
+            "lon": -2.9463272442713753,
+            "admin_district": "Sefton",
+            "county": null
+          },
+          {
+            "name": "Barton Way",
+            "type": "named road",
+            "lat": 53.60401475545533,
+            "lon": -1.288930862775153,
+            "admin_district": "Wakefield",
+            "county": null
+          },
+          {
+            "name": "Barton Blount",
+            "type": "hamlet",
+            "lat": 52.90953521392877,
+            "lon": -1.6910477010506775,
+            "admin_district": "South Derbyshire",
+            "county": "Derbyshire"
+          },
+          {
+            "name": "Barton Park",
+            "type": "other landcover",
+            "lat": 52.90779805991046,
+            "lon": -1.6901976597245012,
+            "admin_district": "South Derbyshire",
+            "county": "Derbyshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lord's Bridge",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Manor Farm, Barton",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "Wimpole Road, Barton"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "Lord's Bridge Station, Barton"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wimpole Road, Barton",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lord's Bridge Station, Barton",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lord's Bridge Station"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lord's Bridge Station",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lord's Bridge, Cambridgeshire"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lord's Bridge, Cambridgeshire",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Barton, Cambridgeshire"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barton, Cambridgeshire",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.175,
+        "la": "South Cambridgeshire",
+        "lon": 0.04
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.175,
+        "lon": 0.04,
+        "la": "South Cambridgeshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.17283510081104,
+        "la_centroid_lon": 0.08123824327654822
+      }
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 0.04,
+        "confidence": "med",
+        "top_lat": 52.175,
+        "evidence": "The site is Orchard Farm on Wimpole Road (A603) southwest of Barton village. The map shows the site adjacent to the A603, between Barton and Lord's Bridge. Barton village center is at 52.182, 0.056. The site is approx 1.5km SW of the village center along the A603.",
+        "sigma_m": 1000,
+        "picked_source": "place:Barton (offset)",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 16,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

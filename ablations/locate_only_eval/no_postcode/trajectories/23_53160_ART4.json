@@ -1,0 +1,278 @@
+{
+  "case": "23:53160:ART4",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.703,
+    "top_lon": 1.41,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Charles Close x The Avenue",
+    "evidence": "The map shows a large area centered on Charles Close in Wroxham. The intersection of Charles Close and The Avenue (found at 52.703, 1.41) aligns perfectly with the map's layout and the road centroids for Charles Close. Verified inside Broadland.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3316379107574991,
+  "gt_centroids": [
+    {
+      "lat": 52.705099433875546,
+      "lon": 1.4065038937917476
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "intersect": 1,
+      "grid_ref": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "Charles Close, Wroxham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "The Avenue",
+        "la": "Broadland",
+        "road_a": "Charles Close"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wroxham Conservation Area",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 300 175"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Charles Close, Wroxham",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Charles Close",
+          "The Avenue"
+        ],
+        "la_filter": "Broadland",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.703001,
+            "lon": 1.410088,
+            "roads": [
+              "Charles Close",
+              "The Avenue"
+            ]
+          },
+          {
+            "lat": 52.706138,
+            "lon": 1.406637,
+            "roads": [
+              "Charles Close",
+              "The Avenue"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wroxham Conservation Area",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG 300 175",
+        "lat": 52.70669354670655,
+        "lon": 1.4038991905415366
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Charles Close",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.703,
+        "lon": 1.41,
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Charles Close",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Charles Close",
+            "lat": 52.70321313315928,
+            "lon": 1.4069624252869637,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Charles Close",
+            "lat": 52.703168030272366,
+            "lon": 1.4090253151045466,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Charles Close",
+            "lat": 52.7042267754049,
+            "lon": 1.4052160423760465,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Charles Close",
+            "lat": 52.70365273998051,
+            "lon": 1.4060653862975747,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Charles Close",
+            "lat": 52.703766676985865,
+            "lon": 1.4080121819656801,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.703,
+        "lon": 1.41,
+        "la": "Broadland",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.70119443642098,
+        "la_centroid_lon": 1.3101886931294198
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Charles Close x The Avenue",
+        "confidence": "high",
+        "sigma_m": 300,
+        "top_lat": 52.703,
+        "top_lon": 1.41,
+        "evidence": "The map shows a large area centered on Charles Close in Wroxham. The intersection of Charles Close and The Avenue (found at 52.703, 1.41) aligns perfectly with the map's layout and the road centroids for Charles Close. Verified inside Broadland."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

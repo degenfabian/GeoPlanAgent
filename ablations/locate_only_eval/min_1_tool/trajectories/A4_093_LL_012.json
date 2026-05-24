@@ -1,0 +1,276 @@
+{
+  "case": "A4_093:LL:012",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.65867,
+    "top_lon": -1.13267,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Beaumanor Road x Wade Street",
+    "evidence": "The site is located at 133 Beaumanor Road, Leicester. Tool results for Beaumanor Road, Wade Street, and Robert Hall Street cluster tightly around this location. The map shows the brewery site at the junction of Beaumanor Road and Wade Street.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.042103407218428805,
+  "gt_centroids": [
+    {
+      "lat": 52.658850139655264,
+      "lon": -1.132120921988633
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "133 Beaumanor Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Beaumanor Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hoskins Brewery",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "133 Beaumanor Road",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beaumanor Road",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Beaumanor Road",
+            "type": "named road",
+            "lat": 52.65867253235288,
+            "lon": -1.1326710329012328,
+            "admin_district": null,
+            "county": "City of Leicester"
+          },
+          {
+            "name": "Beaumanor Gardens",
+            "type": "named road",
+            "lat": 52.73469108677725,
+            "lon": -1.1991569558452864,
+            "admin_district": "Charnwood",
+            "county": "Leicestershire"
+          },
+          {
+            "name": "Beaumanor Drive",
+            "type": "named road",
+            "lat": 52.73559994289795,
+            "lon": -1.2006213500668033,
+            "admin_district": "Charnwood",
+            "county": "Leicestershire"
+          },
+          {
+            "name": "Beaumanor Park",
+            "type": "other landcover",
+            "lat": 52.73696520830192,
+            "lon": -1.2098383913589643,
+            "admin_district": "Charnwood",
+            "county": "Leicestershire"
+          },
+          {
+            "name": "Beaumanor Care Home",
+            "type": "medical care accommodation",
+            "lat": 52.778295470669725,
+            "lon": -1.201084848992748,
+            "admin_district": "Charnwood",
+            "county": "Leicestershire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hoskins Brewery",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wade Street",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Robert Hall Street",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wade Street",
+        "la_filter": "Leicester",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Wade Street",
+            "type": "named road",
+            "lat": 52.65862238467057,
+            "lon": -1.1331894823094333,
+            "admin_district": null,
+            "county": "City of Leicester"
+          },
+          {
+            "name": "Wade Close",
+            "type": "named road",
+            "lat": 52.61202582025459,
+            "lon": -1.0712979166449872,
+            "admin_district": "Oadby and Wigston",
+            "county": "Leicestershire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Robert Hall Street",
+        "la_filter": "Leicester",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Robert Hall Street",
+            "type": "named road",
+            "lat": 52.658441536761906,
+            "lon": -1.1305909992744496,
+            "admin_district": null,
+            "county": "City of Leicester"
+          },
+          {
+            "name": "Robert Hall Road",
+            "type": "named road",
+            "lat": 52.5258383481807,
+            "lon": -1.09227827071161,
+            "admin_district": "Harborough",
+            "county": "Leicestershire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "sigma_m": 200,
+        "top_lat": 52.65867,
+        "top_lon": -1.13267,
+        "evidence": "The site is located at 133 Beaumanor Road, Leicester. Tool results for Beaumanor Road, Wade Street, and Robert Hall Street cluster tightly around this location. The map shows the brewery site at the junction of Beaumanor Road and Wade Street.",
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Beaumanor Road x Wade Street"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

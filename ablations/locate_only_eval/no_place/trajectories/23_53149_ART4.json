@@ -1,0 +1,378 @@
+{
+  "case": "23:53149:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.782959,
+    "top_lon": 1.011084,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "postcode:NR20 5RT",
+    "evidence": "The site is identified as Foulsham Airfield. Postcode NR20 5RT maps directly to the airfield area (specifically near the southern end/Barnards Farm area). The map shows airfield infrastructure (dispersal loops) and Barnards Farm to the south. NR20 5RT is verified inside Broadland.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.8422664281812697,
+  "gt_centroids": [
+    {
+      "lat": 52.79886166689419,
+      "lon": 1.0187695263861591
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 5,
+      "la_check": 2,
+      "postcode": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Broadland",
+        "query": "Foulsham Airfield"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Broadland",
+        "query": "Barnards Farm"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Broadland",
+        "lon": 1.01,
+        "lat": 52.78
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Foulsham Airfield",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Barnards Farm",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.78,
+        "lon": 1.01,
+        "la": "Broadland",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.70119443642098,
+        "la_centroid_lon": 1.3101886931294198
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Foulsham Road",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Guestwick Road",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "The Street",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Foulsham Road",
+        "la_filter": "Broadland",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Foulsham Road",
+            "lat": 52.79195212148167,
+            "lon": 1.0441996550842532,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Guestwick Road",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Guestwick Road",
+            "lat": 52.807054074075076,
+            "lon": 1.0814133618059925,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Guestwick Road",
+            "lat": 52.80668278263506,
+            "lon": 1.088333172914803,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Guestwick Road",
+            "lat": 52.78859197154803,
+            "lon": 1.0271854738885136,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Guestwick Road",
+            "lat": 52.78829046486017,
+            "lon": 1.0221981251720607,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Guestwick Road",
+            "lat": 52.78966849775258,
+            "lon": 1.0302029494334402,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Street",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Street",
+            "lat": 52.77147129872503,
+            "lon": 1.2916732152495438,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "The Street",
+            "lat": 52.77207088954,
+            "lon": 1.2912572296628508,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "The Street",
+            "lat": 52.772175276171545,
+            "lon": 1.2915238026516285,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "The Street",
+            "lat": 52.77340253539148,
+            "lon": 1.289289722805557,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "The Street",
+            "lat": 52.77881774809613,
+            "lon": 1.2897218071786984,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR20 5RT"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR20 5RR"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "NR20 5RT",
+        "lat": 52.78295904338658,
+        "lon": 1.0110845481413564,
+        "admin_district": "Broadland District"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "NR20 5RR",
+        "lat": 52.793410427616664,
+        "lon": 1.0462245727194843,
+        "admin_district": "Broadland District"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.782959,
+        "la": "Broadland",
+        "lon": 1.011084
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.782959,
+        "lon": 1.011084,
+        "la": "Broadland",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.70119443642098,
+        "la_centroid_lon": 1.3101886931294198
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "postcode:NR20 5RT",
+        "sigma_m": 400,
+        "evidence": "The site is identified as Foulsham Airfield. Postcode NR20 5RT maps directly to the airfield area (specifically near the southern end/Barnards Farm area). The map shows airfield infrastructure (dispersal loops) and Barnards Farm to the south. NR20 5RT is verified inside Broadland.",
+        "top_lat": 52.782959,
+        "top_lon": 1.011084,
+        "confidence": "high",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

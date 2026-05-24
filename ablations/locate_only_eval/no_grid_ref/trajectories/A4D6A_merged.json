@@ -1,0 +1,347 @@
+{
+  "case": "A4D6A_merged",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.622,
+    "top_lon": -0.234,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "intersect:The Ridgeway x Hammers Lane",
+    "evidence": "The map shows the Mill Hill Conservation Area centered around the junction of The Ridgeway and Hammers Lane. The intersection tool confirms this junction at 51.622, -0.234, which is consistent with the 'Mill Hill' place name and 'Mill Hill School Foundation' hits.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3004032880535164,
+  "gt_centroids": [
+    {
+      "lat": 51.61814464052538,
+      "lon": -0.23086000444351476
+    },
+    {
+      "lat": 51.62364466028064,
+      "lon": -0.237452266068465
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Mill Hill Conservation Area",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Mill Hill Cemetery"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "The Ridgeway",
+        "road_b": "Hammers Lane",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Mill Hill Ward"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mill Hill Conservation Area",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mill Hill Cemetery",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Ridgeway",
+          "Hammers Lane"
+        ],
+        "la_filter": "Barnet",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 51.622057,
+            "lon": -0.234148,
+            "roads": [
+              "The Ridgeway",
+              "Hammers Lane"
+            ]
+          },
+          {
+            "lat": 51.621692,
+            "lon": -0.233562,
+            "roads": [
+              "The Ridgeway",
+              "Hammers Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mill Hill Ward",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Mill Hill",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Barnet",
+        "query": "The Ridgeway"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Barnet",
+        "lon": -0.234,
+        "lat": 51.622
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mill Hill",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Mill Hill",
+            "type": "suburban area",
+            "lat": 51.6172704418783,
+            "lon": -0.2269349556213149,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Mill Hill East",
+            "type": "railway station",
+            "lat": 51.608394142993454,
+            "lon": -0.2102825416160825,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Mill Hill County High School Oak Hill Campus",
+            "type": "secondary education",
+            "lat": 51.634712582448536,
+            "lon": -0.15611240994321746,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Mill Hill School Foundation",
+            "type": "non state secondary education",
+            "lat": 51.6168612748023,
+            "lon": -0.23259877739924453,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Mill Hill Broadway",
+            "type": "railway station",
+            "lat": 51.61261967647406,
+            "lon": -0.2489833913896847,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Ridgeway",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Ridgeway",
+            "lat": 51.613437631029754,
+            "lon": -0.21460986471657442,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "The Ridgeway",
+            "lat": 51.6144553253289,
+            "lon": -0.2154018299626636,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "The Ridgeway",
+            "lat": 51.61553162358197,
+            "lon": -0.2165416620531487,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "The Ridgeway",
+            "lat": 51.6174258517134,
+            "lon": -0.22238179417224363,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "The Ridgeway",
+            "lat": 51.617238331700605,
+            "lon": -0.22089870381600263,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.622,
+        "lon": -0.234,
+        "la": "Barnet",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.616028526273034,
+        "la_centroid_lon": -0.21000945769264093
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the Mill Hill Conservation Area centered around the junction of The Ridgeway and Hammers Lane. The intersection tool confirms this junction at 51.622, -0.234, which is consistent with the 'Mill Hill' place name and 'Mill Hill School Foundation' hits.",
+        "top_lon": -0.234,
+        "picked_source": "intersect:The Ridgeway x Hammers Lane",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "sigma_m": 500,
+        "top_lat": 51.622
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

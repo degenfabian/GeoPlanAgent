@@ -1,0 +1,363 @@
+{
+  "case": "A4D12",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.453,
+    "top_lon": -2.615,
+    "sigma_m": 1500,
+    "confidence": "med",
+    "picked_source": "place:Clifton/Hotwells midpoint",
+    "evidence": "The map covers the Clifton and Hotwells areas of Bristol. Centroid picked between the Clifton Down Road and Hotwell Road corridors, verified inside Bristol LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.5103109212635543,
+  "gt_centroids": [
+    {
+      "lat": 51.4558343110282,
+      "lon": -2.6207925098892026
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 4,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Clifton Down Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Hotwell Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Bristol",
+        "road_b": "Bridge Valley Road",
+        "road_a": "Clifton Down Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Hotwell Road",
+        "la": "Bristol",
+        "road_b": "Jacob's Wells Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Clifton Down Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Clifton Down Road",
+            "lat": 51.4575515614992,
+            "lon": -2.6203550299792555,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Clifton Down Road",
+            "lat": 51.4575350647028,
+            "lon": -2.620923328603751,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Clifton Down Road",
+            "lat": 51.45550694037853,
+            "lon": -2.619319839648411,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Clifton Down Road",
+            "lat": 51.455717620592225,
+            "lon": -2.619437831075902,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Clifton Down Road",
+            "lat": 51.45600445794411,
+            "lon": -2.6196072287477787,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hotwell Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Hotwell Road",
+            "lat": 51.45000786561685,
+            "lon": -2.610848560691057,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Hotwell Road",
+            "lat": 51.450570391797534,
+            "lon": -2.608245080671018,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Hotwell Road",
+            "lat": 51.44954364024768,
+            "lon": -2.613677210443495,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Hotwell Road",
+            "lat": 51.449733808195575,
+            "lon": -2.6151447153074416,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Hotwell Road",
+            "lat": 51.44982339609231,
+            "lon": -2.617779892845176,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Bristol for: ['Clifton Down Road', 'Bridge Valley Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Bristol for: [\"Jacob's Wells Road\"]"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Princess Victoria Street",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Regent Street",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Bristol",
+        "lon": -2.615,
+        "lat": 51.453
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Princess Victoria Street",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Princess Victoria Street",
+            "lat": 51.4537923432577,
+            "lon": -2.623031298889798,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Princess Victoria Street",
+            "lat": 51.45431037949619,
+            "lon": -2.6211458114066617,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Princess Victoria Street",
+            "lat": 51.45458064407807,
+            "lon": -2.6201996061914934,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Princess Victoria Street",
+            "lat": 51.454782365772694,
+            "lon": -2.6194611475444773,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Princess Victoria Street",
+            "lat": 51.45338877372853,
+            "lon": -2.624522536530285,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Regent Street",
+        "la_filter": "Bristol",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Regent Street",
+            "lat": 51.45471378274866,
+            "lon": -2.618826967233042,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Regent Street",
+            "lat": 51.45500492654156,
+            "lon": -2.6190323960064137,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Regent Street",
+            "lat": 51.453900877449,
+            "lon": -2.617815739374823,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Regent Street",
+            "lat": 51.45437821519672,
+            "lon": -2.6185201965398863,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.453,
+        "lon": -2.615,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Clifton/Hotwells midpoint",
+        "top_lon": -2.615,
+        "sigma_m": 1500,
+        "confidence": "med",
+        "top_lat": 51.453,
+        "evidence": "The map covers the Clifton and Hotwells areas of Bristol. Centroid picked between the Clifton Down Road and Hotwell Road corridors, verified inside Bristol LA.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

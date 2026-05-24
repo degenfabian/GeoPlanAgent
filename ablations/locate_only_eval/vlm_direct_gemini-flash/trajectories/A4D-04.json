@@ -1,0 +1,60 @@
+{
+  "case": "A4D-04",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.165,
+    "lon": -0.775,
+    "reasoning": "The document describes a large area of land (3300 acres) in the parishes of Frensham and Tilford, bounded by the A287, Tilford Road (CX 28), and the Surrey/Hampshire county boundary, centered near Frensham Common."
+  },
+  "err_km": 0.5839186624661841,
+  "gt_centroids": [
+    {
+      "lat": 51.16017788702342,
+      "lon": -0.7716843425634584
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document describes a large area of land (3300 acres) in the parishes of Frensham and Tilford, bounded by the A287, Tilford Road (CX 28), and the Surrey/Hampshire county boundary, centered near Frensham Common.",
+        "lat": 51.165,
+        "lon": -0.775
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

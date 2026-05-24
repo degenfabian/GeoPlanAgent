@@ -1,0 +1,383 @@
+{
+  "case": "SSA401",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.4737364708185,
+    "top_lon": -2.19824696713776,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Prestwood",
+    "evidence": "The site is located in Prestwood, South Staffordshire, adjacent to the A449 (Wolverhampton Road). The place search for 'Prestwood' in South Staffordshire returned a village coordinate which aligns with the map labels (A449, Roundhill Farm, Prestwood). The postcode WV8 1PX is for the Council Offices in Codsall and was correctly identified as a letterhead signal.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.135754748218305,
+  "gt_centroids": [
+    {
+      "lat": 52.474433671439876,
+      "lon": -2.1966016151350836
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 7,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "WV8 1PX"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Prestwood"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Beechwood Bonsai"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Roundhill Farm",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "WV8 1PX",
+        "lat": 52.62566656951965,
+        "lon": -2.191960842481458,
+        "admin_district": "South Staffordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Prestwood",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Prestwood",
+            "type": "hamlet",
+            "lat": 52.97698737202914,
+            "lon": -1.8538039524207977,
+            "admin_district": "East Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Prestwood",
+            "type": "village",
+            "lat": 52.47373647081847,
+            "lon": -2.198246967137764,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Prestwood Lane",
+            "type": "named road",
+            "lat": 52.97609629068312,
+            "lon": -1.8457651790510432,
+            "admin_district": "East Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Prestwood Lane",
+            "type": "section of named road",
+            "lat": 52.97779191889062,
+            "lon": -1.8501971942258577,
+            "admin_district": "East Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Prestwood Park Drive",
+            "type": "named road",
+            "lat": 52.780334980703486,
+            "lon": -1.549268737339872,
+            "admin_district": "South Derbyshire",
+            "county": "Derbyshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beechwood Bonsai",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Roundhill Farm",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "The Homestead"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Gravel Cottage",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Foxes Lodge"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.4737364708185,
+        "la": "South Staffordshire",
+        "lon": -2.19824696713776
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Homestead",
+        "la_filter": "South Staffordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "The Homestead",
+            "type": "named road",
+            "lat": 51.74930681546834,
+            "lon": -0.9845914856514136,
+            "admin_district": "South Oxfordshire",
+            "county": "Oxfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Gravel Cottage",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Foxes Lodge",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.4737364708185,
+        "lon": -2.19824696713776,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Roundhill",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Roundhill",
+        "la_filter": "South Staffordshire",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Roundhill",
+            "type": "named road",
+            "lat": 54.951535334233164,
+            "lon": -1.477760895598417,
+            "admin_district": "South Tyneside",
+            "county": null
+          },
+          {
+            "name": "Roundhill Wood",
+            "type": "woodland or forest",
+            "lat": 52.61784769263153,
+            "lon": -1.7685060357606845,
+            "admin_district": "Lichfield",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Roundhill Close",
+            "type": "named road",
+            "lat": 50.926173148071044,
+            "lon": -1.3563048089833334,
+            "admin_district": null,
+            "county": "City of Southampton"
+          },
+          {
+            "name": "Roundhill Wood",
+            "type": "woodland or forest",
+            "lat": 51.6740005824218,
+            "lon": -1.2034619349059692,
+            "admin_district": "South Oxfordshire",
+            "county": "Oxfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -2.19824696713776,
+        "top_lat": 52.4737364708185,
+        "evidence": "The site is located in Prestwood, South Staffordshire, adjacent to the A449 (Wolverhampton Road). The place search for 'Prestwood' in South Staffordshire returned a village coordinate which aligns with the map labels (A449, Roundhill Farm, Prestwood). The postcode WV8 1PX is for the Council Offices in Codsall and was correctly identified as a letterhead signal.",
+        "confidence": "high",
+        "picked_source": "place:Prestwood",
+        "verified_inside_admin_region": true,
+        "sigma_m": 500
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,423 @@
+{
+  "case": "SSA404",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6585,
+    "top_lon": -2.082,
+    "sigma_m": 1000,
+    "confidence": "med",
+    "picked_source": "place:Shareshill",
+    "evidence": "The map shows a site adjacent to the A460 and New Road, near a Filling Station and Bell View Farm. Shareshill is the likely town. The A460 runs north-south through Shareshill. The site is positioned at the junction of A460 and New Road, which is located just north of Shareshill village center.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 11.313539221698274,
+  "gt_centroids": [
+    {
+      "lat": 52.758470568397684,
+      "lon": -2.050772840424936
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 9,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 15,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Bell View Farm"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Shareshill",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Old School House",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bell View Farm",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shareshill",
+        "la_filter": "South Staffordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Shareshill",
+            "type": "village",
+            "lat": 52.6562240829951,
+            "lon": -2.0820631442914683,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Old School House",
+        "la_filter": "South Staffordshire",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "The Old School House",
+            "type": "medical care accommodation",
+            "lat": 53.754943298474494,
+            "lon": -0.7396471839324071,
+            "admin_district": null,
+            "county": "East Riding of Yorkshire"
+          },
+          {
+            "name": "The Old School House",
+            "type": "special needs education",
+            "lat": 52.62050661274665,
+            "lon": 0.16308006706799405,
+            "admin_district": "Fenland",
+            "county": "Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Old Rectory",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "New Road Shareshill"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Old Rectory",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Old Rectory",
+            "type": "medical care accommodation",
+            "lat": 53.25851418248828,
+            "lon": -2.9529366003129813,
+            "admin_district": null,
+            "county": "Cheshire West and Chester"
+          },
+          {
+            "name": "The Old Rectory",
+            "type": "medical care accommodation",
+            "lat": 53.37257643734423,
+            "lon": -2.542639489600526,
+            "admin_district": null,
+            "county": "Warrington"
+          },
+          {
+            "name": "The Old Rectory",
+            "type": "named road",
+            "lat": 51.26283223453961,
+            "lon": -2.9408337920389354,
+            "admin_district": null,
+            "county": "Somerset"
+          },
+          {
+            "name": "The Old Rectory",
+            "type": "named road",
+            "lat": 50.78895621965168,
+            "lon": -0.6524177166386644,
+            "admin_district": "Arun",
+            "county": "West Sussex"
+          },
+          {
+            "name": "The Old Rectory",
+            "type": "medical care accommodation",
+            "lat": 51.15266398434013,
+            "lon": -0.4399540581294487,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "New Road Shareshill",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "A460 Shareshill",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "A460 Shareshill",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "New Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "New Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "New Road",
+            "type": "named road",
+            "lat": 55.47055194211478,
+            "lon": -4.627650437008358,
+            "admin_district": null,
+            "county": "South Ayrshire"
+          },
+          {
+            "name": "New Road",
+            "type": "named road",
+            "lat": 55.71176173712229,
+            "lon": -4.096174685502752,
+            "admin_district": null,
+            "county": "South Lanarkshire"
+          },
+          {
+            "name": "New Road",
+            "type": "named road",
+            "lat": 55.81189507548321,
+            "lon": -4.137545899343677,
+            "admin_district": null,
+            "county": "South Lanarkshire"
+          },
+          {
+            "name": "New Road",
+            "type": "named road",
+            "lat": 55.63788017140073,
+            "lon": -3.889088876542767,
+            "admin_district": null,
+            "county": "South Lanarkshire"
+          },
+          {
+            "name": "New Road",
+            "type": "named road",
+            "lat": 54.95064574171588,
+            "lon": -1.4472640425749839,
+            "admin_district": "South Tyneside",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Shareshill Filling Station"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shareshill Filling Station",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "A460 South Staffordshire"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "A460 South Staffordshire",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -2.082,
+        "top_lat": 52.6585,
+        "verified_inside_admin_region": true,
+        "sigma_m": 1000,
+        "confidence": "med",
+        "picked_source": "place:Shareshill",
+        "evidence": "The map shows a site adjacent to the A460 and New Road, near a Filling Station and Bell View Farm. Shareshill is the likely town. The A460 runs north-south through Shareshill. The site is positioned at the junction of A460 and New Road, which is located just north of Shareshill village center."
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

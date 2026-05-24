@@ -1,0 +1,232 @@
+{
+  "case": "12:00161:ART4",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.561622,
+    "top_lon": 1.428805,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TG 3201-3301",
+    "evidence": "The grid reference TG 3201-3301 from the map header and pdf_info aligns perfectly with the village of Thurton. The intersection of Vale Road and The Crescent further confirms the location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.7423801854368645,
+  "gt_centroids": [
+    {
+      "lat": 52.55621778771914,
+      "lon": 1.435253412922537
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 3201-3301"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Ethelbert's Close, Thurton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Thurton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG 3201-3301",
+        "lat": 52.561622081007776,
+        "lon": 1.4288045293249427
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Ethelbert's Close, Thurton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thurton",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Thurton",
+            "type": "village",
+            "lat": 52.55667591744069,
+            "lon": 1.4331258745085702,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Thurton Primary School",
+            "type": "primary education",
+            "lat": 52.55779720235161,
+            "lon": 1.43198866253166,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "The Crescent",
+        "la": "South Norfolk",
+        "road_a": "Vale Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.561622,
+        "lon": 1.428805,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Vale Road",
+          "The Crescent"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.55638,
+            "lon": 1.434131,
+            "roads": [
+              "Vale Road",
+              "The Crescent"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.561622,
+        "lon": 1.428805,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.428805,
+        "confidence": "high",
+        "sigma_m": 300,
+        "evidence": "The grid reference TG 3201-3301 from the map header and pdf_info aligns perfectly with the village of Thurton. The intersection of Vale Road and The Crescent further confirms the location.",
+        "picked_source": "grid_ref:TG 3201-3301",
+        "verified_inside_admin_region": true,
+        "top_lat": 52.561622
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

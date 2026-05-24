@@ -1,0 +1,322 @@
+{
+  "case": "A005S",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.635622,
+    "top_lon": -0.410315,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:PE9 3DU",
+    "evidence": "The site is identified as 17 Linden Close. The postcode PE9 3DU and the centroid for Linden Close are within 150m of each other in Barnack. The map shows the site at the junction of Linden Close and Bainton Road, which aligns with these coordinates.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1424046863585651,
+  "gt_centroids": [
+    {
+      "lat": 52.63435668460138,
+      "lon": -0.4099891454679219
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "intersect": 1,
+      "place": 3,
+      "road": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "PE9 3DU"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Peterborough",
+        "road_b": "Bainton Road",
+        "road_a": "Linden Close"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "The Grange, Barnack"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Barnack C of E Primary School"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "PE9 3DU",
+        "lat": 52.635622275060285,
+        "lon": -0.41031459063971953,
+        "admin_district": "City of Peterborough (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Peterborough for: ['Bainton Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Grange, Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barnack C of E Primary School",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Linden Close",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Bainton Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Barnack",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Linden Close",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Linden Close",
+            "lat": 52.63447096067866,
+            "lon": -0.4102092883828254,
+            "in_la": "Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bainton Road",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Bainton Road",
+            "lat": 52.63406650697576,
+            "lon": -0.4095821733588375,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Bainton Road",
+            "lat": 52.63426956375022,
+            "lon": -0.4078118743196791,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Bainton Road",
+            "lat": 52.63346341202118,
+            "lon": -0.41425704145055636,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Bainton Road",
+            "lat": 52.633738689191325,
+            "lon": -0.41180590446458626,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Bainton Road",
+            "lat": 52.63474173106975,
+            "lon": -0.24658065247598115,
+            "in_la": "Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Barnack",
+            "type": "village",
+            "lat": 52.63225751588454,
+            "lon": -0.4094760662085537,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Road",
+            "type": "named road",
+            "lat": 52.63974337696178,
+            "lon": -0.3886023441220477,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Hills and Holes",
+            "type": "other landcover",
+            "lat": 52.62872748491194,
+            "lon": -0.41173173146351194,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Road",
+            "type": "section of named road",
+            "lat": 52.640415078687326,
+            "lon": -0.38576956450195304,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Church of England (Controlled) Primary School",
+            "type": "primary education",
+            "lat": 52.633004872373085,
+            "lon": -0.41224179741321654,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is identified as 17 Linden Close. The postcode PE9 3DU and the centroid for Linden Close are within 150m of each other in Barnack. The map shows the site at the junction of Linden Close and Bainton Road, which aligns with these coordinates.",
+        "picked_source": "postcode:PE9 3DU",
+        "sigma_m": 200,
+        "confidence": "high",
+        "top_lat": 52.635622,
+        "top_lon": -0.410315,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

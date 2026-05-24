@@ -1,0 +1,293 @@
+{
+  "case": "43",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4852106993764,
+    "top_lon": -0.177791330029043,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Chelsea Park Gardens",
+    "evidence": "The map shows a large area of Chelsea Park Gardens bounded by Beaufort Street and Elm Park Lane. Geocoding Chelsea Park Gardens and Beaufort Street places the site consistently in SW3. The coordinate for Chelsea Park Gardens is the primary anchor.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.032833004720617856,
+  "gt_centroids": [
+    {
+      "lat": 51.48550045352857,
+      "lon": -0.1777000711816154
+    },
+    {
+      "lat": 51.485521342732085,
+      "lon": -0.17628486045343517
+    },
+    {
+      "lat": 51.485122481972795,
+      "lon": -0.17704039353741613
+    },
+    {
+      "lat": 51.48464922350568,
+      "lon": -0.17716765034836776
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Chelsea Park Gardens"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Chelsea Park Gardens",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Chelsea Park Gardens",
+            "type": "named road",
+            "lat": 51.485210699376374,
+            "lon": -0.17779133002904296,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Andrew's Church Chelsea",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Andrew's Church Chelsea",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Beaufort Street"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beaufort Street",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Beaufort Street",
+            "type": "named road",
+            "lat": 51.48465160155307,
+            "lon": -0.17595563765203467,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "Beaufort Gardens",
+            "type": "named road",
+            "lat": 57.478877314443004,
+            "lon": -4.465118072447014,
+            "admin_district": null,
+            "county": "Highland"
+          },
+          {
+            "name": "Beaufort Road",
+            "type": "named road",
+            "lat": 57.479445176253215,
+            "lon": -4.215761844012321,
+            "admin_district": null,
+            "county": "Highland"
+          },
+          {
+            "name": "Beaufort Avenue",
+            "type": "named road",
+            "lat": 54.614050253906484,
+            "lon": -3.539504677160862,
+            "admin_district": null,
+            "county": "Cumberland"
+          },
+          {
+            "name": "Beaufort Close",
+            "type": "named road",
+            "lat": 54.86210748733314,
+            "lon": -1.4873759996246492,
+            "admin_district": "Sunderland",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Elm Park Lane"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Elm Park Lane",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Elm Park Lane",
+            "type": "named road",
+            "lat": 51.48678386032547,
+            "lon": -0.177757421035907,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "Elm Park",
+            "type": "named road",
+            "lat": 57.46823447434774,
+            "lon": -4.225789129283795,
+            "admin_district": null,
+            "county": "Highland"
+          },
+          {
+            "name": "Elm Park",
+            "type": "named road",
+            "lat": 54.98026602166571,
+            "lon": -3.2634371795247805,
+            "admin_district": null,
+            "county": "Dumfries and Galloway"
+          },
+          {
+            "name": "Elm Park",
+            "type": "named road",
+            "lat": 51.38600517837204,
+            "lon": -0.6463240114018697,
+            "admin_district": null,
+            "county": "Windsor and Maidenhead"
+          },
+          {
+            "name": "Elm Park",
+            "type": "named road",
+            "lat": 52.661370947904466,
+            "lon": 0.9411140597108636,
+            "admin_district": "Breckland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.177791330029043,
+        "sigma_m": 300,
+        "picked_source": "place:Chelsea Park Gardens",
+        "confidence": "high",
+        "top_lat": 51.4852106993764,
+        "evidence": "The map shows a large area of Chelsea Park Gardens bounded by Beaufort Street and Elm Park Lane. Geocoding Chelsea Park Gardens and Beaufort Street places the site consistently in SW3. The coordinate for Chelsea Park Gardens is the primary anchor.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,211 @@
+{
+  "case": "A4KTRa1",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.54499,
+    "top_lon": -0.14171,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "grid_ref:528942 E 184544 N",
+    "evidence": "The map explicitly provides OS Grid Coordinates (528942 E 184544 N) which convert to 51.54499, -0.14171. This is perfectly consistent with the geocoded location of Castle Place (51.54506, -0.14230) and Kentish Town Road (51.54540) in Camden.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.014963656168083728,
+  "gt_centroids": [
+    {
+      "lat": 51.54506071936761,
+      "lon": -0.14189409918903167
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "147 Kentish Town Road",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "147 Kentish Town Road",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Camden",
+        "query": "Kentish Town Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kentish Town Road",
+        "la_filter": "Camden",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Kentish Town Road",
+            "type": "section of named road",
+            "lat": 51.5484558973917,
+            "lon": -0.14118360272915684,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          },
+          {
+            "name": "Kentish Town Road",
+            "type": "named road",
+            "lat": 51.54540431574868,
+            "lon": -0.14155314753245224,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          },
+          {
+            "name": "Kentish Town Road",
+            "type": "section of named road",
+            "lat": 51.54277441947289,
+            "lon": -0.1418621964902634,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          },
+          {
+            "name": "Kentish Town",
+            "type": "suburban area",
+            "lat": 51.5508725462417,
+            "lon": -0.13990233404689456,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          },
+          {
+            "name": "Kentish Town",
+            "type": "railway station",
+            "lat": 51.55023327678744,
+            "lon": -0.1404188163976605,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Castle Place",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Castle Place",
+        "la_filter": "Camden",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Castle Place",
+            "type": "named road",
+            "lat": 51.54506547751229,
+            "lon": -0.1423024803967078,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "grid_ref:528942 E 184544 N",
+        "top_lon": -0.14171,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "evidence": "The map explicitly provides OS Grid Coordinates (528942 E 184544 N) which convert to 51.54499, -0.14171. This is perfectly consistent with the geocoded location of Castle Place (51.54506, -0.14230) and Kentish Town Road (51.54540) in Camden.",
+        "top_lat": 51.54499,
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

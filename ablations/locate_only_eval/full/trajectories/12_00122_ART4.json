@@ -1,0 +1,411 @@
+{
+  "case": "12:00122:ART4",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.470946,
+    "top_lon": 1.444855,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Longrigg Road",
+    "evidence": "The map shows a cluster of sites in Ditchingham centered around Windmill Green and Scudamore Place. Longrigg Road and Thwaite Road are clearly visible and labeled. The coordinates for Longrigg Road in Ditchingham provide a precise anchor for this cluster.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1713673505743963,
+  "gt_centroids": [
+    {
+      "lat": 52.46943544748213,
+      "lon": 1.4443534356098207
+    },
+    {
+      "lat": 52.469080318165844,
+      "lon": 1.4419316863984695
+    },
+    {
+      "lat": 52.46864455671181,
+      "lon": 1.4411417829215383
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 1,
+      "road": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Windmill Green, Ditchingham",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Scudamore Place, Ditchingham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Thwaite Road",
+        "la": "South Norfolk",
+        "road_a": "Hallow Hill Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Windmill Green, Ditchingham",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Scudamore Place, Ditchingham",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Hallow Hill Road']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Ditchingham"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Thwaite Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Norwich Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ditchingham",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ditchingham",
+            "type": "village",
+            "lat": 52.46725956948341,
+            "lon": 1.443843890640819,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Ditchingham Dam",
+            "type": "suburban area",
+            "lat": 52.45787614753289,
+            "lon": 1.4399159343297712,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Ditchingham Dam",
+            "type": "named road",
+            "lat": 52.46078746265294,
+            "lon": 1.441247423432731,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Ditchingham Dam",
+            "type": "section of named road",
+            "lat": 52.458734200546594,
+            "lon": 1.4404098694349157,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Ditchingham Dam",
+            "type": "section of named road",
+            "lat": 52.46310011310462,
+            "lon": 1.4418255326325409,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Thwaite Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Thwaite Road",
+            "lat": 52.47645962550927,
+            "lon": 1.4427781736271041,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Thwaite Road",
+            "lat": 52.474690794646676,
+            "lon": 1.443818309618459,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Thwaite Road",
+            "lat": 52.47260445496002,
+            "lon": 1.4446827259265684,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Thwaite Road",
+            "lat": 52.47968205535067,
+            "lon": 1.4410068441141402,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Thwaite Road",
+            "lat": 52.46874443583503,
+            "lon": 1.4423198177417473,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Norwich Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Norwich Road",
+            "lat": 52.65254945109614,
+            "lon": 1.2304483549063856,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.65343794198743,
+            "lon": 1.2291566902804625,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.65419695000764,
+            "lon": 1.2287228627311375,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.654615861070084,
+            "lon": 1.2285729590458034,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.57851939586168,
+            "lon": 1.4666925325992577,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Longrigg Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Longrigg Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Longrigg Road",
+            "lat": 52.47094602095301,
+            "lon": 1.444855536442837,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Longrigg Road",
+            "lat": 52.47072364015024,
+            "lon": 1.4455573892850397,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Longrigg Road",
+            "lat": 52.470610171725696,
+            "lon": 1.4460943315948658,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.470946,
+        "la": "South Norfolk",
+        "lon": 1.444855
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.470946,
+        "lon": 1.444855,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows a cluster of sites in Ditchingham centered around Windmill Green and Scudamore Place. Longrigg Road and Thwaite Road are clearly visible and labeled. The coordinates for Longrigg Road in Ditchingham provide a precise anchor for this cluster.",
+        "sigma_m": 300,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "picked_source": "road:Longrigg Road",
+        "top_lon": 1.444855,
+        "top_lat": 52.470946
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

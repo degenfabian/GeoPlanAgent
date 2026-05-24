@@ -1,0 +1,68 @@
+{
+  "case": "12:00122:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.4645,
+    "lon": 1.455,
+    "reasoning": "The document lists multiple sites in South Norfolk, including Windmill Green in Ditchingham, which is clearly shown on the provided map at coordinates 52.4645, 1.455."
+  },
+  "err_km": 0.9062758750351626,
+  "gt_centroids": [
+    {
+      "lat": 52.46943544748213,
+      "lon": 1.4443534356098207
+    },
+    {
+      "lat": 52.469080318165844,
+      "lon": 1.4419316863984695
+    },
+    {
+      "lat": 52.46864455671181,
+      "lon": 1.4411417829215383
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document lists multiple sites in South Norfolk, including Windmill Green in Ditchingham, which is clearly shown on the provided map at coordinates 52.4645, 1.455.",
+        "lat": 52.4645,
+        "lon": 1.455
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

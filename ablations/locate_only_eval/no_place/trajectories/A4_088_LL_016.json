@@ -1,0 +1,222 @@
+{
+  "case": "A4_088:LL:016",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.653,
+    "top_lon": -1.134,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Exploration Drive",
+    "evidence": "The map shows the National Space Centre on Exploration Drive. Geocoding Exploration Drive in Leicester returns coordinates centered around 52.653, -1.134, which aligns with the road's location near Wallingford Road.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.13909755901116058,
+  "gt_centroids": [
+    {
+      "lat": 52.6536908931723,
+      "lon": -1.132280955180471
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Exploration Drive",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Wallingford Road",
+        "road_a": "Exploration Drive",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Exploration Drive",
+        "la_filter": "Leicester",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Exploration Drive",
+            "lat": 52.65257378463937,
+            "lon": -1.1351190399830944,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Exploration Drive",
+            "lat": 52.65274237440191,
+            "lon": -1.1366459247863867,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Exploration Drive",
+            "lat": 52.653066547855026,
+            "lon": -1.1342970882247294,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Exploration Drive",
+            "lat": 52.65474962355896,
+            "lon": -1.133450850509821,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Exploration Drive",
+          "Wallingford Road"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Wallingford Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Wallingford Road",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Wallingford Road",
+            "lat": 52.6551206927448,
+            "lon": -1.1316399519431384,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.653,
+        "la": "Leicester",
+        "lon": -1.134
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.653,
+        "lon": -1.134,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "sigma_m": 300,
+        "top_lat": 52.653,
+        "evidence": "The map shows the National Space Centre on Exploration Drive. Geocoding Exploration Drive in Leicester returns coordinates centered around 52.653, -1.134, which aligns with the road's location near Wallingford Road.",
+        "top_lon": -1.134,
+        "picked_source": "road:Exploration Drive",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

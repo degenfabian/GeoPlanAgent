@@ -35,6 +35,7 @@
 \usepackage{amsmath}
 \usepackage{subcaption}
 \usepackage{xcolor}
+\usepackage{cleveref}
 
 % \placeholder marks cells / sentences that will be filled in once the
 % current full-benchmark run + ablation runs complete. Compiles in red
@@ -46,7 +47,9 @@
 %
 % and set <dim> to something 5cm or larger.
 
-\title{GeoPlanAgent: A Multi-modal Benchmark for Automatic Digitisation of UK Planning Records}
+\title{Plan2Map: A Multimodal Benchmark for Digitising UK Planning Records into Geospatial Boundaries}
+
+% \title{Plan2Map: A Multimodal Benchmark for Automatic Digitisation of UK Planning Records}
 
 % Author information can be set in various styles:
 % For several authors from the same institution:
@@ -116,25 +119,37 @@
 \begin{document}
 \maketitle
 \begin{abstract}
+Planning records define restrictions over geographic areas, but source documents often provide only indirect spatial evidence rather than ready-to-use geospatial boundaries. We introduce \textbf{Plan2Map}, a public, manually reviewed benchmark for planning-record PDF-to-GeoJSON digitisation based on UK Article~4 Directions. Given only a source planning document, systems must reconstruct a valid geospatial boundary from notice text, schedules, map plates, labels, and boundary annotations. We propose \textbf{GeoPlanAgent}, a document-grounded, geospatial-tool-in-the-loop system that decomposes the task into evidence extraction, localization, map registration, boundary segmentation, projection, and verification. On 208 cases, GeoPlanAgent achieves 0.690 mean IoU and 0.895 median IoU, with 74.5\% of predictions above 0.5 IoU. Diagnostic analysis reveals a strongly bimodal success pattern and identifies localization and boundary extraction as the dominant bottlenecks. Plan2Map provides a concrete testbed for multimodal geospatial reconstruction from public planning records.
 \end{abstract}
 
 \section{Introduction}
 \label{section:intro}
-The review of planning records remains manual and time-consuming. Recent UK Government work on Extract identifies legacy paper maps, PDFs, and scanned documents as barriers to modern planning systems, while a GOV.UK report examines delays and barriers across the planning-application process \citep{weinstein2024UKgov,govuk2025extract,colebourn2025extract,mhclg2026planningdelays}. A central difficulty is that human planners must verify the planning records against planning-practice guidance and local regulatory records, making comprehensive review difficult under realistic time constraints \citep{mhclg2025nppf,mhclg2024planningpracticeguidance}. Recent progress in multimodal artificial intelligence offers a promising route to alleviating this bottleneck, since planning documents combine regulatory text, cartographic imagery, and structured metadata within a single artefact.
- 
-In this paper, we examine the ability of contemporary multimodal AI systems, including Gemini, GPT, and Claude, to process UK planning records \citep{geminiteam2023gemini,openai2023gpt4v,anthropic2026claudevision}. To support this investigation, we develop \textbf{GeoPlanAgent}, a multimodal benchmark designed to evaluate two essential stages of automated planning-document processing: the digitisation of planning records and their automated validation against planning regulations. Completing these stages requires a model to summarise the central intent of a proposal, to invoke external tools that augment its multimodal understanding, and to retrieve the regulations or statutory acts relevant to a given case.
- 
-The benchmark comprises data inputs paired with ground-truth annotations, an output data schema, and a set of scoring functions, and it may be extended with additional tools as required. The tooling used in this work includes OpenCV for image manipulation, LoFTR for detector-free local feature matching, and Google Maps APIs for geocoding and satellite imagery retrieval \citep{bradski2000opencv,sun2021loftr,google2026geocoding,google2025mapsstatic}. 
- 
-The contributions of this paper are twofold. First, we construct a dataset for evaluating the ability of AI agents to automatically digitise planning records. Second, we benchmark existing multimodal models on this dataset and address their observed weaknesses with a purpose-built agentic system.
 
-% \textbf{GeoPlanAgent:} We developed GeoMapAgent, an agentic framework compatible with leading multimodal AI systems, to improve the processing and planning of proposals.
-% GeoMapAgent enables multimodal AI to adaptively select tools, make complex decisions, and reflect on its mistakes to deliver reliable reviews of planning proposals end-to-end with no human intervention.
 
-\section{Ralated Work}
+Planning records such as UK Article~4 Directions \citep{planningdata2026article4direction} define restrictions that apply to buildings or areas. Concrete geospatial boundary data is the operational form of these records: it allows planning systems to check whether a site or application falls within an affected area, compare the restriction with other planning records and maps, and audit or update the record over time. Although public planning-data portals may publish such boundaries as spatial records\footnote{https://www.planning.data.gov.uk/entity/?dataset=article-4-direction-area}, including GeoJSON geometries, this geometry is not available to a system whose input is only the source planning document. The document usually provides only indirect spatial evidence: notice text, schedules, map plates, map labels, and boundary annotations, from which the boundary must be reconstructed.
+
+
+Recovering these boundaries is not merely a technical exercise. The UK Government's ``Extract initiative'' reflects a wider push for digitalisation of existing planning records \citep{govuk2025extract,colebourn2025extract}. Recent reviews of planning-application delays further underscore the need for efficient planning information flows \citep{weinstein2024UKgov,mhclg2026planningdelays}. Without machine-actionable boundary data, authorities and downstream users must manually interpret documents, maps, and boundary annotations to reconstruct the affected area, a slow and error-prone process that does not scale across local-authority archives.
+
+
+To study this problem systematically, we introduce \textbf{Plan2Map}, a public, manually reviewed benchmark for planning-record PDF-to-GeoJSON digitisation. Each example provides a source planning document as input and a verified geospatial boundary as the target output, allowing systems to be evaluated on whether they can reconstruct the affected area from the source document. Plan2Map frames this as an indirect geospatial reasoning task: the system must recover a valid GeoJSON boundary from textual, visual, and geographic evidence rather than extract a field already present in the PDF.
+
+
+As illustrated in Figure~\ref{fig:task-overview}, Plan2Map requires coupled document, visual, and geospatial reasoning. A system must discover the relevant spatial evidence, select the correct map, interpret drawn or hatched boundary symbols, ground the local map against external basemaps, and return a valid geospatial polygon. Planning PDFs make each step difficult: they may contain multiple maps, scanned or rotated pages, low-resolution cartography, ambiguous hatching, disconnected areas, and textual annotations such as exclusions of named addresses. Text extraction, map segmentation, and geocoding each solve only one part of the problem; none alone recovers the final boundary.
+
+This structure motivates \textbf{GeoPlanAgent}, a decomposition-based system for Plan2Map. GeoPlanAgent mirrors the task decomposition: a \emph{Reader} extracts structured spatial evidence and candidate map pages; a \emph{Locate} sub-agent proposes map centres using offline UK geocoders; a \emph{Worker} registers the planning map against a national basemap, segments the affected boundary, and projects it into geospatial coordinates; and an optional \emph{Critic} reviews committed results.
+
+ 
+Our \textbf{main contributions} are: \textbf{(i)} We introduce \textbf{Plan2Map}, a public, manually reviewed benchmark for planning-record PDF-to-GeoJSON digitisation, built from UK Article~4 source documents and verified boundary geometries; \textbf{(ii)} We define the associated task and evaluation protocol: given only the source planning document, a system must reconstruct a valid geospatial boundary, evaluated by geometric overlap, polygon F1, centroid error, valid-output rate, and cost; \textbf{(iii)} We propose \textbf{GeoPlanAgent}, a decomposition-based system that mirrors the task structure through reading, localization, map registration, boundary segmentation, projection, and verification; and \textbf{(iv)} We provide diagnostic analysis with direct VLM baselines, essential component ablations, and a failure taxonomy, showing that localization and boundary extraction are the dominant bottlenecks.
+
+
+\section{Related Work}
 
 \paragraph{Tool-augmented agents and UK planning records.}
-Tool-augmented methods such as retrieval-augmented generation, ReAct, and Toolformer are relevant because planning-record digitisation often requires OCR, retrieval, geocoding, segmentation, and map alignment rather than single-pass prediction \citep{lewis2020rag,yao2023react,schick2023toolformer}. In the UK context, the government's Extract initiative and related Google descriptions show growing institutional interest in converting planning PDFs and maps into structured data \citep{govuk2025extract,colebourn2025extract,google2025extract}. However, these initiatives are not presented as reusable academic benchmarks with released proposal-document inputs, ground-truth GeoJSON boundaries, output schemas, and scoring functions.
+Tool-augmented methods such as retrieval-augmented generation, ReAct, and Toolformer are relevant as planning-record digitisation often requires OCR, retrieval, geocoding, segmentation, and map alignment rather than single-pass prediction \citep{lewis2020rag,yao2023react,schick2023toolformer}. In the UK context, the government's Extract initiative and related Google descriptions show growing institutional interest in converting planning PDFs and maps into structured data \citep{govuk2025extract,colebourn2025extract,google2025extract}. However, these initiatives are not presented as reusable academic benchmarks with released proposal-document inputs, ground-truth GeoJSON boundaries, output schemas, and scoring functions.
+
+\paragraph{Map digitisation and georeferencing.}
+Our task is also related to map digitisation and georeferencing. MapReader provides tools for analysing large map collections through patch classification and text spotting, while recent historical-map vectorisation benchmarks show that converting scanned maps into usable vector geometries remains difficult \citep{wood2024mapreader,chen2024historicalmapvectorization}. This work motivates the boundary-extraction component of our benchmark, but planning review additionally requires checking whether the recovered geometry is consistent with the legal description and policy record.
 
 \paragraph{Multimodal document understanding.}
 GeoPlanAgent draws on work in visual document understanding, where models must read document images, exploit layout, and answer grounded questions. DocVQA established document-image question answering, while LayoutLMv3 and Donut represent layout-aware and OCR-free approaches to document understanding \citep{mathew2021docvqa,huang2022layoutlmv3,kim2022donut}. These works are relevant because Article~4 Direction records contain text, layout, signatures, and embedded maps. However, they target generic document tasks rather than linking statutory language to an externally verifiable geographic boundary.
@@ -142,8 +157,7 @@ GeoPlanAgent draws on work in visual document understanding, where models must r
 \paragraph{Geospatial vision-language reasoning.}
 Geospatial VQA and remote-sensing VLMs address spatial reasoning more directly. RSVQA introduced VQA over remote-sensing images using OpenStreetMap-derived questions, and later work such as EarthVQA and GeoChat extends this line to relational reasoning and grounded geospatial dialogue \citep{lobry2020rsvqa,wang2024earthvqa,kuckreja2024geochat}. EarthWhere further evaluates open-world geolocation with multimodal models \citep{qian2025earthwhere}. These benchmarks test important spatial capabilities, but mainly focus on aerial, satellite, street-level, or natural imagery. Planning records instead require joint reasoning over PDFs, cartographic symbols, authority metadata, legal text, and GeoJSON boundaries.
 
-\paragraph{Map digitisation and georeferencing.}
-Our task is also related to map digitisation and georeferencing. MapReader provides tools for analysing large map collections through patch classification and text spotting, while recent historical-map vectorisation benchmarks show that converting scanned maps into usable vector geometries remains difficult \citep{wood2024mapreader,chen2024historicalmapvectorization}. This work motivates the boundary-extraction component of our benchmark, but planning review additionally requires checking whether the recovered geometry is consistent with the legal description and policy record.
+
 
 \paragraph{Planning, legal, and regulatory AI.}
 Planning and legal AI benchmarks evaluate regulatory knowledge and legal reasoning. UrbanPlanBench tests LLMs on urban-planning concepts and regulations, while LexGLUE and LegalBench provide broader legal-language benchmarks \citep{zheng2025urbanplanbench,chalkidis2022lexglue,guha2023legalbench}. These benchmarks are useful comparators for regulatory validation, but they do not require models to connect a planning document's legal language to a map boundary, location, and external geospatial record.
@@ -151,93 +165,86 @@ Planning and legal AI benchmarks evaluate regulatory knowledge and legal reasoni
 In summary, prior work covers important parts of the problem, but no existing benchmark jointly evaluates planning-record digitisation and regulatory validation over multimodal planning documents, external geospatial tools, and ground-truth boundary geometries.
 
 
+Existing benchmarks cover pieces of this transformation but not the full task. Document-understanding benchmarks test whether models can extract or answer questions over visually rich documents, but typically expect textual outputs. Map-digitisation and georeferencing work studies scanned maps, vectorisation, or control-point alignment, but usually assumes that the relevant map is already isolated and does not require reasoning over the surrounding planning record. Geospatial vision-language benchmarks test localization or question answering over maps, satellite imagery, or street-level images, but do not require systems to convert a regulatory PDF into a verified WGS84 boundary. Plan2Map fills this gap by evaluating the complete PDF-to-GeoJSON transformation.
+
 
 
 \section{Dataset}
-The dataset contains 210 Article~4 Direction records paired with corresponding GeoJSON boundary files. Each record links a planning-control PDF to a machine-readable boundary and a structured metadata record. The collection is designed to evaluate systems that must read regulatory text, interpret an associated map, and recover a GIS-ready representation of the relevant planning boundary. The records span multiple local planning authorities in England and cover the period recorded in the metadata, from 2 July 1973 to 27 November 2024. Because the collection is drawn from UK planning material, it should be treated as a UK-specific benchmark rather than as a representative sample of planning documents across jurisdictions.
+We release a benchmark of 208 UK Article~4 Direction records. Article~4 Directions are legal instruments through which UK local planning authorities withdraw nationally-granted permitted development rights for specified areas, typically to protect conservation areas, restrict change-of-use, or preserve landscape character \citep{mhclg2024planningpracticeguidance}. Each released case bundles the original regulatory PDF, a machine-readable ground-truth boundary in GeoJSON, and a rendered location-map visualisation of the boundary on an OpenStreetMap. To our knowledge, this is the first publicly released corpus that links UK planning-control documents to verified, machine-readable boundary geometries, making it suitable for evaluating systems that must read regulatory text, interpret an associated map, and recover a GIS-ready representation of the planning boundary. The records span 1958--2025 and cover twenty-nine distinct local planning authorities across England. The corpus is drawn exclusively from UK planning material and depends on UK gazetteers and base mapping, hence it should be treated as a UK-specific benchmark.
 
-\subsection{Data Collection Methodology}
-The documents and associated boundary files were collected from UK planning authority sources \cite{} \placeholder. Processing followed a six-stage workflow: document acquisition, quality assessment, boundary extraction from the available GeoJSON data, metadata annotation, validation, and final quality control. At each stage, records were checked for completeness, PDF-GeoJSON consistency, and discrepancies between the boundary drawn in the source document and the corresponding vector geometry.
-
-
-\subsection{Scope and Coverage}
-\subsubsection{Temporal Coverage}
-The dataset covers five decades of Article~4 Direction material. The recorded date range is 2 July 1973 to 27 November 2024, with a median year of approximately 1998. By decade, the distribution is 13\% from the 1970s, 19\% from the 1980s, 15\% from the 1990s, 17\% from the 2000s, 22\% from the 2010s, and 15\% from the 2020s.
-
-\subsubsection{Geographic Coverage}
-The dataset is geographically concentrated in London, Kent, and Norfolk, reflecting both policy concentration and data availability. London accounts for 37\% of the records, with examples from Westminster, Kensington \& Chelsea, Southwark, and Camden. Kent and Norfolk each account for 15\%, including records from Dover District, South Norfolk, and Broadland. The remaining 33\% covers other areas, including Leicestershire, Merseyside, and Cambridgeshire. In total, the metadata records more than 15 local planning authorities.
-
-\subsubsection{Document Types}
-The collection includes several forms of Article~4 Direction material. Article~4(1) Directions form the largest group at 59\%, followed by Article~4(2) Conservation Area controls at 33\%. Secretary of State modifications account for 2\%, while other records, including EIA screening and hybrid cases, account for the remaining 6\%.
+\subsection{Sources and Construction}
+ Raw source data was obtained from open UK planning datasets published under the Open Government Licence. Each raw entry consists of an Article~4 Direction PDF paired with a corresponding GeoJSON polygon retrieved from the same authority record. We then carried out a six-stage curation workflow with quality-control checkpoints at each transition: (i)~\emph{document acquisition} from authorised sources; (ii)~\emph{quality assessment} covering visual inspection, completeness, and authenticity; (iii)~\emph{boundary visualisation}, in which the supplied GeoJSON polygon is rendered on an OpenStreetMap to produce the per-case location-map PNG and to enable side-by-side comparison against the boundary drawn in the PDF; (iv)~\emph{metadata annotation} of thirteen structured fields; (v)~\emph{validation} by visual shape matching and cross-reference against the source record; and (vi)~\emph{final quality control} through peer review and discrepancy documentation. The pipeline reduced 270 raw entries to 208 release-ready cases. Specifically, we removed 40 records whose PDF boundary and supplied GeoJSON disagreed (shape mismatches, split maps, or polygons covering only part of a multi-map PDF), 9 records whose PDFs contained no boundary map, and 7 duplicates; we further merged 5 multi-geojson groups (consolidating 11 source rows into 5 cases) where the same PDF was distributed across several authority entries.
 
 \subsection{Dataset Composition}
-Each dataset entry consists of three linked components. The PDF document contains the original regulatory text, schedules, boundary maps, and authority signatures. The GeoJSON file provides the corresponding machine-readable boundary as a Polygon or MultiPolygon. The metadata record contains 13 structured fields covering identification, geography, document quality, shape complexity, and validation status.
+ Each released data item bundles three artefacts. The \textbf{PDF} contains the regulatory text, schedule of withdrawn permitted development rights, boundary map, and authority signatures. The \textbf{GeoJSON} is a single \texttt{Feature} carrying a \texttt{Polygon} or \texttt{MultiPolygon} geometry in WGS84, representing the application boundary. The \textbf{location-map PNG} overlays the GeoJSON on OpenStreetMap with WGS84 axes for human-readable inspection.
+ 
+The accompanying metadata table records, for each case, an administrative area (county or local authority), a free-text site description, a categorical boundary shape, a document-quality label, a shape-complexity label, and a validation flag. Boundary-shape categories are \emph{rectangular}, \emph{quadrilateral}, \emph{triangular}, \emph{irregular polygon}, \emph{L-shaped}, \emph{elongated strip}, \emph{multiple separate polygons}, and \emph{multiple complex irregular polygons}. Document quality is annotated as \emph{good} for clear text and legible maps, and \emph{bad} for poor scans, faded text, or unclear boundaries. Shape complexity is annotated as \emph{easy} (fewer than eight vertices), \emph{medium} (8--20), or \emph{hard} (more than twenty, or multiple disjoint components). The \texttt{Shape\_Matches} flag, with values \{\emph{Yes}, \emph{Yes--almost}\}, records whether the supplied GeoJSON visually matches the boundary drawn in the PDF; 96.6\% of released cases are exact matches and 3.4\% near matches, with all non-matching cases removed at curation. Identification fields maintain referential integrity between the PDF, the GeoJSON, and the metadata table (Appendix~\ref{appendix:idfields}).
 
-\subsection{Metadata Schema}
-The metadata schema is designed to support document tracking, spatial analysis, quality filtering, and benchmark stratification. The unique identification fields maintain referential integrity between the PDF, the associated GeoJSON file, and the metadata table; these fields are summarised in Table~\ref{Unique_Identification}.
 
-\subsubsection{Geographic Metadata}
-Geographic fields record the administrative context and physical location of each planning boundary. They include the county or administrative area, an exact location description, and a boundary-shape category.
-
-The boundary-shape categories are used to describe the geometry that the extraction system must recover. The categories are Rectangular, Quadrilateral, Triangular, Irregular polygon, L-shaped, Elongated strip, Multiple separate polygons, and Multiple complex irregular polygons.
-
-\subsubsection{Document Quality and Shape Complexity}
-Document quality and shape-complexity fields support fitness-for-purpose filtering and stratified evaluation. Document quality is coded as \textit{good} when the source has clear text, legible maps, minimal degradation, and sufficient resolution; it is coded as \textit{bad} when the source contains poor scans, faded text, unclear boundaries, or low resolution. Shape complexity is coded as \textit{easy} for simple shapes with fewer than eight vertices, \textit{medium} for shapes with 8--20 vertices, and \textit{hard} for shapes with more than 20 vertices or multiple separate polygons.
-
-\begin{table}
+\subsection{Distribution}
+ 
+The dataset spans 1958--2025 with a median document year of 1997; cases are distributed across the 1970s (20.2\%), 1980s (18.3\%), 1990s (12.5\%), 2000s (17.3\%), 2010s (25.0\%), and 2020s (4.8\%), with the remaining 1.9\% pre-1970. Geographically, the corpus covers eighteen counties or county-level administrative areas, concentrated in Kent (16.8\%), Norfolk (15.4\%), Hertfordshire (14.9\%), and London (13.9\%), with the remaining 38.9\% distributed across fourteen further areas, including Cambridgeshire, Staffordshire, Bristol, Leicestershire, Surrey, and Lancashire. At the local-authority level, the five largest groupings are St~Albans (28), Dover District (25), South Norfolk (23), South Staffordshire (13), and Bristol (12). Authority frequency reflects publication practices in the underlying datasets rather than a systematic geographic stratification.
+ 
+\Cref{tab:data-characteristics} summarises the document-level distributions. The combination of multi-decade scans, mixed quality, and varied shape complexity provides a non-trivial benchmark for end-to-end planning-record digitisation and a usable signal for stratified evaluation.
+ 
+\begin{table}[t]
 \centering
-\caption{Data Characteristics}
+\setlength{\tabcolsep}{1.5pt}
+\small
+\caption{Distribution of dataset characteristics across the 208 released cases.}
+\label{tab:data-characteristics}
 \begin{tabular}{@{}lll@{}}
 \toprule
-\textbf{Field} & \textbf{Values} & \textbf{Distribution} \\ \midrule
-Doc. Date & DD Month YYYY & 1973--2025 \\
-Doc. Colour & White, Yellow, other & 68\%, 30\%, 2\% \\
-Doc. Quality & good, bad & 75\%, 25\% \\
-Shape \\
-Complexity & easy, medium, hard & 50\%, 30\%, 20\% \\ \bottomrule
+\textbf{Field} & \textbf{Values} & \textbf{Distribution} \\
+\midrule
+Doc. Date     & 1958--2025         & Median 1997 \\
+Doc. Colour   & White/Yellow/Other & 81\% / 18\% / 1\% \\
+Doc. Quality  & Good / Bad         & 85\% / 15\% \\
+Shape Complexity & Easy/Medium/Hard & 52\% / 37.0\% / 11\% \\
+\bottomrule
 \end{tabular}
+\label{tab:data-characteristics}
 \end{table}
 
-\subsubsection{Validation Metadata}
-Each entry includes a \texttt{Shape Matches} flag with values \{\textit{Yes}, \textit{No}, \textit{Yes--almost}, \textit{N/A}\}. This field records whether the human-traced ground-truth GeoJSON boundary matches the boundary drawn in the source PDF. In the current metadata, 81\% of cases are recorded as perfect matches.
+ 
+% \begin{table}
+% \centering
+% \caption{Data Characteristics}
+% \begin{tabular}{@{}lll@{}}
+% \toprule
+% \textbf{Field} & \textbf{Values} & \textbf{Distribution} \\ \midrule
+% Doc. Date & DD Month YYYY & 1973--2025 \\
+% Doc. Colour & White, Yellow, other & 68\%, 30\%, 2\% \\
+% Doc. Quality & good, bad & 75\%, 25\% \\
+% Shape \\
+% Complexity & easy, medium, hard & 50\%, 30\%, 20\% \\ \bottomrule
+% \end{tabular}
+% \end{table}
 
-\section{Benchmark and Evaluation}
-\subsection{Planning documents summarisation with Multi-modal Models}
-\label{subsection:summarize}
 
-Our task is to benchmark the ability of multimodal models to summarise planning records in PDFs.
-The goal of summarisation is to extract the key idea of planning and to recognise its geometric boundary.
-The challenges are in 3-fold:
-\begin{itemize}
-    \item Summarise the planning from long PDFs. The planning PDFs are usually long (i.e., around 10 pages). Accurately summarising the key idea of planning and extracting the geometric boundaries presented in a long document is challenging for multi-modal models.
-    \item Identify the human-written annotations in the planning and refine the boundaries. For example, some human annotations, such as `excluding No. 10 and No. 11,' will change the original geometric boundaries of the planning proposal. These annotations are usually hard to recognise as they are rough and small.
-    \item Visualise the planning proposal on the map. This requires Multi-modal models to have tool-use ability, such as accessing the Google Map API and the geographic coordinate system.
-\end{itemize}
 
-We benchmark the leading multimodal models, including Gemini-2.5, GPT-4, and Claude-3, on this task. We use the metrics introduced in Section~\ref{section:intro} for evaluation. We plan to employ efficiency metrics, such as the token expense per planning document, to evaluate the efficiency of multi-modal models.
-
-\section{GeoPlanAgent}
+\section{GeoPlan Agent}
 \label{section:geoplanagent}
 
-GeoPlanAgent decomposes the boundary-extraction task into a pipeline of three LLM agents and an optional fourth (\Cref{fig:pipeline-overview}). The \emph{Reader} is a single-shot multimodal call that turns a planning PDF into a structured \texttt{PDFInfo} record. The \emph{Worker} is a tool-calling loop that registers the planning map against Ordnance Survey basemap tiles by orchestrating four tools (\Cref{tab:worker-tools}); within \texttt{match\_at} a LoRA-fine-tuned SAM~3 produces the boundary mask and the recovered affine projects it to WGS84, so the agent never leaves the loop without a polygon. One of the worker's tools, \texttt{propose\_centers}, delegates to a \emph{Locate sub-agent} that picks a single map centre by calling six offline UK geocoders. An optional independent \emph{Critic} (\Cref{subsection:critic}) reviews the worker's commit against all stored match attempts and may issue a directive to switch candidate or relocate. All four agents share the same multimodal LLM (Gemini~3~Flash by default~\cite{google2025gemini3}) and all four outputs are enforced by pydantic schemas, so the model physically cannot return free text in any phase.
+GeoPlanAgent decomposes the boundary-extraction task into a pipeline of three LLM agents and an optional fourth (\Cref{fig:pipeline-overview}). The \emph{Reader} is a single-shot multimodal call that turns a planning PDF into a structured \texttt{PDFInfo} record. The \emph{Worker} is a tool-calling loop that registers the planning map against Ordnance Survey basemap tiles by orchestrating four tools (\Cref{tab:worker-tools}); within \texttt{match\_at} a LoRA-fine-tuned SAM~3 produces the boundary mask and the recovered affine projects it to GeoJSON, so the agent never leaves the loop without a polygon. One of the worker's tools, \texttt{propose\_centers}, delegates to a \emph{Locate sub-agent} that picks a single map centre by calling six offline UK geocoders. An optional independent \emph{Critic} (\Cref{subsection:critic}) reviews the worker's commit against all stored match attempts and may issue a directive to switch candidate or relocate. All four agents share the same multimodal LLM (Gemini~3~Flash by default~\cite{google2025gemini3}), and all four outputs are enforced by pydantic schemas, so the model physically cannot return free text in any phase.
 
 \paragraph{Problem.}
 Given a planning PDF $D$ and ground-truth GeoJSON $G_{\text{true}}$, the system emits a predicted GeoJSON $G_{\text{pred}}$. We score $G_{\text{pred}}$ against $G_{\text{true}}$ with IoU and a precision/recall/F1 triple over their polygon set-operations (definitions and headline metric in \S\ref{subsection:summarize}); we additionally report centroid positioning error in metres.
 
-\begin{figure*}[t]
-  \vskip 0.2in
-  \begin{center}
-    \includegraphics[width=\textwidth]{figures/pipeline_overview.pdf}
-    \caption{The GeoPlanAgent pipeline. Stage~1 (Reader) extracts a structured \texttt{PDFInfo} record from the PDF binary and per-page OCR text. Stage~2 (Locate sub-agent, invoked through \texttt{propose\_centers}) sees the rendered map and the \texttt{PDFInfo} summary, calls six offline geocoders (postcode, grid\_ref, place, road, road-intersection, LA containment), and emits one \texttt{LocatePick} carrying a centre, an uncertainty radius $\sigma$, and a confidence label. Stage~3 (\texttt{match\_at}) registers the planning-map crop against styled OS Open Zoomstack tiles using MINIMA-LoFTR feature matching followed by RANSAC affine recovery; SAM~3 with a LoRA adapter produces the boundary mask which is projected through the recovered affine to WGS84 inside \texttt{commit\_match}. An optional Stage~4 critic compares all stored candidates and may direct the worker to switch or re-locate.}
-    \label{fig:pipeline-overview}
-  \end{center}
-  \vskip -0.2in
-\end{figure*}
+% \begin{figure*}[t]
+%   \vskip 0.2in
+%   \begin{center}
+%     \includegraphics[width=\textwidth]{figures/pipeline_overview.pdf}
+%     \caption{The GeoPlanAgent pipeline. Stage~1 (Reader) extracts a structured \texttt{PDFInfo} record from the PDF binary and per-page OCR text. Stage~2 (Locate sub-agent, invoked through \texttt{propose\_centers}) sees the rendered map and the \texttt{PDFInfo} summary, calls six offline geocoders (postcode, grid\_ref, place, road, road-intersection, LA containment), and emits one \texttt{LocatePick} carrying a centre, an uncertainty radius $\sigma$, and a confidence label. Stage~3 (\texttt{match\_at}) registers the planning-map crop against styled OS Open Zoomstack tiles using MINIMA-LoFTR feature matching followed by RANSAC affine recovery; SAM~3 with a LoRA adapter produces the boundary mask which is projected through the recovered affine to WGS84 inside \texttt{commit\_match}. An optional Stage~4 critic compares all stored candidates and may direct the worker to switch or re-locate.}
+%     \label{fig:pipeline-overview}
+%   \end{center}
+%   \vskip -0.2in
+% \end{figure*}
 
 \subsection{Reader}
 \label{subsection:reader}
 
-The reader is a single Gemini~3~Flash call (temperature~0) on the PDF binary together with per-page text from a PyMuPDF\,/\,macOS\,Vision\,/\,PaddleOCR cascade (\Cref{appendix:text-extraction}). The prompt tells the model to trust the OCR text block over re-reading the rasterised image for any exact-string field (postcodes, grid references, addresses, scale) because OCR returns verbatim characters whereas vision-only re-reading often substitutes visually similar digits. The output is a \texttt{PDFInfo} object with fields covering site-specific signals (postcodes, OS grid references, site address, road and place names, house-number/road pairs, parish names, visible map labels, adjacency hints, directional modifiers, most-likely town) and document-level metadata (printed scale, page count, one \texttt{MapPageMeta} per map-like page with \texttt{category}\,/\,\texttt{area\_group}\,/\,\texttt{boundary\_clarity}\,/\,\texttt{detail\_level}\,/\,\texttt{area\_signature}, the local-authority \texttt{admin\_region}, and an \texttt{is\_district\_wide} flag). \texttt{map\_pages} is the reader's ranked list of \texttt{category=match} pages; the page-rotation needed to make a sideways-laid map upright is decided downstream by a ResNet50 classifier (\Cref{subsection:rotation-classifier}), not by the LLM.
+The reader is a single Gemini~3~Flash call (temperature~0) on the PDF binary together with per-page text from a PyMuPDF\,/\,macOS\,Vision\,/\,PaddleOCR cascade (\Cref{appendix:text-extraction}). The prompt tells the model to trust the OCR text block over re-reading the rasterised image for any exact-string field (postcodes, grid references, addresses, scale) because OCR returns verbatim characters whereas vision-only re-reading often substitutes visually similar digits. The output is a \texttt{PDFInfo} object with fields covering site-specific signals (postcodes, OS grid references, site address, road and place names, house-number/road pairs, parish names, visible map labels, adjacency hints, directional modifiers, most-likely town) and document-level metadata (printed scale, page count, one \texttt{MapPageMeta} per map-like page with \texttt{category}, \texttt{area\_group}, \texttt{boundary\_clarity}, \texttt{detail\_level}, \texttt{area\_signature}, local-authority, \texttt{admin\_region}, and an \texttt{is\_district\_wide} flag). \texttt{map\_pages} is the reader's ranked list of \texttt{category=match} pages; the page-rotation needed to make a sideways-laid map upright is decided downstream by a ResNet50 classifier (\Cref{subsection:rotation-classifier}), not by the LLM.
 
 \subsection{Locate sub-agent}
 \label{subsection:locate-sub}
@@ -294,10 +301,11 @@ If a different stored attempt outscores the worker's pick, the gate redirects th
 
 After the worker submits, an optional independent LLM critic (same model, same model-family) reviews up to the top three stored match candidates by inlier count (always including the worker's commit) plus a per-candidate metrics block. For each shown candidate it sees a side-by-side panel of the planning map with the SAM~3 mask overlaid and the OS-tile crop with the projected polygon outlined in red. The critic emits a structured \texttt{CriticDirective}\,$\in$\,\{\texttt{approve}, \texttt{switch}, \texttt{retry\_locate}\} with a reasoning string that must cite a concrete visual feature. A \texttt{switch} re-invokes the worker with a fixed-template instruction to commit a different stored \texttt{candidate\_id}; a \texttt{retry\_locate} re-invokes the worker with an instruction to call \texttt{propose\_centers} with new context and try again. Up to two critic iterations are allowed per case; both the worker's first-commit polygon and the post-critic polygon are returned, so a single benchmark run produces both the no-critic and with-critic IoUs (used in the ablation of \Cref{subsection:abl-critic}).
 
-\section{Results}
+
+\section{Experiments and Results}
 \label{section:results}
 
-We evaluate GeoPlanAgent on the 210-case dataset of Section~3, less five duplicate folders flagged during quality control (208 cases). Inference uses Gemini~3~Flash for the Reader, Worker, and Locate sub-agent; SAM~3 routes per case to the LoRA adapter from the fold that did not see it during training (\Cref{subsection:sam3-finetune}). Each case is allowed up to 12 worker turns and five \texttt{match\_at} attempts. We report IoU and the precision/recall/F1 triple over the predicted vs.\ ground-truth GeoJSON, plus centroid positioning error in metres. Cases where the pipeline produced no polygon are counted as IoU $= 0$, so the headline figures match what an operator actually sees.
+We evaluate GeoPlanAgent on the 211-case dataset of Section~3 (208 data samples). Inference uses Gemini~3~Flash for the Reader, Worker, and Locate sub-agent; SAM~3 routes per case to the LoRA adapter from the fold that did not see it during training (\Cref{subsection:sam3-finetune}). Each case is allowed up to 12 worker turns and five \texttt{match\_at} attempts. We report IoU and the precision/recall/F1 triple over the predicted vs.\ ground-truth GeoJSON, plus centroid positioning error in metres. Cases where the pipeline produced no polygon are counted as IoU $= 0$, so the headline figures match what an operator actually sees.
 
 \begin{table*}[h]
 \centering
@@ -312,6 +320,7 @@ GeoPlanAgent (+ critic)  & 208 & 0.690 & 0.895 & 74.5\% & 61.5\% & 0.740 & 4.8 \
 \label{tab:main-result}
 \end{table*}
 
+\subsection{Core Experiments}
 \paragraph{Headline.}
 \Cref{tab:main-result} reports the production numbers. The worker alone reaches mean IoU 0.680 and median 0.893; with the critic enabled the mean rises to 0.690 (\Cref{subsection:abl-critic}). The distribution is sharply bimodal\textemdash 47.5\% of cases at IoU $\geq 0.9$ and 18.3\% below 0.05 with only $\approx 8\%$ in the $[0.3, 0.7]$ middle band\textemdash so the task in this dataset is mostly ``solve cleanly or fail entirely''. End-to-end wall-clock is $\approx 170$\,s per case in serial, dominated by tile rendering on cold cache and MINIMA inference on warm cache; a full 208-case run costs $\approx \$2.75$ in Gemini Flash API spend.
 
@@ -321,18 +330,20 @@ The strongest deployment-relevant signal is the worker's committed inlier count.
 \paragraph{Failure modes.}
 Of the 49 cases scoring below IoU 0.3, the dominant failure modes are: (i) \emph{wrong-area positioning} (the locate sub-agent picked a coordinate hundreds of metres or kilometres from the true site, typically a council-letterhead postcode that survived the LA filter, or a homonymous road in the wrong town); (ii) \emph{district-lookup mismatch} (15 cases entered the \texttt{lookup\_district} fallback after positioning failed; 13 of them produced a polygon for the wrong administrative area — this is a worse failure pattern than producing no polygon at all because it fakes success); (iii) \emph{wrong-page selection by reader} (the reader's primary map page was a context overview rather than the parcel-scale site map, so MINIMA matched at the wrong scale); (iv) \emph{correct area, bad mask} (positioning correct but the cached SAM~3 mask covered a title block or scale bar rather than the drawn polygon). No-polygon outcomes account for only 5 of 208 cases\textemdash the validator's ``always emit'' policy has all but eliminated that mode.
 
-\section{Ablations}
+
+\subsection{Ablations}
 \label{section:ablations}
 
 We organise the ablation study around two questions: (i) does the LoRA fine-tune actually matter, or could a vision-LLM trace boundaries natively? (ii) does the optional independent critic improve commits made by the worker alone?
 
-\subsection{Fine-Tune Contribution}
+\subsubsection{Fine-Tune Contribution}
 \label{subsection:abl-finetune}
 
 \Cref{tab:abl-finetune} compares three boundary-segmentation regimes on pixel-IoU against hand-traced masks, isolating segmentation quality from positioning. \emph{SAM~3 + LoRA (ours)} is the 5-fold cross-validated mean from \Cref{tab:sam3-cv}; each test case is scored by the adapter trained on the four folds that did not see it. \emph{Vanilla SAM~3} is base SAM~3 (no LoRA) with the best of five pre-registered prompts (\Cref{subsection:abl-vanilla-sam-prompt-search}). \emph{VLM-direct} is Gemini~3~Flash asked to trace the polygon directly using its native $[y,x] \in [0,1000]$ vertex convention (\Cref{subsection:abl-vlm-direct-protocol}). The 0.40 gap between the best vanilla prompt and the LoRA fine-tune is the direct measure of the LoRA's contribution; the further 0.13 gap from VLM-direct to vanilla SAM~3 quantifies how much SAM~3's mask decoder helps even without UK-specific fine-tuning.
 
 \begin{table}[h]
 \centering
+\setlength{\tabcolsep}{1.5pt}
 \small
 \begin{tabular}{@{}lccc@{}}
 \toprule
@@ -350,6 +361,7 @@ SAM~3 + LoRA (ours)         & 211 & \textbf{0.892} & \textbf{91.0\%} \\ \bottomr
 
 \begin{table}[h]
 \centering
+% \setlength{\tabcolsep}{20.5pt}
 \small
 \begin{tabular}{@{}lccc@{}}
 \toprule
@@ -366,18 +378,19 @@ Std  &    & 0.043 & 0.038 \\ \bottomrule
 \label{tab:sam3-cv}
 \end{table}
 
-\subsection{Critic Contribution}
+\subsubsection{Critic Contribution}
 \label{subsection:abl-critic}
 
 The optional independent critic (\Cref{subsection:critic}) is the only architectural variant we can ablate cheaply from a single run, because the critic-enabled benchmark snapshots both the worker's first-commit polygon and the post-critic polygon. The paired numbers in \Cref{tab:main-result} give a $+0.010$ mean IoU lift (worker alone $0.680 \rightarrow$ with critic $0.690$); the larger effect is at the tails\textemdash the critic switches the worker's commit on cases where a higher-inlier alternative was waiting in the candidate store, and triggers a \texttt{retry\_locate} on a small number of cases where every stored candidate visually lands in the wrong region. The critic's failure mode is over-approval: deterministic per-axis metrics correlate only weakly with IoU on borderline cases ($\approx 0.13$ Pearson at $n_{\text{inliers}} \in [25, 50]$), so the critic and worker independently mis-trust the same metrics on the same hard cases. Cost: $\approx \$0.20$ extra per case (two extra critic LLM calls, no extra MINIMA / SAM~3 work).
 
-\subsubsection{Vanilla SAM~3 Prompt Search}
+\paragraph {Vanilla SAM~3 Prompt Search.}
 \label{subsection:abl-vanilla-sam-prompt-search}
 
 Base SAM~3 is a promptable segmentation model; without LoRA fine-tuning, its output depends strongly on which English phrase is supplied as the query. We evaluated five pre-registered candidate prompts on the full 211-case annotated pool: ``planning boundary'' (the LoRA-trained anchor), ``article 4 site boundary'', ``highlighted marked area'', ``site boundary'', and ``application site''. Prompts are discrete pre-registered hyperparameters with no learned component, so a subset-search-plus-held-out-eval split would add no statistical protection over reporting all five prompts on the full pool.
 
 \begin{table}[h]
 \centering
+\setlength{\tabcolsep}{1.5pt}
 \small
 \begin{tabular}{@{}lcccc@{}}
 \toprule
@@ -392,10 +405,40 @@ Base SAM~3 is a promptable segmentation model; without LoRA fine-tuning, its out
 \label{tab:abl-sam-prompt-search}
 \end{table}
 
-\subsubsection{VLM-Direct Protocol}
+\paragraph{VLM-Direct Protocol}
 \label{subsection:abl-vlm-direct-protocol}
 
 VLM-direct is a single-shot Gemini~3~Flash inference per case: no SAM~3, no MINIMA, no agent loop. The model receives the rendered map image together with a fixed prompt that describes the task and enumerates the boundary styles to recognise (solid lines, dashed, dotted, hatched, semi-transparent fill, opaque fill). The schema enforces output as 0+ polygons of $(y, x)$ integer vertices in $[0, 1000]$\textemdash Gemini's native segmentation convention~\cite{google2025gemini3}. We rasterise the polygons at the source image's native resolution (anisotropic scaling) and compute pixel IoU against the same hand-traced masks as the SAM~3 LoRA pool. Decoding is at temperature 0, 8192-token cap, with the schema enforced via \texttt{NativeOutput} mode to prevent truncation of multi-vertex polygons. Six cases failed on first pass (provider 413 / malformed JSON on large pages); we re-ran exactly those six at JPEG-95, 2048-px longest-side input cap (the polygon coordinate system is normalised, so this does not change the IoU axis), giving a merged 0/211 failure rate. For comparison, Gemini~3~Pro on the same prompt with \texttt{output\_retries=0} loses 30 of 211 cases to schema validation, reaching mean IoU 0.555 on its 181 parseable cases\textemdash but the 14\% selection-bias lift on Pro makes it not comparable to the headline Flash row, which is why Flash is what we report.
+
+
+
+\section{Evaluation and Discussion}
+To Do
+
+
+% \subsection{Planning documents summarisation with Multi-modal Models}
+% \label{subsection:summarize}
+
+% Our task is to benchmark multimodal models' ability to summarise planning records in PDFs.
+% The goal of summarisation is to extract the key idea of planning and to recognise its geometric boundary.
+% The challenges are in 3 parts:
+
+% \textbf{1. Summarise the planning from long PDFs.} The planning PDFs are usually long (around 10 pages). Accurately summarising the key idea of planning and extracting the geometric boundaries presented in a long document is challenging for multi-modal models.
+
+% \textbf{2. Identify the human-written annotations in the planning and refine the boundaries.} For example, human annotations, such as `excluding No. 10 and No. 11,' will change the original geometric boundaries of the planning proposal. These annotations are usually hard to recognise as they are rough and small.
+
+% \textbf{3. Visualise the planning proposal on the map.} This requires Multi-modal models to have tool-use ability, such as accessing the Google Map API and the geographic coordinate system.
+
+% We benchmark the leading multimodal models, including Gemini-2.5, GPT-4, and Claude-3, on this task. We use IoU, F1,  metrics for evaluation.  
+% We plan to employ efficiency metrics, such as the token expense per planning document, to evaluate the efficiency of multi-modal models.
+
+
+\section{Conclusion}
+
+We introduced \textbf{Plan2Map}, a public benchmark of 208 manually reviewed UK Article~4 Direction records that pair a regulatory PDF with a verified GeoJSON boundary and a rendered location-map visualisation, and we framed planning-record digitisation as an indirect geospatial reconstruction task in which the target boundary must be recovered from textual, visual, and geographic evidence rather than read off a field in the PDF. To address the benchmark, we proposed \textbf{GeoPlanAgent}, a decomposition-based system that mirrors the task structure through a Reader, a Locate sub-agent backed by offline UK geocoders, a Worker that registers the planning map and segments the boundary, a projection step, and an optional Critic. On the 208-case benchmark the system reaches mean IoU 0.690 with the critic enabled, a median IoU of 0.895, and 74.5\% of cases at IoU $\geq 0.5$. Component ablations confirm that the LoRA-fine-tuned segmenter is essential\textemdash a direct-VLM baseline scores 0.479 mean pixel IoU against the segmenter's 0.892\textemdash and that the dominant residual failures are concentrated in localisation and reader page-selection rather than in segmentation. Plan2Map and GeoPlanAgent together provide a starting point for systematic study of PDF-to-GeoJSON digitisation, and we expect future work to focus on more robust localisation, better discriminators in the borderline regime, and extension of the benchmark to additional jurisdictions.
+
+
+\newpage
 
 \section*{Limitations}
 
@@ -413,9 +456,18 @@ SAM~3 fine-tuning was performed on CUDA with bf16 mixed precision; validation (t
 % Custom bibliography entries only
 \bibliography{custom}
 
-\appendix
+\clearpage
+\setcounter{page}{1}
 
-\section{Dataset Details}
+\appendix
+\title{Appendix} 
+
+\section{Data Collection Methodology}
+
+The final Dataset is available here: [TBA]
+
+
+The documents and associated boundary files were collected from UK planning authority sources \cite{}. Processing followed a six-stage workflow: document acquisition, quality assessment, boundary extraction from the available GeoJSON data, metadata annotation, validation, and final quality control. At each stage, records were checked for completeness, PDF-GeoJSON consistency, and discrepancies between the boundary drawn in the source document and the corresponding vector geometry.
 
 \begin{table}[h]
 \centering
@@ -423,7 +475,7 @@ SAM~3 fine-tuning was performed on CUDA with bf16 mixed precision; validation (t
 \begin{tabular}{@{}lll@{}}
 \toprule
 \textbf{Field} & \textbf{Description} & \textbf{Example} \\ \midrule
-Sl no & Sequential (1--210) & 1, 2, 3 \\
+Sl no & Sequential (1--208) & 1, 2, 3 \\
 Unique ID & Folder identifier & \texttt{1947-...} \\
 geojson ID & Path to GeoJSON & \texttt{..78.geojson} \\ \bottomrule
 \end{tabular}

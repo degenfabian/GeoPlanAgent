@@ -1,0 +1,243 @@
+{
+  "case": "2ACB6DFF-E424-4EB5-BD0C-90BA056BDC64",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.28816,
+    "top_lon": 1.33065,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR32335960",
+    "evidence": "The OS grid reference TR 32-3359, 60 from the map's scale block (interpreted as TR 3233 5960) aligns perfectly with the location of Richborough Hill and the River Stour as shown on the map. CT16 3PG is the council office address, not the site.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0660372617867416,
+  "gt_centroids": [
+    {
+      "lat": 51.28833801975405,
+      "lon": 1.3297440581641606
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "place": 4,
+      "postcode": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR32335960"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3259"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Richborough Castle",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PG"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR32335960",
+        "lat": 51.28816006853009,
+        "lon": 1.3306543062809235
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3259",
+        "lat": 51.28715025119112,
+        "lon": 1.3329480652795234
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Richborough Castle",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CT16 3PG' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Richborough Castle"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Richborough Hill"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Richborough Viaduct"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Richborough Castle",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Richborough Hill",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Richborough Hill",
+            "type": "hill or mountain",
+            "lat": 51.29045502007953,
+            "lon": 1.3265024296373862,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Richborough Viaduct",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.33065,
+        "top_lat": 51.28816,
+        "confidence": "high",
+        "picked_source": "grid_ref:TR32335960",
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "evidence": "The OS grid reference TR 32-3359, 60 from the map's scale block (interpreted as TR 3233 5960) aligns perfectly with the location of Richborough Hill and the River Stour as shown on the map. CT16 3PG is the council office address, not the site."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,325 @@
+{
+  "case": "23:53161:ART4",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.76258,
+    "top_lon": 1.10994,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "place:Reepham",
+    "evidence": "The map title 'Reepham Article 4 Direction' and pdf_info 'Reepham Conservation Area' point clearly to the town of Reepham. The 'Yarmouth Road' and 'Thorpe Lodge' in pdf_info are likely council letterhead addresses (Broadland DC is based at Thorpe Lodge, Yarmouth Road, Norwich NR7 0DU). The town centroid for Reepham provides a reliable center for the conservation area shown.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.11332347253205276,
+  "gt_centroids": [
+    {
+      "lat": 52.7624974919124,
+      "lon": 1.1116186711757081
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "postcode": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "Reepham Conservation Area"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Reepham",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR7 0DU"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Reepham Conservation Area",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Reepham",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Reepham",
+            "type": "town",
+            "lat": 52.76258294263695,
+            "lon": 1.1099384443446518,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Reepham Road",
+            "type": "named road",
+            "lat": 52.6978348306445,
+            "lon": 1.208983066742091,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Reepham Road",
+            "type": "section of named road",
+            "lat": 52.72346399892882,
+            "lon": 1.1470259218804428,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Reepham Road",
+            "type": "section of named road",
+            "lat": 52.69248680887362,
+            "lon": 1.2181524323613264,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Reepham Road",
+            "type": "section of named road",
+            "lat": 52.7728055839395,
+            "lon": 1.0477060367632782,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR7 0DU' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Thorpe Lodge",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Yarmouth Road",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thorpe Lodge",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Yarmouth Road",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.636459243826096,
+            "lon": 1.4600852965825983,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.63666166213207,
+            "lon": 1.4602004096483194,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.63651189792062,
+            "lon": 1.4625720071425377,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.63667448155313,
+            "lon": 1.4622209560736559,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.63650586872959,
+            "lon": 1.4645790831746932,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "Market Place, Reepham"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Market Place, Reepham",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "St Mary's Church, Reepham"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church, Reepham",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map title 'Reepham Article 4 Direction' and pdf_info 'Reepham Conservation Area' point clearly to the town of Reepham. The 'Yarmouth Road' and 'Thorpe Lodge' in pdf_info are likely council letterhead addresses (Broadland DC is based at Thorpe Lodge, Yarmouth Road, Norwich NR7 0DU). The town centroid for Reepham provides a reliable center for the conservation area shown.",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.10994,
+        "top_lat": 52.76258,
+        "confidence": "high",
+        "sigma_m": 1000,
+        "picked_source": "place:Reepham"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

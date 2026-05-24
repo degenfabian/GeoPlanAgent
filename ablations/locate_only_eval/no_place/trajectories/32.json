@@ -1,0 +1,241 @@
+{
+  "case": "32",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.487084,
+    "top_lon": -0.173914,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Carlyle Square x Old Church Street",
+    "evidence": "The site is Carlyle Square, bounded by King's Road and Old Church Street. Road centroids and the intersection of Carlyle Square with Old Church Street cluster tightly around these coordinates. Postcode SW3 6EX (Carlyle Square) also aligns.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.05772600316595057,
+  "gt_centroids": [
+    {
+      "lat": 51.48700682389442,
+      "lon": -0.1722864926118728
+    },
+    {
+      "lat": 51.48746938625088,
+      "lon": -0.17335540467753452
+    },
+    {
+      "lat": 51.48665402819306,
+      "lon": -0.1732802843039544
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 1,
+      "intersect": 2,
+      "postcode": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Carlyle Square",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "road_a": "Carlyle Square",
+        "road_b": "King's Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Old Church Street",
+        "road_a": "Carlyle Square",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SW3 6EX"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Carlyle Square",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Carlyle Square",
+            "lat": 51.486832736493554,
+            "lon": -0.1728078228323487,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Carlyle Square",
+            "lat": 51.487152530659415,
+            "lon": -0.17370967626207928,
+            "in_la": "Kensington and Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Carlyle Square",
+          "King's Road"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Carlyle Square",
+          "Old Church Street"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.487084,
+            "lon": -0.173914,
+            "roads": [
+              "Carlyle Square",
+              "Old Church Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SW3 6EX",
+        "lat": 51.486840727460525,
+        "lon": -0.1721665411624276,
+        "admin_district": "Kensington and Chelsea London Boro"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.173,
+        "lat": 51.4869,
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.4869,
+        "lon": -0.173,
+        "la": "Kensington and Chelsea",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.50120516305225,
+        "la_centroid_lon": -0.19222073817151708
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.487084,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 200,
+        "picked_source": "intersect:Carlyle Square x Old Church Street",
+        "top_lon": -0.173914,
+        "evidence": "The site is Carlyle Square, bounded by King's Road and Old Church Street. Road centroids and the intersection of Carlyle Square with Old Church Street cluster tightly around these coordinates. Postcode SW3 6EX (Carlyle Square) also aligns."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

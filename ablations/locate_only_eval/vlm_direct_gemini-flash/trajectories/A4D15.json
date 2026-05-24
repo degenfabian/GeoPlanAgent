@@ -1,0 +1,60 @@
+{
+  "case": "A4D15",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.468,
+    "lon": -2.602,
+    "reasoning": "The document defines an Article 4 direction for the Cotham and Redland Conservation Area in Bristol, with the provided map showing the area bounded by roads such as Redland Road, Cotham Road, and Hampton Road."
+  },
+  "err_km": 0.10491717877834589,
+  "gt_centroids": [
+    {
+      "lat": 51.4684646015398,
+      "lon": -2.600681704917082
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -2.602,
+        "reasoning": "The document defines an Article 4 direction for the Cotham and Redland Conservation Area in Bristol, with the provided map showing the area bounded by roads such as Redland Road, Cotham Road, and Hampton Road.",
+        "lat": 51.468
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

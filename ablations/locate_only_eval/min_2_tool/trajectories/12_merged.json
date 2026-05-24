@@ -1,0 +1,288 @@
+{
+  "case": "12_merged",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.355,
+    "top_lon": -3.15,
+    "sigma_m": 800,
+    "confidence": "high",
+    "picked_source": "place:Stapledon Wood x Thurstaston Common",
+    "evidence": "The site spans between Caldy and Thurstaston. Stapledon Wood (53.362, -3.157) is inside the northern red boundary (East Farm), and Thurstaston Common (53.355, -3.136) is just east of the southern blue boundary (Dawpool Farm). The picked coordinate (53.355, -3.15) sits centrally between these two major land parcels.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.5197782844660116,
+  "gt_centroids": [
+    {
+      "lat": 53.35118317046466,
+      "lon": -3.145478801079716
+    },
+    {
+      "lat": 53.36217045807339,
+      "lon": -3.153047704294689
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Wirral",
+        "query": "East Farm, Caldy"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Wirral",
+        "query": "Dawpool Farm, Thurstaston"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Wirral",
+        "query": "Stapledon Wood"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "East Farm, Caldy",
+        "la_filter": "Wirral",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Dawpool Farm, Thurstaston",
+        "la_filter": "Wirral",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Stapledon Wood",
+        "la_filter": "Wirral",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Stapledon Wood",
+            "type": "woodland or forest",
+            "lat": 53.36213091612561,
+            "lon": -3.1572725930632886,
+            "admin_district": "Wirral",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Wirral",
+        "query": "Dawpool Cottages"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Wirral",
+        "query": "Caldy Hill"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Thurstaston Common",
+        "la": "Wirral"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Dawpool Cottages",
+        "la_filter": "Wirral",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Caldy Hill",
+        "la_filter": "Wirral",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Caldy Hill",
+            "type": "hill or mountain",
+            "lat": 53.361374314473984,
+            "lon": -3.1666590103635914,
+            "admin_district": "Wirral",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thurstaston Common",
+        "la_filter": "Wirral",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Thurstaston Common",
+            "type": "other landcover",
+            "lat": 53.35488238050534,
+            "lon": -3.1361016510406596,
+            "admin_district": "Wirral",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -3.15,
+        "la": "Wirral",
+        "lat": 53.355
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 53.355,
+        "lon": -3.15,
+        "la": "Wirral",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 53.36836475621285,
+        "la_centroid_lon": -3.092689487184164
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site spans between Caldy and Thurstaston. Stapledon Wood (53.362, -3.157) is inside the northern red boundary (East Farm), and Thurstaston Common (53.355, -3.136) is just east of the southern blue boundary (Dawpool Farm). The picked coordinate (53.355, -3.15) sits centrally between these two major land parcels.",
+        "picked_source": "place:Stapledon Wood x Thurstaston Common",
+        "confidence": "high",
+        "sigma_m": 800,
+        "verified_inside_admin_region": true,
+        "top_lat": 53.355,
+        "top_lon": -3.15
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

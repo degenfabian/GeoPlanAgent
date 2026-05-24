@@ -1,0 +1,241 @@
+{
+  "case": "A4Da1",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.3805,
+    "top_lon": -4.1335,
+    "sigma_m": 2500,
+    "confidence": "med",
+    "picked_source": "road:Mutley Plain",
+    "evidence": "The map covers a large central portion of Plymouth. I used Mutley Plain (a central road in the Mutley & Greenbank area) and North Prospect Road as anchors. The centroid of the highlighted area is approximately near Mutley/Peverell.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.10513120818315484,
+  "gt_centroids": [
+    {
+      "lat": 50.38123361171922,
+      "lon": -4.132564697066778
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Central Park",
+        "la": "Plymouth"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Mutley Plain",
+        "la": "Plymouth"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "North Prospect Road",
+        "la": "Plymouth"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Central Park",
+        "la_filter": "Plymouth",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Mutley Plain",
+        "la_filter": "Plymouth",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Mutley Plain",
+            "lat": 50.38023458928121,
+            "lon": -4.133536384123655,
+            "in_la": "Plymouth"
+          },
+          {
+            "name": "Mutley Plain",
+            "lat": 50.38102959268949,
+            "lon": -4.1335025096976326,
+            "in_la": "Plymouth"
+          },
+          {
+            "name": "Mutley Plain",
+            "lat": 50.38045412310829,
+            "lon": -4.133446719866095,
+            "in_la": "Plymouth"
+          },
+          {
+            "name": "Mutley Plain",
+            "lat": 50.3807998327003,
+            "lon": -4.13343874556798,
+            "in_la": "Plymouth"
+          },
+          {
+            "name": "Mutley Plain",
+            "lat": 50.38066830443759,
+            "lon": -4.133420815705784,
+            "in_la": "Plymouth"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "North Prospect Road",
+        "la_filter": "Plymouth",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "North Prospect Road",
+            "lat": 50.39858224370902,
+            "lon": -4.169873947220397,
+            "in_la": "Plymouth"
+          },
+          {
+            "name": "North Prospect Road",
+            "lat": 50.39873741203731,
+            "lon": -4.169993607862359,
+            "in_la": "Plymouth"
+          },
+          {
+            "name": "North Prospect Road",
+            "lat": 50.40000804549383,
+            "lon": -4.1705863890106105,
+            "in_la": "Plymouth"
+          },
+          {
+            "name": "North Prospect Road",
+            "lat": 50.39740330918369,
+            "lon": -4.169186893154887,
+            "in_la": "Plymouth"
+          },
+          {
+            "name": "North Prospect Road",
+            "lat": 50.396148769397136,
+            "lon": -4.168454210671645,
+            "in_la": "Plymouth"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Plymouth",
+        "lon": -4.14,
+        "lat": 50.38
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.38,
+        "lon": -4.14,
+        "la": "Plymouth",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.39177953575037,
+        "la_centroid_lon": -4.11992882524368
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "The map covers a large central portion of Plymouth. I used Mutley Plain (a central road in the Mutley & Greenbank area) and North Prospect Road as anchors. The centroid of the highlighted area is approximately near Mutley/Peverell.",
+        "confidence": "med",
+        "top_lat": 50.3805,
+        "picked_source": "road:Mutley Plain",
+        "top_lon": -4.1335,
+        "sigma_m": 2500
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

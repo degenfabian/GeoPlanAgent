@@ -1,0 +1,390 @@
+{
+  "case": "A4_102:LL:077",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6410455326212,
+    "top_lon": -1.12931023042004,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Belgrave Gate",
+    "evidence": "The site is the Haymarket Theatre on Belgrave Gate in Leicester. Geocoding Belgrave Gate and nearby postcodes for the Haymarket Centre (LE1 3HP) places the site consistently in the city centre. The picked coordinate is the centroid of Belgrave Gate near the theatre.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.42456849562970467,
+  "gt_centroids": [
+    {
+      "lat": 52.637546197393426,
+      "lon": -1.1318275813510175
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "road": 1,
+      "intersect": 1,
+      "postcode": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Haymarket Theatre"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Haymarket Centre"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "Belgrave Gate"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Belgrave Gate",
+        "la": "Leicester",
+        "road_b": "Kildare Walk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Haymarket Theatre",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Haymarket Centre",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Belgrave Gate",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Belgrave Gate",
+            "lat": 52.64238668503666,
+            "lon": -1.1285309837265511,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Belgrave Gate",
+            "lat": 52.64254670569557,
+            "lon": -1.1283780181370202,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Belgrave Gate",
+            "lat": 52.642689362197785,
+            "lon": -1.1282415797173784,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Belgrave Gate",
+            "lat": 52.64281206962903,
+            "lon": -1.1281246760141803,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Belgrave Gate",
+            "lat": 52.64305590112958,
+            "lon": -1.1279200871214532,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Leicester for: ['Kildare Walk']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Belgrave Gate",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Humberstone Gate"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Charles Street"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Belgrave Gate",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Belgrave Gate",
+            "type": "named road",
+            "lat": 52.64104553262125,
+            "lon": -1.129310230420043,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Humberstone Gate",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Humberstone Gate",
+            "type": "named road",
+            "lat": 52.6363757603299,
+            "lon": -1.1299940003181834,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Charles Street",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Charles Street",
+            "type": "named road",
+            "lat": 52.728344347483734,
+            "lon": -1.3896141310402537,
+            "admin_district": "North West Leicestershire",
+            "county": "Leicestershire"
+          },
+          {
+            "name": "Charles Street",
+            "type": "named road",
+            "lat": 52.63551208758041,
+            "lon": -1.1299076920190028,
+            "admin_district": null,
+            "county": "City of Leicester"
+          },
+          {
+            "name": "Charles Street",
+            "type": "named road",
+            "lat": 52.77746409766349,
+            "lon": -1.2057994847715532,
+            "admin_district": "Charnwood",
+            "county": "Leicestershire"
+          },
+          {
+            "name": "Charles Street",
+            "type": "named road",
+            "lat": 52.72540584971989,
+            "lon": -1.1073900622792063,
+            "admin_district": "Charnwood",
+            "county": "Leicestershire"
+          },
+          {
+            "name": "Charles Street",
+            "type": "named road",
+            "lat": 52.54480760794555,
+            "lon": -1.3673594315897906,
+            "admin_district": "Hinckley and Bosworth",
+            "county": "Leicestershire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "LE1 3AN"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "LE1 3AN",
+        "lat": 52.638325610409574,
+        "lon": -1.1347728392339234,
+        "admin_district": "City of Leicester (B)"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "LE1 3HP"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "LE1 3HP",
+        "lat": 52.63742473319144,
+        "lon": -1.1320568008791125,
+        "admin_district": "City of Leicester (B)"
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lat": 52.6410455326212,
+        "sigma_m": 400,
+        "top_lon": -1.12931023042004,
+        "evidence": "The site is the Haymarket Theatre on Belgrave Gate in Leicester. Geocoding Belgrave Gate and nearby postcodes for the Haymarket Centre (LE1 3HP) places the site consistently in the city centre. The picked coordinate is the centroid of Belgrave Gate near the theatre.",
+        "picked_source": "place:Belgrave Gate"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

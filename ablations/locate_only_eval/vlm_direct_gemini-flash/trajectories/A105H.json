@@ -1,0 +1,60 @@
+{
+  "case": "A105H",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.5884,
+    "lon": -0.2315,
+    "reasoning": "The site is identified as 270 Eastfield Road, Peterborough, which corresponds to the coordinates 52.5884, -0.2315."
+  },
+  "err_km": 0.47775539959535424,
+  "gt_centroids": [
+    {
+      "lat": 52.5846312029081,
+      "lon": -0.2281042243805459
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 52.5884,
+        "lon": -0.2315,
+        "reasoning": "The site is identified as 270 Eastfield Road, Peterborough, which corresponds to the coordinates 52.5884, -0.2315."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

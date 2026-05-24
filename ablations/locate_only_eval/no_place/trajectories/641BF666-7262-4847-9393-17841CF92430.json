@@ -1,0 +1,172 @@
+{
+  "case": "641BF666-7262-4847-9393-17841CF92430",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.273,
+    "top_lon": 1.339,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR3257/TR3358 midpoint",
+    "evidence": "The map shows the Sandwich Walled Town Conservation Area. Grid references TR3257, TR3357, TR3258, and TR3358 provided in the map legend and PDF info define the 2km x 2km area covering Sandwich. The centroid of these grid squares aligns perfectly with the town of Sandwich. CT16 3PG is the council office address in Whitfield, not the site.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.32920251844605825,
+  "gt_centroids": [
+    {
+      "lat": 51.27589222175795,
+      "lon": 1.340011153800493
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "grid_ref": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PG"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3358"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3257"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CT16 3PG' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3358",
+        "lat": 51.277765054562465,
+        "lon": 1.3466100191599673
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3257",
+        "lat": 51.26919707318794,
+        "lon": 1.3316478395968685
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lat": 51.273,
+        "lon": 1.339
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.273,
+        "lon": 1.339,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "grid_ref:TR3257/TR3358 midpoint",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.339,
+        "top_lat": 51.273,
+        "evidence": "The map shows the Sandwich Walled Town Conservation Area. Grid references TR3257, TR3357, TR3258, and TR3358 provided in the map legend and PDF info define the 2km x 2km area covering Sandwich. The centroid of these grid squares aligns perfectly with the town of Sandwich. CT16 3PG is the council office address in Whitfield, not the site.",
+        "sigma_m": 1000
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

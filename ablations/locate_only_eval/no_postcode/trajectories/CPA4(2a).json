@@ -1,0 +1,223 @@
+{
+  "case": "CPA4(2a)",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.54563,
+    "top_lon": 0.56357,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "grid_ref:TQ 7785 8608",
+    "evidence": "The grid reference TQ 7785 8608 from pdf_info aligns perfectly with the intersection of High Street and High Road (51.5457, 0.5636) visible on the map. Both are confirmed inside Castle Point.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.07808609765890387,
+  "gt_centroids": [
+    {
+      "lat": 51.545284972552636,
+      "lon": 0.5625864865263827
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ 7785 8608"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Benfleet Conservation Area",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "High Street",
+        "road_b": "High Road",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St. Mary's Church, South Benfleet",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TQ 7785 8608",
+        "lat": 51.54562957189829,
+        "lon": 0.563567852025757
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Benfleet Conservation Area",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "High Street",
+          "High Road"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 51.579908,
+            "lon": 0.598928,
+            "roads": [
+              "High Street",
+              "High Road"
+            ]
+          },
+          {
+            "lat": 51.5457,
+            "lon": 0.563658,
+            "roads": [
+              "High Street",
+              "High Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St. Mary's Church, South Benfleet",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.5456295718983,
+        "la": "Castle Point",
+        "lon": 0.563567852025757
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5456295718983,
+        "lon": 0.563567852025757,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 200,
+        "verified_inside_admin_region": true,
+        "evidence": "The grid reference TQ 7785 8608 from pdf_info aligns perfectly with the intersection of High Street and High Road (51.5457, 0.5636) visible on the map. Both are confirmed inside Castle Point.",
+        "confidence": "high",
+        "top_lon": 0.56357,
+        "picked_source": "grid_ref:TQ 7785 8608",
+        "top_lat": 51.54563
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

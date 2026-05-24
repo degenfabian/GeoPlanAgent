@@ -1,0 +1,329 @@
+{
+  "case": "23",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5001,
+    "top_lon": -0.1895,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "road:Kensington Square",
+    "evidence": "The site is 14-19 Kensington Square. Road centroids for Kensington Square, Ansdell Terrace, and South End cluster tightly around this coordinate. Postcode W8 5HH (Kensington Square) is within 100m.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.017785714197358627,
+  "gt_centroids": [
+    {
+      "lat": 51.49995496286843,
+      "lon": -0.18960833874835586
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 3,
+      "road": 3,
+      "la_check": 1,
+      "postcode": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Kensington Square",
+        "la": "Kensington and Chelsea",
+        "road_b": "South End"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Kensington Square",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Kensington Square",
+          "South End"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Kensington Square",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Kensington Square",
+            "lat": 51.500575924659564,
+            "lon": -0.19008085626306354,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Kensington Square",
+            "lat": 51.500688046541164,
+            "lon": -0.18948568699261814,
+            "in_la": "Kensington and Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Kensington Square",
+        "road_b": "Ansdell Terrace",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Ansdell Terrace",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Kensington Square",
+          "Ansdell Terrace"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Ansdell Terrace",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Ansdell Terrace",
+            "lat": 51.499761347768796,
+            "lon": -0.1890181424108081,
+            "in_la": "Kensington and Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Ansdell Terrace",
+        "road_a": "South End",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "South End",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "South End",
+          "Ansdell Terrace"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "South End",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "South End",
+            "lat": 51.49944932106302,
+            "lon": -0.18926643520653794,
+            "in_la": "Kensington and Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "lon": -0.1895,
+        "lat": 51.5001
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5001,
+        "lon": -0.1895,
+        "la": "Kensington and Chelsea",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.50120516305225,
+        "la_centroid_lon": -0.19222073817151708
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "W8 5HH"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "W8 5HH",
+        "lat": 51.50023229097104,
+        "lon": -0.19083647361696104,
+        "admin_district": "Kensington and Chelsea London Boro"
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is 14-19 Kensington Square. Road centroids for Kensington Square, Ansdell Terrace, and South End cluster tightly around this coordinate. Postcode W8 5HH (Kensington Square) is within 100m.",
+        "sigma_m": 200,
+        "confidence": "high",
+        "picked_source": "road:Kensington Square",
+        "top_lat": 51.5001,
+        "verified_inside_admin_region": true,
+        "top_lon": -0.1895
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

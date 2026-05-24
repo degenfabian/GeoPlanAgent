@@ -1,0 +1,60 @@
+{
+  "case": "SSA402",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.6615,
+    "lon": -2.068,
+    "reasoning": "The document identifies the site as Blacklees Farm, Saredon, which corresponds to the area shown on the map near Holly Bush Farm and the Tile Works at WV10 7LN."
+  },
+  "err_km": 1.5612893331552817,
+  "gt_centroids": [
+    {
+      "lat": 52.65489163017929,
+      "lon": -2.0475757928271063
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -2.068,
+        "reasoning": "The document identifies the site as Blacklees Farm, Saredon, which corresponds to the area shown on the map near Holly Bush Farm and the Tile Works at WV10 7LN.",
+        "lat": 52.6615
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

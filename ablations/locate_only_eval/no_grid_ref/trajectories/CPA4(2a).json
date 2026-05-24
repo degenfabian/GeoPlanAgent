@@ -1,0 +1,300 @@
+{
+  "case": "CPA4(2a)",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5457,
+    "top_lon": 0.563658,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:High Street x High Road x Essex Way",
+    "evidence": "The intersection of High Street, High Road, and Essex Way (51.5457, 0.5636) perfectly matches the central junction on the map. Postcode SS7 1TF is nearby (approx 1.5km east), but the road intersection is the precise map center. Verified inside Castle Point.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.08729279632977614,
+  "gt_centroids": [
+    {
+      "lat": 51.545284972552636,
+      "lon": 0.5625864865263827
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 3,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SS7 1TF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Benfleet Conservation Area",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "St. Mary's Church"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "High Street",
+        "road_b": "High Road",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SS7 1TF",
+        "lat": 51.56184488380458,
+        "lon": 0.5848681639491619,
+        "admin_district": "Castle Point District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Benfleet Conservation Area",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St. Mary's Church",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "High Street",
+          "High Road"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 51.579908,
+            "lon": 0.598928,
+            "roads": [
+              "High Street",
+              "High Road"
+            ]
+          },
+          {
+            "lat": 51.5457,
+            "lon": 0.563658,
+            "roads": [
+              "High Street",
+              "High Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Benfleet",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Castle Point",
+        "road_a": "High Street",
+        "road_b": "Essex Way"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.5457,
+        "la": "Castle Point",
+        "lon": 0.563658
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Benfleet",
+        "la_filter": "Castle Point",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "South Benfleet",
+            "type": "other settlement",
+            "lat": 51.55365354395544,
+            "lon": 0.5597777655981124,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          },
+          {
+            "name": "South Benfleet Foundation Primary School",
+            "type": "primary education",
+            "lat": 51.55276980935431,
+            "lon": 0.5598868238330015,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "High Street",
+          "Essex Way"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.5457,
+            "lon": 0.563658,
+            "roads": [
+              "High Street",
+              "Essex Way"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5457,
+        "lon": 0.563658,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lon": 0.563658,
+        "evidence": "The intersection of High Street, High Road, and Essex Way (51.5457, 0.5636) perfectly matches the central junction on the map. Postcode SS7 1TF is nearby (approx 1.5km east), but the road intersection is the precise map center. Verified inside Castle Point.",
+        "top_lat": 51.5457,
+        "picked_source": "intersect:High Street x High Road x Essex Way",
+        "sigma_m": 300
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

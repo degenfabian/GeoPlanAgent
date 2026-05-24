@@ -1,0 +1,187 @@
+{
+  "case": "SSA405",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.521,
+    "top_lon": -2.18815,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Bridgnorth Road, Shipley",
+    "evidence": "The postcode WV8 1PX is for the Council Offices in Codsall (letterhead). The site is 'Clive View' on Bridgnorth Road in Shipley. Road search for Bridgnorth Road in South Staffordshire correctly identifies the A454 corridor near Shipley. Map labels 'Shipley Cottages' and 'Clive View' confirm this specific location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 6.741534197084805,
+  "gt_centroids": [
+    {
+      "lat": 52.560697028601574,
+      "lon": -2.263495447576833
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "WV8 1PX"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Bridgnorth Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "WV8 1PX",
+        "lat": 52.62566656951965,
+        "lon": -2.191960842481458,
+        "admin_district": "South Staffordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bridgnorth Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Bridgnorth Road",
+            "lat": 52.520999846233344,
+            "lon": -2.188156132520105,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Bridgnorth Road",
+            "lat": 52.51986608321093,
+            "lon": -2.185540691444273,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Bridgnorth Road",
+            "lat": 52.51923876177424,
+            "lon": -2.184280074803945,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Bridgnorth Road",
+            "lat": 52.518765086111,
+            "lon": -2.1835561945514574,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Bridgnorth Road",
+            "lat": 52.518321264661154,
+            "lon": -2.182795390625979,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Staffordshire",
+        "lon": -2.1881561325201,
+        "lat": 52.5209998462333
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5209998462333,
+        "lon": -2.1881561325201,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "sigma_m": 500,
+        "verified_inside_admin_region": true,
+        "top_lon": -2.18815,
+        "evidence": "The postcode WV8 1PX is for the Council Offices in Codsall (letterhead). The site is 'Clive View' on Bridgnorth Road in Shipley. Road search for Bridgnorth Road in South Staffordshire correctly identifies the A454 corridor near Shipley. Map labels 'Shipley Cottages' and 'Clive View' confirm this specific location.",
+        "top_lat": 52.521,
+        "picked_source": "road:Bridgnorth Road, Shipley"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

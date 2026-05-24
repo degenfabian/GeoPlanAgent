@@ -1,0 +1,60 @@
+{
+  "case": "ART4:15:00001",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 50.935,
+    "lon": -1.795,
+    "reasoning": "The site is a 26-hectare area bounded by Marl Lane and Puddleslosh Lane north of Fordingbridge, as shown on the planning map adjacent to Forres Sandle Manor School."
+  },
+  "err_km": 0.42548737840738016,
+  "gt_centroids": [
+    {
+      "lat": 50.935590098936395,
+      "lon": -1.8009992695298243
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The site is a 26-hectare area bounded by Marl Lane and Puddleslosh Lane north of Fordingbridge, as shown on the planning map adjacent to Forres Sandle Manor School.",
+        "lat": 50.935,
+        "lon": -1.795
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

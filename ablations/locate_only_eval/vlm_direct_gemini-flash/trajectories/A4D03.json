@@ -1,0 +1,60 @@
+{
+  "case": "A4D03",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.5355,
+    "lon": 0.078,
+    "reasoning": "The document identifies four site notice locations; Barking Town Hall at 1 Town Square, Barking IG11 7LU is geocoded to these coordinates."
+  },
+  "err_km": 3.9321149193192126,
+  "gt_centroids": [
+    {
+      "lat": 51.54397728825306,
+      "lon": 0.13319738592126473
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": 0.078,
+        "reasoning": "The document identifies four site notice locations; Barking Town Hall at 1 Town Square, Barking IG11 7LU is geocoded to these coordinates.",
+        "lat": 51.5355
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

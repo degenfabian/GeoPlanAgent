@@ -1,0 +1,320 @@
+{
+  "case": "B4BE31D4-36A8-452E-97FF-04A53362B26C",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.131327095447,
+    "top_lon": 1.27664600367641,
+    "sigma_m": 800,
+    "confidence": "high",
+    "picked_source": "road:Coombe Road",
+    "evidence": "The site is explicitly described as 'Land on the South side of Coombe Road, Dover'. Multiple grid references (TR2842, TR2942, TR2841, TR2941) provided on the map sheet cluster around the Coombe Road area in Dover. The postcode CT16 3PJ is for the Council Offices at White Cliffs Business Park, which is nearby but not the site itself. The pick is centered on the Coombe Road road instances in Dover.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.27372166166215506,
+  "gt_centroids": [
+    {
+      "lat": 51.12887589738372,
+      "lon": 1.2762851220266649
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "road": 1,
+      "grid_ref": 4,
+      "place": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PJ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Coombe Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2842"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "White Cliffs Business Park",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CT16 3PJ",
+        "lat": 51.15436636168577,
+        "lon": 1.294785094400513,
+        "admin_district": "Dover District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Coombe Road",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Coombe Road",
+            "lat": 51.1250263024243,
+            "lon": 1.2456913352736394,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Coombe Road",
+            "lat": 51.128470897526626,
+            "lon": 1.262677058554149,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Coombe Road",
+            "lat": 51.13245297574782,
+            "lon": 1.2811269979481739,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2842",
+        "lat": 51.13615448857655,
+        "lon": 1.2648636561190143
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "White Cliffs Business Park",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Coombe Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2942"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2841"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2941"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coombe Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Coombe Road",
+            "type": "named road",
+            "lat": 51.12709047554427,
+            "lon": 1.2599212392287553,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe Road",
+            "type": "named road",
+            "lat": 51.132383566036495,
+            "lon": 1.281310001078637,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe Road",
+            "type": "section of named road",
+            "lat": 51.13132709544699,
+            "lon": 1.2766460036764113,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe",
+            "type": "hamlet",
+            "lat": 51.27057496120895,
+            "lon": 1.2921992526431263,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe Avenue",
+            "type": "named road",
+            "lat": 51.763592750478374,
+            "lon": -0.7476402678415394,
+            "admin_district": null,
+            "county": "Buckinghamshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2942",
+        "lat": 51.13575490383888,
+        "lon": 1.2791329131768567
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2841",
+        "lat": 51.12717706111898,
+        "lon": 1.2642300690667696
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2941",
+        "lat": 51.12677760368672,
+        "lon": 1.2784965688477414
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is explicitly described as 'Land on the South side of Coombe Road, Dover'. Multiple grid references (TR2842, TR2942, TR2841, TR2941) provided on the map sheet cluster around the Coombe Road area in Dover. The postcode CT16 3PJ is for the Council Offices at White Cliffs Business Park, which is nearby but not the site itself. The pick is centered on the Coombe Road road instances in Dover.",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 800,
+        "picked_source": "road:Coombe Road",
+        "top_lat": 51.131327095447,
+        "top_lon": 1.27664600367641
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

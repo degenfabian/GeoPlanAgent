@@ -1,0 +1,305 @@
+{
+  "case": "A4D11",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.477749,
+    "top_lon": -2.605252,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "intersect:Cranbrook Road x Linden Road",
+    "evidence": "The map shows a large area covering Redland and Bishopston. The intersection of Cranbrook Road and Linden Road (B4054) is centrally located within the red-outlined boundary on the map. This point (51.4777, -2.6052) is verified inside Bristol.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.4615590684594778,
+  "gt_centroids": [
+    {
+      "lat": 51.47443244555778,
+      "lon": -2.6012444210396635
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Redland Green Farm",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "HMP Bristol",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Linden Road",
+        "la": "Bristol",
+        "road_a": "Cranbrook Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Redland High School",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redland Green Farm",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "HMP Bristol",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Cranbrook Road",
+          "Linden Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.477749,
+            "lon": -2.605252,
+            "roads": [
+              "Cranbrook Road",
+              "Linden Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redland High School",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Redland Green",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Horfield Prison",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Redland Road",
+        "la": "Bristol",
+        "road_a": "Coldharbour Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Bristol",
+        "lon": -2.605252,
+        "lat": 51.477749
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redland Green",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Redland Green Road",
+            "type": "named road",
+            "lat": 51.472528863084364,
+            "lon": -2.6062757335759006,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Horfield Prison",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Coldharbour Road",
+          "Redland Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.473113,
+            "lon": -2.611496,
+            "roads": [
+              "Coldharbour Road",
+              "Redland Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.477749,
+        "lon": -2.605252,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "sigma_m": 1000,
+        "evidence": "The map shows a large area covering Redland and Bishopston. The intersection of Cranbrook Road and Linden Road (B4054) is centrally located within the red-outlined boundary on the map. This point (51.4777, -2.6052) is verified inside Bristol.",
+        "top_lon": -2.605252,
+        "top_lat": 51.477749,
+        "confidence": "high",
+        "picked_source": "intersect:Cranbrook Road x Linden Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,377 @@
+{
+  "case": "17:00022:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.613241,
+    "top_lon": 1.315744,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "intersect:The Street x Whitlingham Lane",
+    "evidence": "The map shows the Trowse with Newton Conservation Area. The intersection of The Street and Whitlingham Lane (52.6132, 1.3157) aligns perfectly with the village center and the labels on the map (River Yare to the north, Trowse Common to the west).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.044127671485799755,
+  "gt_centroids": [
+    {
+      "lat": 52.61105312903899,
+      "lon": 1.322298662877032
+    },
+    {
+      "lat": 52.61141522910877,
+      "lon": 1.3171242076872
+    },
+    {
+      "lat": 52.611939208460214,
+      "lon": 1.319267122353719
+    },
+    {
+      "lat": 52.612849673449894,
+      "lon": 1.3171700928468109
+    },
+    {
+      "lat": 52.61313061541371,
+      "lon": 1.3163717885571247
+    },
+    {
+      "lat": 52.61244236325709,
+      "lon": 1.3179609503668532
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "road": 2,
+      "intersect": 3,
+      "la_check": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "The Street, Trowse",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "The Street",
+        "road_b": "Kirby Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "The Street",
+        "road_b": "White Horse Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Street, Trowse",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Street",
+          "Kirby Road"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.59473,
+            "lon": 1.38537,
+            "roads": [
+              "The Street",
+              "Kirby Road"
+            ]
+          },
+          {
+            "lat": 52.594823,
+            "lon": 1.385702,
+            "roads": [
+              "The Street",
+              "Kirby Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Street",
+          "White Horse Lane"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.612351,
+            "lon": 1.317593,
+            "roads": [
+              "The Street",
+              "White Horse Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Whitlingham Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Norfolk",
+        "lat": 52.612351,
+        "lon": 1.317593
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.59473,
+        "la": "South Norfolk",
+        "lon": 1.38537
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Whitlingham Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.61987600819574,
+            "lon": 1.3595598473011066,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.620626316312666,
+            "lon": 1.3591685458606872,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.61549914635781,
+            "lon": 1.320371795040046,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.617777791786004,
+            "lon": 1.3230090663039051,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.61906960910882,
+            "lon": 1.324155431535626,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.612351,
+        "lon": 1.317593,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.59473,
+        "lon": 1.38537,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Whitlingham Lane",
+        "la": "South Norfolk",
+        "road_a": "The Street"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Street",
+          "Whitlingham Lane"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.613241,
+            "lon": 1.315744,
+            "roads": [
+              "The Street",
+              "Whitlingham Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the Trowse with Newton Conservation Area. The intersection of The Street and Whitlingham Lane (52.6132, 1.3157) aligns perfectly with the village center and the labels on the map (River Yare to the north, Trowse Common to the west).",
+        "picked_source": "intersect:The Street x Whitlingham Lane",
+        "sigma_m": 400,
+        "confidence": "high",
+        "top_lat": 52.613241,
+        "top_lon": 1.315744,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

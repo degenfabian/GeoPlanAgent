@@ -1,0 +1,60 @@
+{
+  "case": "23:53155:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.7285,
+    "lon": 1.3445,
+    "reasoning": "The document describes land at Buxton Road in the Parish of Horstead, and the map shows Church Farm and Largate, which corresponds to the area around NR12 7AX."
+  },
+  "err_km": 0.304668892340536,
+  "gt_centroids": [
+    {
+      "lat": 52.73076152394535,
+      "lon": 1.341945601389217
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document describes land at Buxton Road in the Parish of Horstead, and the map shows Church Farm and Largate, which corresponds to the area around NR12 7AX.",
+        "lon": 1.3445,
+        "lat": 52.7285
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

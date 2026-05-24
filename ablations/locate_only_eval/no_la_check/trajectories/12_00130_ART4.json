@@ -1,0 +1,370 @@
+{
+  "case": "12:00130:ART4",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.3730286546894,
+    "top_lon": 1.1010950513616,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Denmark Street",
+    "evidence": "The site is located at the junction of Lower Denmark Street and Riverside in Diss. Road centroids for Denmark Street and Park Road in South Norfolk cluster tightly around 52.373, 1.101, which matches the map's layout.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1513740976986667,
+  "gt_centroids": [
+    {
+      "lat": 52.37200914890912,
+      "lon": 1.0996174072421891
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "road": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fair Green, Diss",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Lower Denmark Street",
+        "road_b": "Riverside",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Denmark Bridge, Diss"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Holy Trinity Church, Diss"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fair Green, Diss",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Lower Denmark Street']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Denmark Bridge, Diss",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Holy Trinity Church, Diss",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fair Green",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Holy Trinity Church",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Denmark Street",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Park Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fair Green",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Fair Green",
+            "type": "named road",
+            "lat": 50.90844628726172,
+            "lon": -1.3477167533600847,
+            "admin_district": null,
+            "county": "City of Southampton"
+          },
+          {
+            "name": "Fair Green",
+            "type": "suburban area",
+            "lat": 52.72511877174594,
+            "lon": 0.4510313542668898,
+            "admin_district": "King's Lynn and West Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Holy Trinity Church",
+        "la_filter": "South Norfolk",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Holy Trinity Church of England Primary School",
+            "type": "primary education",
+            "lat": 54.96752101769878,
+            "lon": -1.4430806428389116,
+            "admin_district": "South Tyneside",
+            "county": null
+          },
+          {
+            "name": "Holy Trinity Church of England Primary School",
+            "type": "primary education",
+            "lat": 53.64976749407283,
+            "lon": -2.9964449818058148,
+            "admin_district": "Sefton",
+            "county": null
+          },
+          {
+            "name": "Holy Trinity Church of England Infant School",
+            "type": "primary education",
+            "lat": 53.07463425287881,
+            "lon": -0.9611290282934017,
+            "admin_district": "Newark and Sherwood",
+            "county": "Nottinghamshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Denmark Street",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Denmark Street",
+            "lat": 52.37614547554945,
+            "lon": 1.1053578490916431,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Denmark Street",
+            "lat": 52.377182035015764,
+            "lon": 1.1061830986804813,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Denmark Street",
+            "lat": 52.373028654689406,
+            "lon": 1.1010950513616047,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Denmark Street",
+            "lat": 52.37328681612931,
+            "lon": 1.1013089468972843,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Denmark Street",
+            "lat": 52.3735733544635,
+            "lon": 1.1014080160014021,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Park Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Park Road",
+            "lat": 52.37392965561385,
+            "lon": 1.1055906692420745,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Park Road",
+            "lat": 52.37374695658179,
+            "lon": 1.107511897801997,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Park Road",
+            "lat": 52.373526336821236,
+            "lon": 1.10925823030644,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Park Road",
+            "lat": 52.37400668889461,
+            "lon": 1.1024512014095793,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Park Road",
+            "lat": 52.3739475313376,
+            "lon": 1.104628639839034,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.3730286546894,
+        "verified_inside_admin_region": true,
+        "picked_source": "road:Denmark Street",
+        "sigma_m": 300,
+        "confidence": "high",
+        "top_lon": 1.1010950513616,
+        "evidence": "The site is located at the junction of Lower Denmark Street and Riverside in Diss. Road centroids for Denmark Street and Park Road in South Norfolk cluster tightly around 52.373, 1.101, which matches the map's layout."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

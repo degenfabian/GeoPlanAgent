@@ -1,0 +1,224 @@
+{
+  "case": "498E1484-1D2E-418C-9547-A93AE9A57BB0",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.266146,
+    "top_lon": 1.384952,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Sandwich Bay Estate",
+    "evidence": "The map shows the Sandwich Bay Estate and Royal St George's Golf Links. The 'Sandwich Bay Estate' geocode matches the residential area shown on the map perfectly.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.9943445606414696,
+  "gt_centroids": [
+    {
+      "lat": 51.27504573411656,
+      "lon": 1.3835581699221844
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandwich Bay Estate",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Sandwich Bay Bird Observatory"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Worth",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandwich Bay Estate",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sandwich Bay Estate",
+            "type": "village",
+            "lat": 51.266146317085045,
+            "lon": 1.384951756073922,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandwich Bay Bird Observatory",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Worth",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Worth",
+            "type": "village",
+            "lat": 51.25559411454889,
+            "lon": 1.3427622229679996,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Worthington Street",
+            "type": "named road",
+            "lat": 51.12645355077843,
+            "lon": 1.3107223457585444,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Worth Hill",
+            "type": "hill or mountain",
+            "lat": 51.25894582502547,
+            "lon": 1.34571505325278,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Worth Primary School",
+            "type": "primary education",
+            "lat": 51.25665080768268,
+            "lon": 1.3485873720506143,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.38495175607392,
+        "lat": 51.266146317085,
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.266146317085,
+        "lon": 1.38495175607392,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 500,
+        "evidence": "The map shows the Sandwich Bay Estate and Royal St George's Golf Links. The 'Sandwich Bay Estate' geocode matches the residential area shown on the map perfectly.",
+        "top_lat": 51.266146,
+        "verified_inside_admin_region": true,
+        "top_lon": 1.384952,
+        "picked_source": "place:Sandwich Bay Estate",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

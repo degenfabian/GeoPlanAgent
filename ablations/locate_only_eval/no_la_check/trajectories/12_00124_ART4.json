@@ -1,0 +1,332 @@
+{
+  "case": "12:00124:ART4",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.486003,
+    "top_lon": 1.607567,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Aldeby",
+    "evidence": "The map shows a cluster of sites in Aldeby, specifically St Mary's Row and Waveney Cottages. The village centroid for Aldeby and the alignment of Waterheath Road (which appears on the map) confirm the location. The picked coordinate is near the southern end of Waterheath Road where it enters the village.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.19418615010960177,
+  "gt_centroids": [
+    {
+      "lat": 52.48442741803966,
+      "lon": 1.6063301522986413
+    },
+    {
+      "lat": 52.48384000079339,
+      "lon": 1.6043370628673683
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "road": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Aldeby School"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Mary's Church Aldeby",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Waterheath Road",
+        "la": "South Norfolk",
+        "road_a": "Beccles Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "St Mary's Row"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Aldeby School",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church Aldeby",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Beccles Road",
+          "Waterheath Road"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "St Mary's Row",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Aldeby"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "The Tuns PH"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Toft Monks Crossing Cottage"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Waterheath Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Aldeby",
+        "la_filter": "South Norfolk",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Aldeby",
+            "type": "village",
+            "lat": 52.48600300216946,
+            "lon": 1.6075671380161263,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Aldeby Road",
+            "type": "named road",
+            "lat": 52.50620521259707,
+            "lon": 1.5978138617203481,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Aldeby Road",
+            "type": "section of named road",
+            "lat": 52.509570714010906,
+            "lon": 1.5986491966995804,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Tuns PH",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Toft Monks Crossing Cottage",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Waterheath Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Waterheath Road",
+            "lat": 52.49229397635477,
+            "lon": 1.586454788045503,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Waterheath Road",
+            "lat": 52.4923648538346,
+            "lon": 1.5865555325810903,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Waterheath Road",
+            "lat": 52.491836412837486,
+            "lon": 1.590072371479794,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Waterheath Road",
+            "lat": 52.49206393811787,
+            "lon": 1.5963836946321763,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Waterheath Road",
+            "lat": 52.48964800920393,
+            "lon": 1.5982984761331467,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 500,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows a cluster of sites in Aldeby, specifically St Mary's Row and Waveney Cottages. The village centroid for Aldeby and the alignment of Waterheath Road (which appears on the map) confirm the location. The picked coordinate is near the southern end of Waterheath Road where it enters the village.",
+        "top_lon": 1.607567,
+        "confidence": "high",
+        "top_lat": 52.486003,
+        "picked_source": "place:Aldeby"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,293 @@
+{
+  "case": "Ar4.9",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7372697516728,
+    "top_lon": -0.255040152173795,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Coursers Road",
+    "evidence": "The site is Colney Heath Farm on Coursers Road. Road centroid for Coursers Road in St Albans aligns perfectly with the map's location between Roestock and Colney Heath. Postcodes AL4 0PH and AL4 0PP bracket the area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2633625887098953,
+  "gt_centroids": [
+    {
+      "lat": 51.73563545921934,
+      "lon": -0.25227196148451597
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 1,
+      "intersect": 2,
+      "postcode": 4,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Coursers Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Roestock Lane",
+        "road_a": "Coursers Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Roestock Lane",
+        "la": "St Albans",
+        "road_b": "Fellowes Lane"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Coursers Road",
+        "la_filter": "St Albans",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Coursers Road",
+            "lat": 51.73561525170265,
+            "lon": -0.2558181591656008,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Coursers Road",
+            "lat": 51.73726975167276,
+            "lon": -0.255040152173795,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Coursers Road",
+            "lat": 51.733691830656134,
+            "lon": -0.2554807791787432,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Coursers Road",
+            "lat": 51.73451000184401,
+            "lon": -0.2553948208103064,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Roestock Lane']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Roestock Lane', 'Fellowes Lane']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL4 0PG"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL4 0PH"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL4 0PN"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL4 0PG",
+        "lat": 51.72791598841807,
+        "lon": -0.2750411477921989,
+        "admin_district": "Hertsmere District (B)"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL4 0PH",
+        "lat": 51.74045538156838,
+        "lon": -0.2643524064430839,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'AL4 0PN' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL4 0PP"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "St Albans",
+        "lat": 51.7372697516728,
+        "lon": -0.255040152173795
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL4 0PP",
+        "lat": 51.7395789600557,
+        "lon": -0.25072779640106935,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.7372697516728,
+        "lon": -0.255040152173795,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is Colney Heath Farm on Coursers Road. Road centroid for Coursers Road in St Albans aligns perfectly with the map's location between Roestock and Colney Heath. Postcodes AL4 0PH and AL4 0PP bracket the area.",
+        "picked_source": "road:Coursers Road",
+        "top_lat": 51.7372697516728,
+        "verified_inside_admin_region": true,
+        "top_lon": -0.255040152173795,
+        "confidence": "high",
+        "sigma_m": 400
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

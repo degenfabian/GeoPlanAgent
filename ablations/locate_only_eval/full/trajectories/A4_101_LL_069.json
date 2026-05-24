@@ -1,0 +1,324 @@
+{
+  "case": "A4_101:LL:069",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.617127,
+    "top_lon": -1.163594,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Coninsby Close",
+    "evidence": "The site is located at 317-355 Narborough Road. Geocoding Coninsby Close and New Fields Square (which are adjacent to the site on the map) provides a tight cluster around 52.617, -1.163. This is also consistent with the southern end of Narborough Road in Leicester.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.10204802919931177,
+  "gt_centroids": [
+    {
+      "lat": 52.61728979722075,
+      "lon": -1.1621063868218067
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Trinity Methodist Church"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Narborough Road",
+        "la": "Leicester",
+        "road_b": "Hallam Crescent East"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Narborough Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trinity Methodist Church",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Narborough Road",
+          "Hallam Crescent East"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Narborough Road",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Narborough Road",
+            "lat": 52.62896682177396,
+            "lon": -1.14902269823462,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.62924842875515,
+            "lon": -1.1488030055673852,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.62965074643643,
+            "lon": -1.148492319545947,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.630079870184495,
+            "lon": -1.1481589451001863,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.63032123857918,
+            "lon": -1.1479695724830177,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Coninsby Close"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "New Fields Square"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Somerville Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coninsby Close",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Coninsby Close",
+            "type": "named road",
+            "lat": 52.617127355260415,
+            "lon": -1.1635943639016861,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "New Fields Square",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "New Fields Square",
+            "type": "named road",
+            "lat": 52.6158517807653,
+            "lon": -1.163736827058322,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Somerville Road",
+        "la_filter": "Leicester",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Somerville Road",
+            "type": "named road",
+            "lat": 52.615797318229426,
+            "lon": -1.158583124802157,
+            "admin_district": null,
+            "county": "City of Leicester"
+          },
+          {
+            "name": "Somerville Close",
+            "type": "named road",
+            "lat": 52.69094970394963,
+            "lon": -1.0611023626874587,
+            "admin_district": "Charnwood",
+            "county": "Leicestershire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.617127,
+        "la": "Leicester",
+        "lon": -1.163594
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.617127,
+        "lon": -1.163594,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.617127,
+        "sigma_m": 300,
+        "picked_source": "place:Coninsby Close",
+        "evidence": "The site is located at 317-355 Narborough Road. Geocoding Coninsby Close and New Fields Square (which are adjacent to the site on the map) provides a tight cluster around 52.617, -1.163. This is also consistent with the southern end of Narborough Road in Leicester.",
+        "verified_inside_admin_region": true,
+        "top_lon": -1.163594,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

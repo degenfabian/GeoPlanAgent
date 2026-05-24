@@ -1,0 +1,341 @@
+{
+  "case": "SSA401",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.49108,
+    "top_lon": -2.20541,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Prestwood (SO 861 881)",
+    "evidence": "The site is located in Prestwood, South Staffordshire, adjacent to the A449 (Wolverhampton Road). The grid reference for Prestwood (SO 861 881) aligns perfectly with the map labels (Roundhill Farm, Prestwood) and the road layout. WV8 1PX is the council office letterhead.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.9447228196569895,
+  "gt_centroids": [
+    {
+      "lat": 52.474433671439876,
+      "lon": -2.1966016151350836
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "road": 3,
+      "intersect": 1,
+      "la_check": 2,
+      "grid_ref": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "WV8 1PX"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Wolverhampton Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "A449",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "WV8 1PX",
+        "lat": 52.62566656951965,
+        "lon": -2.191960842481458,
+        "admin_district": "South Staffordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Wolverhampton Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Wolverhampton Road",
+            "lat": 52.71923829416708,
+            "lon": -2.117397658070672,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Wolverhampton Road",
+            "lat": 52.72039155190665,
+            "lon": -2.1172340580066566,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Wolverhampton Road",
+            "lat": 52.720157540808074,
+            "lon": -2.1171553335741575,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Wolverhampton Road",
+            "lat": 52.721329121098115,
+            "lon": -2.117007614468944,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Wolverhampton Road",
+            "lat": 52.72048775165219,
+            "lon": -2.117041259830442,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "A449",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Prestwood Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Prestwood Road",
+        "road_a": "Wolverhampton Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.488,
+        "la": "South Staffordshire",
+        "lon": -2.205
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Prestwood Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Prestwood Road",
+            "lat": 52.46182677476706,
+            "lon": -2.203888106999829,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Prestwood Road",
+            "lat": 52.462158470728504,
+            "lon": -2.2033868686247002,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Prestwood Road",
+            "lat": 52.46252410220987,
+            "lon": -2.202990058025452,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Prestwood Road",
+            "lat": 52.46296201077609,
+            "lon": -2.202672537495033,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Staffordshire for: ['Prestwood Road']"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.488,
+        "lon": -2.205,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SO 861 881"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SO 861 881",
+        "lat": 52.49108386686487,
+        "lon": -2.2054091483177385
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.491,
+        "lon": -2.205,
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.491,
+        "lon": -2.205,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 400,
+        "top_lat": 52.49108,
+        "picked_source": "place:Prestwood (SO 861 881)",
+        "top_lon": -2.20541,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "evidence": "The site is located in Prestwood, South Staffordshire, adjacent to the A449 (Wolverhampton Road). The grid reference for Prestwood (SO 861 881) aligns perfectly with the map labels (Roundhill Farm, Prestwood) and the road layout. WV8 1PX is the council office letterhead."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

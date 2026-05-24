@@ -1,0 +1,60 @@
+{
+  "case": "10",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 53.2968,
+    "lon": -2.9525,
+    "reasoning": "The site is identified as land adjacent to Hooton Mount Cottage on Eastham Village Road, Eastham, as shown on the provided map near the intersection with Rivacre Road."
+  },
+  "err_km": 1.9537375093688136,
+  "gt_centroids": [
+    {
+      "lat": 53.313933708785186,
+      "lon": -2.959014710460763
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 53.2968,
+        "reasoning": "The site is identified as land adjacent to Hooton Mount Cottage on Eastham Village Road, Eastham, as shown on the provided map near the intersection with Rivacre Road.",
+        "lon": -2.9525
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

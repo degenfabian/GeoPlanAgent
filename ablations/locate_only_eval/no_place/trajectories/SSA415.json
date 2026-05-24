@@ -1,0 +1,349 @@
+{
+  "case": "SSA415",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.728163,
+    "top_lon": -2.110748,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Teddesley Road x Hatherton Road",
+    "evidence": "Found intersection of Teddesley Road and Hatherton Road in Penkridge, which matches the map labels and site address. Stone Cross also geolocates to the same area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.15744902115159784,
+  "gt_centroids": [
+    {
+      "lat": 52.72797553153459,
+      "lon": -2.1130655551501647
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 3,
+      "road": 4,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Hatherton Road",
+        "la": "South Staffordshire",
+        "road_a": "Teddesley Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Teddesley Road, Penkridge"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Stone Cross, Penkridge",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Teddesley Road",
+        "la": "South Staffordshire",
+        "road_b": "Stone Cross"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Teddesley Road",
+          "Hatherton Road"
+        ],
+        "la_filter": "South Staffordshire",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.728163,
+            "lon": -2.110748,
+            "roads": [
+              "Teddesley Road",
+              "Hatherton Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Teddesley Road, Penkridge",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Stone Cross, Penkridge",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Teddesley Road",
+          "Stone Cross"
+        ],
+        "la_filter": "South Staffordshire",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Teddesley Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Stone Cross",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.110748,
+        "la": "South Staffordshire",
+        "lat": 52.728163
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Teddesley Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Teddesley Road",
+            "lat": 52.75752522875809,
+            "lon": -2.0869393828305247,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Teddesley Road",
+            "lat": 52.75836261625271,
+            "lon": -2.084503972258601,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Teddesley Road",
+            "lat": 52.76027992647865,
+            "lon": -2.0817219008200274,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Teddesley Road",
+            "lat": 52.762269889253204,
+            "lon": -2.078747809348365,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Teddesley Road",
+            "lat": 52.76308594086832,
+            "lon": -2.0774133915895274,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Stone Cross",
+        "la_filter": "South Staffordshire",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Stone Cross",
+            "lat": 52.72588759037343,
+            "lon": -2.1162498897979467,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Stone Cross",
+            "lat": 52.72555505649201,
+            "lon": -2.1161675667746,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Stone Cross",
+            "lat": 52.727505403289356,
+            "lon": -2.1160645940269296,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.728163,
+        "lon": -2.110748,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Mill Street",
+        "la": "South Staffordshire",
+        "road_a": "Stone Cross"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Stone Cross",
+          "Mill Street"
+        ],
+        "la_filter": "South Staffordshire",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "Found intersection of Teddesley Road and Hatherton Road in Penkridge, which matches the map labels and site address. Stone Cross also geolocates to the same area.",
+        "top_lon": -2.110748,
+        "top_lat": 52.728163,
+        "picked_source": "intersect:Teddesley Road x Hatherton Road",
+        "confidence": "high",
+        "sigma_m": 300
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

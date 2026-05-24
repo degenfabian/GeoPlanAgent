@@ -1,0 +1,280 @@
+{
+  "case": "A105H",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.585222,
+    "top_lon": -0.22801,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:College Park",
+    "evidence": "The site is at 270 Eastfield Road, which the map shows is at the junction with College Park and Broadway. The 'College Park' road centroid provides a precise anchor for this specific junction.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06600134893444501,
+  "gt_centroids": [
+    {
+      "lat": 52.5846312029081,
+      "lon": -0.2281042243805459
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "270 Eastfield Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Peterborough",
+        "query": "Eastfield Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "270 Eastfield Road",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Eastfield Road",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Eastfield Road",
+            "lat": 52.58931805261855,
+            "lon": -0.2187438895316068,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Eastfield Road",
+            "lat": 52.589271064481615,
+            "lon": -0.21771241601287492,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Eastfield Road",
+            "lat": 52.589317463177416,
+            "lon": -0.21631546994503523,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Eastfield Road",
+            "lat": 52.585622785132436,
+            "lon": -0.22655529497660246,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Eastfield Road",
+            "lat": 52.58642295389366,
+            "lon": -0.22562947328448824,
+            "in_la": "Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "College Park"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Broadway",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "College Park",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "College Park",
+            "type": "named road",
+            "lat": 52.58522235250887,
+            "lon": -0.22801023192375905,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Broadway",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Broadway",
+            "lat": 52.58218472134558,
+            "lon": -0.2358800511999408,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Broadway",
+            "lat": 52.58278274475982,
+            "lon": -0.2344227361073679,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Broadway",
+            "lat": 52.57999539247797,
+            "lon": -0.23803603838544896,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Broadway",
+            "lat": 52.58114858366837,
+            "lon": -0.23698612879807165,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Broadway",
+            "lat": 52.576991330691115,
+            "lon": -0.24053502465033808,
+            "in_la": "Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Peterborough",
+        "lon": -0.22801,
+        "lat": 52.585222
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.585222,
+        "lon": -0.22801,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is at 270 Eastfield Road, which the map shows is at the junction with College Park and Broadway. The 'College Park' road centroid provides a precise anchor for this specific junction.",
+        "picked_source": "place:College Park",
+        "top_lon": -0.22801,
+        "top_lat": 52.585222,
+        "verified_inside_admin_region": true,
+        "sigma_m": 300,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

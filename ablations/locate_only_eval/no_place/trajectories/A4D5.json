@@ -1,0 +1,337 @@
+{
+  "case": "A4D5",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.486444,
+    "top_lon": -2.58395,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "grid_ref:ST 595 765",
+    "evidence": "The map shows a large area covering Horfield, Bishopston, and Ashley Down in Bristol. The center of this polygon is approximately at the Horfield/Ashley Down border near the Memorial Stadium. A grid reference ST 595 765 (estimated from the map's central area) confirms the location within the Bristol admin region.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.12520444347451298,
+  "gt_centroids": [
+    {
+      "lat": 51.487099081883464,
+      "lon": -2.5824792678886643
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 3,
+      "intersect": 2,
+      "grid_ref": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Gloucester Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Ashley Down Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Muller Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Gloucester Road",
+        "la": "Bristol",
+        "road_b": "Ashley Down Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Bristol",
+        "road_a": "Gloucester Road",
+        "road_b": "Muller Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Gloucester Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Gloucester Road",
+            "lat": 51.469829147839576,
+            "lon": -2.593534735224512,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Gloucester Road",
+            "lat": 51.48326822257295,
+            "lon": -2.587063174862048,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Gloucester Road",
+            "lat": 51.48408418032518,
+            "lon": -2.5866200157833017,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Gloucester Road",
+            "lat": 51.484796163545866,
+            "lon": -2.5862907195421845,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Gloucester Road",
+            "lat": 51.48522420891139,
+            "lon": -2.5861017888915905,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Ashley Down Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ashley Down Road",
+            "lat": 51.483161562353885,
+            "lon": -2.585916923848863,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Ashley Down Road",
+            "lat": 51.480707611905004,
+            "lon": -2.582155801204367,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Ashley Down Road",
+            "lat": 51.480984724357754,
+            "lon": -2.582483338376097,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Ashley Down Road",
+            "lat": 51.48119479688936,
+            "lon": -2.5827308224593515,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Ashley Down Road",
+            "lat": 51.48146194962077,
+            "lon": -2.583252646051511,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Muller Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Muller Road",
+            "lat": 51.47394289113244,
+            "lon": -2.5562655855673437,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Muller Road",
+            "lat": 51.47461240137704,
+            "lon": -2.5602218208593372,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Muller Road",
+            "lat": 51.475117872764926,
+            "lon": -2.5601259304403436,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Muller Road",
+            "lat": 51.47484596676956,
+            "lon": -2.560078899628979,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Muller Road",
+            "lat": 51.47472467664496,
+            "lon": -2.5598234267612168,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Bristol for: ['Gloucester Road', 'Ashley Down Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Bristol for: ['Gloucester Road', 'Muller Road']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "ST 595 765"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.486,
+        "lon": -2.584,
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "ST 595 765",
+        "lat": 51.48644431653472,
+        "lon": -2.583949929934403
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.486,
+        "lon": -2.584,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lat": 51.486444,
+        "verified_inside_admin_region": true,
+        "top_lon": -2.58395,
+        "sigma_m": 1500,
+        "picked_source": "grid_ref:ST 595 765",
+        "evidence": "The map shows a large area covering Horfield, Bishopston, and Ashley Down in Bristol. The center of this polygon is approximately at the Horfield/Ashley Down border near the Memorial Stadium. A grid reference ST 595 765 (estimated from the map's central area) confirms the location within the Bristol admin region."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

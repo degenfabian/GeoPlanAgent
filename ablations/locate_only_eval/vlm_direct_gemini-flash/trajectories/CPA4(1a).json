@@ -1,0 +1,60 @@
+{
+  "case": "CPA4(1a)",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.5545,
+    "lon": 0.6065,
+    "reasoning": "The document identifies the Florence Gardens Conservation Area in Hadleigh, specifically referencing 1-25 Florence Gardens, which is located at these coordinates in Benfleet."
+  },
+  "err_km": 0.23050034116122115,
+  "gt_centroids": [
+    {
+      "lat": 51.55376851197057,
+      "lon": 0.6033805620421716
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 51.5545,
+        "lon": 0.6065,
+        "reasoning": "The document identifies the Florence Gardens Conservation Area in Hadleigh, specifically referencing 1-25 Florence Gardens, which is located at these coordinates in Benfleet."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

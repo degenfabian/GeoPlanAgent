@@ -1,0 +1,303 @@
+{
+  "case": "A4D4A1",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.581176,
+    "top_lon": -0.181172,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Hampstead Garden Suburb",
+    "evidence": "The map shows the entire Hampstead Garden Suburb Conservation Area. The pick is the centroid of the 'Hampstead Garden Suburb' suburban area, which aligns with the central features (Central Square, Big Wood) shown on the map. Verified inside Barnet.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14132132103578787,
+  "gt_centroids": [
+    {
+      "lat": 51.58165989581618,
+      "lon": -0.18306322189679006
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Hampstead Garden Suburb Conservation Area"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Lyttelton Playing Fields"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Central Square"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Kingsley Way",
+        "la": "Barnet",
+        "road_a": "Lyttelton Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hampstead Garden Suburb Conservation Area",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lyttelton Playing Fields",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Central Square",
+        "la_filter": "Barnet",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Central Square",
+            "type": "named road",
+            "lat": 51.58088612206232,
+            "lon": -0.1897279260801975,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Barnet for: ['Lyttelton Road', 'Kingsley Way']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hampstead Garden Suburb",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hampstead Golf Club",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Big Wood"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hampstead Garden Suburb",
+        "la_filter": "Barnet",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Hampstead Garden Suburb",
+            "type": "suburban area",
+            "lat": 51.581176468974675,
+            "lon": -0.18117178597945902,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hampstead Golf Club",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Big Wood",
+        "la_filter": "Barnet",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Big Wood",
+            "type": "woodland or forest",
+            "lat": 51.583351050736866,
+            "lon": -0.1892113738333997,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.181172,
+        "lat": 51.581176,
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.581176,
+        "lon": -0.181172,
+        "la": "Barnet",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.616028526273034,
+        "la_centroid_lon": -0.21000945769264093
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.581176,
+        "verified_inside_admin_region": true,
+        "top_lon": -0.181172,
+        "confidence": "high",
+        "sigma_m": 1500,
+        "picked_source": "place:Hampstead Garden Suburb",
+        "evidence": "The map shows the entire Hampstead Garden Suburb Conservation Area. The pick is the centroid of the 'Hampstead Garden Suburb' suburban area, which aligns with the central features (Central Square, Big Wood) shown on the map. Verified inside Barnet."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

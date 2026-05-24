@@ -1,0 +1,276 @@
+{
+  "case": "Ar4.26",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.80844,
+    "top_lon": -0.34535,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Marlborough Park",
+    "evidence": "The site is Southdown Industrial Estate in Harpenden. Multiple road signals (Marlborough Park, Meadow Walk, Bowling Close, Heath Close) cluster tightly around this coordinate. Verified inside St Albans district.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06527542339794881,
+  "gt_centroids": [
+    {
+      "lat": 51.808926191972226,
+      "lon": -0.3458820829280019
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 4,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Marlborough Park"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Meadow Walk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Meadow Walk",
+        "road_a": "Marlborough Park",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Marlborough Park",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Marlborough Park",
+            "lat": 51.80919039605937,
+            "lon": -0.34577138714830746,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Marlborough Park",
+            "lat": 51.807814236536274,
+            "lon": -0.3455030100529772,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Marlborough Park",
+            "lat": 51.80844156019967,
+            "lon": -0.3453532601746504,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Meadow Walk",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Meadow Walk",
+            "lat": 51.81037931885644,
+            "lon": -0.3459133208043345,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Marlborough Park",
+          "Meadow Walk"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Bowling Close",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Heath Close",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bowling Close",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Bowling Close",
+            "lat": 51.80802970846516,
+            "lon": -0.34795758339875704,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Heath Close",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Heath Close",
+            "lat": 51.807324641806744,
+            "lon": -0.3475086017283012,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.8085,
+        "la": "St Albans",
+        "lon": -0.346
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.8085,
+        "lon": -0.346,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "evidence": "The site is Southdown Industrial Estate in Harpenden. Multiple road signals (Marlborough Park, Meadow Walk, Bowling Close, Heath Close) cluster tightly around this coordinate. Verified inside St Albans district.",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.34535,
+        "picked_source": "road:Marlborough Park",
+        "top_lat": 51.80844,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

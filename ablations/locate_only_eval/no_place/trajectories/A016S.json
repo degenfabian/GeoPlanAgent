@@ -1,0 +1,302 @@
+{
+  "case": "A016S",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.575787,
+    "top_lon": -0.352918,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Helpston Road x Main Street",
+    "evidence": "The site is at 1 Helpston Road. The intersection of Helpston Road and Main Street (52.575787, -0.352918) and the intersection with Singerfire Road (52.575742, -0.352345) perfectly match the map layout. The postcode PE5 7AE is nearby (approx 150m north). Picked the Helpston Rd x Main St junction as the primary anchor.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.023500475662062977,
+  "gt_centroids": [
+    {
+      "lat": 52.575867726524024,
+      "lon": -0.3525965973085275
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "intersect": 2,
+      "la_check": 1,
+      "road": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "PE5 7AE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Peterborough",
+        "road_a": "Helpston Road",
+        "road_b": "Main Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Helpston Road",
+        "la": "Peterborough",
+        "road_b": "Singerfire Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "PE5 7AE",
+        "lat": 52.57723150313228,
+        "lon": -0.351402471185426,
+        "admin_district": "City of Peterborough (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Helpston Road",
+          "Main Street"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.575787,
+            "lon": -0.352918,
+            "roads": [
+              "Helpston Road",
+              "Main Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Helpston Road",
+          "Singerfire Road"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.575742,
+            "lon": -0.352345,
+            "roads": [
+              "Helpston Road",
+              "Singerfire Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.575787,
+        "la": "Peterborough",
+        "lon": -0.352918
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.575787,
+        "lon": -0.352918,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Helpston Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Helpston Road",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Helpston Road",
+            "lat": 52.63731660050581,
+            "lon": -0.31308953733869604,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "lat": 52.637835803746555,
+            "lon": -0.3066128866925172,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "lat": 52.6380833808017,
+            "lon": -0.30445152996253105,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "lat": 52.63831866961713,
+            "lon": -0.30236710473800704,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "lat": 52.63866026919494,
+            "lon": -0.3001532832452587,
+            "in_la": "Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Peterborough",
+        "query": "Singerfire Road"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Singerfire Road",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Singerfire Road",
+            "lat": 52.575265229897035,
+            "lon": -0.35155820793260284,
+            "in_la": "Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 200,
+        "picked_source": "intersect:Helpston Road x Main Street",
+        "top_lat": 52.575787,
+        "top_lon": -0.352918,
+        "evidence": "The site is at 1 Helpston Road. The intersection of Helpston Road and Main Street (52.575787, -0.352918) and the intersection with Singerfire Road (52.575742, -0.352345) perfectly match the map layout. The postcode PE5 7AE is nearby (approx 150m north). Picked the Helpston Rd x Main St junction as the primary anchor."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

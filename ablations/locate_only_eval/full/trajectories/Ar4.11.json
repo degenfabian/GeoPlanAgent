@@ -1,0 +1,280 @@
+{
+  "case": "Ar4.11",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7338688913522,
+    "top_lon": -0.360540820156841,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Ragged Hall Lane",
+    "evidence": "The site is explicitly described as 'Land between Ragged Hall Lane and the M10 Motorway'. Multiple road centroids for Ragged Hall Lane cluster around 51.734, -0.36, which is just north of Chiswell Green and south of the former M10 (now A414) alignment. This matches the map's layout.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.23430181736466685,
+  "gt_centroids": [
+    {
+      "lat": 51.73573010711402,
+      "lon": -0.36213593141055866
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 1,
+      "place": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Ragged Hall Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "M10 Motorway"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Ragged Hall Lane",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.7338688913522,
+            "lon": -0.3605408201568414,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.73422817489812,
+            "lon": -0.35793643138097797,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.73456261035821,
+            "lon": -0.35639124649171033,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.734390729746764,
+            "lon": -0.3768313260817681,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.73375349810246,
+            "lon": -0.3631481580499941,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "M10 Motorway",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "St Stephens"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Chiswell Green"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Stephens",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "St Stephens",
+            "type": "suburban area",
+            "lat": 51.743685512734,
+            "lon": -0.353861746329066,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "St Stephens Hill Pond",
+            "type": "inland water",
+            "lat": 51.74052697945722,
+            "lon": -0.3466476781885327,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Chiswell Green",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Chiswell Green",
+            "type": "village",
+            "lat": 51.728460410922374,
+            "lon": -0.35952633123399735,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Chiswell Green Lane",
+            "type": "named road",
+            "lat": 51.727931244957524,
+            "lon": -0.37125969123805563,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Chiswell Green Lane",
+            "type": "section of named road",
+            "lat": 51.728455328518116,
+            "lon": -0.36303068269003874,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.734,
+        "lon": -0.36,
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.734,
+        "lon": -0.36,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "road:Ragged Hall Lane",
+        "top_lon": -0.360540820156841,
+        "sigma_m": 400,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.7338688913522,
+        "confidence": "high",
+        "evidence": "The site is explicitly described as 'Land between Ragged Hall Lane and the M10 Motorway'. Multiple road centroids for Ragged Hall Lane cluster around 51.734, -0.36, which is just north of Chiswell Green and south of the former M10 (now A414) alignment. This matches the map's layout."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

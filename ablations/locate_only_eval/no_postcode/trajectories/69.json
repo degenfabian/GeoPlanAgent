@@ -1,0 +1,324 @@
+{
+  "case": "69",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.512508,
+    "top_lon": -0.195582,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Dawson Place x Pembridge Place",
+    "evidence": "The site is 13 Dawson Place. The intersection of Dawson Place and Pembridge Place (51.512508, -0.195582) is immediately adjacent to the site. Pembridge Square (51.511849, -0.195377) is also adjacent. The intersection provides the most precise anchor.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.028108688967364546,
+  "gt_centroids": [
+    {
+      "lat": 51.51227504234528,
+      "lon": -0.19573970032573312
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 2,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "13 Dawson Place"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Pembridge Place",
+        "la": "Kensington and Chelsea",
+        "road_a": "Dawson Place"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Hyde Park West Hotel"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "London Spiritual Mission"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "13 Dawson Place",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Dawson Place",
+          "Pembridge Place"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.512508,
+            "lon": -0.195582,
+            "roads": [
+              "Dawson Place",
+              "Pembridge Place"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hyde Park West Hotel",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "London Spiritual Mission",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Dawson Place",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.195582,
+        "la": "Kensington and Chelsea",
+        "lat": 51.512508
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Dawson Place",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Dawson Place",
+            "lat": 51.51235379360187,
+            "lon": -0.1966541846607499,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Dawson Place",
+            "lat": 51.51260197529969,
+            "lon": -0.19495821115314177,
+            "in_la": "Kensington and Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.512508,
+        "lon": -0.195582,
+        "la": "Kensington and Chelsea",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.50120516305225,
+        "la_centroid_lon": -0.19222073817151708
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "road_a": "Dawson Place",
+        "road_b": "Pembridge Square"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Dawson Place",
+          "Pembridge Square"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Pembridge Square"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Pembridge Square",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Pembridge Square",
+            "type": "section of named road",
+            "lat": 51.511848559357965,
+            "lon": -0.19537710161177194,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.512508,
+        "sigma_m": 200,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lon": -0.195582,
+        "picked_source": "intersect:Dawson Place x Pembridge Place",
+        "evidence": "The site is 13 Dawson Place. The intersection of Dawson Place and Pembridge Place (51.512508, -0.195582) is immediately adjacent to the site. Pembridge Square (51.511849, -0.195377) is also adjacent. The intersection provides the most precise anchor."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "case": "CB:11:04552:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.0064080716101,
+    "top_lon": -0.408913784930622,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Wrest Park",
+    "evidence": "The map and pdf_info both identify 'Wrest Park Estate'. A search for 'Wrest Park' in Central Bedfordshire returned a precise coordinate which was verified to be within the correct local authority.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3835881822741247,
+  "gt_centroids": [
+    {
+      "lat": 52.00984816635894,
+      "lon": -0.40849605111092946
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wrest Park Estate",
+        "la": "Central Bedfordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Central Bedfordshire",
+        "query": "Wrest Park"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Silsoe",
+        "la": "Central Bedfordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wrest Park Estate",
+        "la_filter": "Central Bedfordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wrest Park",
+        "la_filter": "Central Bedfordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Wrest Park",
+            "type": "other landcover",
+            "lat": 52.00640807161008,
+            "lon": -0.4089137849306223,
+            "admin_district": null,
+            "county": "Central Bedfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Silsoe",
+        "la_filter": "Central Bedfordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Silsoe",
+            "type": "village",
+            "lat": 52.00963798603203,
+            "lon": -0.4251182651421045,
+            "admin_district": null,
+            "county": "Central Bedfordshire"
+          },
+          {
+            "name": "Silsoe Road",
+            "type": "named road",
+            "lat": 52.023779449744225,
+            "lon": -0.45620589733398625,
+            "admin_district": null,
+            "county": "Central Bedfordshire"
+          },
+          {
+            "name": "Silsoe Road",
+            "type": "named road",
+            "lat": 52.00759736907046,
+            "lon": -0.45092029190303623,
+            "admin_district": null,
+            "county": "Central Bedfordshire"
+          },
+          {
+            "name": "Silsoe Road",
+            "type": "section of named road",
+            "lat": 52.008993557860805,
+            "lon": -0.4476957546437818,
+            "admin_district": null,
+            "county": "Central Bedfordshire"
+          },
+          {
+            "name": "Silsoe Pre School",
+            "type": "primary education",
+            "lat": 52.00440939395235,
+            "lon": -0.4301677933133151,
+            "admin_district": null,
+            "county": "Central Bedfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Central Bedfordshire",
+        "lat": 52.0064080716101,
+        "lon": -0.408913784930622
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.0064080716101,
+        "lon": -0.408913784930622,
+        "la": "Central Bedfordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.00669777305078,
+        "la_centroid_lon": -0.43600101320008694
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lat": 52.0064080716101,
+        "confidence": "high",
+        "evidence": "The map and pdf_info both identify 'Wrest Park Estate'. A search for 'Wrest Park' in Central Bedfordshire returned a precise coordinate which was verified to be within the correct local authority.",
+        "picked_source": "place:Wrest Park",
+        "sigma_m": 400,
+        "top_lon": -0.408913784930622
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "case": "CB:11:04552:ART4",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.0064080716101,
+    "top_lon": -0.408913784930622,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Wrest Park",
+    "evidence": "The map shows 'Wrest Park Estate' in Central Bedfordshire. Geocoding 'Wrest Park' returns a precise location in Silsoe, which matches the map's layout of a large estate with formal gardens and buildings. Verified inside Central Bedfordshire.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3835881822741247,
+  "gt_centroids": [
+    {
+      "lat": 52.00984816635894,
+      "lon": -0.40849605111092946
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Central Bedfordshire",
+        "query": "Wrest Park Estate"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wrest Park",
+        "la": "Central Bedfordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wrest Park Estate",
+        "la_filter": "Central Bedfordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wrest Park",
+        "la_filter": "Central Bedfordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Wrest Park",
+            "type": "other landcover",
+            "lat": 52.00640807161008,
+            "lon": -0.4089137849306223,
+            "admin_district": null,
+            "county": "Central Bedfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.408913784930622,
+        "lat": 52.0064080716101,
+        "la": "Central Bedfordshire"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.0064080716101,
+        "lon": -0.408913784930622,
+        "la": "Central Bedfordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.00669777305078,
+        "la_centroid_lon": -0.43600101320008694
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Wrest Park",
+        "top_lat": 52.0064080716101,
+        "top_lon": -0.408913784930622,
+        "sigma_m": 500,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "evidence": "The map shows 'Wrest Park Estate' in Central Bedfordshire. Geocoding 'Wrest Park' returns a precise location in Silsoe, which matches the map's layout of a large estate with formal gardens and buildings. Verified inside Central Bedfordshire."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

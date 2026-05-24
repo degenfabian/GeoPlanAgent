@@ -1,0 +1,329 @@
+{
+  "case": "A4Sa1",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.544,
+    "top_lon": -0.184,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "intersect:Canfield x Fairhazel",
+    "evidence": "The map shows the Swiss Cottage Conservation Area in Camden. Intersections of Fairhazel Gardens with Canfield Gardens and Broadhurst Gardens, along with centroids for Greencroft and Compayne Gardens, cluster tightly around this central point.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.16810383815074642,
+  "gt_centroids": [
+    {
+      "lat": 51.54385609390288,
+      "lon": -0.18641983354549843
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "intersect": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Swiss Cottage Conservation Area",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Hampstead Station",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Canfield Gardens",
+        "la": "Camden",
+        "road_b": "Fairhazel Gardens"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Fairhazel Gardens",
+        "la": "Camden",
+        "road_a": "Broadhurst Gardens"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Swiss Cottage Conservation Area",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Hampstead Station",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Canfield Gardens",
+          "Fairhazel Gardens"
+        ],
+        "la_filter": "Camden",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.544781,
+            "lon": -0.183555,
+            "roads": [
+              "Canfield Gardens",
+              "Fairhazel Gardens"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Broadhurst Gardens",
+          "Fairhazel Gardens"
+        ],
+        "la_filter": "Camden",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.546518,
+            "lon": -0.185698,
+            "roads": [
+              "Broadhurst Gardens",
+              "Fairhazel Gardens"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Greencroft Gardens",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Camden",
+        "query": "Compayne Gardens"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Camden",
+        "query": "Aberdare Gardens"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Camden",
+        "query": "Goldhurst Terrace"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Greencroft Gardens",
+        "la_filter": "Camden",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Greencroft Gardens",
+            "type": "named road",
+            "lat": 51.543599258021096,
+            "lon": -0.183622362194122,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Compayne Gardens",
+        "la_filter": "Camden",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Compayne Gardens",
+            "type": "named road",
+            "lat": 51.54504892429028,
+            "lon": -0.18665094313215305,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Aberdare Gardens",
+        "la_filter": "Camden",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Aberdare Gardens",
+            "type": "named road",
+            "lat": 51.542186851396046,
+            "lon": -0.1847457641471913,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Goldhurst Terrace",
+        "la_filter": "Camden",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Goldhurst Terrace",
+            "type": "named road",
+            "lat": 51.54276035049309,
+            "lon": -0.18113204151663903,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "sigma_m": 500,
+        "picked_source": "intersect:Canfield x Fairhazel",
+        "top_lon": -0.184,
+        "confidence": "high",
+        "evidence": "The map shows the Swiss Cottage Conservation Area in Camden. Intersections of Fairhazel Gardens with Canfield Gardens and Broadhurst Gardens, along with centroids for Greencroft and Compayne Gardens, cluster tightly around this central point.",
+        "top_lat": 51.544
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

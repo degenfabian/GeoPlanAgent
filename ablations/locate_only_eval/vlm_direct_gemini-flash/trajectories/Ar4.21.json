@@ -1,0 +1,60 @@
+{
+  "case": "Ar4.21",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.7485,
+    "lon": -0.298,
+    "reasoning": "The document describes an Article 4 direction for Alban Park, Acrewood Way, and Lyon Way in St Albans, with the provided map showing the industrial estate area bounded by these roads."
+  },
+  "err_km": 1.3626563430494723,
+  "gt_centroids": [
+    {
+      "lat": 51.75091032000251,
+      "lon": -0.27859226944040427
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document describes an Article 4 direction for Alban Park, Acrewood Way, and Lyon Way in St Albans, with the provided map showing the industrial estate area bounded by these roads.",
+        "lon": -0.298,
+        "lat": 51.7485
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

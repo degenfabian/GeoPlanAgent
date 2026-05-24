@@ -1,0 +1,256 @@
+{
+  "case": "12:00117:ART4",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.658668,
+    "top_lon": 1.207818,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:West End x grid_ref:TG1711",
+    "evidence": "The map shows the site on 'Parklands' off 'West End' in Costessey. The grid reference TG1711 provided in the map footer matches the location of West End in Costessey. The site is adjacent to Falcon Lodge and a Recreation Ground.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.34135081714121723,
+  "gt_centroids": [
+    {
+      "lat": 52.65817783098555,
+      "lon": 1.2028219099653041
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG17111111"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Falcon Lodge Costessey",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Parklands Costessey"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "West End"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG17111111",
+        "lat": 52.6542742555022,
+        "lon": 1.208525601719441
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Falcon Lodge Costessey",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Parklands Costessey",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "West End",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "West End",
+            "lat": 52.65963363678481,
+            "lon": 1.2009917878902108,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.65871383506571,
+            "lon": 1.2044364616302121,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.658667963626534,
+            "lon": 1.2078177606980185,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.65901525178464,
+            "lon": 1.2094403379061376,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.66585589681674,
+            "lon": 1.1962905133142714,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Costessey Recreation Ground",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.20781776069802,
+        "la": "South Norfolk",
+        "lat": 52.6586679636265
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Costessey Recreation Ground",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6586679636265,
+        "lon": 1.20781776069802,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lon": 1.207818,
+        "top_lat": 52.658668,
+        "sigma_m": 300,
+        "picked_source": "road:West End x grid_ref:TG1711",
+        "evidence": "The map shows the site on 'Parklands' off 'West End' in Costessey. The grid reference TG1711 provided in the map footer matches the location of West End in Costessey. The site is adjacent to Falcon Lodge and a Recreation Ground.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

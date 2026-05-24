@@ -1,0 +1,201 @@
+{
+  "case": "ART4:22:00001",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.85856472927,
+    "top_lon": -1.62540685722346,
+    "sigma_m": 15000,
+    "confidence": "low",
+    "picked_source": "la_centroid",
+    "evidence": "The map shows the entire New Forest National Park boundary (Article 4 Direction). I have used the centroid of the National Park area, verified against the central village of Lyndhurst.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 2.105641678083912,
+  "gt_centroids": [
+    {
+      "lat": 50.857049630206795,
+      "lon": -1.5955044915314045
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "New Forest National Park"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "New Forest National Park",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lyndhurst"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lyndhurst",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Lyndhurst",
+            "type": "suburban area",
+            "lat": 54.92741594544188,
+            "lon": -1.5877086278441421,
+            "admin_district": "Gateshead",
+            "county": null
+          },
+          {
+            "name": "Lyndhurst",
+            "type": "named road",
+            "lat": 53.51296951047626,
+            "lon": -2.9363187079142468,
+            "admin_district": "Sefton",
+            "county": null
+          },
+          {
+            "name": "Lyndhurst",
+            "type": "named road",
+            "lat": 53.56333870786916,
+            "lon": -2.7747336746061353,
+            "admin_district": "West Lancashire",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Lyndhurst",
+            "type": "village",
+            "lat": 50.87247684476967,
+            "lon": -1.5737628024588748,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Lyndhurst Avenue",
+            "type": "named road",
+            "lat": 56.47677303741999,
+            "lon": -3.0115141506719056,
+            "admin_district": null,
+            "county": "Dundee City"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "New Forest National Park Authority",
+        "lat": 50.8724768447697,
+        "lon": -1.57376280245887
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.8724768447697,
+        "lon": -1.57376280245887,
+        "la": "New Forest National Park Authority",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.85856472927001,
+        "la_centroid_lon": -1.625406857223459
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "low",
+        "sigma_m": 15000,
+        "top_lat": 50.85856472927,
+        "picked_source": "la_centroid",
+        "verified_inside_admin_region": true,
+        "top_lon": -1.62540685722346,
+        "evidence": "The map shows the entire New Forest National Park boundary (Article 4 Direction). I have used the centroid of the National Park area, verified against the central village of Lyndhurst."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,342 @@
+{
+  "case": "12:00140:ART4",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.624,
+    "top_lon": 1.222,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Colney Hall (via Colney village & Watton Rd)",
+    "evidence": "Colney Hall is a prominent estate in Colney, South Norfolk. The village centroid and Watton Road (B1108) which borders the estate to the north align perfectly. The map shows the hall and surrounding parcels.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.10008067218661,
+  "gt_centroids": [
+    {
+      "lat": 52.6275737481917,
+      "lon": 1.2068023741841298
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "la_check": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 15,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colney Hall",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colney",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney Hall",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Colney",
+            "type": "village",
+            "lat": 52.622669932614215,
+            "lon": 1.2234726492806807,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Road",
+            "type": "named road",
+            "lat": 52.752544987152966,
+            "lon": 0.44268653222217047,
+            "admin_district": "King's Lynn and West Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "section of named road",
+            "lat": 52.611985191518805,
+            "lon": 1.2373287202853533,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "section of named road",
+            "lat": 52.62179408696582,
+            "lon": 1.2236003570884657,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "named road",
+            "lat": 52.60312196190886,
+            "lon": 1.196806436600663,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colney Hall, Colney"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney Hall, Colney",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colney Hall, Norwich"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney Hall, Norwich",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.62267,
+        "la": "South Norfolk",
+        "lon": 1.22347
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.62267,
+        "lon": 1.22347,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Watton Road, Colney"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Watton Road, Colney",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Watton Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Watton Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Watton Road",
+            "lat": 52.62531557998124,
+            "lon": 1.2213984188077187,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.6261900116888,
+            "lon": 1.2253202947740787,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.626996932690325,
+            "lon": 1.2289594286014445,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.627079289661644,
+            "lon": 1.2293410451810765,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.62716403817542,
+            "lon": 1.2297338502849495,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lat": 52.624,
+        "picked_source": "place:Colney Hall (via Colney village & Watton Rd)",
+        "confidence": "high",
+        "evidence": "Colney Hall is a prominent estate in Colney, South Norfolk. The village centroid and Watton Road (B1108) which borders the estate to the north align perfectly. The map shows the hall and surrounding parcels.",
+        "top_lon": 1.222,
+        "sigma_m": 400
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,250 @@
+{
+  "case": "A100S",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6326006067297,
+    "top_lon": -0.412936163304532,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:PE9 3EZ",
+    "evidence": "The postcode PE9 3EZ matches the site address 'Shieling, Stamford Road, Barnack' and is consistent with the village of Barnack in Peterborough. The map shows the site at the junction of Stamford Road and a lane, adjacent to a War Memorial, which aligns with the postcode location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09816043785723239,
+  "gt_centroids": [
+    {
+      "lat": 52.63330635286987,
+      "lon": -0.41380992307692266
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "The Shieling, Barnack"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Stamford Road, Barnack",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "War Memorial, Barnack",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Shieling, Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Stamford Road, Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "War Memorial, Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Barnack"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "PE9 3EZ"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Barnack",
+            "type": "village",
+            "lat": 52.63225751588454,
+            "lon": -0.4094760662085537,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Road",
+            "type": "named road",
+            "lat": 52.63974337696178,
+            "lon": -0.3886023441220477,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Hills and Holes",
+            "type": "other landcover",
+            "lat": 52.62872748491194,
+            "lon": -0.41173173146351194,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Road",
+            "type": "section of named road",
+            "lat": 52.640415078687326,
+            "lon": -0.38576956450195304,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Church of England (Controlled) Primary School",
+            "type": "primary education",
+            "lat": 52.633004872373085,
+            "lon": -0.41224179741321654,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "PE9 3EZ",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "PE9 3EZ",
+            "type": "postcode",
+            "lat": 52.63260060672965,
+            "lon": -0.41293616330453176,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.6326006067297,
+        "top_lon": -0.412936163304532,
+        "picked_source": "postcode:PE9 3EZ",
+        "sigma_m": 200,
+        "evidence": "The postcode PE9 3EZ matches the site address 'Shieling, Stamford Road, Barnack' and is consistent with the village of Barnack in Peterborough. The map shows the site at the junction of Stamford Road and a lane, adjacent to a War Memorial, which aligns with the postcode location.",
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

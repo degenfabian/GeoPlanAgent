@@ -1,0 +1,319 @@
+{
+  "case": "SSA415",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.7285,
+    "top_lon": -2.112,
+    "sigma_m": 250,
+    "confidence": "high",
+    "picked_source": "intersect:Teddesley Road x Hatherton Road",
+    "evidence": "The site is 'Land off Teddesley Road' in Penkridge. The intersection of Teddesley Road and Hatherton Road (52.72816, -2.11075) and the nearby Millhouse Gardens (52.72734, -2.11177) align perfectly with the map layout. The site center is slightly north-west of this junction.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09246407473374942,
+  "gt_centroids": [
+    {
+      "lat": 52.72797553153459,
+      "lon": -2.1130655551501647
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Marsh Brook Infants School, Penkridge",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Roll Mill, Penkridge",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Teddesley Road",
+        "la": "South Staffordshire",
+        "road_b": "Hatherton Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Michael's Junior School, Penkridge",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Marsh Brook Infants School, Penkridge",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Roll Mill, Penkridge",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Teddesley Road",
+          "Hatherton Road"
+        ],
+        "la_filter": "South Staffordshire",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.728163,
+            "lon": -2.110748,
+            "roads": [
+              "Teddesley Road",
+              "Hatherton Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Michael's Junior School, Penkridge",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Marsh Brook School",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Michael's School",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Millhouse Gardens",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.728163,
+        "lon": -2.110748,
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Marsh Brook School",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Michael's School",
+        "la_filter": "South Staffordshire",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "St Michael's School",
+            "type": "non state primary education",
+            "lat": 51.684414102945446,
+            "lon": -4.10633974899433,
+            "admin_district": null,
+            "county": "Sir Gaerfyrddin - Carmarthenshire"
+          },
+          {
+            "name": "St Michael's School",
+            "type": "further education,non state primary education,non state secondary education",
+            "lat": 51.34468350657899,
+            "lon": -1.330246113164902,
+            "admin_district": "Basingstoke and Deane",
+            "county": "Hampshire"
+          },
+          {
+            "name": "St Michael's School",
+            "type": "non state primary education",
+            "lat": 51.31359455398911,
+            "lon": 0.21125014804192413,
+            "admin_district": "Sevenoaks",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Millhouse Gardens",
+        "la_filter": "South Staffordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Millhouse Gardens",
+            "type": "named road",
+            "lat": 52.72734372773589,
+            "lon": -2.1117671643740743,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.728163,
+        "lon": -2.110748,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "intersect:Teddesley Road x Hatherton Road",
+        "top_lon": -2.112,
+        "top_lat": 52.7285,
+        "evidence": "The site is 'Land off Teddesley Road' in Penkridge. The intersection of Teddesley Road and Hatherton Road (52.72816, -2.11075) and the nearby Millhouse Gardens (52.72734, -2.11177) align perfectly with the map layout. The site center is slightly north-west of this junction.",
+        "verified_inside_admin_region": true,
+        "sigma_m": 250,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

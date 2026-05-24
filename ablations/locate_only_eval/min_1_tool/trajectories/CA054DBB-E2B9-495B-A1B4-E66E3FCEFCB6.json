@@ -1,0 +1,382 @@
+{
+  "case": "CA054DBB-E2B9-495B-A1B4-E66E3FCEFCB6",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.184224,
+    "top_lon": 1.398049,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Kingsdown",
+    "evidence": "The map shows the Kingsdown Conservation Area. Geocoding 'Kingsdown' village and 'Upper Street' (Dover) provides a tight cluster. 'The Avenue' (Dover) also intersects this area. The center is placed near St John's Church and Upper Street.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.31649031666774485,
+  "gt_centroids": [
+    {
+      "lat": 51.18571849278442,
+      "lon": 1.401913559742691
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St John's Church Kingsdown",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kingsdown Park Holiday Village",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Upper Street Kingsdown",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St John's Church Kingsdown",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kingsdown Park Holiday Village",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Upper Street Kingsdown",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Kingsdown"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Upper Street"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kingsdown",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Kingsdown",
+            "type": "village",
+            "lat": 51.184224148504406,
+            "lon": 1.398049182439034,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Kingsdown Hill",
+            "type": "section of named road",
+            "lat": 51.180045264737856,
+            "lon": 1.3979133626794658,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Kingsdown Road",
+            "type": "named road",
+            "lat": 51.15775266670135,
+            "lon": 1.375017146207361,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Kingsdown Road",
+            "type": "named road",
+            "lat": 51.19861765535072,
+            "lon": 1.4023448119611928,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Kingsdown Road",
+            "type": "section of named road",
+            "lat": 51.20335968402362,
+            "lon": 1.402293602035305,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Upper Street",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Upper Street",
+            "type": "named road",
+            "lat": 51.21533203053226,
+            "lon": 1.2945844232403103,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Upper Street",
+            "type": "named road",
+            "lat": 51.184615293481585,
+            "lon": 1.3991371366108918,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Upper Drove",
+            "type": "named road",
+            "lat": 51.21299782456499,
+            "lon": -1.5081369165282852,
+            "admin_district": "Test Valley",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Upper Walmer",
+            "type": "suburban area",
+            "lat": 51.20140427171035,
+            "lon": 1.3875448192982236,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Upper Deal",
+            "type": "suburban area",
+            "lat": 51.21669749735725,
+            "lon": 1.3809767898801693,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Avenue Kingsdown",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Avenue Kingsdown",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Avenue",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Avenue",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Avenue",
+            "type": "named road",
+            "lat": 51.20920240557438,
+            "lon": -1.4931891497576406,
+            "admin_district": "Test Valley",
+            "county": "Hampshire"
+          },
+          {
+            "name": "The Avenue",
+            "type": "section of named road",
+            "lat": 51.1564965452868,
+            "lon": -1.1547911014713188,
+            "admin_district": "Basingstoke and Deane",
+            "county": "Hampshire"
+          },
+          {
+            "name": "The Avenue",
+            "type": "named road",
+            "lat": 51.18222942877596,
+            "lon": 1.3970436292349213,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "The Avenue",
+            "type": "named road",
+            "lat": 51.227308939026386,
+            "lon": 1.3996915560020124,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "The Avenue",
+            "type": "named road",
+            "lat": 51.15534153270577,
+            "lon": 1.372538135189759,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the Kingsdown Conservation Area. Geocoding 'Kingsdown' village and 'Upper Street' (Dover) provides a tight cluster. 'The Avenue' (Dover) also intersects this area. The center is placed near St John's Church and Upper Street.",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 400,
+        "top_lat": 51.184224,
+        "top_lon": 1.398049,
+        "picked_source": "place:Kingsdown"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

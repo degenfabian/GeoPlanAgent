@@ -1,0 +1,305 @@
+{
+  "case": "A4D9",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.405925,
+    "top_lon": -2.632336,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Peart Drive x The Ridings",
+    "evidence": "The intersection of Peart Drive and The Ridings (51.4059, -2.6323) and The Ridings and Malago Walk (51.4056, -2.6311) perfectly match the map layout. Sherrin Way is also confirmed in the immediate vicinity. Verified inside Bristol.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.021985366564534124,
+  "gt_centroids": [
+    {
+      "lat": 51.40610223670786,
+      "lon": -2.63219551263015
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sherrin Way",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Sherrin Way",
+        "la": "Bristol",
+        "road_b": "Highridge Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "The Ridings",
+        "road_a": "Peart Drive",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Highridge Common"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sherrin Way",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sherrin Way",
+            "type": "named road",
+            "lat": 51.40558322618498,
+            "lon": -2.628953001015419,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Sherrin Way",
+          "Highridge Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Peart Drive",
+          "The Ridings"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.405925,
+            "lon": -2.632336,
+            "roads": [
+              "Peart Drive",
+              "The Ridings"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Highridge Common",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Bristol",
+        "road_a": "The Ridings",
+        "road_b": "Malago Walk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Prospect Place"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.405925,
+        "la": "Bristol",
+        "lon": -2.632336
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Ridings",
+          "Malago Walk"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.405617,
+            "lon": -2.631081,
+            "roads": [
+              "The Ridings",
+              "Malago Walk"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Prospect Place",
+        "la_filter": "Bristol",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Prospect Place",
+            "type": "named road",
+            "lat": 51.468144459630814,
+            "lon": -2.5932897241727373,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Prospect Place",
+            "type": "named road",
+            "lat": 51.46335333214239,
+            "lon": -2.556333759719148,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.405925,
+        "lon": -2.632336,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The intersection of Peart Drive and The Ridings (51.4059, -2.6323) and The Ridings and Malago Walk (51.4056, -2.6311) perfectly match the map layout. Sherrin Way is also confirmed in the immediate vicinity. Verified inside Bristol.",
+        "top_lon": -2.632336,
+        "picked_source": "intersect:Peart Drive x The Ridings",
+        "verified_inside_admin_region": true,
+        "sigma_m": 200,
+        "confidence": "high",
+        "top_lat": 51.405925
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

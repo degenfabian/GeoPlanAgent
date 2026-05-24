@@ -1,0 +1,408 @@
+{
+  "case": "A4_102:LL:077",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.637,
+    "top_lon": -1.131,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Haymarket Theatre",
+    "evidence": "The site is the Haymarket Theatre on Belgrave Gate in Leicester. The map shows the theatre building adjacent to Belgrave Gate and the Haymarket Centre. Coordinates are centered on the Haymarket Theatre building.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.08250646051622855,
+  "gt_centroids": [
+    {
+      "lat": 52.637546197393426,
+      "lon": -1.1318275813510175
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 4,
+      "intersect": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "Belgrave Gate"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Kildare Walk",
+        "la": "Leicester",
+        "road_a": "Belgrave Gate"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Belgrave Gate",
+        "la": "Leicester",
+        "road_b": "Garrick Walk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Belgrave Gate",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Belgrave Gate",
+            "lat": 52.64238668503666,
+            "lon": -1.1285309837265511,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Belgrave Gate",
+            "lat": 52.64254670569557,
+            "lon": -1.1283780181370202,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Belgrave Gate",
+            "lat": 52.642689362197785,
+            "lon": -1.1282415797173784,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Belgrave Gate",
+            "lat": 52.64281206962903,
+            "lon": -1.1281246760141803,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Belgrave Gate",
+            "lat": 52.64305590112958,
+            "lon": -1.1279200871214532,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Leicester for: ['Kildare Walk']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Leicester for: ['Garrick Walk']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Humberstone Gate",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Charles Street",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Humberstone Gate",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Humberstone Gate",
+            "lat": 52.63656471658889,
+            "lon": -1.128597145990374,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Humberstone Gate",
+            "lat": 52.636658400871866,
+            "lon": -1.127993266454424,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Humberstone Gate",
+            "lat": 52.636765484436836,
+            "lon": -1.1273903738211473,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Humberstone Gate",
+            "lat": 52.636054389911536,
+            "lon": -1.1324805254931736,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Humberstone Gate",
+            "lat": 52.636216061947785,
+            "lon": -1.1311226528465388,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Charles Street",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Charles Street",
+            "lat": 52.63776972351209,
+            "lon": -1.1307564298711354,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Charles Street",
+            "lat": 52.638432707388624,
+            "lon": -1.1310223681911729,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Charles Street",
+            "lat": 52.63860749189802,
+            "lon": -1.1310924248122178,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Charles Street",
+            "lat": 52.638807351553005,
+            "lon": -1.1311799403347411,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Charles Street",
+            "lat": 52.634455333176454,
+            "lon": -1.1294145083092042,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Belgrave Gate",
+        "road_b": "Charles Street",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Leicester for: ['Charles Street']"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Abbey Street",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Abbey Street",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Abbey Street",
+            "lat": 52.64017082055644,
+            "lon": -1.132960462161008,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Abbey Street",
+            "lat": 52.63964882091153,
+            "lon": -1.132260767468564,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Abbey Street",
+            "lat": 52.63980999717406,
+            "lon": -1.132498314811593,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Abbey Street",
+            "lat": 52.639016921083744,
+            "lon": -1.1312798255304382,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Abbey Street",
+            "lat": 52.639303131897144,
+            "lon": -1.1317050827220299,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.637,
+        "lon": -1.131,
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.637,
+        "lon": -1.131,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is the Haymarket Theatre on Belgrave Gate in Leicester. The map shows the theatre building adjacent to Belgrave Gate and the Haymarket Centre. Coordinates are centered on the Haymarket Theatre building.",
+        "verified_inside_admin_region": true,
+        "top_lon": -1.131,
+        "confidence": "high",
+        "top_lat": 52.637,
+        "sigma_m": 300,
+        "picked_source": "place:Haymarket Theatre"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

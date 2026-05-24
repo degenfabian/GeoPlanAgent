@@ -1,0 +1,228 @@
+{
+  "case": "A016S",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5772315031323,
+    "top_lon": -0.351402471185426,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:PE5 7AE",
+    "evidence": "The site address '1 Helpston Road, Ailsworth, PE5 7AE' matches the postcode PE5 7AE, which falls within the village of Ailsworth and the Peterborough local authority. The map shows the site at the junction of Helpston Road and Main Street, consistent with the postcode location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.17177675892902647,
+  "gt_centroids": [
+    {
+      "lat": 52.575867726524024,
+      "lon": -0.3525965973085275
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "PE5 7AE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Ailsworth",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Helpston Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "PE5 7AE",
+        "lat": 52.57723150313228,
+        "lon": -0.351402471185426,
+        "admin_district": "City of Peterborough (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ailsworth",
+        "la_filter": "Peterborough",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Ailsworth",
+            "type": "village",
+            "lat": 52.57578709203318,
+            "lon": -0.35291767222683723,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Ailsworth Heath",
+            "type": "woodland or forest",
+            "lat": 52.60323622687576,
+            "lon": -0.35423606392363627,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Helpston Road",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Helpston Road",
+            "lat": 52.63731660050581,
+            "lon": -0.31308953733869604,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "lat": 52.637835803746555,
+            "lon": -0.3066128866925172,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "lat": 52.6380833808017,
+            "lon": -0.30445152996253105,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "lat": 52.63831866961713,
+            "lon": -0.30236710473800704,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "lat": 52.63866026919494,
+            "lon": -0.3001532832452587,
+            "in_la": "Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Peterborough",
+        "lat": 52.5772315031323,
+        "lon": -0.351402471185426
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5772315031323,
+        "lon": -0.351402471185426,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.5772315031323,
+        "top_lon": -0.351402471185426,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "picked_source": "postcode:PE5 7AE",
+        "sigma_m": 200,
+        "evidence": "The site address '1 Helpston Road, Ailsworth, PE5 7AE' matches the postcode PE5 7AE, which falls within the village of Ailsworth and the Peterborough local authority. The map shows the site at the junction of Helpston Road and Main Street, consistent with the postcode location."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,308 @@
+{
+  "case": "Ar4.14",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.82145,
+    "top_lon": -0.32375,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Manor Road, Wheathampstead",
+    "evidence": "The site is 'rear of 26-64 Manor Road, Wheathampstead'. The road search for Manor Road in St Albans returned several segments around 51.821, which matches the village of Wheathampstead. Postcode AL4 8JD is located on Manor Road in Wheathampstead and aligns perfectly with the road centroids. AL1 3JE was a council office/generic postcode.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.07430041887896659,
+  "gt_centroids": [
+    {
+      "lat": 51.82198921383262,
+      "lon": -0.3243884590333055
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 4,
+      "place": 2,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL1 3JE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CB4 9ZR"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Manor Road, Wheathampstead"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Manor Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL1 3JE",
+        "lat": 51.75336285595908,
+        "lon": -0.33612427907835657,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CB4 9ZR' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Manor Road, Wheathampstead",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Manor Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Manor Road",
+            "lat": 51.820979480489854,
+            "lon": -0.3229507374845856,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Manor Road",
+            "lat": 51.8214315141339,
+            "lon": -0.3256840859887008,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Manor Road",
+            "lat": 51.820516029073836,
+            "lon": -0.3208768214120321,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Manor Road",
+            "lat": 51.820630422750654,
+            "lon": -0.320830780699284,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Manor Road",
+            "lat": 51.75476575559818,
+            "lon": -0.32855876659316374,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Wheathampstead"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wheathampstead",
+        "la_filter": "St Albans",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Wheathampstead",
+            "type": "village",
+            "lat": 51.81176242947492,
+            "lon": -0.29387756385607416,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Wheathampstead Road",
+            "type": "section of named road",
+            "lat": 51.81009056451133,
+            "lon": -0.32898786514033157,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Wheathampstead Road",
+            "type": "named road",
+            "lat": 51.81069496220408,
+            "lon": -0.32470061663211647,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Wheathampstead House",
+            "type": "non state primary education",
+            "lat": 51.8175400870189,
+            "lon": -0.29049644080922576,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL4 8LY"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL4 8JD"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL4 8LY",
+        "lat": 51.83856916095411,
+        "lon": -0.30582674126000753,
+        "admin_district": "North Hertfordshire District"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL4 8JD",
+        "lat": 51.82145368992987,
+        "lon": -0.3237501816086457,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "picked_source": "road:Manor Road, Wheathampstead",
+        "top_lon": -0.32375,
+        "top_lat": 51.82145,
+        "evidence": "The site is 'rear of 26-64 Manor Road, Wheathampstead'. The road search for Manor Road in St Albans returned several segments around 51.821, which matches the village of Wheathampstead. Postcode AL4 8JD is located on Manor Road in Wheathampstead and aligns perfectly with the road centroids. AL1 3JE was a council office/generic postcode.",
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

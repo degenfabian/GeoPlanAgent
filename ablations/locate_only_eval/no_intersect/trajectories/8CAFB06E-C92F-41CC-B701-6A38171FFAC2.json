@@ -1,0 +1,486 @@
+{
+  "case": "8CAFB06E-C92F-41CC-B701-6A38171FFAC2",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.126,
+    "top_lon": 1.27,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Elms Vale",
+    "evidence": "The site is located at Elms Vale, Dover. Multiple landmarks from the map (Long Wood, Elms Vale Road, Coombe Road, and Farthingloe) cluster around this coordinate. The map shows the site between Long Wood and Elms Vale Road.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2114155600043548,
+  "gt_centroids": [
+    {
+      "lat": 51.12420041163268,
+      "lon": 1.2709775812117592
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 6,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 24 SE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Elms Vale",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Long Wood"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Elms Vale Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'TR 24 SE'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Elms Vale",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Elms Vale",
+            "type": "suburban area",
+            "lat": 51.124139600678305,
+            "lon": 1.2901021130047237,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Elms Vale Road",
+            "type": "named road",
+            "lat": 51.12381159836632,
+            "lon": 1.2771286029415743,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Elms Vale Road",
+            "type": "section of named road",
+            "lat": 51.124765260407095,
+            "lon": 1.2876880167983908,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Long Wood",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Long Wood",
+            "type": "woodland or forest",
+            "lat": 51.128590882980255,
+            "lon": 1.2635292961740097,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Long Wood",
+            "type": "woodland or forest",
+            "lat": 51.11875075820323,
+            "lon": 1.251573093144446,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Long Wood",
+            "type": "woodland or forest",
+            "lat": 51.24397871577138,
+            "lon": 1.237674648319177,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Long Wood",
+            "type": "woodland or forest",
+            "lat": 51.12562082442569,
+            "lon": 1.2680940882874743,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Elms Vale Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Elms Vale Road",
+            "lat": 51.12535199521321,
+            "lon": 1.284013839137149,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Elms Vale Road",
+            "lat": 51.12530606084425,
+            "lon": 1.2843679353530821,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Elms Vale Road",
+            "lat": 51.124713659308085,
+            "lon": 1.287284115414759,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Elms Vale Road",
+            "lat": 51.12407020067765,
+            "lon": 1.290490260329943,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Elms Vale Road",
+            "lat": 51.12398371714295,
+            "lon": 1.2910058363452983,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Elms Farm"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Little Farthingloe",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.27,
+        "la": "Dover",
+        "lat": 51.126
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Elms Farm",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Elms Farm",
+            "type": "suburban area",
+            "lat": 52.15162548445827,
+            "lon": -0.4120296345671457,
+            "admin_district": null,
+            "county": "Bedford"
+          },
+          {
+            "name": "Elms Farm Community Primary School",
+            "type": "primary education",
+            "lat": 52.46376109141692,
+            "lon": -1.7731557945787761,
+            "admin_district": "Birmingham",
+            "county": null
+          },
+          {
+            "name": "Elms Farm Solar Plant",
+            "type": "electricity production",
+            "lat": 52.210264435429714,
+            "lon": -1.5795264165323846,
+            "admin_district": "Stratford-on-Avon",
+            "county": "Warwickshire"
+          },
+          {
+            "name": "Elms Farm Close",
+            "type": "named road",
+            "lat": 52.3481297200945,
+            "lon": -1.1370717312980778,
+            "admin_district": null,
+            "county": "West Northamptonshire"
+          },
+          {
+            "name": "Elms Farm Solar Park",
+            "type": "electricity production",
+            "lat": 51.60501621769967,
+            "lon": -1.3996761806255482,
+            "admin_district": "Vale of White Horse",
+            "county": "Oxfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Little Farthingloe",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.126,
+        "lon": 1.27,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Farthingloe"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Coombe Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Farthingloe",
+        "la_filter": "Dover",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Farthingloe",
+            "type": "hamlet",
+            "lat": 51.117245116535194,
+            "lon": 1.2774496446892452,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Farthingloe Road",
+            "type": "named road",
+            "lat": 51.118169066539465,
+            "lon": 1.289063061222734,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coombe Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Coombe Road",
+            "type": "named road",
+            "lat": 51.12709047554427,
+            "lon": 1.2599212392287553,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe Road",
+            "type": "named road",
+            "lat": 51.132383566036495,
+            "lon": 1.281310001078637,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe Road",
+            "type": "section of named road",
+            "lat": 51.13132709544699,
+            "lon": 1.2766460036764113,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe",
+            "type": "hamlet",
+            "lat": 51.27057496120895,
+            "lon": 1.2921992526431263,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe Avenue",
+            "type": "named road",
+            "lat": 51.763592750478374,
+            "lon": -0.7476402678415394,
+            "admin_district": null,
+            "county": "Buckinghamshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Elms Vale",
+        "sigma_m": 500,
+        "top_lon": 1.27,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is located at Elms Vale, Dover. Multiple landmarks from the map (Long Wood, Elms Vale Road, Coombe Road, and Farthingloe) cluster around this coordinate. The map shows the site between Long Wood and Elms Vale Road.",
+        "top_lat": 51.126,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

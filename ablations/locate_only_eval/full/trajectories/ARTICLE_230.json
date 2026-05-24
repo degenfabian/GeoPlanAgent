@@ -1,0 +1,268 @@
+{
+  "case": "ARTICLE:230",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.113956,
+    "top_lon": 0.241048,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TL 535 485",
+    "evidence": "The site is located at OS Parcel 7100, Great Abington. The map shows the site bounded by the River Granta and the A604 (now A11). The grid reference TL 535 485 (derived from the map's grid labels 53 and 48) aligns perfectly with the location of Hilda's Wood and the River Granta near Great Abington.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.39969642366504937,
+  "gt_centroids": [
+    {
+      "lat": 52.11677036868277,
+      "lon": 0.24468942774469554
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "place": 3,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TL 50 48"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "West Lodge, Great Abington"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "Hilda's Wood"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "A604",
+        "road_b": "Linton Road",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TL 50 48",
+        "lat": 52.11434480691336,
+        "lon": 0.1965188990569145
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "West Lodge, Great Abington",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hilda's Wood",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Hilda's Wood",
+            "type": "woodland or forest",
+            "lat": 52.11453820639287,
+            "lon": 0.24826318096778704,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Cambridgeshire for: ['A604']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TL 535 485"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "Great Abington"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 0.248263180967787,
+        "lat": 52.1145382063929,
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TL 535 485",
+        "lat": 52.11395623327818,
+        "lon": 0.24104776479411977
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Great Abington",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Great Abington",
+            "type": "village",
+            "lat": 52.11689400551933,
+            "lon": 0.21741514097320971,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "Great Abington Primary School",
+            "type": "primary education",
+            "lat": 52.11681960836629,
+            "lon": 0.23705765996332026,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.1145382063929,
+        "lon": 0.248263180967787,
+        "la": "South Cambridgeshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.17283510081104,
+        "la_centroid_lon": 0.08123824327654822
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lat": 52.113956,
+        "picked_source": "grid_ref:TL 535 485",
+        "evidence": "The site is located at OS Parcel 7100, Great Abington. The map shows the site bounded by the River Granta and the A604 (now A11). The grid reference TL 535 485 (derived from the map's grid labels 53 and 48) aligns perfectly with the location of Hilda's Wood and the River Granta near Great Abington.",
+        "sigma_m": 300,
+        "confidence": "high",
+        "top_lon": 0.241048
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

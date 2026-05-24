@@ -1,0 +1,164 @@
+{
+  "case": "Ar4.16",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.781,
+    "top_lon": -0.31,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Sandridgebury Lane",
+    "evidence": "The map shows a site on Sandridgebury Lane, St Albans, adjacent to a railway line. Road geocoding for Sandridgebury Lane in St Albans provides a tight cluster of points. The picked coordinate is central to these road segments and verified within the St Albans district.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.9048646559601673,
+  "gt_centroids": [
+    {
+      "lat": 51.77618696062137,
+      "lon": -0.32060558921712295
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 3,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Sandridgebury Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Sandridgebury Lane",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Sandridgebury Lane",
+            "lat": 51.78195123008695,
+            "lon": -0.30910713276599033,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "lat": 51.781700707603704,
+            "lon": -0.3134509340415194,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "lat": 51.780797369969925,
+            "lon": -0.315209456495657,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "lat": 51.781276622912095,
+            "lon": -0.3143394689755643,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "lat": 51.781101044292974,
+            "lon": -0.3053292560364684,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "St Albans",
+        "lon": -0.31,
+        "lat": 51.781
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.781,
+        "lon": -0.31,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.31,
+        "picked_source": "road:Sandridgebury Lane",
+        "confidence": "high",
+        "top_lat": 51.781,
+        "sigma_m": 500,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows a site on Sandridgebury Lane, St Albans, adjacent to a railway line. Road geocoding for Sandridgebury Lane in St Albans provides a tight cluster of points. The picked coordinate is central to these road segments and verified within the St Albans district."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

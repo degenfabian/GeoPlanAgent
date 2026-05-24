@@ -1,0 +1,294 @@
+{
+  "case": "A4D4A1",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.581176,
+    "top_lon": -0.181172,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Hampstead Garden Suburb",
+    "evidence": "The map shows the Hampstead Garden Suburb Conservation Area. The 'place' tool for 'Hampstead Garden Suburb' and 'Central Square' (a key landmark on the map) both point to this specific area in Barnet. The pick is the centroid of the suburb area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14132132103578787,
+  "gt_centroids": [
+    {
+      "lat": 51.58165989581618,
+      "lon": -0.18306322189679006
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 17,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hampstead Garden Suburb",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hampstead Garden Suburb",
+        "la_filter": "Barnet",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Hampstead Garden Suburb",
+            "type": "suburban area",
+            "lat": 51.581176468974675,
+            "lon": -0.18117178597945902,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lyttelton Playing Fields",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lyttelton Playing Fields",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Central Square"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Central Square",
+        "la_filter": "Barnet",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Central Square",
+            "type": "named road",
+            "lat": 51.58088612206232,
+            "lon": -0.1897279260801975,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Lyttelton Road",
+        "road_b": "Kingsley Way",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Barnet for: ['Lyttelton Road', 'Kingsley Way']"
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hampstead Golf Club",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hampstead Golf Club",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Barnet",
+        "query": "Falloden Way"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Falloden Way",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Barnet",
+        "lon": -0.185,
+        "lat": 51.581
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.581,
+        "lon": -0.185,
+        "la": "Barnet",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.616028526273034,
+        "la_centroid_lon": -0.21000945769264093
+      }
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.181172,
+        "evidence": "The map shows the Hampstead Garden Suburb Conservation Area. The 'place' tool for 'Hampstead Garden Suburb' and 'Central Square' (a key landmark on the map) both point to this specific area in Barnet. The pick is the centroid of the suburb area.",
+        "top_lat": 51.581176,
+        "sigma_m": 1500,
+        "picked_source": "place:Hampstead Garden Suburb"
+      }
+    },
+    {
+      "turn": 16,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

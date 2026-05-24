@@ -1,0 +1,264 @@
+{
+  "case": "ARTICLE:230",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.1143448069134,
+    "top_lon": 0.196518899056914,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "grid_ref:TL 50 48",
+    "evidence": "The map shows a site bounded by the A604 (now A1307) and the River Granta near Great Abington. The grid reference TL 50 48 provided in the PDF info aligns perfectly with the map's grid markings (486, 487, 488, 489 on the Y-axis) and the local geography. Verified inside South Cambridgeshire.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 3.300198843417368,
+  "gt_centroids": [
+    {
+      "lat": 52.11677036868277,
+      "lon": 0.24468942774469554
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "postcode": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TL 50 48"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Linton Road",
+        "road_a": "A 604",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TL 50 48",
+        "lat": 52.11434480691336,
+        "lon": 0.1965188990569145
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Cambridgeshire for: ['A 604']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "Linton Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 0.196518899056914,
+        "la": "South Cambridgeshire",
+        "lat": 52.1143448069134
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Linton Road",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Linton Road",
+            "lat": 52.099965661079146,
+            "lon": 0.34880915771392906,
+            "in_la": "South Cambridgeshire"
+          },
+          {
+            "name": "Linton Road",
+            "lat": 52.09977691913,
+            "lon": 0.3511064353485317,
+            "in_la": "South Cambridgeshire"
+          },
+          {
+            "name": "Linton Road",
+            "lat": 52.10008744515414,
+            "lon": 0.3467336502840423,
+            "in_la": "South Cambridgeshire"
+          },
+          {
+            "name": "Linton Road",
+            "lat": 52.10044500061347,
+            "lon": 0.3461885020770349,
+            "in_la": "South Cambridgeshire"
+          },
+          {
+            "name": "Linton Road",
+            "lat": 52.13291123245372,
+            "lon": 0.30600300925221335,
+            "in_la": "South Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.1143448069134,
+        "lon": 0.196518899056914,
+        "la": "South Cambridgeshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.17283510081104,
+        "la_centroid_lon": 0.08123824327654822
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CB21 6AX"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CB21 6AX",
+        "lat": 52.093210278257196,
+        "lon": 0.22400710187792375,
+        "admin_district": "South Cambridgeshire District"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TL 505 485"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TL 505 485",
+        "lat": 52.1147804036951,
+        "lon": 0.19727062035984583
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "grid_ref:TL 50 48",
+        "sigma_m": 400,
+        "top_lon": 0.196518899056914,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows a site bounded by the A604 (now A1307) and the River Granta near Great Abington. The grid reference TL 50 48 provided in the PDF info aligns perfectly with the map's grid markings (486, 487, 488, 489 on the Y-axis) and the local geography. Verified inside South Cambridgeshire.",
+        "confidence": "high",
+        "top_lat": 52.1143448069134
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

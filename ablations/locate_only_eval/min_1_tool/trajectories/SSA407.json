@@ -1,0 +1,311 @@
+{
+  "case": "SSA407",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5349838044871,
+    "top_lon": -2.22402760170534,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Feiashill Road",
+    "evidence": "The map shows a large field on Feiashill Road, Trysull, adjacent to 'Fiashill Farm' and a 'Cricket Ground'. Geocoding 'Feiashill Road' in South Staffordshire provides a precise road location south of Trysull village, which aligns with the map's features.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.18915464010038235,
+  "gt_centroids": [
+    {
+      "lat": 52.53377585943938,
+      "lon": -2.2220585187139483
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Feiashill Road, Trysull",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fiashill Farm, Trysull",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Smestow Barn, Trysull",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Trysull Cricket Ground",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Feiashill Road, Trysull",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fiashill Farm, Trysull",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Smestow Barn, Trysull",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trysull Cricket Ground",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Feiashill Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Trysull"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Feiashill Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Feiashill Road",
+            "type": "named road",
+            "lat": 52.53498380448714,
+            "lon": -2.2240276017053384,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Feiashill Close",
+            "type": "named road",
+            "lat": 52.53477661978158,
+            "lon": -2.2242476826788695,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trysull",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Trysull",
+            "type": "village",
+            "lat": 52.54123219019364,
+            "lon": -2.223808787208397,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Trysull Holloway",
+            "type": "section of named road",
+            "lat": 52.547361679993394,
+            "lon": -2.219873150182849,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Trysull Road",
+            "type": "named road",
+            "lat": 52.543427622158966,
+            "lon": -2.202822603555659,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Trysull Holloway",
+            "type": "named road",
+            "lat": 52.55261996271719,
+            "lon": -2.2202976701543915,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Trysull Road",
+            "type": "section of named road",
+            "lat": 52.5421191340155,
+            "lon": -2.200457381414159,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Feiashill Farm",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Feiashill Farm",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lat": 52.5349838044871,
+        "confidence": "high",
+        "top_lon": -2.22402760170534,
+        "sigma_m": 400,
+        "evidence": "The map shows a large field on Feiashill Road, Trysull, adjacent to 'Fiashill Farm' and a 'Cricket Ground'. Geocoding 'Feiashill Road' in South Staffordshire provides a precise road location south of Trysull village, which aligns with the map's features.",
+        "picked_source": "place:Feiashill Road"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,313 @@
+{
+  "case": "12_merged",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.358,
+    "top_lon": -3.135,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "intersect:Telegraph Road x Station Road",
+    "evidence": "The map shows a large area between Caldy and Thurstaston. The intersection of Telegraph Road and Station Road (53.3503, -3.1306) anchors the southern end (Dawpool Farm), while Montgomery Hill (approx 53.367, -3.137) anchors the north. The centroid of the combined red and blue polygons lies near 53.358, -3.135.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.0286974481942037,
+  "gt_centroids": [
+    {
+      "lat": 53.35118317046466,
+      "lon": -3.145478801079716
+    },
+    {
+      "lat": 53.36217045807339,
+      "lon": -3.153047704294689
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 3,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Wirral",
+        "query": "Telegraph Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Wirral",
+        "query": "Station Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Wirral",
+        "road_a": "Telegraph Road",
+        "road_b": "Station Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Montgomery Hill",
+        "la": "Wirral"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Telegraph Road",
+        "la_filter": "Wirral",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Telegraph Road",
+            "lat": 53.35889798597669,
+            "lon": -3.1452011726983864,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Telegraph Road",
+            "lat": 53.35944759889573,
+            "lon": -3.1458454407557146,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Telegraph Road",
+            "lat": 53.36029895225769,
+            "lon": -3.146819322006863,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Telegraph Road",
+            "lat": 53.35244971684147,
+            "lon": -3.133613971889637,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Telegraph Road",
+            "lat": 53.351426329473746,
+            "lon": -3.131831241358706,
+            "in_la": "Wirral"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Station Road",
+        "la_filter": "Wirral",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Station Road",
+            "lat": 53.41780456286694,
+            "lon": -3.0544823103811414,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Station Road",
+            "lat": 53.41731361837526,
+            "lon": -3.054045922395656,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Station Road",
+            "lat": 53.416836531243334,
+            "lon": -3.053612821245637,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Station Road",
+            "lat": 53.41635455085181,
+            "lon": -3.0532247477121603,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Station Road",
+            "lat": 53.4146892812514,
+            "lon": -3.0519573688363444,
+            "in_la": "Wirral"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Telegraph Road",
+          "Station Road"
+        ],
+        "la_filter": "Wirral",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 53.350301,
+            "lon": -3.130621,
+            "roads": [
+              "Telegraph Road",
+              "Station Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Montgomery Hill",
+        "la_filter": "Wirral",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Montgomery Hill",
+            "lat": 53.367635160118176,
+            "lon": -3.137149120911909,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Montgomery Hill",
+            "lat": 53.36827978940767,
+            "lon": -3.1357217396058745,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Montgomery Hill",
+            "lat": 53.366658191431526,
+            "lon": -3.1391175017148623,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Montgomery Hill",
+            "lat": 53.36705310737465,
+            "lon": -3.138328421637577,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Montgomery Hill",
+            "lat": 53.362847595702355,
+            "lon": -3.1451532999606076,
+            "in_la": "Wirral"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 53.358,
+        "la": "Wirral",
+        "lon": -3.135
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 53.358,
+        "lon": -3.135,
+        "la": "Wirral",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 53.36836475621285,
+        "la_centroid_lon": -3.092689487184164
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -3.135,
+        "sigma_m": 1000,
+        "picked_source": "intersect:Telegraph Road x Station Road",
+        "evidence": "The map shows a large area between Caldy and Thurstaston. The intersection of Telegraph Road and Station Road (53.3503, -3.1306) anchors the southern end (Dawpool Farm), while Montgomery Hill (approx 53.367, -3.137) anchors the north. The centroid of the combined red and blue polygons lies near 53.358, -3.135.",
+        "top_lat": 53.358,
+        "confidence": "high",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

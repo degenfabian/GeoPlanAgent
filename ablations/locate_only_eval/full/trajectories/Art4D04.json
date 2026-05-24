@@ -1,0 +1,366 @@
+{
+  "case": "Art4D04",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.6062127399553,
+    "top_lon": -1.96603169196567,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "grid_ref:SZ 0278",
+    "evidence": "The grid reference SZ 0278 from pdf_info places the site in Swanage. The map shows Swanage Station and St Mary's Church, which are consistent with the town center coordinates returned for Swanage (50.608, -1.956). The grid ref is the most precise signal.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.34710030081351223,
+  "gt_centroids": [
+    {
+      "lat": 50.60833518703157,
+      "lon": -1.9624249624545609
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 5,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SZ 0278"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Purbeck",
+        "query": "Swanage Station"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Mary's Church Swanage",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Church Hill",
+        "road_b": "Townsend Road",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SZ 0278",
+        "lat": 50.60621273995527,
+        "lon": -1.9660316919656677
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Swanage Station",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church Swanage",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Church Hill",
+          "Townsend Road"
+        ],
+        "la_filter": "Purbeck",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Swanage Station"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Mary's Church, Swanage"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Church Hill",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 50.6062127399553,
+        "la": "Purbeck",
+        "lon": -1.96603169196567
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Swanage Station",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church, Swanage",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Church Hill",
+        "la_filter": "Purbeck",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Church Hill",
+            "lat": 55.845681532442924,
+            "lon": -4.427598908806738,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 55.4665098318648,
+            "lon": -4.292496215723954,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 55.466734884943556,
+            "lon": -4.291757790374172,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 55.32439727241349,
+            "lon": -4.395464134725311,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 55.32484958677086,
+            "lon": -4.394746155599163,
+            "in_la": "Purbeck"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": false,
+        "error": "No polygon for LA 'Purbeck'"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Swanage"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Swanage",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Swanage",
+            "type": "town",
+            "lat": 50.60814297273917,
+            "lon": -1.9562791863587363,
+            "admin_district": null,
+            "county": "Dorset"
+          },
+          {
+            "name": "Swanage",
+            "type": "railway station",
+            "lat": 50.60996093538049,
+            "lon": -1.9602346432543534,
+            "admin_district": null,
+            "county": "Dorset"
+          },
+          {
+            "name": "Swanage Close",
+            "type": "named road",
+            "lat": 55.02117518574394,
+            "lon": -1.4747449936412211,
+            "admin_district": "North Tyneside",
+            "county": null
+          },
+          {
+            "name": "Swanage Close",
+            "type": "named road",
+            "lat": 54.492732747607704,
+            "lon": -1.3555928585000008,
+            "admin_district": null,
+            "county": "Stockton-on-Tees"
+          },
+          {
+            "name": "Swanage Close",
+            "type": "named road",
+            "lat": 54.534982979568625,
+            "lon": -1.2144781330188699,
+            "admin_district": null,
+            "county": "Middlesbrough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The grid reference SZ 0278 from pdf_info places the site in Swanage. The map shows Swanage Station and St Mary's Church, which are consistent with the town center coordinates returned for Swanage (50.608, -1.956). The grid ref is the most precise signal.",
+        "picked_source": "grid_ref:SZ 0278",
+        "sigma_m": 400,
+        "confidence": "high",
+        "verified_inside_admin_region": false,
+        "top_lat": 50.6062127399553,
+        "top_lon": -1.96603169196567
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

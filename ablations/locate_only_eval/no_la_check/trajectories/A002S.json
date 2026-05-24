@@ -1,0 +1,288 @@
+{
+  "case": "A002S",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6326006067297,
+    "top_lon": -0.412936163304532,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:PE9 3EZ",
+    "evidence": "The site address 'Bay Tree Cottage, Stamford Road, Barnack' matches the postcode PE9 3EZ, which is located in Barnack, Peterborough. The map labels (Rock Cottage, Rose Cottage) are consistent with the site address and the village location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.019899616494339755,
+  "gt_centroids": [
+    {
+      "lat": 52.632534858867096,
+      "lon": -0.4126619172659531
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 4,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "PE9 3EZ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Bay Tree Cottage"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Rock Cottage"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Rose Cottage",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "PE9 3EZ",
+        "lat": 52.63260060672965,
+        "lon": -0.41293616330453176,
+        "admin_district": "City of Peterborough (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bay Tree Cottage",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Rock Cottage",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Rock Cottage Nursing Home",
+            "type": "medical care accommodation",
+            "lat": 53.07512739148418,
+            "lon": -2.1331914485500563,
+            "admin_district": "Staffordshire Moorlands",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Rose Cottage",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Rose Cottage",
+            "type": "named road",
+            "lat": 50.567708314180855,
+            "lon": -4.89772953768075,
+            "admin_district": null,
+            "county": "Cornwall"
+          },
+          {
+            "name": "Rose Cottages",
+            "type": "named road",
+            "lat": 55.87204122657043,
+            "lon": -3.0954267633266563,
+            "admin_district": null,
+            "county": "Midlothian"
+          },
+          {
+            "name": "Rose Cottage Gardens",
+            "type": "named road",
+            "lat": 54.52322994647529,
+            "lon": -1.2619189144040266,
+            "admin_district": null,
+            "county": "Middlesbrough"
+          },
+          {
+            "name": "Rose Cottage Lane",
+            "type": "named road",
+            "lat": 54.38302628860104,
+            "lon": -2.912859074108051,
+            "admin_district": null,
+            "county": "Westmorland and Furness"
+          },
+          {
+            "name": "Rose Cottage Road",
+            "type": "named road",
+            "lat": 53.43839720760398,
+            "lon": -2.229599440855955,
+            "admin_district": "Manchester",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Barnack"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Barnack",
+            "type": "village",
+            "lat": 52.63225751588454,
+            "lon": -0.4094760662085537,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Road",
+            "type": "named road",
+            "lat": 52.63974337696178,
+            "lon": -0.3886023441220477,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Hills and Holes",
+            "type": "other landcover",
+            "lat": 52.62872748491194,
+            "lon": -0.41173173146351194,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Road",
+            "type": "section of named road",
+            "lat": 52.640415078687326,
+            "lon": -0.38576956450195304,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Church of England (Controlled) Primary School",
+            "type": "primary education",
+            "lat": 52.633004872373085,
+            "lon": -0.41224179741321654,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.412936163304532,
+        "confidence": "high",
+        "picked_source": "postcode:PE9 3EZ",
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "top_lat": 52.6326006067297,
+        "evidence": "The site address 'Bay Tree Cottage, Stamford Road, Barnack' matches the postcode PE9 3EZ, which is located in Barnack, Peterborough. The map labels (Rock Cottage, Rose Cottage) are consistent with the site address and the village location."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

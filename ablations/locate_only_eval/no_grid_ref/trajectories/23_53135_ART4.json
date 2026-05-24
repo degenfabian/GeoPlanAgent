@@ -1,0 +1,308 @@
+{
+  "case": "23:53135:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.621496,
+    "top_lon": 1.441186,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:The Street x Station Road",
+    "evidence": "The site is the White Horse Inn at the junction of The Street and Station Road in Brundall. The intersection tool pinpointed this junction within the correct Broadland district. NR7 0DU is the council office address (Thorpe Lodge).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.036664527140954514,
+  "gt_centroids": [
+    {
+      "lat": 52.62163825078993,
+      "lon": 1.4416760025806294
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "postcode": 1,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "White Horse Inn Brundall",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR7 0DU"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "The Street",
+        "la": "Broadland",
+        "road_b": "Station Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Brundall",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "White Horse Inn Brundall",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR7 0DU' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Street",
+          "Station Road"
+        ],
+        "la_filter": "Broadland",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.825188,
+            "lon": 1.033666,
+            "roads": [
+              "The Street",
+              "Station Road"
+            ]
+          },
+          {
+            "lat": 52.621496,
+            "lon": 1.441186,
+            "roads": [
+              "The Street",
+              "Station Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Brundall",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Brundall",
+            "type": "village",
+            "lat": 52.624317196382655,
+            "lon": 1.432909303125613,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Brundall",
+            "type": "railway station",
+            "lat": 52.618747158903425,
+            "lon": 1.4401278734622927,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Brundall Road",
+            "type": "named road",
+            "lat": 52.62831710993018,
+            "lon": 1.445372492712987,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Brundall Low Road",
+            "type": "named road",
+            "lat": 52.62353625715543,
+            "lon": 1.3966984099179478,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Brundall Broad",
+            "type": "inland water",
+            "lat": 52.62226949442132,
+            "lon": 1.425980251704511,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.621496,
+        "la": "Broadland",
+        "lon": 1.441186
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Braydeston House",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Street Brundall",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.621496,
+        "lon": 1.441186,
+        "la": "Broadland",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.70119443642098,
+        "la_centroid_lon": 1.3101886931294198
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Braydeston House",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Street Brundall",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "intersect:The Street x Station Road",
+        "top_lat": 52.621496,
+        "sigma_m": 300,
+        "confidence": "high",
+        "evidence": "The site is the White Horse Inn at the junction of The Street and Station Road in Brundall. The intersection tool pinpointed this junction within the correct Broadland district. NR7 0DU is the council office address (Thorpe Lodge).",
+        "top_lon": 1.441186,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

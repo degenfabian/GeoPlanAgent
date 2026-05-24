@@ -1,0 +1,337 @@
+{
+  "case": "A4Da1",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.3827,
+    "top_lon": -4.134,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Mutley",
+    "evidence": "The map shows a large Article 4 Direction area covering central Plymouth neighborhoods. Mutley is centrally located within this boundary, and the coordinate is verified within the Plymouth admin region.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.19220863041647382,
+  "gt_centroids": [
+    {
+      "lat": 50.38123361171922,
+      "lon": -4.132564697066778
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Plymouth City Centre",
+        "la": "Plymouth"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Mutley & Greenbank",
+        "la": "Plymouth"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Central Park Plymouth",
+        "la": "Plymouth"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Plymouth City Centre",
+        "la_filter": "Plymouth",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mutley & Greenbank",
+        "la_filter": "Plymouth",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Central Park Plymouth",
+        "la_filter": "Plymouth",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Plymouth",
+        "query": "Plymouth"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Mutley",
+        "la": "Plymouth"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Plymouth",
+        "query": "Central Park"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Plymouth",
+        "la_filter": "Plymouth",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Plymouth",
+            "type": "railway station",
+            "lat": 50.37793791864002,
+            "lon": -4.14259401907471,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          },
+          {
+            "name": "Plymouth",
+            "type": "city",
+            "lat": 50.370014567432115,
+            "lon": -4.14206823308745,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          },
+          {
+            "name": "Plymouth Road",
+            "type": "named road",
+            "lat": 50.39105770640812,
+            "lon": -4.07884701904541,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          },
+          {
+            "name": "Plymouth Trade Park",
+            "type": "named road",
+            "lat": 50.364558071953205,
+            "lon": -4.11833992572038,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          },
+          {
+            "name": "Plymouth Road",
+            "type": "section of named road",
+            "lat": 50.387903187079694,
+            "lon": -4.089246134950065,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mutley",
+        "la_filter": "Plymouth",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Mutley",
+            "type": "suburban area",
+            "lat": 50.38273648086205,
+            "lon": -4.134032638906647,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          },
+          {
+            "name": "Mutley Road",
+            "type": "named road",
+            "lat": 50.386768906463644,
+            "lon": -4.132891316668755,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          },
+          {
+            "name": "Mutley Plain Lane",
+            "type": "named road",
+            "lat": 50.38345418917496,
+            "lon": -4.133642853064901,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          },
+          {
+            "name": "Mutley Plain",
+            "type": "named road",
+            "lat": 50.382003678546496,
+            "lon": -4.133774673038509,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Central Park",
+        "la_filter": "Plymouth",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Central Park Avenue",
+            "type": "named road",
+            "lat": 50.37871789198462,
+            "lon": -4.144682754100963,
+            "admin_district": null,
+            "county": "City of Plymouth"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -4.134,
+        "lat": 50.3827,
+        "la": "Plymouth"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.3827,
+        "lon": -4.134,
+        "la": "Plymouth",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.39177953575037,
+        "la_centroid_lon": -4.11992882524368
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows a large Article 4 Direction area covering central Plymouth neighborhoods. Mutley is centrally located within this boundary, and the coordinate is verified within the Plymouth admin region.",
+        "top_lat": 50.3827,
+        "verified_inside_admin_region": true,
+        "sigma_m": 1500,
+        "confidence": "high",
+        "picked_source": "place:Mutley",
+        "top_lon": -4.134
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

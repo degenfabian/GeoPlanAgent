@@ -1,0 +1,381 @@
+{
+  "case": "A4DA06",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.703343,
+    "top_lon": -2.201003,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Bacup",
+    "evidence": "The map shows Bacup Town Centre. The town centroid for Bacup and the centroid for Yorkshire Street (a major road on the map) are within 150m of each other. Verified inside Rossendale.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.058185659869174476,
+  "gt_centroids": [
+    {
+      "lat": 53.701105000000005,
+      "lon": -2.202859333333333
+    },
+    {
+      "lat": 53.70282194230591,
+      "lon": -2.2009216885939944
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 2,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bacup Town Centre",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Rossendale",
+        "query": "Market Place, Bacup"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "St James Street",
+        "la": "Rossendale",
+        "road_b": "Yorkshire Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Market Street",
+        "la": "Rossendale",
+        "road_b": "Bank Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bacup Town Centre",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Market Place, Bacup",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Rossendale for: ['St James Street']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Rossendale for: ['Bank Street']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bacup",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Mary's R.C. Church, Bacup",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Rossendale",
+        "query": "Rochdale Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Rossendale",
+        "query": "Yorkshire Street"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bacup",
+        "la_filter": "Rossendale",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Bacup",
+            "type": "town",
+            "lat": 53.703343424175564,
+            "lon": -2.201002781122456,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Bacup Road",
+            "type": "named road",
+            "lat": 53.697005688387534,
+            "lon": -2.2660525661880513,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Bacup Old Road",
+            "type": "named road",
+            "lat": 53.72500852667359,
+            "lon": -2.2040766995311825,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Bacup Thorn Primary School",
+            "type": "primary education",
+            "lat": 53.70712307625137,
+            "lon": -2.198218237902437,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Bacup St Saviour's Community Primary School",
+            "type": "primary education",
+            "lat": 53.69380188441067,
+            "lon": -2.1987007684170803,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's R.C. Church, Bacup",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Rochdale Road",
+        "la_filter": "Rossendale",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Rochdale Road",
+            "lat": 53.69908824096715,
+            "lon": -2.1978926576505167,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Rochdale Road",
+            "lat": 53.70215530845378,
+            "lon": -2.199323336508767,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Rochdale Road",
+            "lat": 53.70180516557087,
+            "lon": -2.19908689879439,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Rochdale Road",
+            "lat": 53.66840312875651,
+            "lon": -2.304148836615822,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Rochdale Road",
+            "lat": 53.66792412336821,
+            "lon": -2.3035037338359525,
+            "in_la": "Rossendale"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Yorkshire Street",
+        "la_filter": "Rossendale",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Yorkshire Street",
+            "lat": 53.70376899463241,
+            "lon": -2.1998860655408103,
+            "in_la": "Rossendale"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.201003,
+        "la": "Rossendale",
+        "lat": 53.703343
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 53.703343,
+        "lon": -2.201003,
+        "la": "Rossendale",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 53.69381770640495,
+        "la_centroid_lon": -2.2673137098881666
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows Bacup Town Centre. The town centroid for Bacup and the centroid for Yorkshire Street (a major road on the map) are within 150m of each other. Verified inside Rossendale.",
+        "sigma_m": 400,
+        "top_lon": -2.201003,
+        "confidence": "high",
+        "top_lat": 53.703343,
+        "picked_source": "place:Bacup",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

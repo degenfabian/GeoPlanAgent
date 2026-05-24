@@ -16,7 +16,10 @@ class AgentState:
 
     def __init__(self, pdf_path, sam3_processor, sam3_model, device,
                  minima_matcher, dpi=200, sam3_state=None, case_name=None,
-                 locate_model: str = "google/gemini-3-flash-preview"):
+                 locate_model: str = "google/gemini-3-flash-preview",
+                 locate_disabled_tools: frozenset = frozenset(
+                     {"postcode", "grid_ref", "road", "intersect", "la_check"}
+                 )):
         self.pdf_path = pdf_path
         self.sam3_processor = sam3_processor
         self.sam3_model = sam3_model
@@ -24,6 +27,17 @@ class AgentState:
         self.minima_matcher = minima_matcher
         self.dpi = dpi
         self.locate_model: str = locate_model
+        # Production ships the locate sub-agent with `place` only — the
+        # locate-stage ablation showed 1-tool ≈ 6-tool in IoU (Δmean = +0.001
+        # on the 11 cross-1km regression-risk cases), and dropping the 5
+        # other tools shrinks the prompt + tool schema sent to the LLM.
+        #
+        # The other 5 tool wrappers + the factory pattern are RETAINED in
+        # tools.agent.locate_agent for paper-ablation reproducibility — the
+        # ablation harness calls run_locate(disabled_tools=…) directly with
+        # the LOO/min_N kits. Override via benchmark_runner's
+        # --locate-disabled-tools to run those kits in production too.
+        self.locate_disabled_tools: frozenset = locate_disabled_tools
         self.sam3_state: Optional[Dict[str, Any]] = sam3_state
         # Case folder name; needed for k-fold adapter routing.
         self.case_name: Optional[str] = case_name

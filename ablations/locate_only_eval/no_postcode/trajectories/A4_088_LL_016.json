@@ -1,0 +1,346 @@
+{
+  "case": "A4_088:LL:016",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.65257,
+    "top_lon": -1.13511,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Exploration Drive",
+    "evidence": "The site is the National Space Centre on Exploration Drive. Multiple road segments for Exploration Drive in Leicester cluster around this coordinate, which is also verified to be within the Leicester admin region.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.22792990249333536,
+  "gt_centroids": [
+    {
+      "lat": 52.6536908931723,
+      "lon": -1.132280955180471
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "road": 1,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "National Space Centre",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Leicestershire Museum of Technology",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Exploration Drive",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "National Space Centre",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Leicestershire Museum of Technology",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Exploration Drive",
+        "la_filter": "Leicester",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Exploration Drive",
+            "lat": 52.65257378463937,
+            "lon": -1.1351190399830944,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Exploration Drive",
+            "lat": 52.65274237440191,
+            "lon": -1.1366459247863867,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Exploration Drive",
+            "lat": 52.653066547855026,
+            "lon": -1.1342970882247294,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Exploration Drive",
+            "lat": 52.65474962355896,
+            "lon": -1.133450850509821,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "National Space Centre"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Abbey Pumping Station"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Wallingford Road",
+        "la": "Leicester",
+        "road_a": "Exploration Drive"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "National Space Centre",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Abbey Pumping Station",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Exploration Drive",
+          "Wallingford Road"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Leicester"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -1.13511,
+        "lat": 52.65257,
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Leicester",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Leicester",
+            "type": "city",
+            "lat": 52.6336142698673,
+            "lon": -1.1334620331368757,
+            "admin_district": null,
+            "county": "City of Leicester"
+          },
+          {
+            "name": "Leicester",
+            "type": "railway station",
+            "lat": 52.63279826356907,
+            "lon": -1.1239625443355545,
+            "admin_district": null,
+            "county": "City of Leicester"
+          },
+          {
+            "name": "Leicester",
+            "type": "named road",
+            "lat": 51.39455487428239,
+            "lon": -0.7363537828181711,
+            "admin_district": null,
+            "county": "Bracknell Forest"
+          },
+          {
+            "name": "Leicester Avenue",
+            "type": "named road",
+            "lat": 55.88615538248161,
+            "lon": -4.308253267561738,
+            "admin_district": null,
+            "county": "Glasgow City"
+          },
+          {
+            "name": "Leicester Street",
+            "type": "named road",
+            "lat": 54.884546302139235,
+            "lon": -2.942761887995596,
+            "admin_district": null,
+            "county": "Cumberland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.65257,
+        "lon": -1.13511,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -1.13511,
+        "picked_source": "road:Exploration Drive",
+        "confidence": "high",
+        "top_lat": 52.65257,
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is the National Space Centre on Exploration Drive. Multiple road segments for Exploration Drive in Leicester cluster around this coordinate, which is also verified to be within the Leicester admin region."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

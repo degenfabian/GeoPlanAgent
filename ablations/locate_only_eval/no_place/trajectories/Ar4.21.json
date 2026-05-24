@@ -1,0 +1,258 @@
+{
+  "case": "Ar4.21",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7515,
+    "top_lon": -0.277,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Lyon Way x Hatfield Road",
+    "evidence": "The site is the Alban Park Industrial Estate. Intersecting Lyon Way and Hatfield Road, and the centroids for Acrewood Way and Lyon Way, all cluster tightly around this location. Verified inside St Albans.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.12772430553873634,
+  "gt_centroids": [
+    {
+      "lat": 51.75091032000251,
+      "lon": -0.27859226944040427
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_b": "Alban Park",
+        "road_a": "Acrewood Way"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Lyon Way",
+        "la": "St Albans",
+        "road_b": "Hatfield Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Acrewood Way"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Lyon Way",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Acrewood Way",
+          "Alban Park"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Lyon Way",
+          "Hatfield Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.752903,
+            "lon": -0.276132,
+            "roads": [
+              "Lyon Way",
+              "Hatfield Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Acrewood Way",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Acrewood Way",
+            "lat": 51.75200990173824,
+            "lon": -0.27894600953259546,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Acrewood Way",
+            "lat": 51.75169081285526,
+            "lon": -0.2786323851140724,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Acrewood Way",
+            "lat": 51.751009604729745,
+            "lon": -0.2778485835975672,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Lyon Way",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Lyon Way",
+            "lat": 51.75221898578474,
+            "lon": -0.2754844648884506,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lyon Way",
+            "lat": 51.75154794576714,
+            "lon": -0.27537652125406104,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lyon Way",
+            "lat": 51.750805058553354,
+            "lon": -0.2743006663031698,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.277,
+        "la": "St Albans",
+        "lat": 51.7515
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.7515,
+        "lon": -0.277,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "picked_source": "intersect:Lyon Way x Hatfield Road",
+        "top_lat": 51.7515,
+        "top_lon": -0.277,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is the Alban Park Industrial Estate. Intersecting Lyon Way and Hatfield Road, and the centroids for Acrewood Way and Lyon Way, all cluster tightly around this location. Verified inside St Albans.",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

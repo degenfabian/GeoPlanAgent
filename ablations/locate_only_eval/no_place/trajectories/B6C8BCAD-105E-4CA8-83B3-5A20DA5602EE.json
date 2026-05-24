@@ -1,0 +1,207 @@
+{
+  "case": "B6C8BCAD-105E-4CA8-83B3-5A20DA5602EE",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.273673,
+    "top_lon": 1.343595,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Knightrider Street x Sandown Road",
+    "evidence": "The intersection of Knightrider Street and Sandown Road (51.2737, 1.3436) perfectly matches the site location 'The Salutation' shown on the map. This is supported by the grid reference TR3358SW (approx TR 330 580) which places the area in Sandwich. Verified inside Dover LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.10616351642061465,
+  "gt_centroids": [
+    {
+      "lat": 51.27422567229129,
+      "lon": 1.344839452987397
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "postcode": 1,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3358SW"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PG"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Dover",
+        "road_b": "Sandown Road",
+        "road_a": "Knightrider Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'TR3358SW'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CT16 3PG' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Knightrider Street",
+          "Sandown Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.273673,
+            "lon": 1.343595,
+            "roads": [
+              "Knightrider Street",
+              "Sandown Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 330 580"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.343595,
+        "lat": 51.273673,
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 330 580",
+        "lat": 51.273909713821176,
+        "lon": 1.3398763505337854
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.273673,
+        "lon": 1.343595,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The intersection of Knightrider Street and Sandown Road (51.2737, 1.3436) perfectly matches the site location 'The Salutation' shown on the map. This is supported by the grid reference TR3358SW (approx TR 330 580) which places the area in Sandwich. Verified inside Dover LA.",
+        "top_lon": 1.343595,
+        "top_lat": 51.273673,
+        "sigma_m": 200,
+        "picked_source": "intersect:Knightrider Street x Sandown Road",
+        "confidence": "high",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

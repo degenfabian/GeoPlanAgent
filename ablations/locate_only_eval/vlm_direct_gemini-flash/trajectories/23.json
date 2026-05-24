@@ -1,0 +1,60 @@
+{
+  "case": "23",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.5011,
+    "lon": -0.1895,
+    "reasoning": "The document specifies properties 14-19 Kensington Square in the Royal Borough of Kensington and Chelsea, which corresponds to the postcode W8 5HH."
+  },
+  "err_km": 0.12754297595707778,
+  "gt_centroids": [
+    {
+      "lat": 51.49995496286843,
+      "lon": -0.18960833874835586
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -0.1895,
+        "reasoning": "The document specifies properties 14-19 Kensington Square in the Royal Borough of Kensington and Chelsea, which corresponds to the postcode W8 5HH.",
+        "lat": 51.5011
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

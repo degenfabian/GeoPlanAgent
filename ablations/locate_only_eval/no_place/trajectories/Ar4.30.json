@@ -1,0 +1,316 @@
+{
+  "case": "Ar4.30",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.8281278091962,
+    "top_lon": -0.344176194892007,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Lower Luton Road",
+    "evidence": "The map title and site address specify 'Land North of Lower Luton Road, Wheathampstead'. Geocoding 'Lower Luton Road' in St Albans returns coordinates in Wheathampstead (approx 51.828, -0.344). The map shows the site adjacent to a residential area (Manor Road) and a sewage works, which matches the geography of Wheathampstead. AL1 3JE is the council office postcode.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.3015030065394155,
+  "gt_centroids": [
+    {
+      "lat": 51.821604949911254,
+      "lon": -0.3284519275050382
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 3,
+      "road": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL1 3JE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CB2 2DF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SG14 1UB"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Lower Luton Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Manor Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL1 3JE",
+        "lat": 51.75336285595908,
+        "lon": -0.33612427907835657,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CB2 2DF' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SG14 1UB",
+        "lat": 51.7978525244101,
+        "lon": -0.0788218474392787,
+        "admin_district": "East Hertfordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Lower Luton Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.8281278091962,
+            "lon": -0.3441761948920069,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.828809732483904,
+            "lon": -0.3445837243686501,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.826346249928314,
+            "lon": -0.3428543025085218,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.826546622480215,
+            "lon": -0.3427163454621062,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.82563033005167,
+            "lon": -0.3421405030932388,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Manor Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Manor Road",
+            "lat": 51.820979480489854,
+            "lon": -0.3229507374845856,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Manor Road",
+            "lat": 51.8214315141339,
+            "lon": -0.3256840859887008,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Manor Road",
+            "lat": 51.820516029073836,
+            "lon": -0.3208768214120321,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Manor Road",
+            "lat": 51.820630422750654,
+            "lon": -0.320830780699284,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Manor Road",
+            "lat": 51.75476575559818,
+            "lon": -0.32855876659316374,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Lower Luton Road",
+        "la": "St Albans",
+        "road_b": "Manor Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Lower Luton Road",
+          "Manor Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "St Albans",
+        "lat": 51.8281278091962,
+        "lon": -0.344176194892007
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.8281278091962,
+        "lon": -0.344176194892007,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 400,
+        "evidence": "The map title and site address specify 'Land North of Lower Luton Road, Wheathampstead'. Geocoding 'Lower Luton Road' in St Albans returns coordinates in Wheathampstead (approx 51.828, -0.344). The map shows the site adjacent to a residential area (Manor Road) and a sewage works, which matches the geography of Wheathampstead. AL1 3JE is the council office postcode.",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.344176194892007,
+        "picked_source": "road:Lower Luton Road",
+        "top_lat": 51.8281278091962,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

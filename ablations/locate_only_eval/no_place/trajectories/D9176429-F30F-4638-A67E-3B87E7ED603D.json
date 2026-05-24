@@ -1,0 +1,294 @@
+{
+  "case": "D9176429-F30F-4638-A67E-3B87E7ED603D",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.18542,
+    "top_lon": 1.236,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Moon Hill",
+    "evidence": "The site is located at the junction of Moon Hill and Church Hill in Shepherdswell. The road centroid for Moon Hill (51.1854, 1.2360) and one of the Church Hill segments (51.1860, 1.2314) are within 350m of each other and fall within the OS grid squares TR2647/TR2648 mentioned on the map. Postcode CT16 3PJ is for the council offices and was correctly ignored.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.10232485742758048,
+  "gt_centroids": [
+    {
+      "lat": 51.18608588228924,
+      "lon": 1.2349866648082048
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "grid_ref": 2,
+      "intersect": 1,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PJ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2647"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2648"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Moon Hill",
+        "road_b": "Church Hill",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CT16 3PJ",
+        "lat": 51.15436636168577,
+        "lon": 1.294785094400513,
+        "admin_district": "Dover District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2647",
+        "lat": 51.181836552427015,
+        "lon": 1.2394693745345564
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2648",
+        "lat": 51.19081411619527,
+        "lon": 1.240099387664391
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Moon Hill",
+          "Church Hill"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Moon Hill",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Church Hill",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Moon Hill",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Moon Hill",
+            "lat": 51.18542032826042,
+            "lon": 1.2360003014561336,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Church Hill",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Church Hill",
+            "lat": 51.19628537740324,
+            "lon": 1.3384776716740758,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 51.15201805425519,
+            "lon": 1.2667706730820438,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 51.20058764396877,
+            "lon": 1.2627789059360979,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 51.20119538211136,
+            "lon": 1.2618397558517203,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 51.186068675576664,
+            "lon": 1.2314405547990215,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.18542,
+        "la": "Dover",
+        "lon": 1.236
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.18542,
+        "lon": 1.236,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "evidence": "The site is located at the junction of Moon Hill and Church Hill in Shepherdswell. The road centroid for Moon Hill (51.1854, 1.2360) and one of the Church Hill segments (51.1860, 1.2314) are within 350m of each other and fall within the OS grid squares TR2647/TR2648 mentioned on the map. Postcode CT16 3PJ is for the council offices and was correctly ignored.",
+        "top_lon": 1.236,
+        "picked_source": "road:Moon Hill",
+        "top_lat": 51.18542
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

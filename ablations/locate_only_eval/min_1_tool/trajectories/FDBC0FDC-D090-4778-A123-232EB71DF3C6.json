@@ -1,0 +1,260 @@
+{
+  "case": "FDBC0FDC-D090-4778-A123-232EB71DF3C6",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1562953284347,
+    "top_lon": 1.37315130021419,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Kingsdown Road",
+    "evidence": "The site is 'Land formerly part of Townsend Farm' in St Margaret's-at-Cliffe. The map shows the site (red polygon) adjacent to Kingsdown Road, just northeast of the village center. Geocoding Kingsdown Road in St Margaret's-at-Cliffe (51.1577, 1.3750) and the village center (51.1542, 1.3714) provides a tight cluster. The red polygon is centered roughly between these points.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.4582471221208701,
+  "gt_centroids": [
+    {
+      "lat": 51.156640153613864,
+      "lon": 1.379698958987455
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Townsend Farm, St Margaret's at Cliffe"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "St Margaret's at Cliffe"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kingsdown Road, St Margaret's at Cliffe village",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Bockell Hill"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Townsend Farm, St Margaret's at Cliffe",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Margaret's at Cliffe",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "St Margaret's at Cliffe",
+            "type": "village",
+            "lat": 51.154223031313414,
+            "lon": 1.3713980535583459,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kingsdown Road, St Margaret's at Cliffe village",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bockell Hill",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Bockell Hill",
+            "type": "hill or mountain",
+            "lat": 51.15488973653388,
+            "lon": 1.3862939562931165,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kingsdown Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kingsdown Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Kingsdown Road",
+            "type": "named road",
+            "lat": 51.15775266670135,
+            "lon": 1.375017146207361,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Kingsdown Road",
+            "type": "named road",
+            "lat": 51.19861765535072,
+            "lon": 1.4023448119611928,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Kingsdown Road",
+            "type": "section of named road",
+            "lat": 51.20335968402362,
+            "lon": 1.402293602035305,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Kingsdown Road",
+            "type": "section of named road",
+            "lat": 51.19277115082003,
+            "lon": 1.4023289231761098,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Kingsdown Road",
+            "type": "section of named road",
+            "lat": 51.15629532843469,
+            "lon": 1.3731513002141917,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.1562953284347,
+        "top_lon": 1.37315130021419,
+        "confidence": "high",
+        "picked_source": "place:Kingsdown Road",
+        "evidence": "The site is 'Land formerly part of Townsend Farm' in St Margaret's-at-Cliffe. The map shows the site (red polygon) adjacent to Kingsdown Road, just northeast of the village center. Geocoding Kingsdown Road in St Margaret's-at-Cliffe (51.1577, 1.3750) and the village center (51.1542, 1.3714) provides a tight cluster. The red polygon is centered roughly between these points."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

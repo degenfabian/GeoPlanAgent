@@ -1,0 +1,60 @@
+{
+  "case": "Ar4.8",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.7848,
+    "lon": -0.3745,
+    "reasoning": "The document identifies the site as Nos 1-6 Beesonend Cottages in Redbourn Parish, which corresponds to the postcode AL3 7AJ."
+  },
+  "err_km": 1.6512274965998361,
+  "gt_centroids": [
+    {
+      "lat": 51.7930711577738,
+      "lon": -0.35456156569625635
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document identifies the site as Nos 1-6 Beesonend Cottages in Redbourn Parish, which corresponds to the postcode AL3 7AJ.",
+        "lat": 51.7848,
+        "lon": -0.3745
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

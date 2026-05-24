@@ -1,0 +1,364 @@
+{
+  "case": "0C05FFFF-24D1-4DD1-870B-9BA6B05ED77A",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.19449,
+    "top_lon": 1.24388,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Shepherdswell Road",
+    "evidence": "The site is located at 'Golgotha' between Shepherdswell and Eythorne. The grid reference TR 2648 and the centroid of Shepherdswell Road (which borders the site) align perfectly with the map features (railway tunnel, road orientation).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14404664303305492,
+  "gt_centroids": [
+    {
+      "lat": 51.19448958435016,
+      "lon": 1.2418128443809224
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 4,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 2648"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Golgotha"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Shepherdswell Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Railway Bungalows"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 2648",
+        "lat": 51.19081411619527,
+        "lon": 1.240099387664391
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Golgotha",
+        "la_filter": "Dover",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Golgotha",
+            "type": "suburban area",
+            "lat": 54.04231632007464,
+            "lon": -2.7835713171562158,
+            "admin_district": "Lancaster",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Golgotha Road",
+            "type": "named road",
+            "lat": 54.038716038125315,
+            "lon": -2.7884815359030486,
+            "admin_district": "Lancaster",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shepherdswell Road",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Shepherdswell Road",
+            "type": "section of named road",
+            "lat": 51.19958033556873,
+            "lon": 1.2615893603883515,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell Road",
+            "type": "named road",
+            "lat": 51.19768617242354,
+            "lon": 1.252736654834536,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell",
+            "type": "railway station",
+            "lat": 51.187821443462965,
+            "lon": 1.2299271424683944,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell",
+            "type": "railway station",
+            "lat": 51.18961223558278,
+            "lon": 1.2302242122526912,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Railway Bungalows",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Eythorne"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Shepherdswell Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Eythorne",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Eythorne",
+            "type": "village",
+            "lat": 51.195797699198316,
+            "lon": 1.26659033130384,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Eythorne",
+            "type": "railway station",
+            "lat": 51.199233241384704,
+            "lon": 1.2637123958481142,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Eythorne Elvington Community Primary School",
+            "type": "primary education",
+            "lat": 51.20164454317545,
+            "lon": 1.2627232075507657,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Eythorne Road",
+            "type": "named road",
+            "lat": 51.19103854579372,
+            "lon": 1.2349189764853745,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Eythorne Road",
+            "type": "section of named road",
+            "lat": 51.189756499354914,
+            "lon": 1.2331400673828437,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Shepherdswell Road",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Shepherdswell Road",
+            "lat": 51.199742041979064,
+            "lon": 1.2617095301491468,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Shepherdswell Road",
+            "lat": 51.19448990584018,
+            "lon": 1.243883723082553,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Shepherdswell Road",
+            "lat": 51.197111417021475,
+            "lon": 1.2526435302218633,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.1944899058402,
+        "la": "Dover",
+        "lon": 1.24388372308255
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1944899058402,
+        "lon": 1.24388372308255,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.19449,
+        "verified_inside_admin_region": true,
+        "picked_source": "road:Shepherdswell Road",
+        "evidence": "The site is located at 'Golgotha' between Shepherdswell and Eythorne. The grid reference TR 2648 and the centroid of Shepherdswell Road (which borders the site) align perfectly with the map features (railway tunnel, road orientation).",
+        "sigma_m": 400,
+        "confidence": "high",
+        "top_lon": 1.24388
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

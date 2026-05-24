@@ -1,0 +1,258 @@
+{
+  "case": "ED3ECD0D-3B13-4BE3-8C75-62A1EC8DD047",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.127,
+    "top_lon": 1.254,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Limekiln Wood/Square Wood/Park Hill cluster",
+    "evidence": "The map shows the site in Limekiln Wood, adjacent to Square Wood and Park Hill. Tool results for these three features in Dover cluster tightly around 51.127, 1.254. Poulton Farm is also mentioned in the address.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06326078294982582,
+  "gt_centroids": [
+    {
+      "lat": 51.127485195755604,
+      "lon": 1.2544733537288721
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Poulton Farm Hougham Without",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Poulton Farm Hougham Without",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Limekiln Wood"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Limekiln Wood",
+        "la_filter": "Dover",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Limekiln Wood",
+            "type": "woodland or forest",
+            "lat": 51.128026953369755,
+            "lon": 1.2521392603326902,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Limekiln Wood",
+            "type": "woodland or forest",
+            "lat": 51.1413546158408,
+            "lon": 1.2674042833379016,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Square Wood"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Square Wood",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Square Wood",
+            "type": "woodland or forest",
+            "lat": 51.125400972880364,
+            "lon": 1.257929653389514,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Park Hill"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Park Hill",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Park Hill",
+            "type": "hill or mountain",
+            "lat": 51.12165344834977,
+            "lon": 1.2487612284231127,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.254,
+        "lat": 51.127,
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.127,
+        "lon": 1.254,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Limekiln Wood/Square Wood/Park Hill cluster",
+        "evidence": "The map shows the site in Limekiln Wood, adjacent to Square Wood and Park Hill. Tool results for these three features in Dover cluster tightly around 51.127, 1.254. Poulton Farm is also mentioned in the address.",
+        "top_lat": 51.127,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.254,
+        "sigma_m": 300
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

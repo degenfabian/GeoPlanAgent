@@ -1,0 +1,232 @@
+{
+  "case": "Ar4.29",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7505,
+    "top_lon": -0.326,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Station Way x Grimston Road",
+    "evidence": "The site is St Albans City Station. Geocoding 'Station Way' and 'Grimston Road' (both visible on the map) yields a tight cluster around 51.750, -0.326, which is the location of the station. Verified inside St Albans LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0443585450947899,
+  "gt_centroids": [
+    {
+      "lat": 51.75036311726996,
+      "lon": -0.3266052558047421
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Albans City Station",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Station Way"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Grimston Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans City Station",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Station Way",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Station Way",
+            "type": "named road",
+            "lat": 51.75124523700364,
+            "lon": -0.32630722330746453,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Station Road",
+            "type": "named road",
+            "lat": 51.75136145977048,
+            "lon": -0.265484522233097,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Station Approach",
+            "type": "named road",
+            "lat": 51.81492176529157,
+            "lon": -0.3521086560873733,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Station Road",
+            "type": "named road",
+            "lat": 51.81450361126914,
+            "lon": -0.2931647125587099,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Station Road",
+            "type": "named road",
+            "lat": 51.81836474892942,
+            "lon": -0.34691945278071695,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Grimston Road",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Grimston Road",
+            "type": "named road",
+            "lat": 51.74965202132049,
+            "lon": -0.32619227160741193,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.7505,
+        "la": "St Albans",
+        "lon": -0.326
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.7505,
+        "lon": -0.326,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.326,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.7505,
+        "confidence": "high",
+        "sigma_m": 200,
+        "picked_source": "intersect:Station Way x Grimston Road",
+        "evidence": "The site is St Albans City Station. Geocoding 'Station Way' and 'Grimston Road' (both visible on the map) yields a tight cluster around 51.750, -0.326, which is the location of the station. Verified inside St Albans LA."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,347 @@
+{
+  "case": "Ar4.28",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.753,
+    "top_lon": -0.335,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Upper Marlborough Road",
+    "evidence": "The map shows the St Albans City Core bounded by Victoria Street (B691), St Peter's Street, and Upper Marlborough Road. Road centroids for these streets in St Albans cluster around the city centre. Upper Marlborough Road (51.753, -0.334) and Victoria Street (51.752, -0.338) provide a tight bounding area for the site.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.07222689440248578,
+  "gt_centroids": [
+    {
+      "lat": 51.752352670583264,
+      "lon": -0.33508672710519627
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 1,
+      "road": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Albans City Core",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Bricket Road",
+        "la": "St Albans",
+        "road_a": "Victoria Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Law Courts"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "St Albans Library"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans City Core",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Bricket Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Law Courts",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans Library",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Victoria Street",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "St Peter's Street",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Upper Marlborough Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "St Albans Museum"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Victoria Street",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Victoria Street",
+            "lat": 51.752122146516875,
+            "lon": -0.33836163783555884,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Victoria Street",
+            "lat": 51.75192036723978,
+            "lon": -0.3375985937074617,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Victoria Street",
+            "lat": 51.751662388980925,
+            "lon": -0.33652461828129704,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Victoria Street",
+            "lat": 51.75138744829271,
+            "lon": -0.33537109070360854,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Victoria Street",
+            "lat": 51.74992225257342,
+            "lon": -0.3270085458772218,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "St Peter's Street",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "St Peter's Street",
+            "lat": 51.75724003044284,
+            "lon": -0.33401847478881036,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "St Peter's Street",
+            "lat": 51.75744887046096,
+            "lon": -0.33384416129358935,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "St Peter's Street",
+            "lat": 51.757582242343304,
+            "lon": -0.3337378264991743,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "St Peter's Street",
+            "lat": 51.75785838370511,
+            "lon": -0.33355378800398067,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "St Peter's Street",
+            "lat": 51.754552617739414,
+            "lon": -0.3362888237244774,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Upper Marlborough Road",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Upper Marlborough Road",
+            "lat": 51.75229493002983,
+            "lon": -0.3344294921615081,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Upper Marlborough Road",
+            "lat": 51.75341342664795,
+            "lon": -0.3339051677811281,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Upper Marlborough Road",
+            "lat": 51.75372854315403,
+            "lon": -0.33355585226067735,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans Museum",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the St Albans City Core bounded by Victoria Street (B691), St Peter's Street, and Upper Marlborough Road. Road centroids for these streets in St Albans cluster around the city centre. Upper Marlborough Road (51.753, -0.334) and Victoria Street (51.752, -0.338) provide a tight bounding area for the site.",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.335,
+        "top_lat": 51.753,
+        "sigma_m": 400,
+        "picked_source": "road:Upper Marlborough Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

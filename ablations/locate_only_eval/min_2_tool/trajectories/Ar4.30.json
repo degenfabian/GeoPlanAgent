@@ -1,0 +1,293 @@
+{
+  "case": "Ar4.30",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.82119,
+    "top_lon": -0.32356,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Lower Luton Road x Manor Road",
+    "evidence": "The map shows the site north of Lower Luton Road and adjacent to Manor Road in Wheathampstead. Geocoding Manor Road in St Albans returns a result at 51.82119, -0.32356, which intersects with Lower Luton Road in Wheathampstead, matching the map layout perfectly.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3393793644637586,
+  "gt_centroids": [
+    {
+      "lat": 51.821604949911254,
+      "lon": -0.3284519275050382
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Lower Luton Road, Wheathampstead"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Manor Road, Wheathampstead",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lower Luton Road, Wheathampstead",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Manor Road, Wheathampstead",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lower Luton Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Manor Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lower Luton Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.819368304791034,
+            "lon": -0.3206500532710065,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.82445398030757,
+            "lon": -0.3400215739838582,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.81664311784696,
+            "lon": -0.3061849579987683,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "named road",
+            "lat": 51.82077334288012,
+            "lon": -0.32648874393529254,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Lower Luton Road",
+            "type": "section of named road",
+            "lat": 51.815364167986104,
+            "lon": -0.29422029700242824,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Manor Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Manor Road",
+            "type": "named road",
+            "lat": 51.72273726702535,
+            "lon": -0.30349994570785516,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Manor Road",
+            "type": "named road",
+            "lat": 51.82119016941956,
+            "lon": -0.32355682468529695,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Manor Road",
+            "type": "named road",
+            "lat": 51.75477589169294,
+            "lon": -0.3286107683230215,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Manor Close",
+            "type": "named road",
+            "lat": 51.80369105190329,
+            "lon": -0.35919010886710306,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Manor Wood",
+            "type": "woodland or forest",
+            "lat": 51.80619418121353,
+            "lon": -0.3730239564260905,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "St Albans",
+        "lon": -0.323556824685297,
+        "lat": 51.8211901694196
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.8211901694196,
+        "lon": -0.323556824685297,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the site north of Lower Luton Road and adjacent to Manor Road in Wheathampstead. Geocoding Manor Road in St Albans returns a result at 51.82119, -0.32356, which intersects with Lower Luton Road in Wheathampstead, matching the map layout perfectly.",
+        "top_lat": 51.82119,
+        "sigma_m": 200,
+        "picked_source": "intersect:Lower Luton Road x Manor Road",
+        "top_lon": -0.32356,
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

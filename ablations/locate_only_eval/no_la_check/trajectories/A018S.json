@@ -1,0 +1,269 @@
+{
+  "case": "A018S",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.632195,
+    "top_lon": -0.406198,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:PE9 3DN",
+    "evidence": "Postcode PE9 3DN and the intersection of Main Street and Orchard Road (both visible on map) are within 100m of each other in Barnack. The site 'Garthside' is explicitly named in the address and on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.062268007741501194,
+  "gt_centroids": [
+    {
+      "lat": 52.63269684803796,
+      "lon": -0.40578861027501856
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 3,
+      "intersect": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "PE9 3DN"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Barnack Methodist Church",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Garthside"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Peterborough",
+        "road_a": "Main Street",
+        "road_b": "Orchard Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "PE9 3DN",
+        "lat": 52.63219548099334,
+        "lon": -0.40619790361014957,
+        "admin_district": "City of Peterborough (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barnack Methodist Church",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Garthside",
+        "la_filter": "Peterborough",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Garthside",
+            "type": "named road",
+            "lat": 54.388713374452976,
+            "lon": -1.614512919945066,
+            "admin_district": null,
+            "county": "North Yorkshire"
+          },
+          {
+            "name": "Garthside",
+            "type": "named road",
+            "lat": 51.42987062828459,
+            "lon": -0.2980277261828943,
+            "admin_district": "Richmond upon Thames",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Main Street",
+          "Orchard Road"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.632604,
+            "lon": -0.405296,
+            "roads": [
+              "Main Street",
+              "Orchard Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Barnack",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Barnack",
+            "type": "village",
+            "lat": 52.63225751588454,
+            "lon": -0.4094760662085537,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Road",
+            "type": "named road",
+            "lat": 52.63974337696178,
+            "lon": -0.3886023441220477,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Hills and Holes",
+            "type": "other landcover",
+            "lat": 52.62872748491194,
+            "lon": -0.41173173146351194,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Road",
+            "type": "section of named road",
+            "lat": 52.640415078687326,
+            "lon": -0.38576956450195304,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Church of England (Controlled) Primary School",
+            "type": "primary education",
+            "lat": 52.633004872373085,
+            "lon": -0.41224179741321654,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "postcode:PE9 3DN",
+        "evidence": "Postcode PE9 3DN and the intersection of Main Street and Orchard Road (both visible on map) are within 100m of each other in Barnack. The site 'Garthside' is explicitly named in the address and on the map.",
+        "top_lat": 52.632195,
+        "verified_inside_admin_region": true,
+        "sigma_m": 200,
+        "top_lon": -0.406198,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "case": "A4D-04",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.160474,
+    "top_lon": -0.77844,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Frensham Common",
+    "evidence": "The map shows a large area covering Frensham Common and Tilford Reeds. The grid reference SU84 (interpreted as SU8540 for the center of the hatched area) aligns perfectly with the place name search for Frensham Common. Hambledon was a Rural District now within Waverley.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.47225604014107214,
+  "gt_centroids": [
+    {
+      "lat": 51.16017788702342,
+      "lon": -0.7716843425634584
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "place": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU84"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Hambledon",
+        "query": "Frensham Common"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Hambledon",
+        "query": "Tilford Reeds"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Hambledon",
+        "query": "Churt"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'SU84'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Frensham Common",
+        "la_filter": "Hambledon",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Frensham Common",
+            "type": "other landcover",
+            "lat": 51.16047421089795,
+            "lon": -0.7784396680930405,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Tilford Reeds",
+        "la_filter": "Hambledon",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Tilford Reeds",
+            "type": "hamlet",
+            "lat": 51.182458639011806,
+            "lon": -0.7653967762619992,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Churt",
+        "la_filter": "Hambledon",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Churt",
+            "type": "village",
+            "lat": 51.13689592489802,
+            "lon": -0.7792905908017826,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Churton Grove",
+            "type": "named road",
+            "lat": 53.59065186493158,
+            "lon": -2.6869589209602713,
+            "admin_district": "Wigan",
+            "county": null
+          },
+          {
+            "name": "Churton Street",
+            "type": "named road",
+            "lat": 52.882194105537266,
+            "lon": -4.4140946658916205,
+            "admin_district": null,
+            "county": "Gwynedd - Gwynedd"
+          },
+          {
+            "name": "Churton Road",
+            "type": "named road",
+            "lat": 53.323407853186005,
+            "lon": -3.4827776855811305,
+            "admin_district": null,
+            "county": "Sir Ddinbych - Denbighshire"
+          },
+          {
+            "name": "Churton Drive",
+            "type": "named road",
+            "lat": 53.050524849036194,
+            "lon": -2.978938369638379,
+            "admin_district": null,
+            "county": "Wrecsam - Wrexham"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU 850 400"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.778439668093041,
+        "la": "Waverley",
+        "lat": 51.160474210898
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SU 850 400",
+        "lat": 51.153396855317204,
+        "lon": -0.7853182951389208
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.160474210898,
+        "lon": -0.778439668093041,
+        "la": "Waverley",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.14979708109079,
+        "la_centroid_lon": -0.6327293391700743
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows a large area covering Frensham Common and Tilford Reeds. The grid reference SU84 (interpreted as SU8540 for the center of the hatched area) aligns perfectly with the place name search for Frensham Common. Hambledon was a Rural District now within Waverley.",
+        "picked_source": "place:Frensham Common",
+        "top_lon": -0.77844,
+        "sigma_m": 1500,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.160474
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

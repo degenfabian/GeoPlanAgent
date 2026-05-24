@@ -1,0 +1,60 @@
+{
+  "case": "11",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 53.3354,
+    "lon": -3.1158,
+    "reasoning": "The document describes a field north of 98 Pipers Lane, Heswall, Wirral, which corresponds to the large open field at these coordinates, adjacent to properties like 'Marshfield' and 'Hillhead' shown on the map."
+  },
+  "err_km": 0.5912696797196522,
+  "gt_centroids": [
+    {
+      "lat": 53.33330904797972,
+      "lon": -3.1239873884388842
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 53.3354,
+        "lon": -3.1158,
+        "reasoning": "The document describes a field north of 98 Pipers Lane, Heswall, Wirral, which corresponds to the large open field at these coordinates, adjacent to properties like 'Marshfield' and 'Hillhead' shown on the map."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

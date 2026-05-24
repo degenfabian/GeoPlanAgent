@@ -1,0 +1,281 @@
+{
+  "case": "A4D10",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.507348,
+    "top_lon": -2.631074,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Henbury Road x Station Road",
+    "evidence": "The map shows the Henbury Conservation Area centered around the junction of Henbury Road, Station Road, and Church Lane. Multiple road intersections (Henbury Rd x Station Rd, Henbury Rd x Church Lane) cluster tightly around 51.507, -2.631. Verified inside Bristol.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14053321323043022,
+  "gt_centroids": [
+    {
+      "lat": 51.506426833001946,
+      "lon": -2.629683770493267
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Station Road",
+        "la": "Bristol",
+        "road_a": "Henbury Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Church Lane",
+        "road_a": "Henbury Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Kings Weston Road",
+        "la": "Bristol",
+        "road_a": "Henbury Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Henbury Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Henbury Road",
+          "Station Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.507348,
+            "lon": -2.631074,
+            "roads": [
+              "Henbury Road",
+              "Station Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Henbury Road",
+          "Church Lane"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 51.506704,
+            "lon": -2.632461,
+            "roads": [
+              "Henbury Road",
+              "Church Lane"
+            ]
+          },
+          {
+            "lat": 51.507333,
+            "lon": -2.631163,
+            "roads": [
+              "Henbury Road",
+              "Church Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Henbury Road",
+          "Kings Weston Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.506704,
+            "lon": -2.632461,
+            "roads": [
+              "Henbury Road",
+              "Kings Weston Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Henbury Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Henbury Road",
+            "lat": 51.4952693515297,
+            "lon": -2.618129466016623,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Henbury Road",
+            "lat": 51.49575582487009,
+            "lon": -2.618805881514322,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Henbury Road",
+            "lat": 51.50118134530906,
+            "lon": -2.622771436360717,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Henbury Road",
+            "lat": 51.507185494005654,
+            "lon": -2.629795248667184,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Henbury Road",
+            "lat": 51.50668027818905,
+            "lon": -2.628433957699821,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.631,
+        "la": "Bristol",
+        "lat": 51.507
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.507,
+        "lon": -2.631,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lat": 51.507348,
+        "picked_source": "intersect:Henbury Road x Station Road",
+        "confidence": "high",
+        "sigma_m": 300,
+        "top_lon": -2.631074,
+        "evidence": "The map shows the Henbury Conservation Area centered around the junction of Henbury Road, Station Road, and Church Lane. Multiple road intersections (Henbury Rd x Station Rd, Henbury Rd x Church Lane) cluster tightly around 51.507, -2.631. Verified inside Bristol."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

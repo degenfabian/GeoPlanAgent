@@ -1,0 +1,334 @@
+{
+  "case": "A4_093:LL:012",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6588,
+    "top_lon": -1.1328,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "road:Wade Street x Beaumanor Road",
+    "evidence": "The site is identified as 133 Beaumanor Road (Former Hoskins Brewery). Geocoding Wade Street (which intersects Beaumanor Road just south of the site) provides a precise anchor. The site is immediately north of the Wade Street/Beaumanor Road junction.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.04613943994577659,
+  "gt_centroids": [
+    {
+      "lat": 52.658850139655264,
+      "lon": -1.132120921988633
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hoskins Brewery",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Beaumanor Brewery",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Beaumanor Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hoskins Brewery",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beaumanor Brewery",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Beaumanor Road",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Beaumanor Road",
+            "lat": 52.6567108135847,
+            "lon": -1.134254760216484,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumanor Road",
+            "lat": 52.65750881798441,
+            "lon": -1.133351952397314,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumanor Road",
+            "lat": 52.658282715439114,
+            "lon": -1.1328413745215682,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumanor Road",
+            "lat": 52.6586143224028,
+            "lon": -1.1327017537145265,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumanor Road",
+            "lat": 52.65978025362636,
+            "lon": -1.131710273003718,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Beaumanor Court"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Quadrant",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Wade Street",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beaumanor Court",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Quadrant",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Quadrant",
+            "type": "named road",
+            "lat": 58.98281471248174,
+            "lon": -2.952495023479601,
+            "admin_district": null,
+            "county": "Orkney Islands"
+          },
+          {
+            "name": "The Quadrant",
+            "type": "named road",
+            "lat": 55.79177202150274,
+            "lon": -4.274269628149814,
+            "admin_district": null,
+            "county": "East Renfrewshire"
+          },
+          {
+            "name": "The Quadrant",
+            "type": "named road",
+            "lat": 55.833524578240564,
+            "lon": -3.2218486094607584,
+            "admin_district": null,
+            "county": "Midlothian"
+          },
+          {
+            "name": "The Quadrant",
+            "type": "named road",
+            "lat": 55.00848200016191,
+            "lon": -1.4674838179885348,
+            "admin_district": "North Tyneside",
+            "county": null
+          },
+          {
+            "name": "The Quadrant",
+            "type": "named road",
+            "lat": 54.90813981587851,
+            "lon": -1.3661809406923884,
+            "admin_district": "Sunderland",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Wade Street",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Wade Street",
+            "lat": 52.658597850328256,
+            "lon": -1.1330000608494901,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.6585978503283,
+        "lon": -1.13300006084949,
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6585978503283,
+        "lon": -1.13300006084949,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "The site is identified as 133 Beaumanor Road (Former Hoskins Brewery). Geocoding Wade Street (which intersects Beaumanor Road just south of the site) provides a precise anchor. The site is immediately north of the Wade Street/Beaumanor Road junction.",
+        "picked_source": "road:Wade Street x Beaumanor Road",
+        "top_lat": 52.6588,
+        "sigma_m": 200,
+        "top_lon": -1.1328,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

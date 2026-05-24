@@ -1,0 +1,350 @@
+{
+  "case": "A4D15",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.467,
+    "top_lon": -2.602,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Redland/Cotham midpoint",
+    "evidence": "The map shows the Cotham and Redland Conservation Area. I identified the centroids of Redland Road (51.4702, -2.6050) and Cotham Park (51.4641, -2.5987). The midpoint (51.467, -2.602) sits centrally within the conservation area boundary shown on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.18671118174949197,
+  "gt_centroids": [
+    {
+      "lat": 51.4684646015398,
+      "lon": -2.600681704917082
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Cotham Park"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Redland Green Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "High Kingsdown"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cotham Park",
+        "la_filter": "Bristol",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Cotham Park",
+            "type": "named road",
+            "lat": 51.464133252413454,
+            "lon": -2.5987797711467087,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Cotham Park North",
+            "type": "named road",
+            "lat": 51.466406731419966,
+            "lon": -2.599054268347086,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redland Green Road",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Redland Green Road",
+            "type": "named road",
+            "lat": 51.472528863084364,
+            "lon": -2.6062757335759006,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "High Kingsdown",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Cotham and Redland Conservation Area"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Cotham Road South",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Cotham Road South",
+        "road_b": "Cotham Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cotham and Redland Conservation Area",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cotham Road South",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Cotham Road South",
+            "type": "named road",
+            "lat": 51.462268187731155,
+            "lon": -2.5977621356661165,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Bristol for: ['Cotham Road South']"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Redland Road"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.467,
+        "la": "Bristol",
+        "lon": -2.602
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redland Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Redland Road",
+            "type": "named road",
+            "lat": 51.47024233093829,
+            "lon": -2.6050504656643882,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Redland",
+            "type": "suburban area",
+            "lat": 51.470685930769285,
+            "lon": -2.606208104035755,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Redland",
+            "type": "railway station",
+            "lat": 51.4684493850964,
+            "lon": -2.598749912582719,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Redland Court Road",
+            "type": "named road",
+            "lat": 51.47195497901203,
+            "lon": -2.6024815811785786,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Redland Hill",
+            "type": "named road",
+            "lat": 51.47160401412701,
+            "lon": -2.6129438587771006,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.467,
+        "lon": -2.602,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the Cotham and Redland Conservation Area. I identified the centroids of Redland Road (51.4702, -2.6050) and Cotham Park (51.4641, -2.5987). The midpoint (51.467, -2.602) sits centrally within the conservation area boundary shown on the map.",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": -2.602,
+        "picked_source": "place:Redland/Cotham midpoint",
+        "top_lat": 51.467,
+        "sigma_m": 1500
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

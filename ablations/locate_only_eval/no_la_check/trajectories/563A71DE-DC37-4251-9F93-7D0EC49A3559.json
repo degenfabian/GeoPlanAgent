@@ -1,0 +1,320 @@
+{
+  "case": "563A71DE-DC37-4251-9F93-7D0EC49A3559",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.15086,
+    "top_lon": 1.38032,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR3644",
+    "evidence": "The grid reference TR3644 (51.1508, 1.3803) from the map matches the location of St Margaret's Road in Dover. The postcode CT16 3PJ is for the Council Offices and was correctly ignored.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.19052556605404952,
+  "gt_centroids": [
+    {
+      "lat": 51.149154441310664,
+      "lon": 1.3805816483155642
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 3,
+      "intersect": 1,
+      "postcode": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3644"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "The White House, St Margarets Bay"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "St Margaret's Road",
+        "la": "Dover",
+        "road_b": "Bay Hill Close"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PJ"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3644",
+        "lat": 51.15086186292679,
+        "lon": 1.3803207606075063
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The White House, St Margarets Bay",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Dover for: ['Bay Hill Close']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CT16 3PJ",
+        "lat": 51.15436636168577,
+        "lon": 1.294785094400513,
+        "admin_district": "Dover District"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "St Margarets Bay"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "St Margaret's Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Margarets Bay",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "St Margaret's Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "St Margaret's Road",
+            "lat": 51.14853740720017,
+            "lon": 1.3776461787219307,
+            "in_la": "Dover"
+          },
+          {
+            "name": "St Margaret's Road",
+            "lat": 51.1473365776336,
+            "lon": 1.377806350816658,
+            "in_la": "Dover"
+          },
+          {
+            "name": "St Margaret's Road",
+            "lat": 51.148209757091664,
+            "lon": 1.3794177383143853,
+            "in_la": "Dover"
+          },
+          {
+            "name": "St Margaret's Road",
+            "lat": 51.15000689826746,
+            "lon": 1.378834234756483,
+            "in_la": "Dover"
+          },
+          {
+            "name": "St Margaret's Road",
+            "lat": 51.14916109813105,
+            "lon": 1.3815648643083087,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The White House",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The White House",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The White House",
+            "type": "medical care accommodation",
+            "lat": 54.966790380222,
+            "lon": -1.5026012264828605,
+            "admin_district": "South Tyneside",
+            "county": null
+          },
+          {
+            "name": "The White House",
+            "type": "medical care accommodation",
+            "lat": 50.918970471252194,
+            "lon": -1.2592390872686674,
+            "admin_district": "Winchester",
+            "county": "Hampshire"
+          },
+          {
+            "name": "The White House",
+            "type": "medical care accommodation",
+            "lat": 51.97624012144132,
+            "lon": -0.21499640530069278,
+            "admin_district": "North Hertfordshire",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "The White House Park School",
+            "type": "secondary education",
+            "lat": 53.707691189129534,
+            "lon": -2.572061770043279,
+            "admin_district": "Chorley",
+            "county": "Lancashire"
+          },
+          {
+            "name": "The White House School",
+            "type": "non state primary education",
+            "lat": 52.95620816361127,
+            "lon": -2.6736728339592393,
+            "admin_district": null,
+            "county": "Shropshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "confidence": "high",
+        "top_lon": 1.38032,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.15086,
+        "picked_source": "grid_ref:TR3644",
+        "evidence": "The grid reference TR3644 (51.1508, 1.3803) from the map matches the location of St Margaret's Road in Dover. The postcode CT16 3PJ is for the Council Offices and was correctly ignored."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

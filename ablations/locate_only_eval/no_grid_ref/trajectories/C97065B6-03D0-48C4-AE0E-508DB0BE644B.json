@@ -1,0 +1,412 @@
+{
+  "case": "C97065B6-03D0-48C4-AE0E-508DB0BE644B",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.186659,
+    "top_lon": 1.22966,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Sibertswold",
+    "evidence": "The site is in Shepherdswell (also known as Sibertswold). The map shows Church Hill and Mill Lane. The 'Sibertswold' village centroid and 'Church Hill' road centroid in Shepherdswell align perfectly. The site is just north of Church Hill.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.5618910436816105,
+  "gt_centroids": [
+    {
+      "lat": 51.18853460325564,
+      "lon": 1.23714633612713
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Shepherdswell",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Mill House Shepherdswell",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Mill Lane",
+        "road_b": "Sibert's Close",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Church Hill",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Shepherdswell",
+            "type": "railway station",
+            "lat": 51.187821443462965,
+            "lon": 1.2299271424683944,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell",
+            "type": "railway station",
+            "lat": 51.18961223558278,
+            "lon": 1.2302242122526912,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell Road",
+            "type": "section of named road",
+            "lat": 51.19958033556873,
+            "lon": 1.2615893603883515,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell Road",
+            "type": "named road",
+            "lat": 51.19768617242354,
+            "lon": 1.252736654834536,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mill House Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Dover for: [\"Sibert's Close\"]"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Church Hill",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Church Hill",
+            "lat": 51.19628537740324,
+            "lon": 1.3384776716740758,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 51.15201805425519,
+            "lon": 1.2667706730820438,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 51.20058764396877,
+            "lon": 1.2627789059360979,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 51.20119538211136,
+            "lon": 1.2618397558517203,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 51.186068675576664,
+            "lon": 1.2314405547990215,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Upton House Shepherdswell"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "The Green Shepherdswell"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "Mill Lane"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.1860686755767,
+        "la": "Dover",
+        "lon": 1.23144055479902
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Upton House Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Green Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Mill Lane",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Mill Lane",
+            "lat": 51.21780834025684,
+            "lon": 1.3338413898443446,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Mill Lane",
+            "lat": 51.219991514750234,
+            "lon": 1.3386721717066437,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Mill Lane",
+            "lat": 51.252733810047815,
+            "lon": 1.3380819595031506,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Mill Lane",
+            "lat": 51.1638066103071,
+            "lon": 1.2911231176255034,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Mill Lane",
+            "lat": 51.24424163475862,
+            "lon": 1.3049881602459654,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1860686755767,
+        "lon": 1.23144055479902,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Sibertswold"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sibertswold",
+        "la_filter": "Dover",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Sibertswold",
+            "type": "village",
+            "lat": 51.18665948015842,
+            "lon": 1.2296597764994721,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sibertswold Church of England Primary School",
+            "type": "primary education",
+            "lat": 51.18400427851901,
+            "lon": 1.2336246070691774,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.186659,
+        "top_lon": 1.22966,
+        "picked_source": "place:Sibertswold",
+        "sigma_m": 400,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "evidence": "The site is in Shepherdswell (also known as Sibertswold). The map shows Church Hill and Mill Lane. The 'Sibertswold' village centroid and 'Church Hill' road centroid in Shepherdswell align perfectly. The site is just north of Church Hill."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

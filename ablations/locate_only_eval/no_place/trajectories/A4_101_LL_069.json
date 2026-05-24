@@ -1,0 +1,345 @@
+{
+  "case": "A4_101:LL:069",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6175,
+    "top_lon": -1.162,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Narborough Road x Somerville Road",
+    "evidence": "The site is located at 317-355 Narborough Road. The intersection of Narborough Road and Somerville Road (52.6170, -1.1613) and the location of Coninsby Close (52.6171, -1.1633) perfectly match the map layout. The site is the block between these features.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.024452070709182365,
+  "gt_centroids": [
+    {
+      "lat": 52.61728979722075,
+      "lon": -1.1621063868218067
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 3,
+      "intersect": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "Narborough Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Narborough Road",
+        "road_b": "Hallam Crescent East",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Somerville Road",
+        "la": "Leicester",
+        "road_a": "Narborough Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Narborough Road",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Narborough Road",
+            "lat": 52.62896682177396,
+            "lon": -1.14902269823462,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.62924842875515,
+            "lon": -1.1488030055673852,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.62965074643643,
+            "lon": -1.148492319545947,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.630079870184495,
+            "lon": -1.1481589451001863,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.63032123857918,
+            "lon": -1.1479695724830177,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Narborough Road",
+          "Hallam Crescent East"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Narborough Road",
+          "Somerville Road"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.616998,
+            "lon": -1.161338,
+            "roads": [
+              "Narborough Road",
+              "Somerville Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Hallam Crescent East",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "Coninsby Close"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -1.161338,
+        "la": "Leicester",
+        "lat": 52.616998
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hallam Crescent East",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Hallam Crescent East",
+            "lat": 52.61855563226717,
+            "lon": -1.1606560158293895,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Hallam Crescent East",
+            "lat": 52.619036173202474,
+            "lon": -1.1597589352567288,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Hallam Crescent East",
+            "lat": 52.617769908883176,
+            "lon": -1.1657487594127731,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Hallam Crescent East",
+            "lat": 52.61781381532829,
+            "lon": -1.1643056397199174,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Hallam Crescent East",
+            "lat": 52.61799213818062,
+            "lon": -1.162549176725302,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Coninsby Close",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Coninsby Close",
+            "lat": 52.617098408004544,
+            "lon": -1.1633142766313562,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.616998,
+        "lon": -1.161338,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Leicester",
+        "road_a": "Hallam Crescent East",
+        "road_b": "Coninsby Close"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Hallam Crescent East",
+          "Coninsby Close"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -1.162,
+        "confidence": "high",
+        "sigma_m": 300,
+        "evidence": "The site is located at 317-355 Narborough Road. The intersection of Narborough Road and Somerville Road (52.6170, -1.1613) and the location of Coninsby Close (52.6171, -1.1633) perfectly match the map layout. The site is the block between these features.",
+        "picked_source": "intersect:Narborough Road x Somerville Road",
+        "top_lat": 52.6175,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

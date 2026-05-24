@@ -1,0 +1,318 @@
+{
+  "case": "A4_101:LL:069",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6172,
+    "top_lon": -1.1655,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Hallam Crescent East",
+    "evidence": "The site is located at 317-355 Narborough Road. Geocoding Hallam Crescent East, Coninsby Close, and New Fields Square (all visible on the map) places the site consistently around 52.617, -1.165. Narborough Road is a long arterial road, and these specific side roads pinpoint the block.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2293220798020278,
+  "gt_centroids": [
+    {
+      "lat": 52.61728979722075,
+      "lon": -1.1621063868218067
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "road": 1,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Trinity Methodist Church"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "Narborough Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Hallam Crescent East",
+        "la": "Leicester",
+        "road_a": "Narborough Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trinity Methodist Church",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Narborough Road",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Narborough Road",
+            "lat": 52.62896682177396,
+            "lon": -1.14902269823462,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.62924842875515,
+            "lon": -1.1488030055673852,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.62965074643643,
+            "lon": -1.148492319545947,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.630079870184495,
+            "lon": -1.1481589451001863,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.63032123857918,
+            "lon": -1.1479695724830177,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Narborough Road",
+          "Hallam Crescent East"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hallam Crescent East",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Coninsby Close",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "New Fields Square",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hallam Crescent East",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Hallam Crescent East",
+            "type": "named road",
+            "lat": 52.618027968779806,
+            "lon": -1.1676539376132804,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coninsby Close",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Coninsby Close",
+            "type": "named road",
+            "lat": 52.617127355260415,
+            "lon": -1.1635943639016861,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "New Fields Square",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "New Fields Square",
+            "type": "named road",
+            "lat": 52.6158517807653,
+            "lon": -1.163736827058322,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.617,
+        "lon": -1.165,
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.617,
+        "lon": -1.165,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lat": 52.6172,
+        "verified_inside_admin_region": true,
+        "top_lon": -1.1655,
+        "picked_source": "place:Hallam Crescent East",
+        "sigma_m": 200,
+        "evidence": "The site is located at 317-355 Narborough Road. Geocoding Hallam Crescent East, Coninsby Close, and New Fields Square (all visible on the map) places the site consistently around 52.617, -1.165. Narborough Road is a long arterial road, and these specific side roads pinpoint the block."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

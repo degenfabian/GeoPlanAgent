@@ -1,0 +1,295 @@
+{
+  "case": "2ACB6DFF-E424-4EB5-BD0C-90BA056BDC64",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.2875786834154,
+    "top_lon": 1.33369635376447,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR 325 595",
+    "evidence": "The map explicitly cites OS sheet TR 32-3359, 60. A grid reference of TR 325 595 falls exactly in the center of the map area, confirmed by the location of Richborough Hill (place search) and verified within the Dover district.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.28752753456212476,
+  "gt_centroids": [
+    {
+      "lat": 51.28833801975405,
+      "lon": 1.3297440581641606
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 325 595"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Richborough Castle"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Richborough Hill",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Richborough Viaduct",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 325 595",
+        "lat": 51.287578683415376,
+        "lon": 1.3336963537644724
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Richborough Castle",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Richborough Hill",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Richborough Hill",
+            "type": "hill or mountain",
+            "lat": 51.29045502007953,
+            "lon": 1.3265024296373862,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Richborough Viaduct",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Richborough Castle"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Richborough"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lon": 1.33369635376447,
+        "lat": 51.2875786834154
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Richborough Castle",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Richborough",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Richborough",
+            "type": "named road",
+            "lat": 52.057473611130625,
+            "lon": -0.7897015079269368,
+            "admin_district": null,
+            "county": "Milton Keynes"
+          },
+          {
+            "name": "Richborough Close",
+            "type": "named road",
+            "lat": 53.49799062263618,
+            "lon": -2.2561963783139736,
+            "admin_district": "Salford",
+            "county": null
+          },
+          {
+            "name": "Richborough Place",
+            "type": "named road",
+            "lat": 52.942486015940354,
+            "lon": -1.2275735813900392,
+            "admin_district": null,
+            "county": "City of Nottingham"
+          },
+          {
+            "name": "Richborough Drive",
+            "type": "section of named road",
+            "lat": 52.52337871746141,
+            "lon": -2.1083293163222177,
+            "admin_district": "Dudley",
+            "county": null
+          },
+          {
+            "name": "Richborough Drive",
+            "type": "section of named road",
+            "lat": 52.52211764353057,
+            "lon": -2.111008556051113,
+            "admin_district": "Dudley",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.2875786834154,
+        "lon": 1.33369635376447,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.33369635376447,
+        "picked_source": "grid_ref:TR 325 595",
+        "sigma_m": 400,
+        "top_lat": 51.2875786834154,
+        "evidence": "The map explicitly cites OS sheet TR 32-3359, 60. A grid reference of TR 325 595 falls exactly in the center of the map area, confirmed by the location of Richborough Hill (place search) and verified within the Dover district."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,356 @@
+{
+  "case": "Ar4.28",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.752212,
+    "top_lon": -0.338658,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "intersect:Victoria Street x St Peter's Street",
+    "evidence": "The map shows the 'St Albans City Core' boundary centered around the junction of Victoria Street and St Peter's Street, near the Law Courts and Police Station. The intersection tool confirmed this junction location within St Albans.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2463315072100115,
+  "gt_centroids": [
+    {
+      "lat": 51.752352670583264,
+      "lon": -0.33508672710519627
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 2,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "St Albans City Core"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Bricket Road",
+        "la": "St Albans",
+        "road_a": "Victoria Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Law Courts",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans City Core",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Bricket Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Law Courts",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Albans Library",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Victoria Street",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "St Peter's Street",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans Library",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Victoria Street",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Victoria Street",
+            "lat": 51.752122146516875,
+            "lon": -0.33836163783555884,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Victoria Street",
+            "lat": 51.75192036723978,
+            "lon": -0.3375985937074617,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Victoria Street",
+            "lat": 51.751662388980925,
+            "lon": -0.33652461828129704,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Victoria Street",
+            "lat": 51.75138744829271,
+            "lon": -0.33537109070360854,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Victoria Street",
+            "lat": 51.74992225257342,
+            "lon": -0.3270085458772218,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "St Peter's Street",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "St Peter's Street",
+            "lat": 51.75724003044284,
+            "lon": -0.33401847478881036,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "St Peter's Street",
+            "lat": 51.75744887046096,
+            "lon": -0.33384416129358935,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "St Peter's Street",
+            "lat": 51.757582242343304,
+            "lon": -0.3337378264991743,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "St Peter's Street",
+            "lat": 51.75785838370511,
+            "lon": -0.33355378800398067,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "St Peter's Street",
+            "lat": 51.754552617739414,
+            "lon": -0.3362888237244774,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Victoria Street",
+        "la": "St Albans",
+        "road_b": "St Peter's Street"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Victoria Street",
+          "St Peter's Street"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.752212,
+            "lon": -0.338658,
+            "roads": [
+              "Victoria Street",
+              "St Peter's Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.338658,
+        "lat": 51.752212,
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.752212,
+        "lon": -0.338658,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the 'St Albans City Core' boundary centered around the junction of Victoria Street and St Peter's Street, near the Law Courts and Police Station. The intersection tool confirmed this junction location within St Albans.",
+        "top_lat": 51.752212,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.338658,
+        "sigma_m": 400,
+        "picked_source": "intersect:Victoria Street x St Peter's Street"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

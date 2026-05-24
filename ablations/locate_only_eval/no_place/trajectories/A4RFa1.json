@@ -1,0 +1,390 @@
+{
+  "case": "A4RFa1",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.555,
+    "top_lon": -0.185,
+    "sigma_m": 800,
+    "confidence": "high",
+    "picked_source": "road:Frognal Lane/Redington Road cluster",
+    "evidence": "The map shows the Redington/Frognal Conservation Area in Camden. Road centroids for Frognal Lane, Redington Road, and Heath Drive cluster around this central point. Intersection of Frognal Lane and Frognal confirmed the eastern boundary area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.28319854928798616,
+  "gt_centroids": [
+    {
+      "lat": 51.55672960189808,
+      "lon": -0.18800681737347094
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 4,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Frognal Lane",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Redington Road",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Frognal Lane",
+        "road_b": "Redington Road",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Frognal Lane",
+        "la_filter": "Camden",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Frognal Lane",
+            "lat": 51.554098839380025,
+            "lon": -0.1842643659798717,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Frognal Lane",
+            "lat": 51.55421695762538,
+            "lon": -0.18376200291275405,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Frognal Lane",
+            "lat": 51.5544041781759,
+            "lon": -0.18307657175769623,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Frognal Lane",
+            "lat": 51.55321825202263,
+            "lon": -0.18779739458248743,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Frognal Lane",
+            "lat": 51.553679485873545,
+            "lon": -0.1862211923215317,
+            "in_la": "Camden"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Redington Road",
+        "la_filter": "Camden",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Redington Road",
+            "lat": 51.5605974685625,
+            "lon": -0.18844181329215393,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Redington Road",
+            "lat": 51.55844110527356,
+            "lon": -0.18826782716605348,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Redington Road",
+            "lat": 51.55610662178015,
+            "lon": -0.1841339194921258,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Redington Road",
+            "lat": 51.55660326331978,
+            "lon": -0.1860111143036888,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Redington Road",
+            "lat": 51.557525271591956,
+            "lon": -0.18719342285512988,
+            "in_la": "Camden"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Frognal Lane",
+          "Redington Road"
+        ],
+        "la_filter": "Camden",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Frognal",
+        "road_a": "Frognal Lane",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Heath Drive",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Camden",
+        "query": "Arkwright Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Frognal Lane",
+          "Frognal"
+        ],
+        "la_filter": "Camden",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.55451,
+            "lon": -0.182668,
+            "roads": [
+              "Frognal Lane",
+              "Frognal"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Heath Drive",
+        "la_filter": "Camden",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Heath Drive",
+            "lat": 51.555671278121466,
+            "lon": -0.19058482636567123,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Heath Drive",
+            "lat": 51.55682191704845,
+            "lon": -0.18968818842986362,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Heath Drive",
+            "lat": 51.55774989494938,
+            "lon": -0.18834578615408448,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Heath Drive",
+            "lat": 51.55461040120442,
+            "lon": -0.19089393298619495,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Heath Drive",
+            "lat": 51.55506486524431,
+            "lon": -0.19062201824471386,
+            "in_la": "Camden"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Arkwright Road",
+        "la_filter": "Camden",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Arkwright Road",
+            "lat": 51.55109715461794,
+            "lon": -0.18292707033118075,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Arkwright Road",
+            "lat": 51.551635605423876,
+            "lon": -0.1814055085743375,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Arkwright Road",
+            "lat": 51.552273471050334,
+            "lon": -0.17962751697576843,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Arkwright Road",
+            "lat": 51.553158798376494,
+            "lon": -0.1775727313699454,
+            "in_la": "Camden"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Camden",
+        "lat": 51.555,
+        "lon": -0.185
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.555,
+        "lon": -0.185,
+        "la": "Camden",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.546390811083704,
+        "la_centroid_lon": -0.15742226323007869
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.555,
+        "picked_source": "road:Frognal Lane/Redington Road cluster",
+        "top_lon": -0.185,
+        "sigma_m": 800,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows the Redington/Frognal Conservation Area in Camden. Road centroids for Frognal Lane, Redington Road, and Heath Drive cluster around this central point. Intersection of Frognal Lane and Frognal confirmed the eastern boundary area.",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,237 @@
+{
+  "case": "E6369A1B-AA37-4B67-AF76-3BC17E3A5885",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.196156,
+    "top_lon": 1.369321,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR3549",
+    "evidence": "The map explicitly cites OS sheets TR3549 and TR3649. TR3549 (51.196, 1.369) aligns perfectly with the site location on Ripple Road, near the village of Ripple and Walmer, as shown on the map. CT16 3PG is the council office address.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.5180402884557193,
+  "gt_centroids": [
+    {
+      "lat": 51.19534534223907,
+      "lon": 1.376641980377299
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "postcode": 1,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3549"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3649"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PG"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Ripple Road",
+        "la": "Dover",
+        "road_b": "Station Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3549",
+        "lat": 51.19615600478458,
+        "lon": 1.3693211296377945
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3649",
+        "lat": 51.19574333235783,
+        "lon": 1.383607395917079
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CT16 3PG' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Ripple Road",
+          "Station Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "Ripple Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.36932112963779,
+        "la": "Dover",
+        "lat": 51.1961560047846
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Ripple Road",
+        "la_filter": "Dover",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Ripple Road",
+            "lat": 51.19343831869828,
+            "lon": 1.3780690071157122,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Ripple Road",
+            "lat": 51.191420651417566,
+            "lon": 1.369421626299372,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1961560047846,
+        "lon": 1.36932112963779,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 51.196156,
+        "sigma_m": 400,
+        "picked_source": "grid_ref:TR3549",
+        "top_lon": 1.369321,
+        "evidence": "The map explicitly cites OS sheets TR3549 and TR3649. TR3549 (51.196, 1.369) aligns perfectly with the site location on Ripple Road, near the village of Ripple and Walmer, as shown on the map. CT16 3PG is the council office address."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

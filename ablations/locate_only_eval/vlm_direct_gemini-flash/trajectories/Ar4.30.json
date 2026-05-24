@@ -1,0 +1,60 @@
+{
+  "case": "Ar4.30",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.8115,
+    "lon": -0.3055,
+    "reasoning": "The site is identified as land north of Lower Luton Road in Wheathampstead, specifically the field west of 64 Manor Road as indicated by the handwritten note and the hatched area on the planning map."
+  },
+  "err_km": 1.9369065133257042,
+  "gt_centroids": [
+    {
+      "lat": 51.821604949911254,
+      "lon": -0.3284519275050382
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -0.3055,
+        "lat": 51.8115,
+        "reasoning": "The site is identified as land north of Lower Luton Road in Wheathampstead, specifically the field west of 64 Manor Road as indicated by the handwritten note and the hatched area on the planning map."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

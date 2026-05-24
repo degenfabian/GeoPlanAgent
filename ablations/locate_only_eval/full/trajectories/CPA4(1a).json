@@ -1,0 +1,294 @@
+{
+  "case": "CPA4(1a)",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.553969,
+    "top_lon": 0.602267,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Florence Gardens x Florence Close",
+    "evidence": "The postcode SS7 1TF is in Hadleigh, Castle Point, but the intersection of Florence Gardens and Florence Close (both on the map) provides a more precise location for the specific conservation area shown. Both signals are within the correct LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.08015280078644352,
+  "gt_centroids": [
+    {
+      "lat": 51.55376851197057,
+      "lon": 0.6033805620421716
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 3,
+      "intersect": 1,
+      "la_check": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SS7 1TF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Florence Gardens"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Castle Point",
+        "road_b": "Florence Close",
+        "road_a": "Florence Gardens"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SS7 1TF",
+        "lat": 51.56184488380458,
+        "lon": 0.5848681639491619,
+        "admin_district": "Castle Point District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Florence Gardens",
+        "la_filter": "Castle Point",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Florence Gardens",
+            "type": "named road",
+            "lat": 51.553968591490815,
+            "lon": 0.6022670938907759,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Florence Gardens",
+          "Florence Close"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.553969,
+            "lon": 0.602267,
+            "roads": [
+              "Florence Gardens",
+              "Florence Close"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Castle Point",
+        "lat": 51.5618448838046,
+        "lon": 0.584868163949162
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Vaggon and Horses"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5618448838046,
+        "lon": 0.584868163949162,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Vaggon and Horses",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Waggon and Horses"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Waggon and Horses",
+        "la_filter": "Castle Point",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Waggon and Horses Lane",
+            "type": "named road",
+            "lat": 52.63155545874555,
+            "lon": 1.2975888625300211,
+            "admin_district": "Norwich",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 0.602267,
+        "la": "Castle Point",
+        "lat": 51.553969
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.553969,
+        "lon": 0.602267,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lon": 0.602267,
+        "sigma_m": 300,
+        "picked_source": "intersect:Florence Gardens x Florence Close",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.553969,
+        "evidence": "The postcode SS7 1TF is in Hadleigh, Castle Point, but the intersection of Florence Gardens and Florence Close (both on the map) provides a more precise location for the specific conservation area shown. Both signals are within the correct LA."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

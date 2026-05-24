@@ -1,0 +1,284 @@
+{
+  "case": "A4D5",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4805824882521,
+    "top_lon": -2.58200300531523,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Ashley Down",
+    "evidence": "The map shows a large area covering Horfield, Bishopston, and Ashley Down in Bristol. The centroid of these three suburban areas (Horfield 51.490, -2.579; Bishopston 51.475, -2.600; Ashley Down 51.480, -2.582) falls near the Memorial Stadium, which is centrally located within the red boundary.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.7253622341790092,
+  "gt_centroids": [
+    {
+      "lat": 51.487099081883464,
+      "lon": -2.5824792678886643
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Memorial Stadium",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Horfield Common",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Memorial Stadium",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Horfield Common",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Horfield"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bishopston",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Ashley Down"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Horfield",
+        "la_filter": "Bristol",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Horfield",
+            "type": "suburban area",
+            "lat": 51.490010711225395,
+            "lon": -2.579170448580724,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Horfield Road",
+            "type": "named road",
+            "lat": 51.45894689741466,
+            "lon": -2.598424006399968,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Horfield Lodge",
+            "type": "medical care accommodation",
+            "lat": 51.486641267675836,
+            "lon": -2.5912975249329295,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Horfield Church of England Primary School",
+            "type": "primary education",
+            "lat": 51.49339370969543,
+            "lon": -2.5948995562481403,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bishopston",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Bishopston",
+            "type": "suburban area",
+            "lat": 51.47509411883146,
+            "lon": -2.600521563063225,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ashley Down",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ashley Down",
+            "type": "suburban area",
+            "lat": 51.480582488252075,
+            "lon": -2.582003005315234,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Ashley Down",
+            "type": "railway station",
+            "lat": 51.47882753038863,
+            "lon": -2.5768687834832233,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Ashley Down Road",
+            "type": "named road",
+            "lat": 51.47949143866354,
+            "lon": -2.5808083237638217,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Ashley Down Primary School Brunel Field",
+            "type": "primary education",
+            "lat": 51.47836475535482,
+            "lon": -2.5831699249436557,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Ashley Down Primary School",
+            "type": "primary education",
+            "lat": 51.483618122412345,
+            "lon": -2.584518664363242,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Ashley Down",
+        "sigma_m": 1500,
+        "top_lat": 51.4805824882521,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows a large area covering Horfield, Bishopston, and Ashley Down in Bristol. The centroid of these three suburban areas (Horfield 51.490, -2.579; Bishopston 51.475, -2.600; Ashley Down 51.480, -2.582) falls near the Memorial Stadium, which is centrally located within the red boundary.",
+        "confidence": "high",
+        "top_lon": -2.58200300531523
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

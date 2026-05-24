@@ -1,0 +1,258 @@
+{
+  "case": "A4DA04",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.6987,
+    "top_lon": -2.2362,
+    "sigma_m": 800,
+    "confidence": "med",
+    "picked_source": "place:Fox Hill Farm (SD 84 22)",
+    "evidence": "The site is Fox Hill Farm in Shawclough, Waterfoot. Map labels 'Higher Slack', 'Far Slack', and 'Hewin Hill' correspond to farmsteads north of Waterfoot. SD 84 22 places us exactly in this rural cluster.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.7187347759887082,
+  "gt_centroids": [
+    {
+      "lat": 53.714005635037275,
+      "lon": -2.2398449463854417
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 4,
+      "grid_ref": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Rossendale",
+        "query": "Shawclough Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Shawclough Lane",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Fox Hill Farm",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Higher Slack",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Shawclough Road",
+        "la_filter": "Rossendale",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Shawclough Road",
+            "lat": 53.63976572826663,
+            "lon": -2.1782924279879916,
+            "in_la": "Rossendale"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Shawclough Lane",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Fox Hill Farm",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Higher Slack",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SD 84 22"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SD 83 22"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SD 84 22",
+        "lat": 53.69870409064862,
+        "lon": -2.236240675070499
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SD 83 22",
+        "lat": 53.698673233390785,
+        "lon": -2.2513865585600867
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 53.6987,
+        "la": "Rossendale",
+        "lon": -2.2362
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 53.6987,
+        "lon": -2.2362,
+        "la": "Rossendale",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 53.69381770640495,
+        "la_centroid_lon": -2.2673137098881666
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 800,
+        "top_lon": -2.2362,
+        "top_lat": 53.6987,
+        "picked_source": "place:Fox Hill Farm (SD 84 22)",
+        "evidence": "The site is Fox Hill Farm in Shawclough, Waterfoot. Map labels 'Higher Slack', 'Far Slack', and 'Hewin Hill' correspond to farmsteads north of Waterfoot. SD 84 22 places us exactly in this rural cluster.",
+        "confidence": "med",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,318 @@
+{
+  "case": "12:00141:ART4",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6596336367848,
+    "top_lon": 1.20099178789021,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:West End x TG1611",
+    "evidence": "The map is traced from OS sheets TG1611 and TG1711. The site is on 'Parklands' off 'West End' in Costessey. The road 'West End' in South Norfolk (Costessey) aligns perfectly with the grid reference TG1611.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.07520907196116788,
+  "gt_centroids": [
+    {
+      "lat": 52.658995430218226,
+      "lon": 1.2006225075185237
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "place": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG1611"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG1711"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Parklands, Costessey",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Falcon Lodge, Costessey",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "West End",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG1611",
+        "lat": 52.657975518830575,
+        "lon": 1.199701041966887
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG1711",
+        "lat": 52.65757571286197,
+        "lon": 1.2144616274855755
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Parklands, Costessey",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Falcon Lodge, Costessey",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "West End",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "West End",
+            "lat": 52.65963363678481,
+            "lon": 1.2009917878902108,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.65871383506571,
+            "lon": 1.2044364616302121,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.658667963626534,
+            "lon": 1.2078177606980185,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.65901525178464,
+            "lon": 1.2094403379061376,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.66585589681674,
+            "lon": 1.1962905133142714,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Parklands",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Norfolk",
+        "lat": 52.6596336367848,
+        "lon": 1.20099178789021
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Parklands",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Parklands",
+            "type": "named road",
+            "lat": 55.447025331577755,
+            "lon": -4.517537285557966,
+            "admin_district": null,
+            "county": "South Ayrshire"
+          },
+          {
+            "name": "Parklands",
+            "type": "named road",
+            "lat": 53.652754804133714,
+            "lon": -2.979736026739882,
+            "admin_district": "Sefton",
+            "county": null
+          },
+          {
+            "name": "Parklands",
+            "type": "named road",
+            "lat": 51.01296437746089,
+            "lon": -3.8409720092720097,
+            "admin_district": "North Devon",
+            "county": "Devon"
+          },
+          {
+            "name": "Parklands",
+            "type": "named road",
+            "lat": 51.46330657754596,
+            "lon": -2.505102325377256,
+            "admin_district": null,
+            "county": "South Gloucestershire"
+          },
+          {
+            "name": "Parklands",
+            "type": "named road",
+            "lat": 50.923757030665385,
+            "lon": -1.370025130165177,
+            "admin_district": null,
+            "county": "City of Southampton"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6596336367848,
+        "lon": 1.20099178789021,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.20099178789021,
+        "verified_inside_admin_region": true,
+        "top_lat": 52.6596336367848,
+        "confidence": "high",
+        "sigma_m": 300,
+        "picked_source": "road:West End x TG1611",
+        "evidence": "The map is traced from OS sheets TG1611 and TG1711. The site is on 'Parklands' off 'West End' in Costessey. The road 'West End' in South Norfolk (Costessey) aligns perfectly with the grid reference TG1611."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

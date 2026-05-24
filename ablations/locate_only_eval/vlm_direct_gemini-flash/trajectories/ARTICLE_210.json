@@ -1,0 +1,60 @@
+{
+  "case": "ARTICLE:210",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.1795,
+    "lon": 0.0385,
+    "reasoning": "The document describes Orchard Farm on Wimpole Road in Barton, and the provided map shows the site outlined in red at the junction of Wimpole Road (A603) and the track leading to Lord's Bridge."
+  },
+  "err_km": 0.7180813972271343,
+  "gt_centroids": [
+    {
+      "lat": 52.17631773644746,
+      "lon": 0.04766381246197953
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": 0.0385,
+        "lat": 52.1795,
+        "reasoning": "The document describes Orchard Farm on Wimpole Road in Barton, and the provided map shows the site outlined in red at the junction of Wimpole Road (A603) and the track leading to Lord's Bridge."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

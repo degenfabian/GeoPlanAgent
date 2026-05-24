@@ -1,0 +1,305 @@
+{
+  "case": "SSA412",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.69214,
+    "top_lon": -2.0976,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:SJ9310",
+    "evidence": "The grid reference SJ9310 from the map header aligns perfectly with the 'Gailey Lower Reservoir' label on the map and the site address in Gailey. The WV8 postcode is for the council offices (letterhead).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.4928729153491146,
+  "gt_centroids": [
+    {
+      "lat": 52.68818078502824,
+      "lon": -2.094312008670204
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "postcode": 1,
+      "place": 3,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SJ9310"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "WV8 1PX"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Gailey Lower Reservoir"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Pool House, Gailey"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SJ9310",
+        "lat": 52.692143955522475,
+        "lon": -2.0976066474978143
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "WV8 1PX",
+        "lat": 52.62566656951965,
+        "lon": -2.191960842481458,
+        "admin_district": "South Staffordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Gailey Lower Reservoir",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Gailey Lower Reservoir",
+            "type": "inland water",
+            "lat": 52.69117277051838,
+            "lon": -2.0979743519216876,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Pool House, Gailey",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Watling Street",
+        "road_b": "Vicarage Lane",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.69214,
+        "la": "South Staffordshire",
+        "lon": -2.0976
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Watling Street",
+          "Vicarage Lane"
+        ],
+        "la_filter": "South Staffordshire",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.69214,
+        "lon": -2.0976,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Gailey"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Gailey",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Gailey",
+            "type": "village",
+            "lat": 52.69209155946353,
+            "lon": -2.124667231622067,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Gailey Wood",
+            "type": "woodland or forest",
+            "lat": 53.384441649054274,
+            "lon": -2.4424356074314555,
+            "admin_district": null,
+            "county": "Warrington"
+          },
+          {
+            "name": "Gailey Lea Lane",
+            "type": "named road",
+            "lat": 52.69320685174867,
+            "lon": -2.095004976096798,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Gailey Lower Reservoir",
+            "type": "inland water",
+            "lat": 52.69117277051838,
+            "lon": -2.0979743519216876,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Gailey Upper Reservoir",
+            "type": "inland water",
+            "lat": 52.689182756936624,
+            "lon": -2.090853794716578,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "grid_ref:SJ9310",
+        "sigma_m": 300,
+        "top_lat": 52.69214,
+        "confidence": "high",
+        "evidence": "The grid reference SJ9310 from the map header aligns perfectly with the 'Gailey Lower Reservoir' label on the map and the site address in Gailey. The WV8 postcode is for the council offices (letterhead).",
+        "verified_inside_admin_region": true,
+        "top_lon": -2.0976
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

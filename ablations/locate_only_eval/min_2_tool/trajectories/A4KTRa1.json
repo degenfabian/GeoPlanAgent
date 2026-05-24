@@ -1,0 +1,168 @@
+{
+  "case": "A4KTRa1",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5443459443757,
+    "top_lon": -0.141726067480566,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:NW1 8PB",
+    "evidence": "The site is explicitly identified as 147 Kentish Town Road (Castle PH). The postcode NW1 8PB from pdf_info resolves to this exact location and is confirmed to be within Camden. The map also provides a grid reference (528942, 184544) which matches this coordinate.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.08032426638802949,
+  "gt_centroids": [
+    {
+      "lat": 51.54506071936761,
+      "lon": -0.14189409918903167
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "147 Kentish Town Road",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Camden",
+        "query": "NW1 8PB"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "147 Kentish Town Road",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "NW1 8PB",
+        "la_filter": "Camden",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "NW1 8PB",
+            "type": "postcode",
+            "lat": 51.544345944375735,
+            "lon": -0.14172606748056557,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.5443459443757,
+        "lon": -0.141726067480566,
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5443459443757,
+        "lon": -0.141726067480566,
+        "la": "Camden",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.546390811083704,
+        "la_centroid_lon": -0.15742226323007869
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.141726067480566,
+        "confidence": "high",
+        "top_lat": 51.5443459443757,
+        "picked_source": "postcode:NW1 8PB",
+        "sigma_m": 200,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is explicitly identified as 147 Kentish Town Road (Castle PH). The postcode NW1 8PB from pdf_info resolves to this exact location and is confirmed to be within Camden. The map also provides a grid reference (528942, 184544) which matches this coordinate."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

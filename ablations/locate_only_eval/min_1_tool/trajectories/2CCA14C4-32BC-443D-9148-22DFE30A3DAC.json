@@ -1,0 +1,285 @@
+{
+  "case": "2CCA14C4-32BC-443D-9148-22DFE30A3DAC",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.148673758242,
+    "top_lon": 1.26428900964074,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Palmtree Hill Plantation",
+    "evidence": "The site is explicitly labeled as Palmtree Hill Plantation on the map and in the address. Geocoding 'Palmtree Hill Plantation' in Dover returns a precise woodland feature that matches the map's location relative to Kearsney Court and Temple Ewell.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.047525141970340086,
+  "gt_centroids": [
+    {
+      "lat": 51.14909693283401,
+      "lon": 1.2641933968857286
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Palmtree Hill Plantation",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kearsney Court",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Russell Gardens",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Temple Ewell",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Palmtree Hill Plantation",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Palmtree Hill Plantation",
+            "type": "woodland or forest",
+            "lat": 51.148673758242026,
+            "lon": 1.2642890096407378,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kearsney Court",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Kearsney Court",
+            "type": "named road",
+            "lat": 51.148281167238615,
+            "lon": 1.2673932783248194,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Russell Gardens",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Russell Gardens",
+            "type": "named road",
+            "lat": 56.275383815577115,
+            "lon": -3.125745768928903,
+            "admin_district": null,
+            "county": "Fife"
+          },
+          {
+            "name": "Russell Gardens",
+            "type": "named road",
+            "lat": 55.82961573424973,
+            "lon": -4.070976710697025,
+            "admin_district": null,
+            "county": "North Lanarkshire"
+          },
+          {
+            "name": "Russell Gardens",
+            "type": "named road",
+            "lat": 55.94415358242942,
+            "lon": -3.2337366774715117,
+            "admin_district": null,
+            "county": "City of Edinburgh"
+          },
+          {
+            "name": "Russell Gardens",
+            "type": "named road",
+            "lat": 53.323402515908754,
+            "lon": -3.486095648742321,
+            "admin_district": null,
+            "county": "Sir Ddinbych - Denbighshire"
+          },
+          {
+            "name": "Russell Gardens",
+            "type": "named road",
+            "lat": 53.17955800183606,
+            "lon": -1.4222834569538092,
+            "admin_district": "North East Derbyshire",
+            "county": "Derbyshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Temple Ewell",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Temple Ewell",
+            "type": "suburban area",
+            "lat": 51.152936790323885,
+            "lon": 1.2697819786562115,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Temple Ewell Nursing Home",
+            "type": "medical care accommodation",
+            "lat": 51.15140020968375,
+            "lon": 1.2713323488554285,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Temple Ewell Church of England Primary School",
+            "type": "primary education",
+            "lat": 51.1511892338302,
+            "lon": 1.267942089285005,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bushy Ruff House",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bushy Ruff House",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 200,
+        "confidence": "high",
+        "picked_source": "place:Palmtree Hill Plantation",
+        "evidence": "The site is explicitly labeled as Palmtree Hill Plantation on the map and in the address. Geocoding 'Palmtree Hill Plantation' in Dover returns a precise woodland feature that matches the map's location relative to Kearsney Court and Temple Ewell.",
+        "top_lat": 51.148673758242,
+        "verified_inside_admin_region": true,
+        "top_lon": 1.26428900964074
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

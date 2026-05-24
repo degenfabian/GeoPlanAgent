@@ -1,0 +1,283 @@
+{
+  "case": "A4D-24",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1355,
+    "top_lon": -0.4506,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "grid_ref:TQ0838",
+    "evidence": "The map explicitly states 'MAP SHEET: TQ0838' and 'Land at Norley Farm'. The grid reference TQ0838 (1km square) aligns perfectly with the site address in Cranleigh/Ewhurst. Postcode GU7 1HR is the council office (letterhead).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.29422072869796895,
+  "gt_centroids": [
+    {
+      "lat": 51.1333140203058,
+      "lon": -0.44822405983230423
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 3,
+      "postcode": 1,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ0838"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Norley Farm"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "GU7 1HR"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Coxlands Estate"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TQ0838",
+        "lat": 51.135503638480586,
+        "lon": -0.4506093809703768
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Norley Farm",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "GU7 1HR",
+        "lat": 51.187070295865894,
+        "lon": -0.6097327533849907,
+        "admin_district": "Waverley District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coxlands Estate",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Somersbury Lane"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Waverley",
+        "road_a": "Horsham Road",
+        "road_b": "Somersbury Lane"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Somersbury Lane",
+        "la_filter": "Waverley",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Somersbury Lane",
+            "type": "named road",
+            "lat": 51.128989994097175,
+            "lon": -0.4301617705412274,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Somersbury Lane",
+            "type": "section of named road",
+            "lat": 51.1190022768784,
+            "lon": -0.4317433889743593,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Somersbury Wood",
+            "type": "woodland or forest",
+            "lat": 51.12685283001069,
+            "lon": -0.4190444407233676,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Horsham Road",
+          "Somersbury Lane"
+        ],
+        "la_filter": "Waverley",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.1355,
+        "la": "Waverley",
+        "lon": -0.4506
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1355,
+        "lon": -0.4506,
+        "la": "Waverley",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.14979708109079,
+        "la_centroid_lon": -0.6327293391700743
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map explicitly states 'MAP SHEET: TQ0838' and 'Land at Norley Farm'. The grid reference TQ0838 (1km square) aligns perfectly with the site address in Cranleigh/Ewhurst. Postcode GU7 1HR is the council office (letterhead).",
+        "top_lat": 51.1355,
+        "confidence": "high",
+        "picked_source": "grid_ref:TQ0838",
+        "sigma_m": 500,
+        "top_lon": -0.4506,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

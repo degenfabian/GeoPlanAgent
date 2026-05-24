@@ -1,0 +1,64 @@
+{
+  "case": "12_merged",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 53.351,
+    "lon": -3.155,
+    "reasoning": "The document describes land in the parishes of Caldy and Thurstaston, with the map specifically highlighting East Farm and Dawpool Farm near Thurstaston Hill."
+  },
+  "err_km": 0.6322820832983375,
+  "gt_centroids": [
+    {
+      "lat": 53.35118317046466,
+      "lon": -3.145478801079716
+    },
+    {
+      "lat": 53.36217045807339,
+      "lon": -3.153047704294689
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document describes land in the parishes of Caldy and Thurstaston, with the map specifically highlighting East Farm and Dawpool Farm near Thurstaston Hill.",
+        "lat": 53.351,
+        "lon": -3.155
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

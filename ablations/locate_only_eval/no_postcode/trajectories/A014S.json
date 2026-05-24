@@ -1,0 +1,278 @@
+{
+  "case": "A014S",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.576518,
+    "top_lon": -0.352588,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Maffit Road x Main Street",
+    "evidence": "The site is at 2a Maffit Road, Ailsworth. The intersection of Maffit Road and Main Street (52.5765, -0.3526) aligns perfectly with the map layout showing the site just north of this junction. Verified inside Peterborough.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.12487569910428403,
+  "gt_centroids": [
+    {
+      "lat": 52.57763879297042,
+      "lon": -0.3527046937621966
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "2a Maffit Road, Ailsworth"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Maffit Road",
+        "road_b": "Main Street",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Ailsworth",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "2a Maffit Road, Ailsworth",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Maffit Road",
+          "Main Street"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.576518,
+            "lon": -0.352588,
+            "roads": [
+              "Maffit Road",
+              "Main Street"
+            ]
+          },
+          {
+            "lat": 52.580088,
+            "lon": -0.351856,
+            "roads": [
+              "Maffit Road",
+              "Main Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ailsworth",
+        "la_filter": "Peterborough",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Ailsworth",
+            "type": "village",
+            "lat": 52.57578709203318,
+            "lon": -0.35291767222683723,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Ailsworth Heath",
+            "type": "woodland or forest",
+            "lat": 52.60323622687576,
+            "lon": -0.35423606392363627,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Maffit Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Peterborough",
+        "lon": -0.352588,
+        "lat": 52.576518
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Maffit Road",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Maffit Road",
+            "lat": 52.578306749347114,
+            "lon": -0.35248408214733834,
+            "in_la": "Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.576518,
+        "lon": -0.352588,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Moffit House"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Moffit House",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is at 2a Maffit Road, Ailsworth. The intersection of Maffit Road and Main Street (52.5765, -0.3526) aligns perfectly with the map layout showing the site just north of this junction. Verified inside Peterborough.",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.352588,
+        "picked_source": "intersect:Maffit Road x Main Street",
+        "sigma_m": 200,
+        "top_lat": 52.576518
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

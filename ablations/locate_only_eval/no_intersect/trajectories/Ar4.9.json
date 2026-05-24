@@ -1,0 +1,332 @@
+{
+  "case": "Ar4.9",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.73684,
+    "top_lon": -0.25115,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Roestock",
+    "evidence": "The site is Colney Heath Farm, located between Coursers Road and Roestock. The road centroids for Coursers Road and Fellowes Lane cluster tightly around this coordinate.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1546241750936398,
+  "gt_centroids": [
+    {
+      "lat": 51.73563545921934,
+      "lon": -0.25227196148451597
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Colney Heath Farm"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colney Heath",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Coursers Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney Heath Farm",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney Heath",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Colney Heath",
+            "type": "village",
+            "lat": 51.74017015859061,
+            "lon": -0.26208935629229957,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Colney Heath",
+            "type": "other landcover",
+            "lat": 51.73322247750252,
+            "lon": -0.257446573161603,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Colney Heath Lane",
+            "type": "section of named road",
+            "lat": 51.747897315851844,
+            "lon": -0.2861734171940435,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Colney Heath Lane",
+            "type": "named road",
+            "lat": 51.746436883474956,
+            "lon": -0.28160768163178257,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Colney Heath Lakes",
+            "type": "inland water",
+            "lat": 51.742793676274786,
+            "lon": -0.260120148225823,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Coursers Road",
+        "la_filter": "St Albans",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Coursers Road",
+            "lat": 51.73561525170265,
+            "lon": -0.2558181591656008,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Coursers Road",
+            "lat": 51.73726975167276,
+            "lon": -0.255040152173795,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Coursers Road",
+            "lat": 51.733691830656134,
+            "lon": -0.2554807791787432,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Coursers Road",
+            "lat": 51.73451000184401,
+            "lon": -0.2553948208103064,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Roestock Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Fellowes Lane"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Roestock Lane",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Roestock Lane",
+            "type": "named road",
+            "lat": 51.74037513879142,
+            "lon": -0.248640314439276,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Roestock",
+            "type": "suburban area",
+            "lat": 51.73684269400088,
+            "lon": -0.2511520850322036,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Roestock Gardens",
+            "type": "named road",
+            "lat": 51.740496615738905,
+            "lon": -0.24653542576753495,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fellowes Lane",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Fellowes Lane",
+            "type": "named road",
+            "lat": 51.737004116464455,
+            "lon": -0.24810443177669525,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "St Albans",
+        "lon": -0.252,
+        "lat": 51.736
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.736,
+        "lon": -0.252,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "confidence": "high",
+        "top_lon": -0.25115,
+        "top_lat": 51.73684,
+        "verified_inside_admin_region": true,
+        "picked_source": "place:Roestock",
+        "evidence": "The site is Colney Heath Farm, located between Coursers Road and Roestock. The road centroids for Coursers Road and Fellowes Lane cluster tightly around this coordinate."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

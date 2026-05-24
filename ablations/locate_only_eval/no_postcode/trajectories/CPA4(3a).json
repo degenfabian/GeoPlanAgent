@@ -1,0 +1,222 @@
+{
+  "case": "CPA4(3a)",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.56542,
+    "top_lon": 0.57139,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Coombe Wood",
+    "evidence": "The site is Coombe Wood in Thundersley. The 'place' search for Coombe Wood matches the intersection of London Road and Catherine Road (seen on the map's southern boundary) within 200m. Verified inside Castle Point.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.02629436337317615,
+  "gt_centroids": [
+    {
+      "lat": 51.56519074636219,
+      "lon": 0.571483266138213
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ7888SW"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Coombe Wood"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Castle Point",
+        "road_b": "Catherine Road",
+        "road_a": "London Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Thundersley Christian Spiritualist Church",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'TQ7888SW'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coombe Wood",
+        "la_filter": "Castle Point",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Coombe Wood",
+            "type": "woodland or forest",
+            "lat": 51.56542370364884,
+            "lon": 0.5713914382920157,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "Catherine Road"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.56409,
+            "lon": 0.569469,
+            "roads": [
+              "London Road",
+              "Catherine Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thundersley Christian Spiritualist Church",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Castle Point",
+        "lon": 0.571391438292016,
+        "lat": 51.5654237036488
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5654237036488,
+        "lon": 0.571391438292016,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 0.57139,
+        "top_lat": 51.56542,
+        "picked_source": "place:Coombe Wood",
+        "confidence": "high",
+        "evidence": "The site is Coombe Wood in Thundersley. The 'place' search for Coombe Wood matches the intersection of London Road and Catherine Road (seen on the map's southern boundary) within 200m. Verified inside Castle Point.",
+        "verified_inside_admin_region": true,
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

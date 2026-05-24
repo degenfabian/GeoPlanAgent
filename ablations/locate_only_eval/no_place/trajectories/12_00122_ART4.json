@@ -1,0 +1,398 @@
+{
+  "case": "12:00122:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.4713545613784,
+    "top_lon": 1.44930398120935,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "postcode:NR35 2RE",
+    "evidence": "The map shows Ditchingham with roads Thwaite Road, Hallow Hill Road, and Windmill Green. Postcode NR35 2RE (Ditchingham) is centrally located within this cluster of roads and verified inside South Norfolk.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3974752310506689,
+  "gt_centroids": [
+    {
+      "lat": 52.46943544748213,
+      "lon": 1.4443534356098207
+    },
+    {
+      "lat": 52.469080318165844,
+      "lon": 1.4419316863984695
+    },
+    {
+      "lat": 52.46864455671181,
+      "lon": 1.4411417829215383
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "road": 5,
+      "postcode": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_a": "Thwaite Road",
+        "road_b": "Hallow Hill Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_a": "Thwaite Road",
+        "road_b": "Longrigg Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Scudamore Place",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Windmill Green"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Hallow Hill Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Longrigg Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Scudamore Place",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Windmill Green",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Thwaite Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Norwich Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Green Lane"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR35 2RE"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Thwaite Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Thwaite Road",
+            "lat": 52.47645962550927,
+            "lon": 1.4427781736271041,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Thwaite Road",
+            "lat": 52.474690794646676,
+            "lon": 1.443818309618459,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Thwaite Road",
+            "lat": 52.47260445496002,
+            "lon": 1.4446827259265684,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Thwaite Road",
+            "lat": 52.47968205535067,
+            "lon": 1.4410068441141402,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Thwaite Road",
+            "lat": 52.46874443583503,
+            "lon": 1.4423198177417473,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Norwich Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Norwich Road",
+            "lat": 52.65254945109614,
+            "lon": 1.2304483549063856,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.65343794198743,
+            "lon": 1.2291566902804625,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.65419695000764,
+            "lon": 1.2287228627311375,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.654615861070084,
+            "lon": 1.2285729590458034,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.57851939586168,
+            "lon": 1.4666925325992577,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Green Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Green Lane",
+            "lat": 52.5576152251884,
+            "lon": 1.3758336103604614,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Green Lane",
+            "lat": 52.557206300328595,
+            "lon": 1.384002961992305,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Green Lane",
+            "lat": 52.602416358245044,
+            "lon": 1.1296680380477844,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Green Lane",
+            "lat": 52.55845471492206,
+            "lon": 1.1193615149518912,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Green Lane",
+            "lat": 52.55850595759897,
+            "lon": 1.118347426988348,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "NR35 2RE",
+        "lat": 52.4713545613784,
+        "lon": 1.4493039812093529,
+        "admin_district": "South Norfolk District"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.44930398120935,
+        "lat": 52.4713545613784,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.4713545613784,
+        "lon": 1.44930398120935,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "sigma_m": 400,
+        "verified_inside_admin_region": true,
+        "picked_source": "postcode:NR35 2RE",
+        "top_lon": 1.44930398120935,
+        "top_lat": 52.4713545613784,
+        "evidence": "The map shows Ditchingham with roads Thwaite Road, Hallow Hill Road, and Windmill Green. Postcode NR35 2RE (Ditchingham) is centrally located within this cluster of roads and verified inside South Norfolk."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

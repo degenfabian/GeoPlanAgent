@@ -1,0 +1,386 @@
+{
+  "case": "SSA416",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5486596847003,
+    "top_lon": -2.25115514301971,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Tinker's Castle Road",
+    "evidence": "The site 'Wilderhope' is located on Tinker's Castle Road in Seisdon. Geocoding Tinker's Castle Road in South Staffordshire provides a precise road segment matching the map's context.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.38425741292666404,
+  "gt_centroids": [
+    {
+      "lat": 52.54758739776492,
+      "lon": -2.2565574876535734
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "road": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wilderhope",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Tinkers Castle Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Seisdon"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wilderhope",
+        "la_filter": "South Staffordshire",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Wilderhope Close",
+            "type": "named road",
+            "lat": 53.07779346676847,
+            "lon": -2.4475683901844576,
+            "admin_district": null,
+            "county": "Cheshire East"
+          },
+          {
+            "name": "Wilderhope Coppice",
+            "type": "woodland or forest",
+            "lat": 52.52943878052147,
+            "lon": -2.6641876590514806,
+            "admin_district": null,
+            "county": "Shropshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Tinkers Castle Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Seisdon",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Seisdon",
+            "type": "village",
+            "lat": 52.550514747902206,
+            "lon": -2.239606626756396,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Seisdon Road",
+            "type": "named road",
+            "lat": 52.547201061066986,
+            "lon": -2.228720310307708,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Seisdon Common Road",
+            "type": "named road",
+            "lat": 52.54384612828817,
+            "lon": -2.2516910649989437,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Seisdon Road",
+            "type": "section of named road",
+            "lat": 52.54591956780874,
+            "lon": -2.221871415156175,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Seisdon Road",
+            "type": "section of named road",
+            "lat": 52.549333534821,
+            "lon": -2.236901426128175,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Tinkers Castle Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wilderhope, Seisdon"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Tinkers Castle Road",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wilderhope, Seisdon",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Tinker's Castle Road"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wilderhope"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Tinker's Castle Road",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Tinker's Castle Road",
+            "lat": 52.54723094608695,
+            "lon": -2.259145474435126,
+            "in_la": null
+          },
+          {
+            "name": "Tinker's Castle Road",
+            "lat": 52.54865968470026,
+            "lon": -2.2511551430197057,
+            "in_la": null
+          },
+          {
+            "name": "Tinker's Castle Road",
+            "lat": 52.54992104748615,
+            "lon": -2.243811890276597,
+            "in_la": null
+          },
+          {
+            "name": "Tinker's Castle Road",
+            "lat": 52.5501506237314,
+            "lon": -2.242578126173761,
+            "in_la": null
+          },
+          {
+            "name": "Tinker's Castle Road",
+            "lat": 52.550168552956364,
+            "lon": -2.242164112369001,
+            "in_la": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wilderhope",
+        "la_filter": null,
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Wilderhope Close",
+            "type": "named road",
+            "lat": 53.07779346676847,
+            "lon": -2.4475683901844576,
+            "admin_district": null,
+            "county": "Cheshire East"
+          },
+          {
+            "name": "Wilderhope Coppice",
+            "type": "woodland or forest",
+            "lat": 52.52943878052147,
+            "lon": -2.6641876590514806,
+            "admin_district": null,
+            "county": "Shropshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.25115514301971,
+        "la": "South Staffordshire",
+        "lat": 52.5486596847003
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5486596847003,
+        "lon": -2.25115514301971,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "evidence": "The site 'Wilderhope' is located on Tinker's Castle Road in Seisdon. Geocoding Tinker's Castle Road in South Staffordshire provides a precise road segment matching the map's context.",
+        "verified_inside_admin_region": true,
+        "top_lat": 52.5486596847003,
+        "top_lon": -2.25115514301971,
+        "sigma_m": 400,
+        "picked_source": "road:Tinker's Castle Road"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

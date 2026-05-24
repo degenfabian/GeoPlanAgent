@@ -1,0 +1,60 @@
+{
+  "case": "CPA4(3a)",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.5645,
+    "lon": 0.584,
+    "reasoning": "The site is identified as Coombe Wood in Thundersley, Benfleet, bounded to the south by London Road (Bread and Cheese Hill) and to the east by Lake Drive, as shown on the provided OS map extract TQ7888SW."
+  },
+  "err_km": 0.8685835305351031,
+  "gt_centroids": [
+    {
+      "lat": 51.56519074636219,
+      "lon": 0.571483266138213
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The site is identified as Coombe Wood in Thundersley, Benfleet, bounded to the south by London Road (Bread and Cheese Hill) and to the east by Lake Drive, as shown on the provided OS map extract TQ7888SW.",
+        "lon": 0.584,
+        "lat": 51.5645
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "case": "CB:75:00001:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 50.7128,
+    "lon": -2.435,
+    "reasoning": "The map shows the distinctive circular earthwork of Maumbury Rings in Dorchester, with the conservation area boundary encompassing the surrounding street layout."
+  },
+  "err_km": 190.74651894689623,
+  "gt_centroids": [
+    {
+      "lat": 51.94923779700328,
+      "lon": -0.5316660978663318
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -2.435,
+        "lat": 50.7128,
+        "reasoning": "The map shows the distinctive circular earthwork of Maumbury Rings in Dorchester, with the conservation area boundary encompassing the surrounding street layout."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

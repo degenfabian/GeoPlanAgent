@@ -1,0 +1,368 @@
+{
+  "case": "A4Da2",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.4905,
+    "top_lon": -1.962,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Corbett Street",
+    "evidence": "The map shows the High Street & Crocketts Lane Conservation Area in Smethwick, adjacent to Victoria Park. Road searches for Victoria Park Road and Corbett Street (visible on map) cluster around 52.490, -1.962, which is confirmed inside Sandwell.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3737518318605697,
+  "gt_centroids": [
+    {
+      "lat": 52.48972826799353,
+      "lon": -1.967372715739662
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "road": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Sandwell",
+        "road_a": "High Street",
+        "road_b": "Crocketts Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Crocketts Lane",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "High Street",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Sandwell for: ['Crocketts Lane']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Crocketts Lane",
+        "la_filter": "Sandwell",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "High Street",
+        "la_filter": "Sandwell",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "High Street",
+            "lat": 52.522763270169705,
+            "lon": -2.0012238852351993,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.52341052235424,
+            "lon": -2.002373518596827,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.5237206587939,
+            "lon": -2.0029704550357814,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.475567317604224,
+            "lon": -2.0396963251643907,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.47554579966261,
+            "lon": -2.040579588828016,
+            "in_la": "Sandwell"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Victoria Park Road",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Suffolk Road",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Corbett Street",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Victoria Park Road",
+        "la_filter": "Sandwell",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Victoria Park Road",
+            "lat": 52.49232665621021,
+            "lon": -1.9628190362682254,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "Victoria Park Road",
+            "lat": 52.492789543369575,
+            "lon": -1.9625167170602005,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "Victoria Park Road",
+            "lat": 52.49364789074619,
+            "lon": -1.9619121174411944,
+            "in_la": "Sandwell"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Suffolk Road",
+        "la_filter": "Sandwell",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Suffolk Road",
+            "lat": 52.55716740008151,
+            "lon": -1.9949415836740763,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "Suffolk Road",
+            "lat": 52.55696966861065,
+            "lon": -1.9962248423310156,
+            "in_la": "Sandwell"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Corbett Street",
+        "la_filter": "Sandwell",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Corbett Street",
+            "lat": 52.48954004464382,
+            "lon": -1.9611307508040852,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "Corbett Street",
+            "lat": 52.49007849088422,
+            "lon": -1.9607001637327135,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "Corbett Street",
+            "lat": 52.490532363266844,
+            "lon": -1.9603389352816805,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "Corbett Street",
+            "lat": 52.48825930738319,
+            "lon": -1.9621553887249703,
+            "in_la": "Sandwell"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Sandwell",
+        "road_a": "High Street",
+        "road_b": "Corbett Street"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Sandwell for: ['Corbett Street']"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Sandwell",
+        "lat": 52.4905,
+        "lon": -1.962
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.4905,
+        "lon": -1.962,
+        "la": "Sandwell",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51544066566969,
+        "la_centroid_lon": -2.008954795482069
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows the High Street & Crocketts Lane Conservation Area in Smethwick, adjacent to Victoria Park. Road searches for Victoria Park Road and Corbett Street (visible on map) cluster around 52.490, -1.962, which is confirmed inside Sandwell.",
+        "top_lat": 52.4905,
+        "top_lon": -1.962,
+        "picked_source": "road:Corbett Street",
+        "sigma_m": 400
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

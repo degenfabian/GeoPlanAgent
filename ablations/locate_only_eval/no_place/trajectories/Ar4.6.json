@@ -1,0 +1,269 @@
+{
+  "case": "Ar4.6",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7488,
+    "top_lon": -0.339,
+    "sigma_m": 250,
+    "confidence": "high",
+    "picked_source": "intersect:Sopwell Lane x Holywell Hill",
+    "evidence": "The map shows an Article 4 area bounded by Holywell Hill, Sopwell Lane, and Albert Street. Intersections of Sopwell Lane with Holywell Hill and Thorpe Road confirm the location in St Albans. Picked the centroid of the Sopwell Lane/Holywell Hill junction area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.03414623083446766,
+  "gt_centroids": [
+    {
+      "lat": 51.74862092594286,
+      "lon": -0.3385970579771725
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 4,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_a": "Sopwell Lane",
+        "road_b": "Albert Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_b": "Holywell Hill",
+        "road_a": "Sopwell Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Pearces Walk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Sopwell Lane",
+          "Albert Street"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Sopwell Lane",
+          "Holywell Hill"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.749095,
+            "lon": -0.34083,
+            "roads": [
+              "Sopwell Lane",
+              "Holywell Hill"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Pearces Walk",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Thorpe Road",
+        "la": "St Albans",
+        "road_a": "Sopwell Lane"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_a": "Albert Street",
+        "road_b": "Holywell Hill"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.749095,
+        "la": "St Albans",
+        "lon": -0.34083
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Sopwell Lane",
+          "Thorpe Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.747983,
+            "lon": -0.337206,
+            "roads": [
+              "Sopwell Lane",
+              "Thorpe Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Albert Street",
+          "Holywell Hill"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.749425,
+            "lon": -0.340629,
+            "roads": [
+              "Albert Street",
+              "Holywell Hill"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.749095,
+        "lon": -0.34083,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.339,
+        "evidence": "The map shows an Article 4 area bounded by Holywell Hill, Sopwell Lane, and Albert Street. Intersections of Sopwell Lane with Holywell Hill and Thorpe Road confirm the location in St Albans. Picked the centroid of the Sopwell Lane/Holywell Hill junction area.",
+        "picked_source": "intersect:Sopwell Lane x Holywell Hill",
+        "top_lat": 51.7488,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 250
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

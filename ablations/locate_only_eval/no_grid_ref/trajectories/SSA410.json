@@ -1,0 +1,319 @@
+{
+  "case": "SSA410",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.777853,
+    "top_lon": -2.132014,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Hyde Lea",
+    "evidence": "The site is identified as 'Kevina' in Hyde Lea. While the council is South Staffordshire, Hyde Lea village and Bradley Lane are located just across the border in Stafford district. The coordinates for Hyde Lea village and Bradley Lane (Stafford) align perfectly with the map features.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.2430658530843039,
+  "gt_centroids": [
+    {
+      "lat": 52.77638928961494,
+      "lon": -2.134697914890217
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 3,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "WV8 1PX"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kevina, Hyde Lea",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hyde Lea",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Bradley Lane",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "WV8 1PX",
+        "lat": 52.62566656951965,
+        "lon": -2.191960842481458,
+        "admin_district": "South Staffordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kevina, Hyde Lea",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hyde Lea",
+        "la_filter": "South Staffordshire",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Hyde Lea",
+            "type": "village",
+            "lat": 52.777853122229125,
+            "lon": -2.1320135458590608,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hyde Lea Bank",
+            "type": "section of named road",
+            "lat": 52.781416271842694,
+            "lon": -2.1290147460408786,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hyde Lea Bank",
+            "type": "named road",
+            "lat": 52.780065882634,
+            "lon": -2.1308045904440487,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hyde Lea Bank",
+            "type": "section of named road",
+            "lat": 52.77914877578164,
+            "lon": -2.1309649088409883,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bradley Lane",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Stafford",
+        "query": "Bradley Lane"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kevina",
+        "la": "Stafford"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bradley Lane",
+        "la_filter": "Stafford",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Bradley Lane",
+            "lat": 52.777597210676944,
+            "lon": -2.1337583353520686,
+            "in_la": "Stafford"
+          },
+          {
+            "name": "Bradley Lane",
+            "lat": 52.7780718210988,
+            "lon": -2.135646951457174,
+            "in_la": "Stafford"
+          },
+          {
+            "name": "Bradley Lane",
+            "lat": 52.76181604874791,
+            "lon": -2.1782031276141165,
+            "in_la": "Stafford"
+          },
+          {
+            "name": "Bradley Lane",
+            "lat": 52.760900089266485,
+            "lon": -2.1775547711484537,
+            "in_la": "Stafford"
+          },
+          {
+            "name": "Bradley Lane",
+            "lat": 52.777206678415475,
+            "lon": -2.1908043890166913,
+            "in_la": "Stafford"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kevina",
+        "la_filter": "Stafford",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Staffordshire",
+        "lat": 52.7778531222291,
+        "lon": -2.13201354585906
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.7778531222291,
+        "lon": -2.13201354585906,
+        "la": "South Staffordshire",
+        "inside_la": false,
+        "distance_km_approx": 0.21,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is identified as 'Kevina' in Hyde Lea. While the council is South Staffordshire, Hyde Lea village and Bradley Lane are located just across the border in Stafford district. The coordinates for Hyde Lea village and Bradley Lane (Stafford) align perfectly with the map features.",
+        "confidence": "high",
+        "top_lat": 52.777853,
+        "verified_inside_admin_region": false,
+        "top_lon": -2.132014,
+        "sigma_m": 300,
+        "picked_source": "place:Hyde Lea"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

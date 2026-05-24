@@ -1,0 +1,216 @@
+{
+  "case": "A084S",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6349978612515,
+    "top_lon": -0.349527279331478,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:PE6 7DU",
+    "evidence": "Postcode PE6 7DU from site address matches the map labels (West Street, Crossberry Way, Quarry Farm) and is verified within the Peterborough admin region. Intersection of West Street and Crossberry Way is ~170m away, confirming the location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1197084670491447,
+  "gt_centroids": [
+    {
+      "lat": 52.63495411444385,
+      "lon": -0.3477548435993574
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 1,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "PE6 7DU"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Quarry Farm",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Crossberry Way",
+        "la": "Peterborough",
+        "road_a": "West Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "PE6 7DU",
+        "lat": 52.6349978612515,
+        "lon": -0.3495272793314776,
+        "admin_district": "City of Peterborough (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Quarry Farm",
+        "la_filter": "Peterborough",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Quarry Farm Close",
+            "type": "named road",
+            "lat": 54.687446783121615,
+            "lon": -1.7076151480443318,
+            "admin_district": null,
+            "county": "County Durham"
+          },
+          {
+            "name": "Quarry Farm Court",
+            "type": "named road",
+            "lat": 53.89332295178438,
+            "lon": -2.355614957090331,
+            "admin_district": "Ribble Valley",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Quarry Farm Road",
+            "type": "named road",
+            "lat": 53.89322366861835,
+            "lon": -1.6437194614196804,
+            "admin_district": "Leeds",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "West Street",
+          "Crossberry Way"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.635006,
+            "lon": -0.346911,
+            "roads": [
+              "West Street",
+              "Crossberry Way"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Peterborough",
+        "lat": 52.6349978612515,
+        "lon": -0.349527279331478
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6349978612515,
+        "lon": -0.349527279331478,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lat": 52.6349978612515,
+        "verified_inside_admin_region": true,
+        "top_lon": -0.349527279331478,
+        "picked_source": "postcode:PE6 7DU",
+        "sigma_m": 200,
+        "evidence": "Postcode PE6 7DU from site address matches the map labels (West Street, Crossberry Way, Quarry Farm) and is verified within the Peterborough admin region. Intersection of West Street and Crossberry Way is ~170m away, confirming the location."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

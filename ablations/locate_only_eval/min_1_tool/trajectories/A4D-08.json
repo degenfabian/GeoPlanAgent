@@ -1,0 +1,521 @@
+{
+  "case": "A4D-08",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1984351520167,
+    "top_lon": -0.796185603243471,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Middle Bourne Lane",
+    "evidence": "The map shows the intersection of Middle Lane (labeled as Middle Bourne Lane in modern maps) and Fox Hill (labeled as Fox Hill Road in modern maps) in Farnham. Middle Bourne Lane is found at 51.1984, -0.7962. Fox Hill Road intersects it just to the east.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.18802311641453934,
+  "gt_centroids": [
+    {
+      "lat": 51.19881435341966,
+      "lon": -0.7935558461697626
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 10,
+      "final_result": 1
+    },
+    "total_tool_calls": 11,
+    "n_turns": 15,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Surrey",
+        "query": "Middle Lane Farnham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Surrey",
+        "query": "Fox Hill Farnham"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Middle Lane Farnham",
+        "la_filter": "Surrey",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fox Hill Farnham",
+        "la_filter": "Surrey",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Surrey",
+        "query": "Middle Lane"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Surrey",
+        "query": "Fox Hill"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Middle Lane",
+        "la_filter": "Surrey",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Middle Lane",
+            "type": "named road",
+            "lat": 51.33870253503799,
+            "lon": -0.2587376078412772,
+            "admin_district": "Epsom and Ewell",
+            "county": "Surrey"
+          },
+          {
+            "name": "Middle Bourne",
+            "type": "suburban area",
+            "lat": 51.194950026242225,
+            "lon": -0.8027022744050416,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Middle Avenue",
+            "type": "named road",
+            "lat": 51.20367012729942,
+            "lon": -0.7893501156830032,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Middle Church Lane",
+            "type": "named road",
+            "lat": 51.21325928770646,
+            "lon": -0.8001515524271526,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Middlemoor Road",
+            "type": "named road",
+            "lat": 51.31273030062767,
+            "lon": -0.7350729488759433,
+            "admin_district": "Surrey Heath",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fox Hill",
+        "la_filter": "Surrey",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Fox Hill",
+            "type": "hill or mountain",
+            "lat": 51.37452481135085,
+            "lon": -0.621102582277671,
+            "admin_district": "Surrey Heath",
+            "county": "Surrey"
+          },
+          {
+            "name": "Fox Hill",
+            "type": "hill or mountain",
+            "lat": 51.31546673859468,
+            "lon": -0.5225437254609417,
+            "admin_district": "Woking",
+            "county": "Surrey"
+          },
+          {
+            "name": "Fox Hills Lane",
+            "type": "named road",
+            "lat": 51.25331950264162,
+            "lon": -0.7096348757281544,
+            "admin_district": "Guildford",
+            "county": "Surrey"
+          },
+          {
+            "name": "Fox Hill West",
+            "type": "hill or mountain",
+            "lat": 51.270604349169076,
+            "lon": -0.6975967579337486,
+            "admin_district": "Guildford",
+            "county": "Surrey"
+          },
+          {
+            "name": "Fox Hills",
+            "type": "hill or mountain ranges",
+            "lat": 51.26287832982564,
+            "lon": -0.6998790155807392,
+            "admin_district": "Guildford",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fox Hill Farnham",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Middle Bourne Lane"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fox Hill Farnham",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Middle Bourne Lane",
+        "la_filter": "Waverley",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Middle Bourne Lane",
+            "type": "named road",
+            "lat": 51.19843515201674,
+            "lon": -0.7961856032434708,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Middle Bourne",
+            "type": "suburban area",
+            "lat": 51.194950026242225,
+            "lon": -0.8027022744050416,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fox Hill Farnham",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fox Hill",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fox Hill Farnham",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fox Hill",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Fox Hill",
+            "type": "hill or mountain",
+            "lat": 57.439812510756326,
+            "lon": -3.6505049718870284,
+            "admin_district": null,
+            "county": "Moray"
+          },
+          {
+            "name": "Fox Hill",
+            "type": "hill or mountain",
+            "lat": 54.933970211258774,
+            "lon": -1.8647536368047066,
+            "admin_district": null,
+            "county": "Northumberland"
+          },
+          {
+            "name": "Fox Hill",
+            "type": "hill or mountain",
+            "lat": 54.83972660832044,
+            "lon": -1.9217283921302215,
+            "admin_district": null,
+            "county": "County Durham"
+          },
+          {
+            "name": "Fox Hill",
+            "type": "hill or mountain",
+            "lat": 54.920293565836076,
+            "lon": -1.8922421444257236,
+            "admin_district": null,
+            "county": "Northumberland"
+          },
+          {
+            "name": "Fox Hill",
+            "type": "hill or mountain",
+            "lat": 54.56211255954878,
+            "lon": -1.5155471764542943,
+            "admin_district": null,
+            "county": "Darlington"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fox Hill Road Farnham",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fox Hill Road Farnham",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fox Hill Road",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fox Hill Road",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Fox Hill Road",
+            "type": "named road",
+            "lat": 53.58342049181173,
+            "lon": -2.173817982986706,
+            "admin_district": "Rochdale",
+            "county": null
+          },
+          {
+            "name": "Fox Hill Road",
+            "type": "section of named road",
+            "lat": 53.43667949644054,
+            "lon": -1.4991107824980932,
+            "admin_district": "Sheffield",
+            "county": null
+          },
+          {
+            "name": "Fox Hill Road",
+            "type": "section of named road",
+            "lat": 53.42610477150592,
+            "lon": -1.5002734181445825,
+            "admin_district": "Sheffield",
+            "county": null
+          },
+          {
+            "name": "Fox Hill Road",
+            "type": "named road",
+            "lat": 53.427665375929365,
+            "lon": -1.4994574920803103,
+            "admin_district": "Sheffield",
+            "county": null
+          },
+          {
+            "name": "Fox Hill Road",
+            "type": "section of named road",
+            "lat": 52.58675523054689,
+            "lon": -1.8053184775142002,
+            "admin_district": "Birmingham",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "picked_source": "place:Middle Bourne Lane",
+        "top_lon": -0.796185603243471,
+        "evidence": "The map shows the intersection of Middle Lane (labeled as Middle Bourne Lane in modern maps) and Fox Hill (labeled as Fox Hill Road in modern maps) in Farnham. Middle Bourne Lane is found at 51.1984, -0.7962. Fox Hill Road intersects it just to the east.",
+        "top_lat": 51.1984351520167,
+        "sigma_m": 300
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

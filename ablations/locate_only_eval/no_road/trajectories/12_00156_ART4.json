@@ -1,0 +1,388 @@
+{
+  "case": "12:00156:ART4",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.615,
+    "top_lon": 1.205,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Braymeadow Lane",
+    "evidence": "The site is located between Colney and Little Melton. Braymeadow Lane and Braymeadow Bottom (found via tool) align perfectly with the southern boundary of the map. The center of the red-hatched area is approximately 1km east of Little Melton and 1km west of Colney.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.17239584006205075,
+  "gt_centroids": [
+    {
+      "lat": 52.616178717481645,
+      "lon": 1.206658783269228
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 5,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 10NE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Norfolk",
+        "query": "Colney"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Norfolk",
+        "query": "Little Melton"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Manor Farm Colney",
+        "la": "Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Norfolk",
+        "road_b": "Braymeadow Lane",
+        "road_a": "B1108"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'TG 10NE'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney",
+        "la_filter": "Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Colney",
+            "type": "village",
+            "lat": 52.622669932614215,
+            "lon": 1.2234726492806807,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Road",
+            "type": "named road",
+            "lat": 52.752544987152966,
+            "lon": 0.44268653222217047,
+            "admin_district": "King's Lynn and West Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "section of named road",
+            "lat": 52.611985191518805,
+            "lon": 1.2373287202853533,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "section of named road",
+            "lat": 52.62179408696582,
+            "lon": 1.2236003570884657,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "named road",
+            "lat": 52.60312196190886,
+            "lon": 1.196806436600663,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Little Melton",
+        "la_filter": "Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Little Melton",
+            "type": "village",
+            "lat": 52.61752949784457,
+            "lon": 1.184794633990199,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Little Melton Road",
+            "type": "section of named road",
+            "lat": 52.613374966130245,
+            "lon": 1.1901220971124917,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Little Melton Road",
+            "type": "section of named road",
+            "lat": 52.61188869248898,
+            "lon": 1.1808539196606498,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Little Melton Road",
+            "type": "section of named road",
+            "lat": 52.606171450393525,
+            "lon": 1.1794200159497479,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Little Melton Road",
+            "type": "named road",
+            "lat": 52.60871414494264,
+            "lon": 1.17917591199655,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Manor Farm Colney",
+        "la_filter": "Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Norfolk for: ['B1108']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Braymeadow Lane",
+        "la": "Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Ryebeck Plantation",
+        "la": "Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Braymeadow Lane",
+        "la_filter": "Norfolk",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Braymeadow Lane",
+            "type": "section of named road",
+            "lat": 52.61534624140948,
+            "lon": 1.1953926038852454,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Braymeadow Lane",
+            "type": "named road",
+            "lat": 52.61307192566978,
+            "lon": 1.1986841655192002,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Braymeadow",
+            "type": "named road",
+            "lat": 52.61452690856334,
+            "lon": 1.196426264069053,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Braymeadow Bottom",
+            "type": "valley",
+            "lat": 52.61072111534534,
+            "lon": 1.2038017793841085,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ryebeck Plantation",
+        "la_filter": "Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.615,
+        "lon": 1.205,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.615,
+        "lon": 1.205,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.205,
+        "verified_inside_admin_region": true,
+        "top_lat": 52.615,
+        "sigma_m": 500,
+        "confidence": "high",
+        "picked_source": "place:Braymeadow Lane",
+        "evidence": "The site is located between Colney and Little Melton. Braymeadow Lane and Braymeadow Bottom (found via tool) align perfectly with the southern boundary of the map. The center of the red-hatched area is approximately 1km east of Little Melton and 1km west of Colney."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

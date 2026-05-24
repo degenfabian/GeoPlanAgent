@@ -1,0 +1,285 @@
+{
+  "case": "SSA403",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.519,
+    "top_lon": -2.254,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "intersect:Six Ashes Road x Tom Lane",
+    "evidence": "The map shows Halfpenny Green Airfield (Wolverhampton Airport) bounded by Six Ashes Road, Tom Lane, and Forest Lane. The intersection of Six Ashes Road and Tom Lane at the northern tip of the site was geocoded to 52.5255, -2.2595. The airfield center is approximately 800m SE of this junction.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.5251885986327882,
+  "gt_centroids": [
+    {
+      "lat": 52.516725312563224,
+      "lon": -2.2608023063898424
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 3,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Six Ashes Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Tom Lane",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Six Ashes Road",
+        "la": "South Staffordshire",
+        "road_b": "Tom Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Forest Lane"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Six Ashes Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Six Ashes Road",
+            "lat": 52.52394432798201,
+            "lon": -2.261065741728127,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Six Ashes Road",
+            "lat": 52.524364580435424,
+            "lon": -2.2605884823200686,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Six Ashes Road",
+            "lat": 52.524984569144685,
+            "lon": -2.2599966186373512,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Six Ashes Road",
+            "lat": 52.514905849089075,
+            "lon": -2.278543600269994,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Six Ashes Road",
+            "lat": 52.520619173782116,
+            "lon": -2.267882247417624,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Tom Lane",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Tom Lane",
+            "lat": 52.528230425384095,
+            "lon": -2.247553799485405,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Tom Lane",
+            "lat": 52.52823769963226,
+            "lon": -2.2442504744736342,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Tom Lane",
+            "lat": 52.52820329015154,
+            "lon": -2.243978620613458,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Tom Lane",
+            "lat": 52.52799709107807,
+            "lon": -2.2404092481074804,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Tom Lane",
+            "lat": 52.52573033481774,
+            "lon": -2.258352569263976,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Six Ashes Road",
+          "Tom Lane"
+        ],
+        "la_filter": "South Staffordshire",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.525526,
+            "lon": -2.259464,
+            "roads": [
+              "Six Ashes Road",
+              "Tom Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Forest Lane",
+        "la_filter": "South Staffordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Forest Lane",
+            "lat": 52.51362776522094,
+            "lon": -2.2480581856141186,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.519,
+        "lon": -2.254,
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.519,
+        "lon": -2.254,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 500,
+        "evidence": "The map shows Halfpenny Green Airfield (Wolverhampton Airport) bounded by Six Ashes Road, Tom Lane, and Forest Lane. The intersection of Six Ashes Road and Tom Lane at the northern tip of the site was geocoded to 52.5255, -2.2595. The airfield center is approximately 800m SE of this junction.",
+        "top_lat": 52.519,
+        "verified_inside_admin_region": true,
+        "top_lon": -2.254,
+        "confidence": "high",
+        "picked_source": "intersect:Six Ashes Road x Tom Lane"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

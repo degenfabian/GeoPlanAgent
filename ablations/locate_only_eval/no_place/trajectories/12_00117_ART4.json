@@ -1,0 +1,304 @@
+{
+  "case": "12:00117:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.65898,
+    "top_lon": 1.20183,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Parklands",
+    "evidence": "The site is located on Parklands, just off West End in Costessey. Road centroids for Parklands and West End in South Norfolk align perfectly with the map labels and the grid reference TG1711 mentioned in the map footer.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.11149836992736706,
+  "gt_centroids": [
+    {
+      "lat": 52.65817783098555,
+      "lon": 1.2028219099653041
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 3,
+      "road": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG161111"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG171111"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "West End",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Parklands",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG161111",
+        "lat": 52.65497351911765,
+        "lon": 1.1943055510453642
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG171111",
+        "lat": 52.65457440093737,
+        "lon": 1.209065203513196
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "West End",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "West End",
+            "lat": 52.65963363678481,
+            "lon": 1.2009917878902108,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.65871383506571,
+            "lon": 1.2044364616302121,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.658667963626534,
+            "lon": 1.2078177606980185,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.65901525178464,
+            "lon": 1.2094403379061376,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.66585589681674,
+            "lon": 1.1962905133142714,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Parklands",
+        "la_filter": "South Norfolk",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Parklands",
+            "lat": 52.65912386257798,
+            "lon": 1.2008797494395749,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Parklands",
+            "lat": 52.65898468338074,
+            "lon": 1.2018313100600178,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Parklands",
+            "lat": 52.6585940739776,
+            "lon": 1.2022762487260443,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Parklands",
+        "road_a": "West End",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Parklands']"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.6589,
+        "la": "South Norfolk",
+        "lon": 1.2018
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6589,
+        "lon": 1.2018,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 171 111"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG 171 111",
+        "lat": 52.65457440093737,
+        "lon": 1.209065203513196
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "confidence": "high",
+        "picked_source": "road:Parklands",
+        "top_lat": 52.65898,
+        "evidence": "The site is located on Parklands, just off West End in Costessey. Road centroids for Parklands and West End in South Norfolk align perfectly with the map labels and the grid reference TG1711 mentioned in the map footer.",
+        "top_lon": 1.20183,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,242 @@
+{
+  "case": "CB:75:00001:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.70909,
+    "top_lon": -2.43998,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Maumbury Rings",
+    "evidence": "The map clearly shows Maumbury Rings, a distinctive circular earthwork in Dorchester. The site boundary surrounds the town center area adjacent to Weymouth Avenue. The postcode DT1 1QZ is located immediately adjacent to Maumbury Rings.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 191.28730931766293,
+  "gt_centroids": [
+    {
+      "lat": 51.94923779700328,
+      "lon": -0.5316660978663318
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 3,
+      "postcode": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Maumbury Rings",
+        "la": null
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Weymouth Avenue",
+        "la": null
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Maumbury Rings",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Weymouth Avenue",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Weymouth Avenue",
+            "lat": 54.53456467899045,
+            "lon": -1.2144166184374787,
+            "in_la": null
+          },
+          {
+            "name": "Weymouth Avenue",
+            "lat": 54.534975265315,
+            "lon": -1.2153669135926826,
+            "in_la": null
+          },
+          {
+            "name": "Weymouth Avenue",
+            "lat": 54.535361577454424,
+            "lon": -1.2160395094092384,
+            "in_la": null
+          },
+          {
+            "name": "Weymouth Avenue",
+            "lat": 54.53578777271143,
+            "lon": -1.2166263530863464,
+            "in_la": null
+          },
+          {
+            "name": "Weymouth Avenue",
+            "lat": 54.536289596392464,
+            "lon": -1.217095849807276,
+            "in_la": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Weymouth Avenue",
+        "la": "Dorset"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Weymouth Avenue",
+        "la_filter": "Dorset",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Weymouth Avenue",
+            "lat": 50.70853553515166,
+            "lon": -2.4408026716354407,
+            "in_la": "Dorset"
+          },
+          {
+            "name": "Weymouth Avenue",
+            "lat": 50.70914921505136,
+            "lon": -2.4402277675773023,
+            "in_la": "Dorset"
+          },
+          {
+            "name": "Weymouth Avenue",
+            "lat": 50.70951850664049,
+            "lon": -2.4398931668135706,
+            "in_la": "Dorset"
+          },
+          {
+            "name": "Weymouth Avenue",
+            "lat": 50.709948382683855,
+            "lon": -2.4394938374910353,
+            "in_la": "Dorset"
+          },
+          {
+            "name": "Weymouth Avenue",
+            "lat": 50.71048038734603,
+            "lon": -2.4389944032578894,
+            "in_la": "Dorset"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "DT1 1QZ"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "DT1 1QZ",
+        "lat": 50.709090992283585,
+        "lon": -2.4399883010221477,
+        "admin_district": "Dorset"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 50.70909,
+        "evidence": "The map clearly shows Maumbury Rings, a distinctive circular earthwork in Dorchester. The site boundary surrounds the town center area adjacent to Weymouth Avenue. The postcode DT1 1QZ is located immediately adjacent to Maumbury Rings.",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 300,
+        "picked_source": "place:Maumbury Rings",
+        "top_lon": -2.43998
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

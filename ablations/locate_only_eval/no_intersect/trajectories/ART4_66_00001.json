@@ -1,0 +1,286 @@
+{
+  "case": "ART4:66:00001",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.8569,
+    "top_lon": -1.3968,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:SU 425 065",
+    "evidence": "The grid reference SU425065 (derived from the map's SU42/43 06 range) and the road 'Spinney Dale' both point to this specific field (parcel 0451) on Frost Lane, Hythe. Verified inside New Forest.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.4810475871530475,
+  "gt_centroids": [
+    {
+      "lat": 50.85641843974112,
+      "lon": -1.3899893971204016
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "place": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU 4206 4306"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Furzedown Farm",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "New Forest",
+        "query": "The Travellers Rest Hythe"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Frost Lane",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SU 4206 4306",
+        "lat": 51.18527226399709,
+        "lon": -1.3995196885065038
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Furzedown Farm",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Travellers Rest Hythe",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Frost Lane",
+        "la_filter": "New Forest",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Frost Lane",
+            "lat": 50.85876837058343,
+            "lon": -1.3895415154347965,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Frost Lane",
+            "lat": 50.85981905070286,
+            "lon": -1.3884053580148017,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Frost Lane",
+            "lat": 50.86080227985737,
+            "lon": -1.387270032898328,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Frost Lane",
+            "lat": 50.855365192923806,
+            "lon": -1.393054162123116,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Frost Lane",
+            "lat": 50.8566162060318,
+            "lon": -1.3906653304915748,
+            "in_la": "New Forest"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU 425 065"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Spinney Dale",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -1.395,
+        "lat": 50.858,
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SU 425 065",
+        "lat": 50.85690444694522,
+        "lon": -1.3968541716477156
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Spinney Dale",
+        "la_filter": "New Forest",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Spinney Dale",
+            "type": "named road",
+            "lat": 50.85716469716238,
+            "lon": -1.3915514733342502,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.858,
+        "lon": -1.395,
+        "la": "New Forest",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.85856472927001,
+        "la_centroid_lon": -1.625406857223459
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -1.3968,
+        "picked_source": "grid_ref:SU 425 065",
+        "top_lat": 50.8569,
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "evidence": "The grid reference SU425065 (derived from the map's SU42/43 06 range) and the road 'Spinney Dale' both point to this specific field (parcel 0451) on Frost Lane, Hythe. Verified inside New Forest."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

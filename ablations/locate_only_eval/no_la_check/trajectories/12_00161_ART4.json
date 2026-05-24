@@ -1,0 +1,327 @@
+{
+  "case": "12:00161:ART4",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.561622,
+    "top_lon": 1.428805,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TG 3201-3301",
+    "evidence": "The map shows St Ethelbert's Close in Thurton. The grid reference TG 3201-3301 provided in the PDF_INFO and visible on the map header aligns perfectly with the village of Thurton and the road centroids for Vale Road and Loddon Road in South Norfolk.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.7423801854368645,
+  "gt_centroids": [
+    {
+      "lat": 52.55621778771914,
+      "lon": 1.435253412922537
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 2,
+      "intersect": 1,
+      "road": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 3201-3301"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "St Ethelbert's Close, Thurton"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Thurton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Loddon Road",
+        "la": "South Norfolk",
+        "road_a": "Vale Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG 3201-3301",
+        "lat": 52.561622081007776,
+        "lon": 1.4288045293249427
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Ethelbert's Close, Thurton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thurton",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Thurton",
+            "type": "village",
+            "lat": 52.55667591744069,
+            "lon": 1.4331258745085702,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Thurton Primary School",
+            "type": "primary education",
+            "lat": 52.55779720235161,
+            "lon": 1.43198866253166,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Vale Road",
+          "Loddon Road"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "St Ethelberts Close"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Vale Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Loddon Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "St Ethelberts Close",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Vale Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Vale Road",
+            "lat": 52.55650225048035,
+            "lon": 1.4374018285430967,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Vale Road",
+            "lat": 52.55656074992989,
+            "lon": 1.43568725774705,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Vale Road",
+            "lat": 52.556319603521054,
+            "lon": 1.4339814321478965,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Vale Road",
+            "lat": 52.556447147603684,
+            "lon": 1.434699717137669,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Vale Road",
+            "lat": 52.55630725169933,
+            "lon": 1.4387958968752748,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Loddon Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Loddon Road",
+            "lat": 52.56709007268038,
+            "lon": 1.413113368346758,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Loddon Road",
+            "lat": 52.56961205257941,
+            "lon": 1.4050285036115906,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Loddon Road",
+            "lat": 52.57133445076075,
+            "lon": 1.4009624214270964,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Loddon Road",
+            "lat": 52.55547579018837,
+            "lon": 1.434134464229709,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Loddon Road",
+            "lat": 52.60701447788432,
+            "lon": 1.3225920791781136,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.561622,
+        "evidence": "The map shows St Ethelbert's Close in Thurton. The grid reference TG 3201-3301 provided in the PDF_INFO and visible on the map header aligns perfectly with the village of Thurton and the road centroids for Vale Road and Loddon Road in South Norfolk.",
+        "sigma_m": 300,
+        "picked_source": "grid_ref:TG 3201-3301",
+        "confidence": "high",
+        "top_lon": 1.428805,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

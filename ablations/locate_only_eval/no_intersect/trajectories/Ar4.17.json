@@ -1,0 +1,335 @@
+{
+  "case": "Ar4.17",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.772703,
+    "top_lon": -0.335606,
+    "sigma_m": 1200,
+    "confidence": "med",
+    "picked_source": "road:Harpenden Road",
+    "evidence": "The site is on Harpenden Road in St Albans. Based on the road geometry and the 'Childwickbury Estate' mention in PDF_INFO, it likely sits on the northern stretch of Harpenden Road (A1081) near the junction with Sandridgebury Lane. Picked a central point on the Harpenden Road segment in that vicinity.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3024927963042632,
+  "gt_centroids": [
+    {
+      "lat": 51.77509274833537,
+      "lon": -0.3377066978567879
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 1,
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Harpenden Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Childwickbury Estate"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Harpenden Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Harpenden Road",
+            "lat": 51.808007735830316,
+            "lon": -0.30134736959917274,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Harpenden Road",
+            "lat": 51.810305527197606,
+            "lon": -0.31170236627586595,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Harpenden Road",
+            "lat": 51.8089427998898,
+            "lon": -0.3055756521303249,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Harpenden Road",
+            "lat": 51.79482457431399,
+            "lon": -0.35015860106859165,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Harpenden Road",
+            "lat": 51.77270316928166,
+            "lon": -0.3356063119152638,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Childwickbury Estate",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Childwickbury",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Ancient Briton"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Childwickbury",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ancient Briton",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandridgebury Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Woollams Playing Fields"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandridgebury Lane",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Sandridgebury Lane",
+            "type": "named road",
+            "lat": 51.77794207602556,
+            "lon": -0.31998509789863505,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "type": "section of named road",
+            "lat": 51.77126545704176,
+            "lon": -0.33229186021128776,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "type": "section of named road",
+            "lat": 51.781167203546985,
+            "lon": -0.3053683110238039,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Woollams Playing Fields",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Childwick Bury",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Albans Girls' School",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Childwick Bury",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans Girls' School",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "med",
+        "sigma_m": 1200,
+        "top_lat": 51.772703,
+        "top_lon": -0.335606,
+        "evidence": "The site is on Harpenden Road in St Albans. Based on the road geometry and the 'Childwickbury Estate' mention in PDF_INFO, it likely sits on the northern stretch of Harpenden Road (A1081) near the junction with Sandridgebury Lane. Picked a central point on the Harpenden Road segment in that vicinity.",
+        "verified_inside_admin_region": true,
+        "picked_source": "road:Harpenden Road"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

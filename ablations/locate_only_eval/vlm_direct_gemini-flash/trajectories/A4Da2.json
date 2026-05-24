@@ -1,0 +1,60 @@
+{
+  "case": "A4Da2",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.4915,
+    "lon": -1.9785,
+    "reasoning": "The map shows the High Street & Crocketts Lane Conservation Area in Smethwick, with the red-outlined Article 4 Direction area located on High Street adjacent to Victoria Park."
+  },
+  "err_km": 0.7787124965369933,
+  "gt_centroids": [
+    {
+      "lat": 52.48972826799353,
+      "lon": -1.967372715739662
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 52.4915,
+        "reasoning": "The map shows the High Street & Crocketts Lane Conservation Area in Smethwick, with the red-outlined Article 4 Direction area located on High Street adjacent to Victoria Park.",
+        "lon": -1.9785
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

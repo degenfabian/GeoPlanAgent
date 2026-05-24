@@ -1,0 +1,229 @@
+{
+  "case": "3DA282A7-E829-47CF-B842-E03E0C704072",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.155571,
+    "top_lon": 1.369475,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "intersect:Dover Road x Station Road",
+    "evidence": "The map shows a large site at St Margaret's at Cliffe. The intersection of Dover Road and Station Road (found at 51.155, 1.369) aligns perfectly with the village center shown on the map. Grid references TR 34 SE/SW also confirm this general area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.8266435785983366,
+  "gt_centroids": [
+    {
+      "lat": 51.16156670781039,
+      "lon": 1.3764831649445817
+    },
+    {
+      "lat": 51.16226458361999,
+      "lon": 1.3838849737352805
+    },
+    {
+      "lat": 51.16617025141209,
+      "lon": 1.3866151330451562
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 35 44"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 36 44"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Dover",
+        "road_b": "Station Road",
+        "road_a": "Dover Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "St Margarets Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 35 44",
+        "lat": 51.15127387825765,
+        "lon": 1.366048308164387
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 36 44",
+        "lat": 51.15086186292679,
+        "lon": 1.3803207606075063
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Dover Road",
+          "Station Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 51.201144,
+            "lon": 1.389072,
+            "roads": [
+              "Dover Road",
+              "Station Road"
+            ]
+          },
+          {
+            "lat": 51.155571,
+            "lon": 1.369475,
+            "roads": [
+              "Dover Road",
+              "Station Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "St Margarets Road",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.369475,
+        "lat": 51.155571,
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.155571,
+        "lon": 1.369475,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.369475,
+        "evidence": "The map shows a large site at St Margaret's at Cliffe. The intersection of Dover Road and Station Road (found at 51.155, 1.369) aligns perfectly with the village center shown on the map. Grid references TR 34 SE/SW also confirm this general area.",
+        "picked_source": "intersect:Dover Road x Station Road",
+        "sigma_m": 500,
+        "top_lat": 51.155571
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,9 +1,4 @@
-"""Phase 1 reader: one-shot pydantic-ai Agent over the PDF binary.
-
-Output is locked to PDFInfo (schema in tools.agent.schemas). The actual
-read call lives in tools.agent.runtime.read_pdf_phase — this module just
-defines the Agent instance and its system prompt.
-"""
+"""Phase 1 reader Agent (PDF → PDFInfo)."""
 
 from __future__ import annotations
 

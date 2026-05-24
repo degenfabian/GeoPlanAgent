@@ -1,0 +1,349 @@
+{
+  "case": "12:00115:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5054113714106,
+    "top_lon": 1.15414263016839,
+    "sigma_m": 1000,
+    "confidence": "med",
+    "picked_source": "place:Tacolneston",
+    "evidence": "Located via the village of Tacolneston. The site is on Norwich Road (B1113) adjacent to 'The Pelican' public house. The village centroid provides a reliable starting point within the correct admin district.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.7857427134177447,
+  "gt_centroids": [
+    {
+      "lat": 52.51228460250801,
+      "lon": 1.1568383955477777
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Pelican (PH)",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "126 Norwich Road, Tacolneston"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Pelican (PH)",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "126 Norwich Road, Tacolneston",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Pelican Tacolneston",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Norwich Road Tacolneston",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Pelican Tacolneston",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Norwich Road Tacolneston",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Tacolneston"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Tacolneston",
+        "la_filter": "South Norfolk",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Tacolneston",
+            "type": "village",
+            "lat": 52.50541137141056,
+            "lon": 1.1541426301683932,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Tacolneston Lake Nursing Home",
+            "type": "medical care accommodation",
+            "lat": 52.50764047623061,
+            "lon": 1.1552014293250015,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Tacolneston Church of England Primary School",
+            "type": "primary education",
+            "lat": 52.51142739548642,
+            "lon": 1.1571975097233433,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Pelican",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Pelican",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Norwich Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Norwich Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Norwich Road",
+            "type": "named road",
+            "lat": 50.93092629336238,
+            "lon": -1.3654601623515614,
+            "admin_district": null,
+            "county": "City of Southampton"
+          },
+          {
+            "name": "Norwich Road",
+            "type": "named road",
+            "lat": 52.64544044572986,
+            "lon": 0.49461774466073793,
+            "admin_district": "King's Lynn and West Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "type": "section of named road",
+            "lat": 52.65045607502105,
+            "lon": 0.47971917178408957,
+            "admin_district": "King's Lynn and West Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "type": "named road",
+            "lat": 52.568944314449695,
+            "lon": 0.8903062413104977,
+            "admin_district": "Breckland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "type": "section of named road",
+            "lat": 52.57057588616856,
+            "lon": 0.8501060877894341,
+            "admin_district": "Breckland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Tacolneston",
+        "top_lat": 52.5054113714106,
+        "verified_inside_admin_region": true,
+        "evidence": "Located via the village of Tacolneston. The site is on Norwich Road (B1113) adjacent to 'The Pelican' public house. The village centroid provides a reliable starting point within the correct admin district.",
+        "confidence": "med",
+        "sigma_m": 1000,
+        "top_lon": 1.15414263016839
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

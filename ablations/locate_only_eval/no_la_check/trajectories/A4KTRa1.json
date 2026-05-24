@@ -1,0 +1,233 @@
+{
+  "case": "A4KTRa1",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5450685298508,
+    "top_lon": -0.14192738168126,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "grid_ref:528942 E 184544 N",
+    "evidence": "The grid reference provided on the map (528942 E 184544 N) and the site postcode (NW1 8PB) are in very close agreement (approx 80m apart). The grid reference is used as the primary pick as it is explicitly printed on the map as the 'Centre'.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0024599603872435412,
+  "gt_centroids": [
+    {
+      "lat": 51.54506071936761,
+      "lon": -0.14189409918903167
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "grid_ref": 1,
+      "place": 1,
+      "intersect": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NW1 8PB"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "528942 E 184544 N"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Castle PH",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "NW1 8PB",
+        "lat": 51.544345944375735,
+        "lon": -0.14172606748056557,
+        "admin_district": "Camden London Boro"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "528942 E 184544 N",
+        "lat": 51.54506852985083,
+        "lon": -0.14192738168126026
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Castle PH",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Castle Place",
+        "road_a": "Kentish Town Road",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Camden for: ['Castle Place']"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Kentish Town Road",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Kentish Town Road",
+        "la_filter": "Camden",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Kentish Town Road",
+            "lat": 51.55104217465838,
+            "lon": -0.1407183753257851,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Kentish Town Road",
+            "lat": 51.551437289226826,
+            "lon": -0.14094733089453465,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Kentish Town Road",
+            "lat": 51.54900964770601,
+            "lon": -0.14104990040014287,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Kentish Town Road",
+            "lat": 51.54941887935331,
+            "lon": -0.14094963492026766,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Kentish Town Road",
+            "lat": 51.549763837582084,
+            "lon": -0.14087066637386278,
+            "in_la": "Camden"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.5450685298508,
+        "top_lon": -0.14192738168126,
+        "picked_source": "grid_ref:528942 E 184544 N",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "sigma_m": 200,
+        "evidence": "The grid reference provided on the map (528942 E 184544 N) and the site postcode (NW1 8PB) are in very close agreement (approx 80m apart). The grid reference is used as the primary pick as it is explicitly printed on the map as the 'Centre'."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

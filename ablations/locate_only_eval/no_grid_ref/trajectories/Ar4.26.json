@@ -1,0 +1,352 @@
+{
+  "case": "Ar4.26",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.80919,
+    "top_lon": -0.34577,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Marlborough Park",
+    "evidence": "The site is Southdown Industrial Estate in Harpenden. Road centroids for Meadow Walk and Marlborough Park (both on the map) cluster tightly around 51.809, -0.346. Verified inside St Albans district.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.030329329018332237,
+  "gt_centroids": [
+    {
+      "lat": 51.808926191972226,
+      "lon": -0.3458820829280019
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "intersect": 1,
+      "road": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Southdown Industrial Estate"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Meadow Walk",
+        "road_b": "Marlborough Park",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Harpenden"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Southdown Industrial Estate",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Meadow Walk",
+          "Marlborough Park"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Harpenden",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Harpenden",
+            "type": "town",
+            "lat": 51.81672671104109,
+            "lon": -0.35707720336806087,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden",
+            "type": "railway station",
+            "lat": 51.81445410792542,
+            "lon": -0.35082003033856496,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden Road",
+            "type": "section of named road",
+            "lat": 51.807996281936695,
+            "lon": -0.30143215039001275,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden Lane",
+            "type": "named road",
+            "lat": 51.80194147423341,
+            "lon": -0.3926698069461324,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden Road",
+            "type": "named road",
+            "lat": 51.77667957006904,
+            "lon": -0.3368033101096478,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Meadow Walk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Marlborough Park"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Queens Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Meadow Walk",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Meadow Walk",
+            "lat": 51.81037931885644,
+            "lon": -0.3459133208043345,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Marlborough Park",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Marlborough Park",
+            "lat": 51.80919039605937,
+            "lon": -0.34577138714830746,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Marlborough Park",
+            "lat": 51.807814236536274,
+            "lon": -0.3455030100529772,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Marlborough Park",
+            "lat": 51.80844156019967,
+            "lon": -0.3453532601746504,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Queens Road",
+        "la_filter": "St Albans",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Queens Road",
+            "lat": 51.80642026471107,
+            "lon": -0.34828476726314705,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Queens Road",
+            "lat": 51.80700157161835,
+            "lon": -0.3483795607490859,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Queens Road",
+            "lat": 51.80754804930294,
+            "lon": -0.34855540917025857,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Queens Road",
+            "lat": 51.808254987735495,
+            "lon": -0.3483119874475202,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.809,
+        "la": "St Albans",
+        "lon": -0.346
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.809,
+        "lon": -0.346,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "evidence": "The site is Southdown Industrial Estate in Harpenden. Road centroids for Meadow Walk and Marlborough Park (both on the map) cluster tightly around 51.809, -0.346. Verified inside St Albans district.",
+        "picked_source": "road:Marlborough Park",
+        "top_lat": 51.80919,
+        "top_lon": -0.34577
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

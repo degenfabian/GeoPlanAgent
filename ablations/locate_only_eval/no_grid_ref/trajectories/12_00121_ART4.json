@@ -1,0 +1,382 @@
+{
+  "case": "12:00121:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6016447455504,
+    "top_lon": 1.3894043586639,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Hill House Road",
+    "evidence": "The site is identified as O.S. Parcel 7790 on Hill House Road in Bramerton. Road search for Hill House Road in South Norfolk returned a centroid at 52.6016, 1.3894, which aligns perfectly with the village of Bramerton and the map's grid reference TG2905.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.16706474635640547,
+  "gt_centroids": [
+    {
+      "lat": 52.60228546752934,
+      "lon": 1.3916419221331193
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 4,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bramerton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Yare Farm Cottage",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Hill House Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bramerton",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Bramerton",
+            "type": "village",
+            "lat": 52.5974599795089,
+            "lon": 1.3880177347451912,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Bramerton Lane",
+            "type": "named road",
+            "lat": 52.586244507020126,
+            "lon": 1.3732271757798875,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Bramerton Lane",
+            "type": "named road",
+            "lat": 52.58747623926206,
+            "lon": 1.4030770435810151,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Bramerton Common",
+            "type": "woodland or forest",
+            "lat": 52.60304311541282,
+            "lon": 1.3896602836885885,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Bramerton Road",
+            "type": "section of named road",
+            "lat": 52.606734208772025,
+            "lon": 1.4064474270872314,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Yare Farm Cottage",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hill House Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Hill House Road",
+            "lat": 52.601644745550445,
+            "lon": 1.389404358663899,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Hill House Road",
+            "lat": 52.60372548235276,
+            "lon": 1.391727078021413,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Hill House"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Anchorage",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.3894043586639,
+        "lat": 52.6016447455504,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hill House",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Hill House Road",
+            "type": "named road",
+            "lat": 51.48436610664461,
+            "lon": -2.4963918393760705,
+            "admin_district": null,
+            "county": "South Gloucestershire"
+          },
+          {
+            "name": "Hill House Belt",
+            "type": "woodland or forest",
+            "lat": 52.88306190057239,
+            "lon": 0.8934165728339322,
+            "admin_district": "North Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Hill House Gardens",
+            "type": "named road",
+            "lat": 52.60689349755256,
+            "lon": 1.2403358667840254,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Hill House Lane",
+            "type": "named road",
+            "lat": 52.88817032313566,
+            "lon": 1.1092473108781842,
+            "admin_district": "North Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Hill House Road",
+            "type": "named road",
+            "lat": 52.62790126284703,
+            "lon": 1.312182735951365,
+            "admin_district": "Norwich",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Anchorage",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Anchorage",
+            "type": "bay",
+            "lat": 58.01309881865419,
+            "lon": -5.399562889440204,
+            "admin_district": null,
+            "county": "Highland"
+          },
+          {
+            "name": "The Anchorage",
+            "type": "named road",
+            "lat": 54.85624178509775,
+            "lon": -1.5715648362015553,
+            "admin_district": null,
+            "county": "County Durham"
+          },
+          {
+            "name": "The Anchorage",
+            "type": "named road",
+            "lat": 53.85205393814359,
+            "lon": -1.8366400717948408,
+            "admin_district": "Bradford",
+            "county": null
+          },
+          {
+            "name": "The Anchorage",
+            "type": "named road",
+            "lat": 53.28853977198276,
+            "lon": -3.0772901256928358,
+            "admin_district": null,
+            "county": "Cheshire West and Chester"
+          },
+          {
+            "name": "The Anchorage",
+            "type": "named road",
+            "lat": 53.392171744824914,
+            "lon": -2.9828977728036183,
+            "admin_district": "Liverpool",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6016447455504,
+        "lon": 1.3894043586639,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 52.6016447455504,
+        "sigma_m": 300,
+        "picked_source": "road:Hill House Road",
+        "top_lon": 1.3894043586639,
+        "evidence": "The site is identified as O.S. Parcel 7790 on Hill House Road in Bramerton. Road search for Hill House Road in South Norfolk returned a centroid at 52.6016, 1.3894, which aligns perfectly with the village of Bramerton and the map's grid reference TG2905."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

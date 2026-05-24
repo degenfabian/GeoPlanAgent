@@ -1,0 +1,423 @@
+{
+  "case": "Ar4.18",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7715,
+    "top_lon": -0.3325,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:St Albans Girls School",
+    "evidence": "The map shows a site on Harpenden Road adjacent to a large institutional building complex. The intersection of Harpenden Road and Sandridgebury Lane (51.7702, -0.3340) and the location of St Albans Girls School (51.7707, -0.3312) perfectly match the map's layout. The site is the field immediately north of the school.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.7087972699432223,
+  "gt_centroids": [
+    {
+      "lat": 51.77581693255756,
+      "lon": -0.34007965197845846
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 1,
+      "place": 6,
+      "intersect": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 19,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Harpenden Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Harpenden Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Harpenden Road",
+            "lat": 51.808007735830316,
+            "lon": -0.30134736959917274,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Harpenden Road",
+            "lat": 51.810305527197606,
+            "lon": -0.31170236627586595,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Harpenden Road",
+            "lat": 51.8089427998898,
+            "lon": -0.3055756521303249,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Harpenden Road",
+            "lat": 51.79482457431399,
+            "lon": -0.35015860106859165,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Harpenden Road",
+            "lat": 51.77270316928166,
+            "lon": -0.3356063119152638,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Harpenden Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Harpenden Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Harpenden Road",
+            "type": "section of named road",
+            "lat": 51.807996281936695,
+            "lon": -0.30143215039001275,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden Road",
+            "type": "named road",
+            "lat": 51.77667957006904,
+            "lon": -0.3368033101096478,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden Road",
+            "type": "named road",
+            "lat": 51.80939869726702,
+            "lon": -0.30764605036200976,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden Road",
+            "type": "section of named road",
+            "lat": 51.76645258821865,
+            "lon": -0.33530971395461395,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden",
+            "type": "town",
+            "lat": 51.81672671104109,
+            "lon": -0.35707720336806087,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Sandridgebury Lane"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandridgebury Lane",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Sandridgebury Lane",
+            "type": "named road",
+            "lat": 51.77794207602556,
+            "lon": -0.31998509789863505,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "type": "section of named road",
+            "lat": 51.77126545704176,
+            "lon": -0.33229186021128776,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Sandridgebury Lane",
+            "type": "section of named road",
+            "lat": 51.781167203546985,
+            "lon": -0.3053683110238039,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_a": "Harpenden Road",
+        "road_b": "Sandridgebury Lane"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Harpenden Road",
+          "Sandridgebury Lane"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.770201,
+            "lon": -0.333983,
+            "roads": [
+              "Harpenden Road",
+              "Sandridgebury Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Ancient Briton"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ancient Briton",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Woollams Playing Fields",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Woollams Playing Fields",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Albans Girls' School",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans Girls' School",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Albans Girls School",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 16,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans Girls School",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "St Albans Girls School",
+            "type": "secondary education",
+            "lat": 51.770655852870746,
+            "lon": -0.3311548423386526,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 17,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 17,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows a site on Harpenden Road adjacent to a large institutional building complex. The intersection of Harpenden Road and Sandridgebury Lane (51.7702, -0.3340) and the location of St Albans Girls School (51.7707, -0.3312) perfectly match the map's layout. The site is the field immediately north of the school.",
+        "confidence": "high",
+        "picked_source": "place:St Albans Girls School",
+        "top_lat": 51.7715,
+        "top_lon": -0.3325
+      }
+    },
+    {
+      "turn": 18,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

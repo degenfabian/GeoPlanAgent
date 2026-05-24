@@ -1,0 +1,398 @@
+{
+  "case": "A4D8A_merged",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.661,
+    "top_lon": -0.191,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "road:Hadley Common",
+    "evidence": "The map shows the Monken Hadley Conservation Area. Road centroids for 'Hadley Common' and 'Camlet Way' cluster around 51.662, -0.19, which is the heart of the conservation area shown. Verified inside Barnet.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.26460110324470715,
+  "gt_centroids": [
+    {
+      "lat": 51.66066617921087,
+      "lon": -0.1947982032086669
+    },
+    {
+      "lat": 51.66528182483707,
+      "lon": -0.19904722511536274
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 6,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Barnet",
+        "query": "Camlet Way"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Great North Road",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Camlet Way",
+        "road_b": "Great North Road",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Camlet Way",
+        "la_filter": "Barnet",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Camlet Way",
+            "lat": 51.66352478968855,
+            "lon": -0.18549317530928872,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Camlet Way",
+            "lat": 51.66170893448259,
+            "lon": -0.191771607157496,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Camlet Way",
+            "lat": 51.662416096168734,
+            "lon": -0.1903187837890934,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Camlet Way",
+            "lat": 51.66296337327367,
+            "lon": -0.1878993148530257,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Great North Road",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Great North Road",
+            "lat": 51.66749549304155,
+            "lon": -0.19725866894194033,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Great North Road",
+            "lat": 51.65907678278857,
+            "lon": -0.20052722258380537,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Great North Road",
+            "lat": 51.65982613629834,
+            "lon": -0.20013607694758798,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Great North Road",
+            "lat": 51.66046604220486,
+            "lon": -0.19982928424990798,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Great North Road",
+            "lat": 51.64669152999773,
+            "lon": -0.18737525134691532,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Barnet for: ['Camlet Way', 'Great North Road']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Barnet",
+        "query": "Hadley Common Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Barnet",
+        "query": "Hadley Highstone Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Barnet",
+        "lon": -0.19,
+        "lat": 51.662
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hadley Common Road",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hadley Highstone Road",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.662,
+        "lon": -0.19,
+        "la": "Barnet",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.616028526273034,
+        "la_centroid_lon": -0.21000945769264093
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Barnet",
+        "query": "Hadley Common"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Barnet",
+        "query": "Hadley Highstone"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hadley Common",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Hadley Common",
+            "lat": 51.6609221067349,
+            "lon": -0.19291618387743895,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Hadley Common",
+            "lat": 51.66081269153695,
+            "lon": -0.19261950584212112,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Hadley Common",
+            "lat": 51.6606473014146,
+            "lon": -0.19213022599219218,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Hadley Common",
+            "lat": 51.66040797811287,
+            "lon": -0.19138305963285257,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Hadley Common",
+            "lat": 51.66028115055531,
+            "lon": -0.1909865948848458,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hadley Highstone",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Hadley Highstone",
+            "lat": 51.664348049901626,
+            "lon": -0.19929071445483593,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Hadley Highstone",
+            "lat": 51.66462085366087,
+            "lon": -0.19928351310902456,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Hadley Highstone",
+            "lat": 51.66499791497487,
+            "lon": -0.19919373201763158,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Hadley Highstone",
+            "lat": 51.663885789233674,
+            "lon": -0.19924281666273125,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Hadley Highstone",
+            "lat": 51.66589984223504,
+            "lon": -0.19910034380502964,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "picked_source": "road:Hadley Common",
+        "confidence": "high",
+        "sigma_m": 1000,
+        "top_lat": 51.661,
+        "evidence": "The map shows the Monken Hadley Conservation Area. Road centroids for 'Hadley Common' and 'Camlet Way' cluster around 51.662, -0.19, which is the heart of the conservation area shown. Verified inside Barnet.",
+        "top_lon": -0.191
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

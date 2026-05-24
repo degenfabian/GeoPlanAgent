@@ -1,0 +1,391 @@
+{
+  "case": "12:00166:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.63207,
+    "top_lon": 1.17637,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Glen Lodge Farm, Bawburgh",
+    "evidence": "The site is located at Glen Lodge Farm in Bawburgh. The map shows the site bounded by Marlingford Road to the south. A grid reference search for the Bawburgh area (TG 150 085) aligns with the village and road network shown.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.0684107507722658,
+  "gt_centroids": [
+    {
+      "lat": 52.64157673295484,
+      "lon": 1.1786676885315517
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 4,
+      "intersect": 1,
+      "la_check": 2,
+      "grid_ref": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Marlingford Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Hockering Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Hockering Lane",
+        "road_a": "Marlingford Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Marlingford Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Marlingford Road",
+            "lat": 52.65044125434954,
+            "lon": 1.1548428872225736,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Marlingford Road",
+            "lat": 52.650780589979874,
+            "lon": 1.1550801219905207,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Marlingford Road",
+            "lat": 52.65155588895116,
+            "lon": 1.1555513622634597,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Marlingford Road",
+            "lat": 52.65232199381076,
+            "lon": 1.1558900497814995,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Marlingford Road",
+            "lat": 52.652641233684754,
+            "lon": 1.1558908747859646,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hockering Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Hockering Lane",
+            "lat": 52.632612443666495,
+            "lon": 1.186343598506939,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Hockering Lane",
+            "lat": 52.63237748881903,
+            "lon": 1.1890221645387573,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Hockering Lane",
+            "lat": 52.63281353323673,
+            "lon": 1.189157366615863,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Marlingford Road', 'Hockering Lane']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.632,
+        "lon": 1.175,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.632,
+        "lon": 1.175,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Hockering Lane"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Marlingford Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hockering Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Hockering Lane",
+            "lat": 52.632612443666495,
+            "lon": 1.186343598506939,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Hockering Lane",
+            "lat": 52.63237748881903,
+            "lon": 1.1890221645387573,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Hockering Lane",
+            "lat": 52.63281353323673,
+            "lon": 1.189157366615863,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Marlingford Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Marlingford Road",
+            "lat": 52.65044125434954,
+            "lon": 1.1548428872225736,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Marlingford Road",
+            "lat": 52.650780589979874,
+            "lon": 1.1550801219905207,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Marlingford Road",
+            "lat": 52.65155588895116,
+            "lon": 1.1555513622634597,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Marlingford Road",
+            "lat": 52.65232199381076,
+            "lon": 1.1558900497814995,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Marlingford Road",
+            "lat": 52.652641233684754,
+            "lon": 1.1558908747859646,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 150 085"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG 150 085",
+        "lat": 52.632073145293205,
+        "lon": 1.1763768164077417
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.63207,
+        "lon": 1.17637,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.63207,
+        "lon": 1.17637,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 400,
+        "top_lon": 1.17637,
+        "evidence": "The site is located at Glen Lodge Farm in Bawburgh. The map shows the site bounded by Marlingford Road to the south. A grid reference search for the Bawburgh area (TG 150 085) aligns with the village and road network shown.",
+        "verified_inside_admin_region": true,
+        "picked_source": "place:Glen Lodge Farm, Bawburgh",
+        "top_lat": 52.63207,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

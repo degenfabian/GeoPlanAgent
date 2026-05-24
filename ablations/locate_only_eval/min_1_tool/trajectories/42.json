@@ -1,0 +1,282 @@
+{
+  "case": "42",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.48731,
+    "top_lon": -0.16533,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Shawfield Street",
+    "evidence": "The site is 43 Shawfield Street. Geocoding Shawfield Street and Radnor Walk (which intersect nearby) provides a tight cluster in Chelsea. The map shows the site on the east side of Shawfield Street, south of the Radnor Walk junction.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.016101887424331843,
+  "gt_centroids": [
+    {
+      "lat": 51.48731926229509,
+      "lon": -0.1650979234972669
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "43 Shawfield Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Shawfield Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Radnor Walk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "43 Shawfield Street",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shawfield Street",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Shawfield Street",
+            "type": "named road",
+            "lat": 51.48730956121813,
+            "lon": -0.16533479480431387,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "Shawfield",
+            "type": "named road",
+            "lat": 54.892934993096034,
+            "lon": -5.027511490431994,
+            "admin_district": null,
+            "county": "Dumfries and Galloway"
+          },
+          {
+            "name": "Shawfield",
+            "type": "other settlement",
+            "lat": 53.14831186600166,
+            "lon": -1.9100103006629776,
+            "admin_district": "Staffordshire Moorlands",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Shawfield Lane",
+            "type": "named road",
+            "lat": 56.57807347325017,
+            "lon": -3.325903794358716,
+            "admin_district": null,
+            "county": "Perth and Kinross"
+          },
+          {
+            "name": "Shawfield Road",
+            "type": "named road",
+            "lat": 54.14344569808907,
+            "lon": -3.089767253311663,
+            "admin_district": null,
+            "county": "Westmorland and Furness"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Radnor Walk",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Radnor Walk",
+            "type": "named road",
+            "lat": 51.487442538832966,
+            "lon": -0.16463807227956004,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Violet Melchett Infant Welfare Centre",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Violet Melchett Infant Welfare Centre",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Smith Terrace"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Smith Terrace",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Smith Terrace",
+            "type": "named road",
+            "lat": 58.59739464770012,
+            "lon": -3.5285167794399688,
+            "admin_district": null,
+            "county": "Highland"
+          },
+          {
+            "name": "Smith Terrace",
+            "type": "named road",
+            "lat": 58.437543735259766,
+            "lon": -3.084127086736747,
+            "admin_district": null,
+            "county": "Highland"
+          },
+          {
+            "name": "Smith Terrace",
+            "type": "named road",
+            "lat": 51.487865992637815,
+            "lon": -0.16354076916285615,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 200,
+        "top_lon": -0.16533,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 51.48731,
+        "evidence": "The site is 43 Shawfield Street. Geocoding Shawfield Street and Radnor Walk (which intersect nearby) provides a tight cluster in Chelsea. The map shows the site on the east side of Shawfield Street, south of the Radnor Walk junction.",
+        "picked_source": "place:Shawfield Street"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

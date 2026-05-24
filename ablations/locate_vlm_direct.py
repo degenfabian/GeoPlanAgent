@@ -202,8 +202,7 @@ def evaluate(args: argparse.Namespace) -> int:
 
     # Same column schema as locate_only_eval (imported from _shared) so
     # the aggregation step can union all CSVs cleanly. Fields VLM-direct
-    # has no value for stay empty (sigma_m, confidence,
-    # verified_inside_admin_region).
+    # has no value for stay empty (sigma_m, confidence).
     fieldnames = CSV_FIELDNAMES
 
     csv_mode = "a" if (args.resume and already_done) else "w"
@@ -239,7 +238,6 @@ def evaluate(args: argparse.Namespace) -> int:
             row["picked_source"] = "vlm_direct"
             row["confidence"] = ""
             row["sigma_m"] = ""
-            row["verified_inside_admin_region"] = ""
 
             if pdf_path is None:
                 row["error"] = "no PDF"

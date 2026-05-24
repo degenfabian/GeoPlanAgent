@@ -1,0 +1,360 @@
+{
+  "case": "12:00116:ART4",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5354,
+    "top_lon": 1.4835,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:High Street x Market Place",
+    "evidence": "The map shows a site east of Market Place and Holy Trinity Church in Loddon. The intersection of High Street and Market Place (52.5354, 1.4812) aligns perfectly with the town center shown on the map. The site is approximately 200m east of this junction.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1461257320891327,
+  "gt_centroids": [
+    {
+      "lat": 52.534421162669354,
+      "lon": 1.4849415062856708
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 5,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Holy Trinity Church, Loddon"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Market Place, Loddon",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Holy Trinity Church, Loddon",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Market Place, Loddon",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Loddon",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Church Plain, Loddon"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Loddon",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Loddon",
+            "type": "town",
+            "lat": 52.535437066073634,
+            "lon": 1.4812472192651958,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Loddon Drive",
+            "type": "named road",
+            "lat": 51.61048842510364,
+            "lon": -1.226842320385021,
+            "admin_district": "South Oxfordshire",
+            "county": "Oxfordshire"
+          },
+          {
+            "name": "Loddon Road",
+            "type": "named road",
+            "lat": 52.55527899889354,
+            "lon": 1.4344628284046836,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Loddon Road",
+            "type": "section of named road",
+            "lat": 52.56955198793479,
+            "lon": 1.4058652165161916,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Loddon Road",
+            "type": "named road",
+            "lat": 52.585414797454135,
+            "lon": 1.370151126568595,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Church Plain, Loddon",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "High Street",
+        "la": "South Norfolk",
+        "road_b": "Market Place"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Holy Trinity Church",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "High Street",
+          "Market Place"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.535432,
+            "lon": 1.48125,
+            "roads": [
+              "High Street",
+              "Market Place"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Holy Trinity Church",
+        "la_filter": "South Norfolk",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Holy Trinity Church of England Primary School",
+            "type": "primary education",
+            "lat": 54.96752101769878,
+            "lon": -1.4430806428389116,
+            "admin_district": "South Tyneside",
+            "county": null
+          },
+          {
+            "name": "Holy Trinity Church of England Primary School",
+            "type": "primary education",
+            "lat": 53.64976749407283,
+            "lon": -2.9964449818058148,
+            "admin_district": "Sefton",
+            "county": null
+          },
+          {
+            "name": "Holy Trinity Church of England Infant School",
+            "type": "primary education",
+            "lat": 53.07463425287881,
+            "lon": -0.9611290282934017,
+            "admin_district": "Newark and Sherwood",
+            "county": "Nottinghamshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Norfolk",
+        "lat": 52.535432,
+        "lon": 1.48125
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.535432,
+        "lon": 1.48125,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows a site east of Market Place and Holy Trinity Church in Loddon. The intersection of High Street and Market Place (52.5354, 1.4812) aligns perfectly with the town center shown on the map. The site is approximately 200m east of this junction.",
+        "top_lat": 52.5354,
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:High Street x Market Place",
+        "top_lon": 1.4835,
+        "sigma_m": 300,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

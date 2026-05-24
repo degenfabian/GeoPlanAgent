@@ -1,0 +1,358 @@
+{
+  "case": "Ar4.27",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.744,
+    "top_lon": -0.3425,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Everard Close x Griffiths Way",
+    "evidence": "The site is St Albans Abbey Station, located at the junction of Holywell Hill, Everard Close, and Griffiths Way. Road centroids for Everard Close and Griffiths Way intersect at approximately 51.744, -0.3425, which matches the map layout perfectly. Verified inside St Albans.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0922731606146206,
+  "gt_centroids": [
+    {
+      "lat": 51.74390423114763,
+      "lon": -0.3438312638201174
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "road": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Albans Abbey Station",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Westminster Lodge Leisure Centre",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Everard Close",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans Abbey Station",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Westminster Lodge Leisure Centre",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Everard Close",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Everard Close",
+            "lat": 51.74404612602197,
+            "lon": -0.34209402925726196,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Everard Close",
+            "lat": 51.74373880709982,
+            "lon": -0.34253258516818264,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Abbey Station",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Holywell Hill"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Abbey Station",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Holywell Hill",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Holywell Hill",
+            "lat": 51.74896224956474,
+            "lon": -0.3409116382347014,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Holywell Hill",
+            "lat": 51.749260192387354,
+            "lon": -0.3407297059630156,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Holywell Hill",
+            "lat": 51.749639290876296,
+            "lon": -0.3405129984111061,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Holywell Hill",
+            "lat": 51.75006790355586,
+            "lon": -0.34027498724753047,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Holywell Hill",
+            "lat": 51.750366817717,
+            "lon": -0.34010460021048117,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Albans Abbey Station"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Griffiths Way",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Albans Abbey Station",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Griffiths Way",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Griffiths Way",
+            "lat": 51.74413975704455,
+            "lon": -0.34401552378103945,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Griffiths Way",
+            "lat": 51.74149272075903,
+            "lon": -0.3385505025634356,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Griffiths Way",
+            "lat": 51.74238693200091,
+            "lon": -0.34017038470436867,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Griffiths Way",
+            "lat": 51.74300186064902,
+            "lon": -0.3416904714205435,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Griffiths Way",
+            "lat": 51.74340535731556,
+            "lon": -0.34247960639891323,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.744,
+        "la": "St Albans",
+        "lon": -0.3425
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.744,
+        "lon": -0.3425,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.3425,
+        "top_lat": 51.744,
+        "picked_source": "intersect:Everard Close x Griffiths Way",
+        "sigma_m": 200,
+        "evidence": "The site is St Albans Abbey Station, located at the junction of Holywell Hill, Everard Close, and Griffiths Way. Road centroids for Everard Close and Griffiths Way intersect at approximately 51.744, -0.3425, which matches the map layout perfectly. Verified inside St Albans."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

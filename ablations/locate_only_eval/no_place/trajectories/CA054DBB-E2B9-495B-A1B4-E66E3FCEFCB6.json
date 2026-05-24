@@ -1,0 +1,381 @@
+{
+  "case": "CA054DBB-E2B9-495B-A1B4-E66E3FCEFCB6",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1857,
+    "top_lon": 1.4025,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Upper Street x Cliffe Road",
+    "evidence": "The map shows the Kingsdown Conservation Area. Road names like Upper Street, Cliffe Road, and Glen Road are clearly visible. Geocoding Upper Street and Cliffe Road in Dover places the site at these coordinates, which align with the coastal location and landmarks like St John's Church.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.040924689098717916,
+  "gt_centroids": [
+    {
+      "lat": 51.18571849278442,
+      "lon": 1.401913559742691
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 4,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "Upper Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "The Avenue"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Upper Street",
+        "road_b": "The Avenue",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Upper Street",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Upper Street",
+            "lat": 51.1855985088273,
+            "lon": 1.4021769010466298,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Upper Street",
+            "lat": 51.185701136009165,
+            "lon": 1.402455345065583,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Upper Street",
+            "lat": 51.18573518903614,
+            "lon": 1.4028151167485274,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Upper Street",
+            "lat": 51.185955731073534,
+            "lon": 1.4027572304124396,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Upper Street",
+            "lat": 51.18314734162325,
+            "lon": 1.3960242762169688,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Avenue",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Avenue",
+            "lat": 51.22728569433172,
+            "lon": 1.3997407714847283,
+            "in_la": "Dover"
+          },
+          {
+            "name": "The Avenue",
+            "lat": 51.18162603986399,
+            "lon": 1.3977733013565172,
+            "in_la": "Dover"
+          },
+          {
+            "name": "The Avenue",
+            "lat": 51.18231426566998,
+            "lon": 1.3965913773399228,
+            "in_la": "Dover"
+          },
+          {
+            "name": "The Avenue",
+            "lat": 51.182493450378445,
+            "lon": 1.3976993830858302,
+            "in_la": "Dover"
+          },
+          {
+            "name": "The Avenue",
+            "lat": 51.18262760933564,
+            "lon": 1.3958162286502942,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Upper Street",
+          "The Avenue"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Cliffe Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Glen Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Cliffe Road",
+        "la": "Dover",
+        "road_a": "Upper Street"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Cliffe Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Cliffe Road",
+            "lat": 51.185971143000195,
+            "lon": 1.4029678437564568,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Cliffe Road",
+            "lat": 51.18623498463779,
+            "lon": 1.4029165851142653,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Cliffe Road",
+            "lat": 51.186347599393,
+            "lon": 1.402910644901611,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Cliffe Road",
+            "lat": 51.18690160685537,
+            "lon": 1.402840125216178,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Cliffe Road",
+            "lat": 51.18774479115786,
+            "lon": 1.4027008869017024,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Glen Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Glen Road",
+            "lat": 51.18571717488924,
+            "lon": 1.3970812893957825,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Glen Road",
+            "lat": 51.18585398923082,
+            "lon": 1.39680444571621,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Glen Road",
+            "lat": 51.18613195537851,
+            "lon": 1.3963088275241564,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Glen Road",
+            "lat": 51.1865602607568,
+            "lon": 1.3955830789007257,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Glen Road",
+            "lat": 51.18697517360058,
+            "lon": 1.394770091908359,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Dover for: ['Cliffe Road']"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lat": 51.185,
+        "lon": 1.402
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.185,
+        "lon": 1.402,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 400,
+        "verified_inside_admin_region": true,
+        "top_lon": 1.4025,
+        "picked_source": "road:Upper Street x Cliffe Road",
+        "top_lat": 51.1857,
+        "confidence": "high",
+        "evidence": "The map shows the Kingsdown Conservation Area. Road names like Upper Street, Cliffe Road, and Glen Road are clearly visible. Geocoding Upper Street and Cliffe Road in Dover places the site at these coordinates, which align with the coastal location and landmarks like St John's Church."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

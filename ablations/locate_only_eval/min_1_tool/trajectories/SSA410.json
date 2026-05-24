@@ -1,0 +1,329 @@
+{
+  "case": "SSA410",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.777853,
+    "top_lon": -2.132014,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Hyde Lea",
+    "evidence": "The map shows a site at 'Kevina' in Hyde Lea, near Bradley Lane. Geocoding Hyde Lea village and Hyde Lea Bank road provides a consistent cluster. The site is specifically identified as land rear of Kevina.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.2430658530843039,
+  "gt_centroids": [
+    {
+      "lat": 52.77638928961494,
+      "lon": -2.134697914890217
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 8,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kevina Hyde Lea",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Hyde Lea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Bradley Lane Hyde Lea"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kevina Hyde Lea",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hyde Lea",
+        "la_filter": "South Staffordshire",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Hyde Lea",
+            "type": "village",
+            "lat": 52.777853122229125,
+            "lon": -2.1320135458590608,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hyde Lea Bank",
+            "type": "section of named road",
+            "lat": 52.781416271842694,
+            "lon": -2.1290147460408786,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hyde Lea Bank",
+            "type": "named road",
+            "lat": 52.780065882634,
+            "lon": -2.1308045904440487,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hyde Lea Bank",
+            "type": "section of named road",
+            "lat": 52.77914877578164,
+            "lon": -2.1309649088409883,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bradley Lane Hyde Lea",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bradley Lane Stafford"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Tanglemere Stafford"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Desford House Stafford"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bradley Lane Stafford",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Tanglemere Stafford",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Desford House Stafford",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bradley Lane ST18"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hyde Lea Bank"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bradley Lane ST18",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hyde Lea Bank",
+        "la_filter": null,
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Hyde Lea Bank",
+            "type": "section of named road",
+            "lat": 52.781416271842694,
+            "lon": -2.1290147460408786,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hyde Lea Bank",
+            "type": "named road",
+            "lat": 52.780065882634,
+            "lon": -2.1308045904440487,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hyde Lea Bank",
+            "type": "section of named road",
+            "lat": 52.77914877578164,
+            "lon": -2.1309649088409883,
+            "admin_district": "Stafford",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows a site at 'Kevina' in Hyde Lea, near Bradley Lane. Geocoding Hyde Lea village and Hyde Lea Bank road provides a consistent cluster. The site is specifically identified as land rear of Kevina.",
+        "top_lon": -2.132014,
+        "top_lat": 52.777853,
+        "picked_source": "place:Hyde Lea",
+        "sigma_m": 400,
+        "confidence": "high",
+        "verified_inside_admin_region": false
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

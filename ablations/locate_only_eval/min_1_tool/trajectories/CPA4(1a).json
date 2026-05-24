@@ -1,0 +1,347 @@
+{
+  "case": "CPA4(1a)",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5539685914908,
+    "top_lon": 0.602267093890776,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Florence Gardens",
+    "evidence": "The map shows Florence Gardens and Florence Close in Hadleigh, Castle Point. Geocoding Florence Gardens in Castle Point returns a precise location that matches the map's layout.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.08013394267588786,
+  "gt_centroids": [
+    {
+      "lat": 51.55376851197057,
+      "lon": 0.6033805620421716
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Florence Gardens, Hadleigh"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Florence Close, Hadleigh"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Chapel Lane, Hadleigh",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Florence Gardens, Hadleigh",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Florence Close, Hadleigh",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Chapel Lane, Hadleigh",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Florence Gardens",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Florence Close",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Chapel Lane",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hadleigh",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Florence Gardens",
+        "la_filter": "Castle Point",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Florence Gardens",
+            "type": "named road",
+            "lat": 51.553968591490815,
+            "lon": 0.6022670938907759,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Florence Close",
+        "la_filter": "Castle Point",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Florence Close",
+            "type": "named road",
+            "lat": 51.554292965045676,
+            "lon": 0.6030502269073309,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Chapel Lane",
+        "la_filter": "Castle Point",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Chapel Lane",
+            "type": "named road",
+            "lat": 52.91359479028965,
+            "lon": -2.3808873744900922,
+            "admin_district": "Newcastle-under-Lyme",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Chapel Lane",
+            "type": "named road",
+            "lat": 52.92644994277296,
+            "lon": -2.3606063651112184,
+            "admin_district": "Newcastle-under-Lyme",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Chapel Lane",
+            "type": "named road",
+            "lat": 53.05297253207305,
+            "lon": -2.302912525501177,
+            "admin_district": "Newcastle-under-Lyme",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Chapel Lane",
+            "type": "named road",
+            "lat": 52.958227519985016,
+            "lon": -2.4024626662236455,
+            "admin_district": "Newcastle-under-Lyme",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Chapel Lane",
+            "type": "named road",
+            "lat": 53.09712256600276,
+            "lon": -2.2088550952119763,
+            "admin_district": "Newcastle-under-Lyme",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hadleigh",
+        "la_filter": "Castle Point",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Hadleigh",
+            "type": "village",
+            "lat": 51.55399415774112,
+            "lon": 0.6059761831403214,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          },
+          {
+            "name": "Hadleigh Close",
+            "type": "named road",
+            "lat": 52.98212690788205,
+            "lon": -2.227259811753567,
+            "admin_district": "Newcastle-under-Lyme",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hadleigh Ray",
+            "type": "beach",
+            "lat": 51.537249193388874,
+            "lon": 0.5925448669882478,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          },
+          {
+            "name": "Hadleigh Park Avenue",
+            "type": "named road",
+            "lat": 51.55702938619068,
+            "lon": 0.5972623791076701,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          },
+          {
+            "name": "Hadleigh Ray",
+            "type": "channel",
+            "lat": 51.529783328917226,
+            "lon": 0.6225300531457595,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows Florence Gardens and Florence Close in Hadleigh, Castle Point. Geocoding Florence Gardens in Castle Point returns a precise location that matches the map's layout.",
+        "confidence": "high",
+        "picked_source": "place:Florence Gardens",
+        "top_lon": 0.602267093890776,
+        "top_lat": 51.5539685914908,
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

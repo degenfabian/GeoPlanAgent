@@ -1,0 +1,362 @@
+{
+  "case": "A4D6A_merged",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.622057,
+    "top_lon": -0.234148,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "intersect:The Ridgeway x Hammers Lane",
+    "evidence": "The map shows the Mill Hill Conservation Area centered around the junction of The Ridgeway and Hammers Lane. Intersect tool confirmed this junction at 51.622, -0.234, which aligns with the labels for Highwood Hill and Milespit Hill nearby.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2884415693253162,
+  "gt_centroids": [
+    {
+      "lat": 51.61814464052538,
+      "lon": -0.23086000444351476
+    },
+    {
+      "lat": 51.62364466028064,
+      "lon": -0.237452266068465
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 2,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Mill Hill Conservation Area",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Mill Hill Cemetery",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Hammers Lane",
+        "road_a": "The Ridgeway",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Barnet",
+        "road_b": "Milespit Hill",
+        "road_a": "The Ridgeway"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mill Hill Conservation Area",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mill Hill Cemetery",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Ridgeway",
+          "Hammers Lane"
+        ],
+        "la_filter": "Barnet",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 51.622057,
+            "lon": -0.234148,
+            "roads": [
+              "The Ridgeway",
+              "Hammers Lane"
+            ]
+          },
+          {
+            "lat": 51.621692,
+            "lon": -0.233562,
+            "roads": [
+              "The Ridgeway",
+              "Hammers Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Ridgeway",
+          "Milespit Hill"
+        ],
+        "la_filter": "Barnet",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Mill Hill Ward",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Milespit Hill",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Highwood Hill",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.234148,
+        "lat": 51.622057,
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mill Hill Ward",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Milespit Hill",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Milespit Hill",
+            "lat": 51.609310213443976,
+            "lon": -0.22388641766913175,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Milespit Hill",
+            "lat": 51.61742605483209,
+            "lon": -0.22711667427719734,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Milespit Hill",
+            "lat": 51.61697005577304,
+            "lon": -0.2266938796867712,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Milespit Hill",
+            "lat": 51.61660971990395,
+            "lon": -0.22637735961751937,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Milespit Hill",
+            "lat": 51.6163208242179,
+            "lon": -0.22610233143264447,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Highwood Hill",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Highwood Hill",
+            "lat": 51.62706685401322,
+            "lon": -0.2411855517620533,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Highwood Hill",
+            "lat": 51.62719115512818,
+            "lon": -0.24113342754563263,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Highwood Hill",
+            "lat": 51.627888841370265,
+            "lon": -0.2409609510515434,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Highwood Hill",
+            "lat": 51.62635004356419,
+            "lon": -0.23931715772053702,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Highwood Hill",
+            "lat": 51.62873796201416,
+            "lon": -0.2400178544144272,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.622057,
+        "lon": -0.234148,
+        "la": "Barnet",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.616028526273034,
+        "la_centroid_lon": -0.21000945769264093
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 500,
+        "top_lon": -0.234148,
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:The Ridgeway x Hammers Lane",
+        "evidence": "The map shows the Mill Hill Conservation Area centered around the junction of The Ridgeway and Hammers Lane. Intersect tool confirmed this junction at 51.622, -0.234, which aligns with the labels for Highwood Hill and Milespit Hill nearby.",
+        "confidence": "high",
+        "top_lat": 51.622057
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

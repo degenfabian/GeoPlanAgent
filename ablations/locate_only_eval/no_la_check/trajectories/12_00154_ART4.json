@@ -1,0 +1,450 @@
+{
+  "case": "12:00154:ART4",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6265,
+    "top_lon": 1.2085,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Colney Wood",
+    "evidence": "The site is located on Watton Road between Colney Wood and Little Melton. The 'Colney Wood' place search and 'Watton Road' road search in South Norfolk align perfectly with the map's labels and layout. The site is the field immediately south of Watton Road, east of Ryebeck.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3498179703781173,
+  "gt_centroids": [
+    {
+      "lat": 52.62355190915425,
+      "lon": 1.2066908891214172
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 1,
+      "place": 6,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Watton Road",
+        "road_b": "Little Melton Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Colney Hall"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Little Melton"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Little Melton Lane']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney Hall",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Little Melton",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Little Melton",
+            "type": "village",
+            "lat": 52.61752949784457,
+            "lon": 1.184794633990199,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Little Melton Road",
+            "type": "section of named road",
+            "lat": 52.613374966130245,
+            "lon": 1.1901220971124917,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Little Melton Road",
+            "type": "section of named road",
+            "lat": 52.61188869248898,
+            "lon": 1.1808539196606498,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Little Melton Road",
+            "type": "section of named road",
+            "lat": 52.606171450393525,
+            "lon": 1.1794200159497479,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Little Melton Road",
+            "type": "named road",
+            "lat": 52.60871414494264,
+            "lon": 1.17917591199655,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Colney"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Watton Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Colney",
+            "type": "village",
+            "lat": 52.622669932614215,
+            "lon": 1.2234726492806807,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Road",
+            "type": "named road",
+            "lat": 52.752544987152966,
+            "lon": 0.44268653222217047,
+            "admin_district": "King's Lynn and West Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "section of named road",
+            "lat": 52.611985191518805,
+            "lon": 1.2373287202853533,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "section of named road",
+            "lat": 52.62179408696582,
+            "lon": 1.2236003570884657,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "named road",
+            "lat": 52.60312196190886,
+            "lon": 1.196806436600663,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Watton Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Watton Road",
+            "lat": 52.62531557998124,
+            "lon": 1.2213984188077187,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.6261900116888,
+            "lon": 1.2253202947740787,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.626996932690325,
+            "lon": 1.2289594286014445,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.627079289661644,
+            "lon": 1.2293410451810765,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.62716403817542,
+            "lon": 1.2297338502849495,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Ryebeck",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Manor Farm",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ryebeck",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Ryebeck Road",
+            "type": "named road",
+            "lat": 51.265403355369536,
+            "lon": -0.836462483706914,
+            "admin_district": "Hart",
+            "county": "Hampshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Manor Farm",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Manor Farm",
+            "type": "other settlement",
+            "lat": 52.857992467546026,
+            "lon": -0.47123820554337437,
+            "admin_district": "South Kesteven",
+            "county": "Lincolnshire"
+          },
+          {
+            "name": "Manor Farm Road",
+            "type": "named road",
+            "lat": 52.86310541037755,
+            "lon": -1.3822296557820626,
+            "admin_district": "South Derbyshire",
+            "county": "Derbyshire"
+          },
+          {
+            "name": "Manor Farm Mews",
+            "type": "named road",
+            "lat": 52.86195541078596,
+            "lon": -1.3840877894808414,
+            "admin_district": "South Derbyshire",
+            "county": "Derbyshire"
+          },
+          {
+            "name": "Manor Farm Gardens",
+            "type": "named road",
+            "lat": 53.34701551574964,
+            "lon": -1.2218458315311562,
+            "admin_district": "Rotherham",
+            "county": null
+          },
+          {
+            "name": "Manor Farm Road",
+            "type": "named road",
+            "lat": 51.73955686144063,
+            "lon": -1.174836730523149,
+            "admin_district": "South Oxfordshire",
+            "county": "Oxfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Colney Wood"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney Wood",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Colney Wood",
+            "type": "woodland or forest",
+            "lat": 52.62825783485812,
+            "lon": 1.2034873297939135,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lon": 1.2085,
+        "confidence": "high",
+        "picked_source": "place:Colney Wood",
+        "sigma_m": 400,
+        "evidence": "The site is located on Watton Road between Colney Wood and Little Melton. The 'Colney Wood' place search and 'Watton Road' road search in South Norfolk align perfectly with the map's labels and layout. The site is the field immediately south of Watton Road, east of Ryebeck.",
+        "top_lat": 52.6265
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

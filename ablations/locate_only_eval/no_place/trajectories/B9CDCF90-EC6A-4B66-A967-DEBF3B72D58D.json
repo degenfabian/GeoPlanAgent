@@ -1,0 +1,328 @@
+{
+  "case": "B9CDCF90-EC6A-4B66-A967-DEBF3B72D58D",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.160266,
+    "top_lon": 1.381724,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR 365 455",
+    "evidence": "The grid reference TR 365 455 (derived from the OS sheet TR 34 SE/SW labels on the map) points directly to the site at Hogs Bush on Kingsdown Road. This is confirmed to be within the Dover district.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3065118898480972,
+  "gt_centroids": [
+    {
+      "lat": 51.16022020901898,
+      "lon": 1.3773292431665773
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "road": 2,
+      "intersect": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 365 455"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Kingsdown Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Dover",
+        "road_b": "Reach Road",
+        "road_a": "Kingsdown Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 365 455",
+        "lat": 51.16026635953745,
+        "lon": 1.3817240117142313
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Kingsdown Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.205509874311005,
+            "lon": 1.4024808272492049,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.20228111458364,
+            "lon": 1.4023069872330225,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.200397324541484,
+            "lon": 1.4025476384451352,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.18916870039809,
+            "lon": 1.4024972389384933,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.19212553735629,
+            "lon": 1.4024516088494872,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Kingsdown Road",
+          "Reach Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Station Road",
+        "la": "Dover",
+        "road_a": "Kingsdown Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Dover Road",
+        "la": "Dover",
+        "road_a": "Kingsdown Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Kingsdown Road",
+          "Station Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Kingsdown Road",
+          "Dover Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "Reach Road"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lat": 51.160266,
+        "lon": 1.381724
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Reach Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Reach Road",
+            "lat": 51.151839770577304,
+            "lon": 1.3714400352307683,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Reach Road",
+            "lat": 51.15209974107293,
+            "lon": 1.3716393575958907,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Reach Road",
+            "lat": 51.15228050218806,
+            "lon": 1.3718186007120627,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Reach Road",
+            "lat": 51.152739318305294,
+            "lon": 1.3723840035523498,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Reach Road",
+            "lat": 51.14996257618212,
+            "lon": 1.3695176999043135,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.160266,
+        "lon": 1.381724,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "picked_source": "grid_ref:TR 365 455",
+        "top_lon": 1.381724,
+        "evidence": "The grid reference TR 365 455 (derived from the OS sheet TR 34 SE/SW labels on the map) points directly to the site at Hogs Bush on Kingsdown Road. This is confirmed to be within the Dover district.",
+        "sigma_m": 300,
+        "top_lat": 51.160266
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

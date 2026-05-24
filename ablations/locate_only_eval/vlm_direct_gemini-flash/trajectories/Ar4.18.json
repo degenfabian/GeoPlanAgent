@@ -1,0 +1,60 @@
+{
+  "case": "Ar4.18",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.7785,
+    "lon": -0.348,
+    "reasoning": "The document describes land at Harpenden Road, St Albans, and the provided map shows a large site north of residential streets (likely Sandridgebury Lane area) and adjacent to the main Harpenden Road (A1081)."
+  },
+  "err_km": 0.6212370074740513,
+  "gt_centroids": [
+    {
+      "lat": 51.77581693255756,
+      "lon": -0.34007965197845846
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 51.7785,
+        "reasoning": "The document describes land at Harpenden Road, St Albans, and the provided map shows a large site north of residential streets (likely Sandridgebury Lane area) and adjacent to the main Harpenden Road (A1081).",
+        "lon": -0.348
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

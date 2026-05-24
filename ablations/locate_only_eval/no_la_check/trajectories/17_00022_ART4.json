@@ -1,0 +1,344 @@
+{
+  "case": "17:00022:ART4",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.61235,
+    "top_lon": 1.31759,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "intersect:The Street x White Horse Lane",
+    "evidence": "The map shows the Trowse with Newton Conservation Area. The intersection of The Street and White Horse Lane (52.61235, 1.31759) and the village centroid for Trowse Newton (52.61371, 1.31798) are within 150m of each other and align perfectly with the map's central features. NR15 2XE is the council's office postcode, not the site.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.027069780347624993,
+  "gt_centroids": [
+    {
+      "lat": 52.61105312903899,
+      "lon": 1.322298662877032
+    },
+    {
+      "lat": 52.61141522910877,
+      "lon": 1.3171242076872
+    },
+    {
+      "lat": 52.611939208460214,
+      "lon": 1.319267122353719
+    },
+    {
+      "lat": 52.612849673449894,
+      "lon": 1.3171700928468109
+    },
+    {
+      "lat": 52.61313061541371,
+      "lon": 1.3163717885571247
+    },
+    {
+      "lat": 52.61244236325709,
+      "lon": 1.3179609503668532
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "postcode": 1,
+      "intersect": 2,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Trowse with Newton Conservation Area",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Trowse Newton"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_a": "The Street",
+        "road_b": "Kirby Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trowse with Newton Conservation Area",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trowse Newton",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Trowse Newton",
+            "type": "village",
+            "lat": 52.613708680239775,
+            "lon": 1.3179811111263393,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Trowse Newton Solar Farm",
+            "type": "electricity production",
+            "lat": 52.607261365650764,
+            "lon": 1.3121601953553796,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Street",
+          "Kirby Road"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.59473,
+            "lon": 1.38537,
+            "roads": [
+              "The Street",
+              "Kirby Road"
+            ]
+          },
+          {
+            "lat": 52.594823,
+            "lon": 1.385702,
+            "roads": [
+              "The Street",
+              "Kirby Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Trowse Common"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Whitlingham Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "The Street",
+        "road_b": "White Horse Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trowse Common",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Whitlingham Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.61987600819574,
+            "lon": 1.3595598473011066,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.620626316312666,
+            "lon": 1.3591685458606872,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.61549914635781,
+            "lon": 1.320371795040046,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.617777791786004,
+            "lon": 1.3230090663039051,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Whitlingham Lane",
+            "lat": 52.61906960910882,
+            "lon": 1.324155431535626,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Street",
+          "White Horse Lane"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.612351,
+            "lon": 1.317593,
+            "roads": [
+              "The Street",
+              "White Horse Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "intersect:The Street x White Horse Lane",
+        "sigma_m": 400,
+        "evidence": "The map shows the Trowse with Newton Conservation Area. The intersection of The Street and White Horse Lane (52.61235, 1.31759) and the village centroid for Trowse Newton (52.61371, 1.31798) are within 150m of each other and align perfectly with the map's central features. NR15 2XE is the council's office postcode, not the site.",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.31759,
+        "top_lat": 52.61235,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

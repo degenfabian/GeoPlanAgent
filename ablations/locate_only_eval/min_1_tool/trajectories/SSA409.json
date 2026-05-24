@@ -1,0 +1,289 @@
+{
+  "case": "SSA409",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5192808427758,
+    "top_lon": -2.19201200067331,
+    "sigma_m": 1000,
+    "confidence": "med",
+    "picked_source": "place:Himley Plantation",
+    "evidence": "The site is 'Land at Himley Park, Himley'. While 'Himley Park' didn't return a direct hit, 'Himley Plantation' and the village of 'Himley' are in the immediate vicinity. The map shows a large rural plot adjacent to a road. Himley Plantation (52.519, -2.192) is a strong local landmark for this area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.3605880956690353,
+  "gt_centroids": [
+    {
+      "lat": 52.52542718297215,
+      "lon": -2.174623037999248
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Himley Park",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Himley"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Himley Park",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Himley",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Himley",
+            "type": "village",
+            "lat": 52.518382734865384,
+            "lon": -2.180026942455045,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Himley Way",
+            "type": "named road",
+            "lat": 52.63463440978258,
+            "lon": -1.6428658048161655,
+            "admin_district": "Tamworth",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Himley Lane",
+            "type": "named road",
+            "lat": 52.51628647997492,
+            "lon": -2.1924557533608593,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Himley Lane",
+            "type": "section of named road",
+            "lat": 52.51376345961386,
+            "lon": -2.201359634735294,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Himley Plantation",
+            "type": "woodland or forest",
+            "lat": 52.51928084277577,
+            "lon": -2.1920120006733117,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Himley Hall"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Himley Hall",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Himley Hall"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Himley Hall",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Himley Park"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Himley Park",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Himley Plantation"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Himley Plantation",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Himley Plantation",
+            "type": "woodland or forest",
+            "lat": 52.51928084277577,
+            "lon": -2.1920120006733117,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "picked_source": "place:Himley Plantation",
+        "sigma_m": 1000,
+        "top_lon": -2.19201200067331,
+        "confidence": "med",
+        "evidence": "The site is 'Land at Himley Park, Himley'. While 'Himley Park' didn't return a direct hit, 'Himley Plantation' and the village of 'Himley' are in the immediate vicinity. The map shows a large rural plot adjacent to a road. Himley Plantation (52.519, -2.192) is a strong local landmark for this area.",
+        "top_lat": 52.5192808427758
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

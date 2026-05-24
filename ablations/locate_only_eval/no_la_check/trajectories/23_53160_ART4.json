@@ -1,0 +1,348 @@
+{
+  "case": "23:53160:ART4",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.7065,
+    "top_lon": 1.406,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Staitheway Road x Hartwell Road",
+    "evidence": "The map shows an Article 4 Direction area centered on Charles Close in Wroxham. The intersection of Staitheway Road and Hartwell Road (52.7074, 1.4052) and the intersection of Charles Close and The Avenue (52.7061, 1.4066) perfectly bracket the site. The village centroid for Wroxham is also nearby.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.15939324907934072,
+  "gt_centroids": [
+    {
+      "lat": 52.705099433875546,
+      "lon": 1.4065038937917476
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 3,
+      "intersect": 2,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR7 0DU"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "Charles Close, Wroxham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Broadland",
+        "road_b": "The Avenue",
+        "road_a": "Charles Close"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wroxham Conservation Area",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR7 0DU' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Charles Close, Wroxham",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Charles Close",
+          "The Avenue"
+        ],
+        "la_filter": "Broadland",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.703001,
+            "lon": 1.410088,
+            "roads": [
+              "Charles Close",
+              "The Avenue"
+            ]
+          },
+          {
+            "lat": 52.706138,
+            "lon": 1.406637,
+            "roads": [
+              "Charles Close",
+              "The Avenue"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wroxham Conservation Area",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wroxham",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Staitheway Road",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Staitheway Road",
+        "road_b": "Hartwell Road",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wroxham",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Wroxham",
+            "type": "village",
+            "lat": 52.7066178772019,
+            "lon": 1.40152414472359,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wroxham Road",
+            "type": "named road",
+            "lat": 52.726857355281744,
+            "lon": 1.3765686877277317,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wroxham Road",
+            "type": "section of named road",
+            "lat": 52.680677874537594,
+            "lon": 1.3701317712970684,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wroxham Road",
+            "type": "named road",
+            "lat": 52.67092538502902,
+            "lon": 1.3496441325084632,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wroxham Broad",
+            "type": "inland water",
+            "lat": 52.69695844960819,
+            "lon": 1.4165238372873519,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Staitheway Road",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Staitheway Road",
+            "lat": 52.70670574422536,
+            "lon": 1.4049908414757393,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Staitheway Road",
+            "lat": 52.70721894132409,
+            "lon": 1.405167282069712,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Staitheway Road",
+            "lat": 52.70778666040056,
+            "lon": 1.4054885003641329,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Staitheway Road",
+            "lat": 52.708589875515926,
+            "lon": 1.4061821399035666,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Staitheway Road",
+            "lat": 52.70898296145852,
+            "lon": 1.4072074377911798,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Staitheway Road",
+          "Hartwell Road"
+        ],
+        "la_filter": "Broadland",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.707415,
+            "lon": 1.405238,
+            "roads": [
+              "Staitheway Road",
+              "Hartwell Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Staitheway Road x Hartwell Road",
+        "confidence": "high",
+        "sigma_m": 300,
+        "top_lat": 52.7065,
+        "evidence": "The map shows an Article 4 Direction area centered on Charles Close in Wroxham. The intersection of Staitheway Road and Hartwell Road (52.7074, 1.4052) and the intersection of Charles Close and The Avenue (52.7061, 1.4066) perfectly bracket the site. The village centroid for Wroxham is also nearby.",
+        "top_lon": 1.406
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

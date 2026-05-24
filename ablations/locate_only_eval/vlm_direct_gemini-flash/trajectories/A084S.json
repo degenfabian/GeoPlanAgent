@@ -1,0 +1,60 @@
+{
+  "case": "A084S",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.62144,
+    "lon": -0.34945,
+    "reasoning": "The application site is identified as 27 West Street, Helpston, Peterborough PE6 7DU, which is clearly marked on the location plan and confirmed in the public notice text."
+  },
+  "err_km": 1.507050215855896,
+  "gt_centroids": [
+    {
+      "lat": 52.63495411444385,
+      "lon": -0.3477548435993574
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The application site is identified as 27 West Street, Helpston, Peterborough PE6 7DU, which is clearly marked on the location plan and confirmed in the public notice text.",
+        "lat": 52.62144,
+        "lon": -0.34945
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "case": "A100S",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6326006067297,
+    "top_lon": -0.412936163304532,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:PE9 3EZ",
+    "evidence": "The site address 'Shieling, Stamford Road, Barnack, PE9 3EZ' matches the map labels (The Shieling, Stamford Road). The postcode PE9 3EZ is verified to be inside the Peterborough admin region and aligns perfectly with the site location in Barnack.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09816043785723239,
+  "gt_centroids": [
+    {
+      "lat": 52.63330635286987,
+      "lon": -0.41380992307692266
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "PE9 3EZ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Shieling",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "War Memorial Barnack",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "PE9 3EZ",
+        "lat": 52.63260060672965,
+        "lon": -0.41293616330453176,
+        "admin_district": "City of Peterborough (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Shieling",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "The Shieling",
+            "type": "named road",
+            "lat": 52.871920244582334,
+            "lon": -1.682906010009647,
+            "admin_district": "South Derbyshire",
+            "county": "Derbyshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "War Memorial Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.412936163304532,
+        "lat": 52.6326006067297,
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6326006067297,
+        "lon": -0.412936163304532,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lon": -0.412936163304532,
+        "picked_source": "postcode:PE9 3EZ",
+        "confidence": "high",
+        "evidence": "The site address 'Shieling, Stamford Road, Barnack, PE9 3EZ' matches the map labels (The Shieling, Stamford Road). The postcode PE9 3EZ is verified to be inside the Peterborough admin region and aligns perfectly with the site location in Barnack.",
+        "top_lat": 52.6326006067297,
+        "sigma_m": 300
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,272 @@
+{
+  "case": "12:00162:ART4",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.552,
+    "top_lon": 0.988,
+    "sigma_m": 800,
+    "confidence": "high",
+    "picked_source": "place:Deopham Stalland",
+    "evidence": "The site is the former Deopham Airfield. 'Deopham Stalland' is a hamlet located on the northern edge of the airfield boundary as shown on the map. 'Stalland Common' is to the southwest. The pick is centered on the airfield between these two points.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.48849455547176196,
+  "gt_centroids": [
+    {
+      "lat": 52.55425096040126,
+      "lon": 0.994204743122648
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Deopham Airfield",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Deopham Stalland",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Stalland Common"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Halffield Lane",
+        "la": "South Norfolk",
+        "road_a": "Stalland Lane"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Deopham Airfield",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Deopham Stalland",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Deopham Stalland",
+            "type": "hamlet",
+            "lat": 52.55598999876642,
+            "lon": 0.9988891159057344,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Stalland Common",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Stalland Common",
+            "type": "hamlet",
+            "lat": 52.54840435638782,
+            "lon": 0.9773497369152604,
+            "admin_district": "Breckland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Halffield Lane']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Deopham Green"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Ellingham Farm"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Norfolk",
+        "lat": 52.5559899987664,
+        "lon": 0.998889115905734
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Deopham Green",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Deopham Green",
+            "type": "village",
+            "lat": 52.55137413375344,
+            "lon": 1.0149060522565352,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ellingham Farm",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5559899987664,
+        "lon": 0.998889115905734,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Deopham Stalland",
+        "top_lon": 0.988,
+        "sigma_m": 800,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 52.552,
+        "evidence": "The site is the former Deopham Airfield. 'Deopham Stalland' is a hamlet located on the northern edge of the airfield boundary as shown on the map. 'Stalland Common' is to the southwest. The pick is centered on the airfield between these two points."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

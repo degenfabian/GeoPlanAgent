@@ -1,0 +1,271 @@
+{
+  "case": "43",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4853,
+    "top_lon": -0.177,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Chelsea Park Gardens x Beaufort Street",
+    "evidence": "The site is a large residential block on Chelsea Park Gardens. Intersections of Chelsea Park Gardens and Beaufort Street place the site accurately. The road centroids for Chelsea Park Gardens also cluster here.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.01993627976005178,
+  "gt_centroids": [
+    {
+      "lat": 51.48550045352857,
+      "lon": -0.1777000711816154
+    },
+    {
+      "lat": 51.485521342732085,
+      "lon": -0.17628486045343517
+    },
+    {
+      "lat": 51.485122481972795,
+      "lon": -0.17704039353741613
+    },
+    {
+      "lat": 51.48464922350568,
+      "lon": -0.17716765034836776
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 1,
+      "intersect": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Chelsea Park Gardens"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Beaufort Street",
+        "la": "Kensington and Chelsea",
+        "road_a": "Chelsea Park Gardens"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Elm Park Road",
+        "road_a": "Chelsea Park Gardens",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Chelsea Park Gardens",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Chelsea Park Gardens",
+            "lat": 51.484938668471784,
+            "lon": -0.17706761945698046,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Chelsea Park Gardens",
+            "lat": 51.48502363067331,
+            "lon": -0.17819487162401462,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Chelsea Park Gardens",
+            "lat": 51.48539411014405,
+            "lon": -0.17657415120244052,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Chelsea Park Gardens",
+            "lat": 51.48541079959348,
+            "lon": -0.17735845910311962,
+            "in_la": "Kensington and Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Chelsea Park Gardens",
+          "Beaufort Street"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 3,
+        "intersections": [
+          {
+            "lat": 51.485017,
+            "lon": -0.17633,
+            "roads": [
+              "Chelsea Park Gardens",
+              "Beaufort Street"
+            ]
+          },
+          {
+            "lat": 51.485675,
+            "lon": -0.177009,
+            "roads": [
+              "Chelsea Park Gardens",
+              "Beaufort Street"
+            ]
+          },
+          {
+            "lat": 51.485611,
+            "lon": -0.176926,
+            "roads": [
+              "Chelsea Park Gardens",
+              "Beaufort Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Kensington and Chelsea for: ['Elm Park Road']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Chelsea Park Gardens",
+        "la": "Kensington and Chelsea",
+        "road_b": "The Vale"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.4853,
+        "lon": -0.177,
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Chelsea Park Gardens",
+          "The Vale"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.4853,
+        "lon": -0.177,
+        "la": "Kensington and Chelsea",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.50120516305225,
+        "la_centroid_lon": -0.19222073817151708
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "evidence": "The site is a large residential block on Chelsea Park Gardens. Intersections of Chelsea Park Gardens and Beaufort Street place the site accurately. The road centroids for Chelsea Park Gardens also cluster here.",
+        "top_lat": 51.4853,
+        "sigma_m": 300,
+        "top_lon": -0.177,
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Chelsea Park Gardens x Beaufort Street"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

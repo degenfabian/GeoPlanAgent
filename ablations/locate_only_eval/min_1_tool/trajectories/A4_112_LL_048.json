@@ -1,0 +1,167 @@
+{
+  "case": "A4_112:LL:048",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6605203325183,
+    "top_lon": -1.17620617843909,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Sangha Close",
+    "evidence": "Sangha Close is the primary site address and road name on the map. The geocoded location for Sangha Close aligns perfectly with the map's layout, showing the intersection with Hallgate Drive nearby.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.008656353767593997,
+  "gt_centroids": [
+    {
+      "lat": 52.660494935911096,
+      "lon": -1.1760848512624487
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 5,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sangha Close",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Leicester Frith Farm",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hallgate Drive",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sangha Close",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sangha Close",
+            "type": "named road",
+            "lat": 52.66052033251831,
+            "lon": -1.1762061784390931,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Leicester Frith Farm",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hallgate Drive",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Hallgate Drive",
+            "type": "named road",
+            "lat": 52.658913447973,
+            "lon": -1.1752458144677453,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 200,
+        "top_lat": 52.6605203325183,
+        "top_lon": -1.17620617843909,
+        "picked_source": "place:Sangha Close",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "evidence": "Sangha Close is the primary site address and road name on the map. The geocoded location for Sangha Close aligns perfectly with the map's layout, showing the intersection with Hallgate Drive nearby."
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

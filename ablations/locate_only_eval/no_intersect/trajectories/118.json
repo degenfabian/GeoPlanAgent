@@ -1,0 +1,323 @@
+{
+  "case": "118",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.463175,
+    "top_lon": -0.056603,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Abbotsbury Mews",
+    "evidence": "The site is at 41 Linden Grove, at the junction with Abbotsbury Mews and Nunhead Grove. The 'place' tool for Abbotsbury Mews (Southwark) provides a precise coordinate that matches the map's intersection.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.04332953247292718,
+  "gt_centroids": [
+    {
+      "lat": 51.4627976102254,
+      "lon": -0.05644720665059693
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "road": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "41 Linden Grove",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Linden Grove",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Southwark",
+        "query": "Abbotsbury Mews"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Nunhead Grove",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "41 Linden Grove",
+        "la_filter": "Southwark",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Linden Grove",
+        "la_filter": "Southwark",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Linden Grove",
+            "lat": 51.46351541780512,
+            "lon": -0.05951931794224047,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Linden Grove",
+            "lat": 51.46405750282209,
+            "lon": -0.06019355259101455,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Linden Grove",
+            "lat": 51.462528004441246,
+            "lon": -0.05706677529096344,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Linden Grove",
+            "lat": 51.46258022868715,
+            "lon": -0.057705764492149945,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Linden Grove",
+            "lat": 51.46267381033936,
+            "lon": -0.05802138762466711,
+            "in_la": "Southwark"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Abbotsbury Mews",
+        "la_filter": "Southwark",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Nunhead Grove",
+        "la_filter": "Southwark",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Nunhead Grove",
+            "lat": 51.46421864252523,
+            "lon": -0.057976821594490316,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Nunhead Grove",
+            "lat": 51.463376210449624,
+            "lon": -0.05652255300681185,
+            "in_la": "Southwark"
+          },
+          {
+            "name": "Nunhead Grove",
+            "lat": 51.46291273998058,
+            "lon": -0.05595919304949336,
+            "in_la": "Southwark"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Abbotsbury Mews",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Nunhead Grove",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Abbotsbury Mews",
+        "la_filter": "Southwark",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Abbotsbury Mews",
+            "type": "named road",
+            "lat": 51.463175210120944,
+            "lon": -0.05660307478639985,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Nunhead Grove",
+        "la_filter": "Southwark",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Nunhead Grove",
+            "type": "named road",
+            "lat": 51.46386794862542,
+            "lon": -0.05716390495337418,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.056603,
+        "la": "Southwark",
+        "lat": 51.463175
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.463175,
+        "lon": -0.056603,
+        "la": "Southwark",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.47423890487611,
+        "la_centroid_lon": -0.07405678270101093
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.056603,
+        "picked_source": "place:Abbotsbury Mews",
+        "top_lat": 51.463175,
+        "sigma_m": 200,
+        "confidence": "high",
+        "evidence": "The site is at 41 Linden Grove, at the junction with Abbotsbury Mews and Nunhead Grove. The 'place' tool for Abbotsbury Mews (Southwark) provides a precise coordinate that matches the map's intersection.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

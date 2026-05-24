@@ -1,0 +1,60 @@
+{
+  "case": "A4D8",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.501,
+    "lon": -2.695,
+    "reasoning": "The Article 4 Direction map shows a red-edged area covering the residential core of Avonmouth, Bristol, bounded by the A403 to the north and the railway line to the east."
+  },
+  "err_km": 0.26347348408011945,
+  "gt_centroids": [
+    {
+      "lat": 51.498641130976395,
+      "lon": -2.6953597140585575
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 51.501,
+        "lon": -2.695,
+        "reasoning": "The Article 4 Direction map shows a red-edged area covering the residential core of Avonmouth, Bristol, bounded by the A403 to the north and the railway line to the east."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

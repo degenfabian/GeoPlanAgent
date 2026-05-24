@@ -1,0 +1,60 @@
+{
+  "case": "A4D-11",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.2285,
+    "lon": -0.778,
+    "reasoning": "The document specifies \"Land off Green Lane, Weybourne\" and provides an OS Grid Reference of 4857014860, which translates to these coordinates near Farnham."
+  },
+  "err_km": 0.3466273798753759,
+  "gt_centroids": [
+    {
+      "lat": 51.23024613958444,
+      "lon": -0.7738761876840656
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -0.778,
+        "lat": 51.2285,
+        "reasoning": "The document specifies \"Land off Green Lane, Weybourne\" and provides an OS Grid Reference of 4857014860, which translates to these coordinates near Farnham."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

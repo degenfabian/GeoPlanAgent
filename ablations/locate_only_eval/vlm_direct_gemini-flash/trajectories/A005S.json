@@ -1,0 +1,60 @@
+{
+  "case": "A005S",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.6318,
+    "lon": -0.4145,
+    "reasoning": "The document identifies the site as 'The Grange, Uffington Road, Barnack, PE9 3DU', which corresponds to the red-outlined property on the provided map at the intersection of Uffington Road and Banton Road."
+  },
+  "err_km": 0.4165243550806279,
+  "gt_centroids": [
+    {
+      "lat": 52.63435668460138,
+      "lon": -0.4099891454679219
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -0.4145,
+        "reasoning": "The document identifies the site as 'The Grange, Uffington Road, Barnack, PE9 3DU', which corresponds to the red-outlined property on the provided map at the intersection of Uffington Road and Banton Road.",
+        "lat": 52.6318
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

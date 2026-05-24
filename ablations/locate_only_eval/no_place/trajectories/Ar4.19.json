@@ -1,0 +1,316 @@
+{
+  "case": "Ar4.19",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.8198,
+    "top_lon": -0.3188,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:AL4 8HY",
+    "evidence": "The map shows a site on Lower Luton Road near a junction with a road labeled 'Valley...'. Postcode AL4 8HY (Wheathampstead) is located on Lower Luton Road and aligns perfectly with the River Lea and the road layout shown.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.6293587861725828,
+  "gt_centroids": [
+    {
+      "lat": 51.820129145557885,
+      "lon": -0.3279410214592815
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 1,
+      "road": 3,
+      "postcode": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 15,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_a": "Lower Luton Road",
+        "road_b": "Valley Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Lower Luton Road",
+          "Valley Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Lower Luton Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Lower Luton Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.8281278091962,
+            "lon": -0.3441761948920069,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.828809732483904,
+            "lon": -0.3445837243686501,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.826346249928314,
+            "lon": -0.3428543025085218,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.826546622480215,
+            "lon": -0.3427163454621062,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Lower Luton Road",
+            "lat": 51.82563033005167,
+            "lon": -0.3421405030932388,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Valley Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Valley Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Valley Road",
+            "lat": 51.7715273457193,
+            "lon": -0.3295211247871096,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Valley Road",
+            "lat": 51.770231009538634,
+            "lon": -0.3281697866757545,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Valley Road",
+            "lat": 51.770013628535516,
+            "lon": -0.32774301698783836,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Valley Road",
+            "lat": 51.769706445608016,
+            "lon": -0.32730565754474594,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Valley Road",
+            "lat": 51.76928443492719,
+            "lon": -0.32640094255140084,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Valley View",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Valley View",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL4 8HY"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL4 8HY",
+        "lat": 51.81980095440683,
+        "lon": -0.3188348029925883,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.8198,
+        "la": "St Albans",
+        "lon": -0.3188
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.8198,
+        "lon": -0.3188,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows a site on Lower Luton Road near a junction with a road labeled 'Valley...'. Postcode AL4 8HY (Wheathampstead) is located on Lower Luton Road and aligns perfectly with the River Lea and the road layout shown.",
+        "top_lat": 51.8198,
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "top_lon": -0.3188,
+        "picked_source": "postcode:AL4 8HY",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

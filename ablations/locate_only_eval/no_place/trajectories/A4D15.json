@@ -1,0 +1,390 @@
+{
+  "case": "A4D15",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.466275,
+    "top_lon": -2.599189,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Cotham Park North",
+    "evidence": "The map shows the Cotham and Redland Conservation Area. I identified several key roads including Cotham Road South (south), Redland Green Road (northwest), and the intersection of Cranbrook Road and Zetland Road (east). The centroid of these features falls near Cotham Park North.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2645191780736606,
+  "gt_centroids": [
+    {
+      "lat": 51.4684646015398,
+      "lon": -2.600681704917082
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 5,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Cotham Road South",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Redland Green Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Zelland Road",
+        "la": "Bristol",
+        "road_a": "Cranbrook Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Cotham Park North"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Cotham Road South",
+        "la_filter": "Bristol",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Cotham Road South",
+            "lat": 51.46195264210153,
+            "lon": -2.5978031377198834,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Cotham Road South",
+            "lat": 51.46221870035258,
+            "lon": -2.5977686860697573,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Cotham Road South",
+            "lat": 51.46275387440866,
+            "lon": -2.5975409771671214,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Redland Green Road",
+        "la_filter": "Bristol",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Redland Green Road",
+            "lat": 51.47209937790944,
+            "lon": -2.6074915259058065,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Redland Green Road",
+            "lat": 51.472655673574685,
+            "lon": -2.605435148624624,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Bristol for: ['Zelland Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Cotham Park North",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Cotham Park North",
+            "lat": 51.466275662592444,
+            "lon": -2.59918931051924,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Zetland Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Cranbrook Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Cranbrook Road",
+        "road_b": "Zetland Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Zetland Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Zetland Road",
+            "lat": 51.46933045826644,
+            "lon": -2.59713138750291,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Zetland Road",
+            "lat": 51.4697141383314,
+            "lon": -2.5958223314606457,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Zetland Road",
+            "lat": 51.469956532124144,
+            "lon": -2.5950120673698787,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Zetland Road",
+            "lat": 51.47013010075028,
+            "lon": -2.5944744417154575,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Zetland Road",
+            "lat": 51.47030155402854,
+            "lon": -2.593936784518751,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Cranbrook Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Cranbrook Road",
+            "lat": 51.47757968211015,
+            "lon": -2.605004455230569,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Cranbrook Road",
+            "lat": 51.477191668415344,
+            "lon": -2.604408090610152,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Cranbrook Road",
+            "lat": 51.47557424403073,
+            "lon": -2.601578970802161,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Cranbrook Road",
+            "lat": 51.47651376706821,
+            "lon": -2.603348005018723,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Cranbrook Road",
+            "lat": 51.47419195865912,
+            "lon": -2.599350656924895,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Cranbrook Road",
+          "Zetland Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.470226,
+            "lon": -2.594181,
+            "roads": [
+              "Cranbrook Road",
+              "Zetland Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.6,
+        "la": "Bristol",
+        "lat": 51.467
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.467,
+        "lon": -2.6,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.466275,
+        "top_lon": -2.599189,
+        "sigma_m": 1500,
+        "picked_source": "place:Cotham Park North",
+        "confidence": "high",
+        "evidence": "The map shows the Cotham and Redland Conservation Area. I identified several key roads including Cotham Road South (south), Redland Green Road (northwest), and the intersection of Cranbrook Road and Zetland Road (east). The centroid of these features falls near Cotham Park North.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

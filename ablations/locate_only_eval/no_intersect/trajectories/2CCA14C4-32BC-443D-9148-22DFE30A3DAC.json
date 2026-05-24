@@ -1,0 +1,240 @@
+{
+  "case": "2CCA14C4-32BC-443D-9148-22DFE30A3DAC",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.14867,
+    "top_lon": 1.26429,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Palmtree Hill Plantation",
+    "evidence": "The site is explicitly named 'Palmtree Hill Plantation' on the map and in the address. The place search for this name matches the grid reference TR 2843 (NW/NE) provided in the map legend. The postcode CT16 1LZ is likely a letterhead/office address as it is ~3km away.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0479485992579033,
+  "gt_centroids": [
+    {
+      "lat": 51.14909693283401,
+      "lon": 1.2641933968857286
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "postcode": 1,
+      "place": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 2843 NW"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 2843 NE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 1LZ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Palmtree Hill Plantation"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kearsney Court",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 2843 NW",
+        "lat": 51.14513189650306,
+        "lon": 1.2654975689953827
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 2843 NE",
+        "lat": 51.14513189650306,
+        "lon": 1.2654975689953827
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CT16 1LZ",
+        "lat": 51.125372905553135,
+        "lon": 1.3133037676580233,
+        "admin_district": "Dover District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Palmtree Hill Plantation",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Palmtree Hill Plantation",
+            "type": "woodland or forest",
+            "lat": 51.148673758242026,
+            "lon": 1.2642890096407378,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kearsney Court",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Kearsney Court",
+            "type": "named road",
+            "lat": 51.148281167238615,
+            "lon": 1.2673932783248194,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.14867,
+        "la": "Dover",
+        "lon": 1.26429
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.14867,
+        "lon": 1.26429,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "The site is explicitly named 'Palmtree Hill Plantation' on the map and in the address. The place search for this name matches the grid reference TR 2843 (NW/NE) provided in the map legend. The postcode CT16 1LZ is likely a letterhead/office address as it is ~3km away.",
+        "confidence": "high",
+        "sigma_m": 300,
+        "picked_source": "place:Palmtree Hill Plantation",
+        "top_lat": 51.14867,
+        "top_lon": 1.26429
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

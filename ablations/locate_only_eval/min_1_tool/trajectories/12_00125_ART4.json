@@ -1,0 +1,360 @@
+{
+  "case": "12:00125:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5605806819794,
+    "top_lon": 1.40195241344862,
+    "sigma_m": 1000,
+    "confidence": "med",
+    "picked_source": "place:Bergh Apton",
+    "evidence": "The map shows Church Road in Bergh Apton, with landmarks like Street Farm, Stud Farm, and The Rectory. The village centroid for Bergh Apton provides a reliable anchor in the absence of a specific road hit.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.7936864208558151,
+  "gt_centroids": [
+    {
+      "lat": 52.55357962441475,
+      "lon": 1.3990896823237144
+    },
+    {
+      "lat": 52.55381450395936,
+      "lon": 1.398213591491261
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 8,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Church Road, Bergh Apton"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Street Farm, Bergh Apton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Stud Farm, Bergh Apton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Church Road, Bergh Apton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Street Farm, Bergh Apton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Stud Farm, Bergh Apton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bergh Apton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Rectory, Bergh Apton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bergh Apton",
+        "la_filter": "South Norfolk",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Bergh Apton",
+            "type": "village",
+            "lat": 52.56058068197943,
+            "lon": 1.4019524134486212,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Bergh Apton Road",
+            "type": "named road",
+            "lat": 52.56584195669603,
+            "lon": 1.3884859011086415,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Bergh Apton Road",
+            "type": "section of named road",
+            "lat": 52.56630145146146,
+            "lon": 1.3843738727159887,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Bergh Apton Road",
+            "type": "section of named road",
+            "lat": 52.564721514222775,
+            "lon": 1.3921187799453343,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Rectory, Bergh Apton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Church Road, NR15"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Church Road, NR14"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Church Road, NR15",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Church Road, NR14",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Church Road"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Church Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Church Road",
+            "type": "named road",
+            "lat": 53.688958081539994,
+            "lon": -2.6900427044750463,
+            "admin_district": "South Ribble",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Church Road",
+            "type": "named road",
+            "lat": 53.71948823285523,
+            "lon": -2.6586589356212373,
+            "admin_district": "South Ribble",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Church Road",
+            "type": "named road",
+            "lat": 53.05832577794532,
+            "lon": -3.0426345538121753,
+            "admin_district": null,
+            "county": "Wrecsam - Wrexham"
+          },
+          {
+            "name": "Church Road",
+            "type": "named road",
+            "lat": 52.67582029932414,
+            "lon": -2.174447854157282,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Church Road",
+            "type": "named road",
+            "lat": 52.65608829568284,
+            "lon": -2.083408159735536,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "sigma_m": 1000,
+        "top_lat": 52.5605806819794,
+        "picked_source": "place:Bergh Apton",
+        "top_lon": 1.40195241344862,
+        "confidence": "med",
+        "evidence": "The map shows Church Road in Bergh Apton, with landmarks like Street Farm, Stud Farm, and The Rectory. The village centroid for Bergh Apton provides a reliable anchor in the absence of a specific road hit."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

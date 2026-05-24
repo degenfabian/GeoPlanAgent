@@ -1,0 +1,247 @@
+{
+  "case": "Ar4.5",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.718,
+    "top_lon": -0.325,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Radlett Aerodrome",
+    "evidence": "The map shows Radlett Aerodrome (Airfield) between Park Street and London Colney. Postcodes for Frogmore (AL2 2NJ) and Park Street (AL2 2AF) cluster around the site. The picked coordinate is the centroid of the airfield area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2338657080411726,
+  "gt_centroids": [
+    {
+      "lat": 51.719450458383996,
+      "lon": -0.3274584042474716
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 4,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL1 3TZ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St. Albans",
+        "query": "Park Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "EC2V 6ER"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'AL1 3TZ' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Park Street",
+        "la_filter": "St. Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Park Street",
+            "lat": 51.72424391719761,
+            "lon": -0.3402635200495186,
+            "in_la": "St. Albans"
+          },
+          {
+            "name": "Park Street",
+            "lat": 51.72308423010567,
+            "lon": -0.339328698975274,
+            "in_la": "St. Albans"
+          },
+          {
+            "name": "Park Street",
+            "lat": 51.7223452537538,
+            "lon": -0.33868203553061277,
+            "in_la": "St. Albans"
+          },
+          {
+            "name": "Park Street",
+            "lat": 51.721885459278305,
+            "lon": -0.33827902726940284,
+            "in_la": "St. Albans"
+          },
+          {
+            "name": "Park Street",
+            "lat": 51.721521258600156,
+            "lon": -0.33795938874368137,
+            "in_la": "St. Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'EC2V 6ER' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL2 2AF"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL2 2NJ"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.32,
+        "lat": 51.715,
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL2 2AF",
+        "lat": 51.71586933785254,
+        "lon": -0.34717069818237356,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL2 2NJ",
+        "lat": 51.71969262942829,
+        "lon": -0.3351888927562707,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.715,
+        "lon": -0.32,
+        "la": "St. Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Radlett Aerodrome",
+        "sigma_m": 500,
+        "top_lon": -0.325,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows Radlett Aerodrome (Airfield) between Park Street and London Colney. Postcodes for Frogmore (AL2 2NJ) and Park Street (AL2 2AF) cluster around the site. The picked coordinate is the centroid of the airfield area.",
+        "top_lat": 51.718,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

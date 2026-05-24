@@ -1,0 +1,254 @@
+{
+  "case": "12:00126:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.4738,
+    "top_lon": 1.515,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Geldeston Hill x Yarmouth Road",
+    "evidence": "The map shows a site bounded by Geldeston Hill, Kell's Way, and Kell's Walk. The intersection of Geldeston Hill and Yarmouth Road (visible at the top right of the map) was found at 52.474968, 1.51622. The site itself is slightly south of this junction. Road centroids for Geldeston Hill confirm the location in Geldeston, South Norfolk.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.05395393286368783,
+  "gt_centroids": [
+    {
+      "lat": 52.47382141827659,
+      "lon": 1.514126917824604
+    },
+    {
+      "lat": 52.47428111326806,
+      "lon": 1.515103412976047
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "road": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Geldeston Hill",
+        "road_b": "Kell's Way",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Yarmouth Road",
+        "la": "South Norfolk",
+        "road_a": "Geldeston Hill"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Kell's Walk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "The Knowle",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: [\"Kell's Way\"]"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Geldeston Hill",
+          "Yarmouth Road"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.474968,
+            "lon": 1.51622,
+            "roads": [
+              "Geldeston Hill",
+              "Yarmouth Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Kell's Walk",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Knowle",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Geldeston Hill"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.51622,
+        "la": "South Norfolk",
+        "lat": 52.474968
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Geldeston Hill",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Geldeston Hill",
+            "lat": 52.47443980653724,
+            "lon": 1.515847476758332,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Geldeston Hill",
+            "lat": 52.473417281765386,
+            "lon": 1.5150222213307705,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.474968,
+        "lon": 1.51622,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lat": 52.4738,
+        "picked_source": "intersect:Geldeston Hill x Yarmouth Road",
+        "evidence": "The map shows a site bounded by Geldeston Hill, Kell's Way, and Kell's Walk. The intersection of Geldeston Hill and Yarmouth Road (visible at the top right of the map) was found at 52.474968, 1.51622. The site itself is slightly south of this junction. Road centroids for Geldeston Hill confirm the location in Geldeston, South Norfolk.",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.515,
+        "sigma_m": 300
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

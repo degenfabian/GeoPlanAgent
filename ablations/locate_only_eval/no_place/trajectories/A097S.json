@@ -1,0 +1,205 @@
+{
+  "case": "A097S",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.632195,
+    "top_lon": -0.406198,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:PE9 3DN",
+    "evidence": "The site postcode PE9 3DN is confirmed inside the Peterborough LA. It aligns perfectly with the map labels (Main Street, Barnack) and the intersection of Main Street and Bishops Walk (approx 100m away).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14421117869315692,
+  "gt_centroids": [
+    {
+      "lat": 52.632036930155415,
+      "lon": -0.40831892408313986
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "PE9 3DN"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Jack Haws Lane",
+        "la": "Peterborough",
+        "road_a": "Main Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Peterborough",
+        "road_b": "Bishops Walk",
+        "road_a": "Main Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "PE9 3DN",
+        "lat": 52.63219548099334,
+        "lon": -0.40619790361014957,
+        "admin_district": "City of Peterborough (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Main Street",
+          "Jack Haws Lane"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.63231,
+            "lon": -0.40947,
+            "roads": [
+              "Main Street",
+              "Jack Haws Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Main Street",
+          "Bishops Walk"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.631952,
+            "lon": -0.407478,
+            "roads": [
+              "Main Street",
+              "Bishops Walk"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Peterborough",
+        "lon": -0.406198,
+        "lat": 52.632195
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.632195,
+        "lon": -0.406198,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.632195,
+        "top_lon": -0.406198,
+        "sigma_m": 300,
+        "picked_source": "postcode:PE9 3DN",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "evidence": "The site postcode PE9 3DN is confirmed inside the Peterborough LA. It aligns perfectly with the map labels (Main Street, Barnack) and the intersection of Main Street and Bishops Walk (approx 100m away)."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,278 @@
+{
+  "case": "5B10B5A8-B0A0-4DB3-9867-55B78F678079",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.115327,
+    "top_lon": 1.26338,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Broomfield Wood",
+    "evidence": "The site is explicitly identified as 'Land Northwest of the A20 Folkestone Road' and 'Broomfield Wood' is visible on the map. The grid references TR 2839 and TR 2840 from the map title block align perfectly with the geocoded location of Broomfield Wood.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.15863102075234134,
+  "gt_centroids": [
+    {
+      "lat": 51.1139336706837,
+      "lon": 1.2638679478915265
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "place": 3,
+      "postcode": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 2839"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 2840"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Broomfield Wood",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Hougham Lodge"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PG"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 2839",
+        "lat": 51.109222147622674,
+        "lon": 1.2629638715544036
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 2840",
+        "lat": 51.118199614133374,
+        "lon": 1.2635968076185367
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Broomfield Wood",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Broomfield Wood",
+            "type": "woodland or forest",
+            "lat": 51.11532722539403,
+            "lon": 1.2633799696613577,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hougham Lodge",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CT16 3PG' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Hougham Without"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Folkestone Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hougham Without",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Folkestone Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Folkestone Road",
+            "lat": 51.12564773281356,
+            "lon": 1.306918248490776,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Folkestone Road",
+            "lat": 51.12574792369052,
+            "lon": 1.3076687226866466,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Folkestone Road",
+            "lat": 51.12601227661295,
+            "lon": 1.3088462682369224,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Folkestone Road",
+            "lat": 51.12333420227955,
+            "lon": 1.29597943721206,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Folkestone Road",
+            "lat": 51.12353336065754,
+            "lon": 1.2967699183264747,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "confidence": "high",
+        "picked_source": "place:Broomfield Wood",
+        "evidence": "The site is explicitly identified as 'Land Northwest of the A20 Folkestone Road' and 'Broomfield Wood' is visible on the map. The grid references TR 2839 and TR 2840 from the map title block align perfectly with the geocoded location of Broomfield Wood.",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.115327,
+        "top_lon": 1.26338
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

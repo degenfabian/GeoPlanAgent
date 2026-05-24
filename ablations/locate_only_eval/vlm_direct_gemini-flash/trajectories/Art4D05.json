@@ -1,0 +1,60 @@
+{
+  "case": "Art4D05",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 50.685,
+    "lon": -2.109,
+    "reasoning": "The document defines an Article 4 direction for the Wareham Conservation Area, and the provided map shows the historic town center of Wareham bounded by the River Piddle and the River Frome."
+  },
+  "err_km": 0.20677148817747118,
+  "gt_centroids": [
+    {
+      "lat": 50.68673641754148,
+      "lon": -2.1100502225839315
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -2.109,
+        "lat": 50.685,
+        "reasoning": "The document defines an Article 4 direction for the Wareham Conservation Area, and the provided map shows the historic town center of Wareham bounded by the River Piddle and the River Frome."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

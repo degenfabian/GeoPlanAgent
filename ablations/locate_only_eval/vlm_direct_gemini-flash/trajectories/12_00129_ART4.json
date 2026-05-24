@@ -1,0 +1,64 @@
+{
+  "case": "12:00129:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.588,
+    "lon": 1.285,
+    "reasoning": "The document identifies Harford Farm in the parishes of Caistor St. Edmund and Keswick, with the map showing the site bounded by the River Tas and the railway line west of the Venta Icenorum Roman Town."
+  },
+  "err_km": 0.29739309930753954,
+  "gt_centroids": [
+    {
+      "lat": 52.588214903805756,
+      "lon": 1.2806120267684353
+    },
+    {
+      "lat": 52.59346740495619,
+      "lon": 1.2822672088020546
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document identifies Harford Farm in the parishes of Caistor St. Edmund and Keswick, with the map showing the site bounded by the River Tas and the railway line west of the Venta Icenorum Roman Town.",
+        "lat": 52.588,
+        "lon": 1.285
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

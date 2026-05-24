@@ -1,0 +1,156 @@
+{
+  "case": "23:00006:REG_4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.500987982504,
+    "top_lon": -0.126142843538163,
+    "sigma_m": 2500,
+    "confidence": "high",
+    "picked_source": "place:City of Westminster",
+    "evidence": "The map shows the entire City of Westminster. The geocoded centroid for the City of Westminster (51.501, -0.126) aligns with the central area of the district-wide boundary shown.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 2.7484507565661525,
+  "gt_centroids": [
+    {
+      "lat": 51.51344560997917,
+      "lon": -0.16044222960568932
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 3,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "City of Westminster"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "City of Westminster",
+        "la_filter": null,
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "City of Westminster",
+            "type": "city",
+            "lat": 51.50098798250397,
+            "lon": -0.12614284353816335,
+            "admin_district": "City of Westminster",
+            "county": "Greater London"
+          },
+          {
+            "name": "City of Westminster College",
+            "type": "further education",
+            "lat": 51.52155829589615,
+            "lon": -0.17489936479570553,
+            "admin_district": "City of Westminster",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "SW1E 6QP"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "SW1E 6QP",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "SW1E 6QP",
+            "type": "postcode",
+            "lat": 51.49755195228505,
+            "lon": -0.13737723639211014,
+            "admin_district": "City of Westminster",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the entire City of Westminster. The geocoded centroid for the City of Westminster (51.501, -0.126) aligns with the central area of the district-wide boundary shown.",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 51.500987982504,
+        "sigma_m": 2500,
+        "picked_source": "place:City of Westminster",
+        "top_lon": -0.126142843538163
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

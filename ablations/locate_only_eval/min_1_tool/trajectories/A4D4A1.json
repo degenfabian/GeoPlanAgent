@@ -1,0 +1,233 @@
+{
+  "case": "A4D4A1",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.581176,
+    "top_lon": -0.181172,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Hampstead Garden Suburb",
+    "evidence": "The map shows the entire Hampstead Garden Suburb Conservation Area. The geocoded center for 'Hampstead Garden Suburb' (51.5811, -0.1811) aligns perfectly with the central features of the map, including Central Square and Lyttelton Road.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14132132103578787,
+  "gt_centroids": [
+    {
+      "lat": 51.58165989581618,
+      "lon": -0.18306322189679006
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Hampstead Garden Suburb"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hampstead Garden Suburb",
+        "la_filter": "Barnet",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Hampstead Garden Suburb",
+            "type": "suburban area",
+            "lat": 51.581176468974675,
+            "lon": -0.18117178597945902,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lyttelton Playing Fields",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lyttelton Playing Fields",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Central Square",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Central Square",
+        "la_filter": "Barnet",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Central Square",
+            "type": "named road",
+            "lat": 51.58088612206232,
+            "lon": -0.1897279260801975,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lyttelton Road",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lyttelton Road",
+        "la_filter": "Barnet",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Lyttelton Road",
+            "type": "named road",
+            "lat": 51.584918660483886,
+            "lon": -0.17431023928022363,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Lyttelton Road",
+            "type": "section of named road",
+            "lat": 51.58366899567622,
+            "lon": -0.16798038412371177,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Lyttelton Road",
+            "type": "section of named road",
+            "lat": 51.584962909553894,
+            "lon": -0.1748425483485339,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.181172,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "picked_source": "place:Hampstead Garden Suburb",
+        "sigma_m": 1500,
+        "evidence": "The map shows the entire Hampstead Garden Suburb Conservation Area. The geocoded center for 'Hampstead Garden Suburb' (51.5811, -0.1811) aligns perfectly with the central features of the map, including Central Square and Lyttelton Road.",
+        "top_lat": 51.581176
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

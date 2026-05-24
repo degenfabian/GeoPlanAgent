@@ -1,0 +1,64 @@
+{
+  "case": "A4D5A_merged",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.5905,
+    "lon": -0.2285,
+    "reasoning": "The document specifies properties 63-77 The Burroughs and 1-8 Burroughs Gardens in Hendon, which are clearly shown on the provided planning map adjacent to the Hendon Methodist Church and the White Bear PH."
+  },
+  "err_km": 0.32107791513790795,
+  "gt_centroids": [
+    {
+      "lat": 51.587244496142766,
+      "lon": -0.23070257148186343
+    },
+    {
+      "lat": 51.58769572001404,
+      "lon": -0.22960789809379725
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 51.5905,
+        "reasoning": "The document specifies properties 63-77 The Burroughs and 1-8 Burroughs Gardens in Hendon, which are clearly shown on the provided planning map adjacent to the Hendon Methodist Church and the White Bear PH.",
+        "lon": -0.2285
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

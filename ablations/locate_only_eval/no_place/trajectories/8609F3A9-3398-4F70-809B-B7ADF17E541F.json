@@ -1,0 +1,235 @@
+{
+  "case": "8609F3A9-3398-4F70-809B-B7ADF17E541F",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1931587203082,
+    "top_lon": 1.15437372707363,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR 2048",
+    "evidence": "The map explicitly states it is based on OS sheet TR 2048 and covers land at Walderchain Wood. The grid reference TR 2048 (1km square) centers on the site. The site straddles the boundary between Canterbury and Dover districts, which is consistent with the la_check results for the grid reference.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.33486424858684993,
+  "gt_centroids": [
+    {
+      "lat": 51.19014888146805,
+      "lon": 1.1545336216582964
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "postcode": 1,
+      "road": 1,
+      "la_check": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 2048"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PG"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "Walderchain Wood"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 2048",
+        "lat": 51.19315872030823,
+        "lon": 1.1543737270736274
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CT16 3PG' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Walderchain Wood",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.15437372707363,
+        "lat": 51.1931587203082,
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1931587203082,
+        "lon": 1.15437372707363,
+        "la": "Dover",
+        "inside_la": false,
+        "distance_km_approx": 0.25,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 200 480"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 200 480",
+        "lat": 51.1892917742282,
+        "lon": 1.1476683267503032
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Canterbury",
+        "lon": 1.15437372707363,
+        "lat": 51.1931587203082
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1931587203082,
+        "lon": 1.15437372707363,
+        "la": "Canterbury",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.2832719075139,
+        "la_centroid_lon": 1.1018035362941523
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lon": 1.15437372707363,
+        "evidence": "The map explicitly states it is based on OS sheet TR 2048 and covers land at Walderchain Wood. The grid reference TR 2048 (1km square) centers on the site. The site straddles the boundary between Canterbury and Dover districts, which is consistent with the la_check results for the grid reference.",
+        "top_lat": 51.1931587203082,
+        "confidence": "high",
+        "picked_source": "grid_ref:TR 2048",
+        "sigma_m": 500
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

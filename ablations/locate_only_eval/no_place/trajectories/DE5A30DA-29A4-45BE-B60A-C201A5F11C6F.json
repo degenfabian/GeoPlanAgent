@@ -1,0 +1,190 @@
+{
+  "case": "DE5A30DA-29A4-45BE-B60A-C201A5F11C6F",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1537434938596,
+    "top_lon": 1.37464197182249,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Droveway Gardens",
+    "evidence": "The site is explicitly named 'Land at Droveway Gardens' in the document title and address. The road 'Droveway Gardens' was found in St Margaret's at Cliffe (Dover) and verified to be within the correct Local Authority. The OS grid sheet reference TR34 also aligns with this location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.23314764664452015,
+  "gt_centroids": [
+    {
+      "lat": 51.15331515523218,
+      "lon": 1.3779143124253197
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 1,
+      "grid_ref": 1,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "Droveway Gardens"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 35 44"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Kingsdown Road",
+        "la": "Dover",
+        "road_b": "Dover Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Droveway Gardens",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Droveway Gardens",
+            "lat": 51.15374349385958,
+            "lon": 1.3746419718224936,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 35 44",
+        "lat": 51.15127387825765,
+        "lon": 1.366048308164387
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Kingsdown Road",
+          "Dover Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.1537434938596,
+        "la": "Dover",
+        "lon": 1.37464197182249
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1537434938596,
+        "lon": 1.37464197182249,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is explicitly named 'Land at Droveway Gardens' in the document title and address. The road 'Droveway Gardens' was found in St Margaret's at Cliffe (Dover) and verified to be within the correct Local Authority. The OS grid sheet reference TR34 also aligns with this location.",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 300,
+        "top_lon": 1.37464197182249,
+        "top_lat": 51.1537434938596,
+        "picked_source": "road:Droveway Gardens"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "case": "12:00121:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5987908679888,
+    "top_lon": 1.38739675625359,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TG2905",
+    "evidence": "The map explicitly states 'MAP: TG2905' and the site address is on Hill House Road in Bramerton. The grid reference TG2905 falls exactly in Bramerton and aligns with the road geometry found. NR15 2XE is the council letterhead postcode (Long Stratton) and was correctly ignored for the site location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.4829018723728524,
+  "gt_centroids": [
+    {
+      "lat": 52.60228546752934,
+      "lon": 1.3916419221331193
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "postcode": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG2905"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Hill House Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG2905",
+        "lat": 52.59879086798877,
+        "lon": 1.3873967562535905
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hill House Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Hill House Road",
+            "lat": 52.601644745550445,
+            "lon": 1.389404358663899,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Hill House Road",
+            "lat": 52.60372548235276,
+            "lon": 1.391727078021413,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.38739675625359,
+        "lat": 52.5987908679888,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5987908679888,
+        "lon": 1.38739675625359,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.5987908679888,
+        "evidence": "The map explicitly states 'MAP: TG2905' and the site address is on Hill House Road in Bramerton. The grid reference TG2905 falls exactly in Bramerton and aligns with the road geometry found. NR15 2XE is the council letterhead postcode (Long Stratton) and was correctly ignored for the site location.",
+        "sigma_m": 300,
+        "picked_source": "grid_ref:TG2905",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lon": 1.38739675625359
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

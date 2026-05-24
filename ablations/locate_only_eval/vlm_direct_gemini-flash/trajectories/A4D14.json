@@ -1,0 +1,60 @@
+{
+  "case": "A4D14",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.4858,
+    "lon": -2.5405,
+    "reasoning": "The document specifies Grove Wood at Blackberry Hill, Stapleton, with an OS grid reference of ST 6276 362520E 176465N, which maps to these coordinates."
+  },
+  "err_km": 0.059512776130240745,
+  "gt_centroids": [
+    {
+      "lat": 51.48566575912615,
+      "lon": -2.541332013595114
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document specifies Grove Wood at Blackberry Hill, Stapleton, with an OS grid reference of ST 6276 362520E 176465N, which maps to these coordinates.",
+        "lon": -2.5405,
+        "lat": 51.4858
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,239 @@
+{
+  "case": "CPA4(2a)",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5457,
+    "top_lon": 0.563658,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:High Street x High Road",
+    "evidence": "The grid reference TQ 7790 8610 and the intersection of High Street and High Road in South Benfleet align perfectly (within 50m). The postcode SS7 1TF is slightly north but consistent with the general area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.08729279632977614,
+  "gt_centroids": [
+    {
+      "lat": 51.545284972552636,
+      "lon": 0.5625864865263827
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "grid_ref": 2,
+      "place": 2,
+      "intersect": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SS7 1TF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ 7790 8610"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Benfleet Conservation Area",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Castle Point",
+        "road_a": "High Street",
+        "road_b": "High Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SS7 1TF",
+        "lat": 51.56184488380458,
+        "lon": 0.5848681639491619,
+        "admin_district": "Castle Point District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TQ 7790 8610",
+        "lat": 51.545793472213695,
+        "lon": 0.5642982612306057
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Benfleet Conservation Area",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "High Street",
+          "High Road"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 51.579908,
+            "lon": 0.598928,
+            "roads": [
+              "High Street",
+              "High Road"
+            ]
+          },
+          {
+            "lat": 51.5457,
+            "lon": 0.563658,
+            "roads": [
+              "High Street",
+              "High Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St. Mary's Church",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ 7775 8600"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St. Mary's Church",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TQ 7775 8600",
+        "lat": 51.54494246145919,
+        "lon": 0.5620868590656376
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "evidence": "The grid reference TQ 7790 8610 and the intersection of High Street and High Road in South Benfleet align perfectly (within 50m). The postcode SS7 1TF is slightly north but consistent with the general area.",
+        "verified_inside_admin_region": true,
+        "top_lon": 0.563658,
+        "top_lat": 51.5457,
+        "picked_source": "intersect:High Street x High Road",
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

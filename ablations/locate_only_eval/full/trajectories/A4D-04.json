@@ -1,0 +1,322 @@
+{
+  "case": "A4D-04",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.160474,
+    "top_lon": -0.77844,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Frensham Common",
+    "evidence": "The site is a large area of Frensham Common, clearly identified on the map and confirmed by the place name search. The grid reference SU84 and labels for Millbridge, Tilford Reeds, and Churt further bound the area. Frensham Common centroid is used as the center.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.47225604014107214,
+  "gt_centroids": [
+    {
+      "lat": 51.16017788702342,
+      "lon": -0.7716843425634584
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU8440"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Frensham Common",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Millbridge"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Tilford Reeds",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SU8440",
+        "lat": 51.15752372485963,
+        "lon": -0.7930748981496729
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Frensham Common",
+        "la_filter": "Waverley",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Frensham Common",
+            "type": "other landcover",
+            "lat": 51.16047421089795,
+            "lon": -0.7784396680930405,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Millbridge",
+        "la_filter": "Waverley",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Millbridge",
+            "type": "village",
+            "lat": 51.1745387563114,
+            "lon": -0.7871232916321811,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Tilford Reeds",
+        "la_filter": "Waverley",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Tilford Reeds",
+            "type": "hamlet",
+            "lat": 51.182458639011806,
+            "lon": -0.7653967762619992,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Frensham Great Pond"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Churt",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.77844,
+        "lat": 51.160474,
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Frensham Great Pond",
+        "la_filter": "Waverley",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Frensham Great Pond",
+            "type": "inland water",
+            "lat": 51.15496081214647,
+            "lon": -0.7913257668009439,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Churt",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Churt",
+            "type": "village",
+            "lat": 51.13689592489802,
+            "lon": -0.7792905908017826,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Churt Road",
+            "type": "section of named road",
+            "lat": 51.1302374913281,
+            "lon": -0.7746070095061953,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Churt Road",
+            "type": "named road",
+            "lat": 51.122006607365265,
+            "lon": -0.7547630425427833,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Churt Wynde",
+            "type": "named road",
+            "lat": 51.12777614751583,
+            "lon": -0.750206359137943,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Churt Road",
+            "type": "section of named road",
+            "lat": 51.11940930426713,
+            "lon": -0.7439738350628816,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.160474,
+        "lon": -0.77844,
+        "la": "Waverley",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.14979708109079,
+        "la_centroid_lon": -0.6327293391700743
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is a large area of Frensham Common, clearly identified on the map and confirmed by the place name search. The grid reference SU84 and labels for Millbridge, Tilford Reeds, and Churt further bound the area. Frensham Common centroid is used as the center.",
+        "sigma_m": 1500,
+        "confidence": "high",
+        "picked_source": "place:Frensham Common",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.160474,
+        "top_lon": -0.77844
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "case": "12:00156:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.621,
+    "lon": 1.198,
+    "reasoning": "The planning map shows an Article 4 direction for land at Colney and Little Melton, specifically identifying the area between the B1108 Watton Road and Braymeadow Lane, with the OS grid reference TG 10NE provided on the map."
+  },
+  "err_km": 0.7931542911352473,
+  "gt_centroids": [
+    {
+      "lat": 52.616178717481645,
+      "lon": 1.206658783269228
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The planning map shows an Article 4 direction for land at Colney and Little Melton, specifically identifying the area between the B1108 Watton Road and Braymeadow Lane, with the OS grid reference TG 10NE provided on the map.",
+        "lon": 1.198,
+        "lat": 52.621
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

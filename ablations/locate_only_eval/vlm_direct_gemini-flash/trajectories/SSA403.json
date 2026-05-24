@@ -1,0 +1,60 @@
+{
+  "case": "SSA403",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.517,
+    "lon": -2.26,
+    "reasoning": "The document refers to Halfpenny Green Airfield in Bobbington, which is clearly outlined on the provided map and corresponds to the modern-day Wolverhampton Halfpenny Green Airport."
+  },
+  "err_km": 0.0622907638143003,
+  "gt_centroids": [
+    {
+      "lat": 52.516725312563224,
+      "lon": -2.2608023063898424
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document refers to Halfpenny Green Airfield in Bobbington, which is clearly outlined on the provided map and corresponds to the modern-day Wolverhampton Halfpenny Green Airport.",
+        "lat": 52.517,
+        "lon": -2.26
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

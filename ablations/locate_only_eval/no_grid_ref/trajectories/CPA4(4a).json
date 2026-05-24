@@ -1,0 +1,383 @@
+{
+  "case": "CPA4(4a)",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5678,
+    "top_lon": 0.5715,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Kingston Primary School",
+    "evidence": "The site is located immediately west of Kingston Primary School and south of the junction of Thundersley Church Road and Church Road. Kingston Primary School was geocoded to 51.5681, 0.5735, which aligns perfectly with the map's layout.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.04503188017911645,
+  "gt_centroids": [
+    {
+      "lat": 51.567398880193345,
+      "lon": 0.5715897583827427
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 3,
+      "intersect": 1,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SS7 1TF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Kingston Primary School"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Peter's Church Thundersley",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Thundersley Church Road",
+        "road_b": "Church Road",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SS7 1TF",
+        "lat": 51.56184488380458,
+        "lon": 0.5848681639491619,
+        "admin_district": "Castle Point District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kingston Primary School",
+        "la_filter": "Castle Point",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Kingston Primary School",
+            "type": "primary education",
+            "lat": 51.56812898135592,
+            "lon": 0.5735211746729008,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Peter's Church Thundersley",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Thundersley Church Road",
+          "Church Road"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "St Peter's Church"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Thundersley Church Road",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Castle Point",
+        "query": "Church Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Castle Point",
+        "lat": 51.5681289813559,
+        "lon": 0.573521174672901
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Peter's Church",
+        "la_filter": "Castle Point",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "St Peter's Church of England (Voluntary Controlled) Primary School",
+            "type": "primary education",
+            "lat": 54.57131846599634,
+            "lon": -0.9501982318652599,
+            "admin_district": null,
+            "county": "Redcar and Cleveland"
+          },
+          {
+            "name": "St Peter's Church of England Primary School",
+            "type": "primary education",
+            "lat": 53.661734524398206,
+            "lon": -2.6172314727673194,
+            "admin_district": "Chorley",
+            "county": "Lancashire"
+          },
+          {
+            "name": "St Peter's Church of England Primary School",
+            "type": "primary education",
+            "lat": 53.53313656337149,
+            "lon": -2.5852149555725967,
+            "admin_district": "Wigan",
+            "county": null
+          },
+          {
+            "name": "St Peter's Church of England Primary School",
+            "type": "primary education",
+            "lat": 53.54313857932929,
+            "lon": -2.3950302673398567,
+            "admin_district": "Bolton",
+            "county": null
+          },
+          {
+            "name": "St Peter's Church of England Primary School",
+            "type": "primary education",
+            "lat": 53.511839660156376,
+            "lon": -2.34304673187897,
+            "admin_district": "Salford",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Thundersley Church Road",
+        "la_filter": "Castle Point",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Thundersley Church Road",
+            "lat": 51.56625466251108,
+            "lon": 0.5646560647647508,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Thundersley Church Road",
+            "lat": 51.56670866347089,
+            "lon": 0.5656917569269954,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Thundersley Church Road",
+            "lat": 51.566938563078146,
+            "lon": 0.5671044701693005,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Thundersley Church Road",
+            "lat": 51.5672284180677,
+            "lon": 0.5686533405167387,
+            "in_la": "Castle Point"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Church Road",
+        "la_filter": "Castle Point",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Church Road",
+            "lat": 51.56847184213531,
+            "lon": 0.5759288881989534,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Church Road",
+            "lat": 51.57137955835965,
+            "lon": 0.5657455728252859,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Church Road",
+            "lat": 51.57125187011962,
+            "lon": 0.5669471284004197,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Church Road",
+            "lat": 51.5711357225993,
+            "lon": 0.5676147700424049,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Church Road",
+            "lat": 51.57184213328013,
+            "lon": 0.5674082323881092,
+            "in_la": "Castle Point"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5681289813559,
+        "lon": 0.573521174672901,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lon": 0.5715,
+        "verified_inside_admin_region": true,
+        "sigma_m": 300,
+        "top_lat": 51.5678,
+        "evidence": "The site is located immediately west of Kingston Primary School and south of the junction of Thundersley Church Road and Church Road. Kingston Primary School was geocoded to 51.5681, 0.5735, which aligns perfectly with the map's layout.",
+        "picked_source": "place:Kingston Primary School"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,295 @@
+{
+  "case": "CPA4(3a)",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.565,
+    "top_lon": 0.572,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:London Road x Glen Road",
+    "evidence": "The site is Coombe Wood, bounded by London Road (A13) to the south. Intersections of London Road with Catherine Road and Glen Road (found via tools) perfectly match the map's southern boundary. The postcode SS7 1TF is also confirmed within the LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.04154035900222263,
+  "gt_centroids": [
+    {
+      "lat": 51.56519074636219,
+      "lon": 0.571483266138213
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "postcode": 1,
+      "intersect": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ7888SW"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SS7 1TF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Catherine Road",
+        "road_a": "London Road",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Castle Point",
+        "road_a": "London Road",
+        "road_b": "Rhoda Road North"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'TQ7888SW'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SS7 1TF",
+        "lat": 51.56184488380458,
+        "lon": 0.5848681639491619,
+        "admin_district": "Castle Point District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "Catherine Road"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.56409,
+            "lon": 0.569469,
+            "roads": [
+              "London Road",
+              "Catherine Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "Rhoda Road North"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Castle Point",
+        "query": "Rhoda Road North"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 0.584868163949162,
+        "la": "Castle Point",
+        "lat": 51.5618448838046
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Rhoda Road North",
+        "la_filter": "Castle Point",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Rhoda Road North",
+            "lat": 51.566185338008815,
+            "lon": 0.5688803246632985,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Rhoda Road North",
+            "lat": 51.56720380616869,
+            "lon": 0.569395204540355,
+            "in_la": "Castle Point"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5618448838046,
+        "lon": 0.584868163949162,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "London Road",
+        "road_b": "Glen Road",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "Glen Road"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.56362,
+            "lon": 0.572862,
+            "roads": [
+              "London Road",
+              "Glen Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "intersect:London Road x Glen Road",
+        "sigma_m": 300,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": 0.572,
+        "top_lat": 51.565,
+        "evidence": "The site is Coombe Wood, bounded by London Road (A13) to the south. Intersections of London Road with Catherine Road and Glen Road (found via tools) perfectly match the map's southern boundary. The postcode SS7 1TF is also confirmed within the LA."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

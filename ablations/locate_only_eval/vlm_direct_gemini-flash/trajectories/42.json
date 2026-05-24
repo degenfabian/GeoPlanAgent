@@ -1,0 +1,60 @@
+{
+  "case": "42",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.48785,
+    "lon": -0.1638,
+    "reasoning": "The document identifies the site as 43 Shawfield Street, London SW3, which is clearly marked on the provided planning map between Radnor Walk and Flood Street."
+  },
+  "err_km": 0.10751255870056312,
+  "gt_centroids": [
+    {
+      "lat": 51.48731926229509,
+      "lon": -0.1650979234972669
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document identifies the site as 43 Shawfield Street, London SW3, which is clearly marked on the provided planning map between Radnor Walk and Flood Street.",
+        "lat": 51.48785,
+        "lon": -0.1638
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

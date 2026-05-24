@@ -1,0 +1,350 @@
+{
+  "case": "A4D7",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.44,
+    "top_lon": -2.59,
+    "sigma_m": 2500,
+    "confidence": "high",
+    "picked_source": "place:Windmill Hill/Southville/Totterdown cluster",
+    "evidence": "The site is a large Article 4 area covering Southville, Bedminster, Windmill Hill, Totterdown, and Knowle. The picked coordinate (51.44, -2.59) is the central point of this cluster of suburban areas within Bristol.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.15124742933361687,
+  "gt_centroids": [
+    {
+      "lat": 51.44043475881167,
+      "lon": -2.5920676799003943
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Windmill Hill"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bedminster Station",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Southville",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Windmill Hill",
+        "la_filter": "Bristol",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Windmill Hill",
+            "type": "suburban area",
+            "lat": 51.43772784337421,
+            "lon": -2.583918091203482,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Windmill Hill",
+            "type": "named road",
+            "lat": 51.43965337221218,
+            "lon": -2.5943878576592745,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bedminster Station",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Southville",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Southville",
+            "type": "suburban area",
+            "lat": 51.443230681662605,
+            "lon": -2.6051968861942,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Southville Primary School",
+            "type": "primary education",
+            "lat": 51.440971038488904,
+            "lon": -2.6091955788026255,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Southville Primary School",
+            "type": "primary education",
+            "lat": 51.44328038850357,
+            "lon": -2.6042766808024314,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Southville Road",
+            "type": "named road",
+            "lat": 51.44499737386641,
+            "lon": -2.599104917035661,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Southville Place",
+            "type": "named road",
+            "lat": 51.44463924062487,
+            "lon": -2.597042615480137,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Totterdown",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Knowle"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Totterdown",
+        "la_filter": "Bristol",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Totterdown",
+            "type": "suburban area",
+            "lat": 51.44077278551924,
+            "lon": -2.580949912278614,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Totterdown Bridge",
+            "type": "named road",
+            "lat": 51.44333761230991,
+            "lon": -2.5731983013396165,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Knowle",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Knowle",
+            "type": "suburban area",
+            "lat": 51.43815743576905,
+            "lon": -2.575233910626927,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Knowle Road",
+            "type": "named road",
+            "lat": 51.44028287444783,
+            "lon": -2.5781956769921024,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Knowle DGE",
+            "type": "special needs education",
+            "lat": 51.42543942724606,
+            "lon": -2.595785467572498,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Knowle Park",
+            "type": "suburban area",
+            "lat": 51.432460247619666,
+            "lon": -2.5745149982157938,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Knowle Park Primary School",
+            "type": "primary education",
+            "lat": 51.43176387286914,
+            "lon": -2.573499320717161,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.44,
+        "la": "Bristol",
+        "lon": -2.59
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.44,
+        "lon": -2.59,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -2.59,
+        "picked_source": "place:Windmill Hill/Southville/Totterdown cluster",
+        "evidence": "The site is a large Article 4 area covering Southville, Bedminster, Windmill Hill, Totterdown, and Knowle. The picked coordinate (51.44, -2.59) is the central point of this cluster of suburban areas within Bristol.",
+        "sigma_m": 2500,
+        "confidence": "high",
+        "top_lat": 51.44,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

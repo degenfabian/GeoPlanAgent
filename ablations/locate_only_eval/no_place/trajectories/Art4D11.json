@@ -1,0 +1,264 @@
+{
+  "case": "Art4D11",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.616276,
+    "top_lon": -2.062514,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:The Lane x West Street",
+    "evidence": "The map shows the site at 1-3 The Lane, Kingston, adjacent to the Scott Arms (PH). The intersection of The Lane and West Street in Kingston (Dorset) matches the map layout perfectly.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.07651932716455177,
+  "gt_centroids": [
+    {
+      "lat": 50.61696404661333,
+      "lon": -2.062533234282221
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 1,
+      "road": 3,
+      "la_check": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "The Lane",
+        "road_b": "West Street",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Purbeck",
+        "query": "The Lane, Kingston"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Purbeck",
+        "query": "West Street, Kingston"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Lane",
+          "West Street"
+        ],
+        "la_filter": "Purbeck",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 50.616276,
+            "lon": -2.062514,
+            "roads": [
+              "The Lane",
+              "West Street"
+            ]
+          },
+          {
+            "lat": 52.628267,
+            "lon": -0.508514,
+            "roads": [
+              "The Lane",
+              "West Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Lane, Kingston",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "West Street, Kingston",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Purbeck",
+        "lon": -2.062514,
+        "lat": 50.616276
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": false,
+        "error": "No polygon for LA 'Purbeck'"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dorset Council",
+        "lon": -2.062514,
+        "lat": 50.616276
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.616276,
+        "lon": -2.062514,
+        "la": "Dorset Council",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.806321959940966,
+        "la_centroid_lon": -2.3334460447768595
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "The Lane",
+        "la": "Dorset Council"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Lane",
+        "la_filter": "Dorset Council",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "The Lane",
+            "lat": 50.616529541319736,
+            "lon": -2.0633814014697327,
+            "in_la": "Dorset Council"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lat": 50.616276,
+        "verified_inside_admin_region": true,
+        "top_lon": -2.062514,
+        "picked_source": "intersect:The Lane x West Street",
+        "sigma_m": 200,
+        "evidence": "The map shows the site at 1-3 The Lane, Kingston, adjacent to the Scott Arms (PH). The intersection of The Lane and West Street in Kingston (Dorset) matches the map layout perfectly."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

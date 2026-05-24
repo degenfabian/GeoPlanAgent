@@ -1,0 +1,60 @@
+{
+  "case": "12:00130:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.37485,
+    "lon": 1.1068,
+    "reasoning": "The document identifies land at Fair Green/Lower Denmark Street in Diss, Norfolk, and the map shows a specific red-outlined plot on Riverside near Denmark Bridge."
+  },
+  "err_km": 0.5809784394256434,
+  "gt_centroids": [
+    {
+      "lat": 52.37200914890912,
+      "lon": 1.0996174072421891
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": 1.1068,
+        "reasoning": "The document identifies land at Fair Green/Lower Denmark Street in Diss, Norfolk, and the map shows a specific red-outlined plot on Riverside near Denmark Bridge.",
+        "lat": 52.37485
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

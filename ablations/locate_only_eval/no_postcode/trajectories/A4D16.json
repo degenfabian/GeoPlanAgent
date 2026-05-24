@@ -1,0 +1,247 @@
+{
+  "case": "A4D16",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.484,
+    "top_lon": -2.615,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Henleaze Avenue x Westbury Road",
+    "evidence": "The site is a large block bounded by Westbury Road, Henleaze Avenue, and Henleaze Gardens. Intersections of these roads in Bristol provide a precise and consistent location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.03990966876875431,
+  "gt_centroids": [
+    {
+      "lat": 51.48387396219555,
+      "lon": -2.614460349745082
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "place": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Henleaze Avenue",
+        "la": "Bristol",
+        "road_b": "Westbury Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Bristol",
+        "road_b": "Westbury Road",
+        "road_a": "Henleaze Gardens"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Henleaze Avenue",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Henleaze Avenue",
+          "Westbury Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.484436,
+            "lon": -2.61627,
+            "roads": [
+              "Henleaze Avenue",
+              "Westbury Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Henleaze Gardens",
+          "Westbury Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.483598,
+            "lon": -2.616547,
+            "roads": [
+              "Henleaze Gardens",
+              "Westbury Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Henleaze Avenue",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Henleaze Avenue",
+            "type": "named road",
+            "lat": 51.48431667477151,
+            "lon": -2.614943332150991,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Henleaze",
+            "type": "suburban area",
+            "lat": 51.48433522127838,
+            "lon": -2.5974458828736853,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Henleaze Road",
+            "type": "named road",
+            "lat": 51.48688947348572,
+            "lon": -2.6095483235840717,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Henleaze Terrace",
+            "type": "named road",
+            "lat": 51.49196741280022,
+            "lon": -2.6082621138933897,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Henleaze Park",
+            "type": "named road",
+            "lat": 51.48500153258694,
+            "lon": -2.604280954952658,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.615,
+        "la": "Bristol",
+        "lat": 51.484
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.484,
+        "lon": -2.615,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lon": -2.615,
+        "evidence": "The site is a large block bounded by Westbury Road, Henleaze Avenue, and Henleaze Gardens. Intersections of these roads in Bristol provide a precise and consistent location.",
+        "sigma_m": 200,
+        "confidence": "high",
+        "top_lat": 51.484,
+        "picked_source": "intersect:Henleaze Avenue x Westbury Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

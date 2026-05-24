@@ -1,0 +1,60 @@
+{
+  "case": "A4D16",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.4848,
+    "lon": -2.6145,
+    "reasoning": "The document specifies an Article 4 direction for properties on Henleaze Avenue and Henleaze Gardens in Bristol, with the provided map showing the intersection of these streets with Westbury Road (BS9 4HH)."
+  },
+  "err_km": 0.10300730215718681,
+  "gt_centroids": [
+    {
+      "lat": 51.48387396219555,
+      "lon": -2.614460349745082
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document specifies an Article 4 direction for properties on Henleaze Avenue and Henleaze Gardens in Bristol, with the provided map showing the intersection of these streets with Westbury Road (BS9 4HH).",
+        "lon": -2.6145,
+        "lat": 51.4848
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,285 @@
+{
+  "case": "A4_088:LL:016",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.65257,
+    "top_lon": -1.131,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "road:Exploration Drive",
+    "evidence": "The site is the National Space Centre on Exploration Drive. Road searches for Exploration Drive and Wallingford Road in Leicester place the site at these coordinates. The map shows the site bounded by Exploration Drive to the west and Wallingford Road to the north.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.15165987602243972,
+  "gt_centroids": [
+    {
+      "lat": 52.6536908931723,
+      "lon": -1.132280955180471
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "National Space Centre",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Leicestershire Museum of Technology"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "Exploration Drive"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "National Space Centre",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Leicestershire Museum of Technology",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Exploration Drive",
+        "la_filter": "Leicester",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Exploration Drive",
+            "lat": 52.65257378463937,
+            "lon": -1.1351190399830944,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Exploration Drive",
+            "lat": 52.65274237440191,
+            "lon": -1.1366459247863867,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Exploration Drive",
+            "lat": 52.653066547855026,
+            "lon": -1.1342970882247294,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Exploration Drive",
+            "lat": 52.65474962355896,
+            "lon": -1.133450850509821,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "National Space Centre"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Abbey Pumping Station"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "Wallingford Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "National Space Centre",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Abbey Pumping Station",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Wallingford Road",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Wallingford Road",
+            "lat": 52.6551206927448,
+            "lon": -1.1316399519431384,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.6525,
+        "lon": -1.131,
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6525,
+        "lon": -1.131,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.65257,
+        "verified_inside_admin_region": true,
+        "picked_source": "road:Exploration Drive",
+        "sigma_m": 200,
+        "confidence": "high",
+        "top_lon": -1.131,
+        "evidence": "The site is the National Space Centre on Exploration Drive. Road searches for Exploration Drive and Wallingford Road in Leicester place the site at these coordinates. The map shows the site bounded by Exploration Drive to the west and Wallingford Road to the north."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

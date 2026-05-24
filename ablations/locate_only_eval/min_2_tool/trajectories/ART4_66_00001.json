@@ -1,0 +1,289 @@
+{
+  "case": "ART4:66:00001",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.8571646971624,
+    "top_lon": -1.39155147333425,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Spinney Dale",
+    "evidence": "Spinney Dale is a direct road label on the map adjacent to the site. The site is the large field (0451) immediately east of the Spinney Dale / Frost Lane junction. Coordinates for Spinney Dale provide a precise anchor.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1375067747398662,
+  "gt_centroids": [
+    {
+      "lat": 50.85641843974112,
+      "lon": -1.3899893971204016
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Furzedown Farm, Frost Lane, Hythe",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Travellers Rest, Frost Lane",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Spinney Dale, Hythe",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Furzedown Farm, Frost Lane, Hythe",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Travellers Rest, Frost Lane",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Spinney Dale, Hythe",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "New Forest",
+        "query": "Frost Lane, Hythe"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "New Forest",
+        "query": "Curlew Drive, Hythe"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "New Forest",
+        "query": "Spinney Dale"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Frost Lane, Hythe",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Curlew Drive, Hythe",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Spinney Dale",
+        "la_filter": "New Forest",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Spinney Dale",
+            "type": "named road",
+            "lat": 50.85716469716238,
+            "lon": -1.3915514733342502,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "New Forest",
+        "query": "Frost Lane, Dibden"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "New Forest",
+        "lon": -1.39155147333425,
+        "lat": 50.8571646971624
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Frost Lane, Dibden",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.8571646971624,
+        "lon": -1.39155147333425,
+        "la": "New Forest",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.85856472927001,
+        "la_centroid_lon": -1.625406857223459
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lat": 50.8571646971624,
+        "verified_inside_admin_region": true,
+        "evidence": "Spinney Dale is a direct road label on the map adjacent to the site. The site is the large field (0451) immediately east of the Spinney Dale / Frost Lane junction. Coordinates for Spinney Dale provide a precise anchor.",
+        "picked_source": "place:Spinney Dale",
+        "sigma_m": 300,
+        "top_lon": -1.39155147333425
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

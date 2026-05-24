@@ -1,0 +1,396 @@
+{
+  "case": "A4_094:LL:013",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6717839508573,
+    "top_lon": -1.15280496624254,
+    "sigma_m": 800,
+    "confidence": "med",
+    "picked_source": "road:Beaumont Leys Lane",
+    "evidence": "The site is St Patrick's RC Church on Beaumont Leys Lane. Road searches for Beaumont Leys Lane in Leicester provide a consistent cluster of coordinates. The map shows the church at the junction of Beaumont Leys Lane and Norwich Road/Dersingham Road. The picked coordinate is a centroid of Beaumont Leys Lane segments in Leicester.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.6468967067406741,
+  "gt_centroids": [
+    {
+      "lat": 52.65835621291477,
+      "lon": -1.1425000035348176
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "road": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Patrick's RC Church",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "Beaumont Leys Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "Norwich Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Patrick's RC Church",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Beaumont Leys Lane",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.671783950857325,
+            "lon": -1.1528049662425381,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.671740523479755,
+            "lon": -1.1525714020004618,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.67196087534609,
+            "lon": -1.1525223291925784,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.671962706569026,
+            "lon": -1.1522126126944379,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.67216017044183,
+            "lon": -1.1521749246424275,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Norwich Road",
+        "la_filter": "Leicester",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Norwich Road",
+            "lat": 52.65813641827716,
+            "lon": -1.1448787040827162,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.65788946833489,
+            "lon": -1.143671214888365,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.657655935689554,
+            "lon": -1.1424560846232967,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Beaumont Hall",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Patrick's Church",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "Dersingham Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beaumont Hall",
+        "la_filter": "Leicester",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Beaumont Hall Lane",
+            "type": "named road",
+            "lat": 51.785143765341594,
+            "lon": -0.39062823783798767,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Beaumont Hall Brook (North Arm)",
+            "type": "inland water",
+            "lat": 51.87627248851056,
+            "lon": 1.191019906608143,
+            "admin_district": "Tendring",
+            "county": "Essex"
+          },
+          {
+            "name": "Beaumont Hall Covert",
+            "type": "woodland or forest",
+            "lat": 51.959906907280676,
+            "lon": 1.2089564517705529,
+            "admin_district": "Babergh",
+            "county": "Suffolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Patrick's Church",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "St Patrick's Church of England Primary Academy",
+            "type": "primary education",
+            "lat": 52.3708489550636,
+            "lon": -1.8204268468861158,
+            "admin_district": "Solihull",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Dersingham Road",
+        "la_filter": "Leicester",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Dersingham Road",
+            "lat": 52.6555767910225,
+            "lon": -1.144603399467661,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Dersingham Road",
+            "lat": 52.656878348352755,
+            "lon": -1.1437057515286377,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Patrick's RC Church, Leicester"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Beaumont Leys Lane, Leicester"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Patrick's RC Church, Leicester",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beaumont Leys Lane, Leicester",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Patrick's Church, Beaumont Leys Lane"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Patrick's Church, Beaumont Leys Lane",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is St Patrick's RC Church on Beaumont Leys Lane. Road searches for Beaumont Leys Lane in Leicester provide a consistent cluster of coordinates. The map shows the church at the junction of Beaumont Leys Lane and Norwich Road/Dersingham Road. The picked coordinate is a centroid of Beaumont Leys Lane segments in Leicester.",
+        "top_lat": 52.6717839508573,
+        "verified_inside_admin_region": true,
+        "sigma_m": 800,
+        "picked_source": "road:Beaumont Leys Lane",
+        "top_lon": -1.15280496624254,
+        "confidence": "med"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

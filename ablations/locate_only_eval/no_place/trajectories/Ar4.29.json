@@ -1,0 +1,206 @@
+{
+  "case": "Ar4.29",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.749896,
+    "top_lon": -0.326922,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Station Way x Grimston Road",
+    "evidence": "The map shows St Albans City Station and surrounding roads. Two road intersections (Station Way x Grimston Road and Grimston Road x Charrington Place) converge at the same coordinate (51.749896, -0.326922), which is the central junction within the red boundary. Verified inside St Albans.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.056332203965461895,
+  "gt_centroids": [
+    {
+      "lat": 51.75036311726996,
+      "lon": -0.3266052558047421
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Station Way",
+        "la": "St Albans",
+        "road_b": "Grimston Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Charrington Place",
+        "la": "St Albans",
+        "road_a": "Grimston Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "St Albans City Station",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Station Way",
+          "Grimston Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.749896,
+            "lon": -0.326922,
+            "roads": [
+              "Station Way",
+              "Grimston Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Grimston Road",
+          "Charrington Place"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.749896,
+            "lon": -0.326922,
+            "roads": [
+              "Grimston Road",
+              "Charrington Place"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "St Albans City Station",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.749896,
+        "lon": -0.326922,
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.749896,
+        "lon": -0.326922,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows St Albans City Station and surrounding roads. Two road intersections (Station Way x Grimston Road and Grimston Road x Charrington Place) converge at the same coordinate (51.749896, -0.326922), which is the central junction within the red boundary. Verified inside St Albans.",
+        "top_lon": -0.326922,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 200,
+        "picked_source": "intersect:Station Way x Grimston Road",
+        "top_lat": 51.749896
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,349 @@
+{
+  "case": "A008S",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5779,
+    "top_lon": -0.3518,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Maffit Road x Helpston Road",
+    "evidence": "The site is at 37a Main Street, Ailsworth. Geocoding Maffit Road and Helpston Road in Ailsworth places the site at the intersection of these roads. Maffit Road is at 52.5784, -0.3528 and Helpston Road (Ailsworth section) is at 52.5775, -0.3509. The map shows the site on Main Street between these two.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.026137377978981677,
+  "gt_centroids": [
+    {
+      "lat": 52.57802002996029,
+      "lon": -0.35213258037569056
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 8,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "37a Main Street, Ailsworth",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Maffit Road, Ailsworth",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Helpston Road, Ailsworth",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "37a Main Street, Ailsworth",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Maffit Road, Ailsworth",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Helpston Road, Ailsworth",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Main Street, Ailsworth"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Maffit Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Main Street, Ailsworth",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Maffit Road",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Maffit Road",
+            "type": "named road",
+            "lat": 52.57843757887817,
+            "lon": -0.35278881360344083,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Helpston Road"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Ailsworth"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Helpston Road",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Helpston Road",
+            "type": "named road",
+            "lat": 52.63768958163383,
+            "lon": -0.30834135807023,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "type": "section of named road",
+            "lat": 52.63829909639045,
+            "lon": -0.302554076611096,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "type": "section of named road",
+            "lat": 52.577521471262735,
+            "lon": -0.35091932635714346,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "type": "named road",
+            "lat": 52.581609959413065,
+            "lon": -0.3488176033137188,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Helpston",
+            "type": "village",
+            "lat": 52.63524448135052,
+            "lon": -0.34400588689895034,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ailsworth",
+        "la_filter": "Peterborough",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Ailsworth",
+            "type": "village",
+            "lat": 52.57578709203318,
+            "lon": -0.35291767222683723,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Ailsworth Heath",
+            "type": "woodland or forest",
+            "lat": 52.60323622687576,
+            "lon": -0.35423606392363627,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Main Street, Peterborough"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Main Street, Peterborough",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Maffit Road x Helpston Road",
+        "top_lat": 52.5779,
+        "top_lon": -0.3518,
+        "sigma_m": 200,
+        "confidence": "high",
+        "evidence": "The site is at 37a Main Street, Ailsworth. Geocoding Maffit Road and Helpston Road in Ailsworth places the site at the intersection of these roads. Maffit Road is at 52.5784, -0.3528 and Helpston Road (Ailsworth section) is at 52.5775, -0.3509. The map shows the site on Main Street between these two."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

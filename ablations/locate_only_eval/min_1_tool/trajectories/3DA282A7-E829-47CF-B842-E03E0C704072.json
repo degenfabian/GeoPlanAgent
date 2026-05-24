@@ -1,0 +1,251 @@
+{
+  "case": "3DA282A7-E829-47CF-B842-E03E0C704072",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1544266824834,
+    "top_lon": 1.36963926925635,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Townsend Farm Road",
+    "evidence": "The site is 'Land formerly part of Townsend Farm' in St Margaret's at Cliffe. Geocoding 'Townsend Farm Road' and 'St Margaret's at Cliffe' village center provides a tight cluster. The map shows the site extending NE from the village towards Bockell Hill.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.9263543380334605,
+  "gt_centroids": [
+    {
+      "lat": 51.16156670781039,
+      "lon": 1.3764831649445817
+    },
+    {
+      "lat": 51.16226458361999,
+      "lon": 1.3838849737352805
+    },
+    {
+      "lat": 51.16617025141209,
+      "lon": 1.3866151330451562
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Townsend Farm"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "St Margaret's at Cliffe"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "East Valley Farm"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Townsend Farm",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Townsend Farm Road",
+            "type": "named road",
+            "lat": 51.15442668248337,
+            "lon": 1.3696392692563522,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Margaret's at Cliffe",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "St Margaret's at Cliffe",
+            "type": "village",
+            "lat": 51.154223031313414,
+            "lon": 1.3713980535583459,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "East Valley Farm",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Cliffe Place"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cliffe Place",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Cliffe Place",
+            "type": "named road",
+            "lat": 53.05755923337269,
+            "lon": -2.194414637155931,
+            "admin_district": null,
+            "county": "City of Stoke-on-Trent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Bockell Hill"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bockell Hill",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Bockell Hill",
+            "type": "hill or mountain",
+            "lat": 51.15488973653388,
+            "lon": 1.3862939562931165,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.36963926925635,
+        "top_lat": 51.1544266824834,
+        "sigma_m": 500,
+        "picked_source": "place:Townsend Farm Road",
+        "confidence": "high",
+        "evidence": "The site is 'Land formerly part of Townsend Farm' in St Margaret's at Cliffe. Geocoding 'Townsend Farm Road' and 'St Margaret's at Cliffe' village center provides a tight cluster. The map shows the site extending NE from the village towards Bockell Hill.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,302 @@
+{
+  "case": "A4D-21",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.171712,
+    "top_lon": -0.628876,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:GU7 2JR",
+    "evidence": "The site postcode GU7 2JR (Wood Farm) and the grid reference SU9542 (from the map sheet label) are within 500m of each other. The map also shows Tuesley hamlet nearby, which matches the geocoded location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1000295466745309,
+  "gt_centroids": [
+    {
+      "lat": 51.17081586058412,
+      "lon": -0.6290014972656658
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "grid_ref": 2,
+      "place": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "GU7 2JR"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU9542SE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wood Farm",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Tuesley",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "GU7 2JR",
+        "lat": 51.171712174612765,
+        "lon": -0.6288763001305293,
+        "admin_district": "Waverley District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'SU9542SE'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wood Farm",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Wood Farm Road",
+            "type": "section of named road",
+            "lat": 55.79972814293219,
+            "lon": -4.3088629388521795,
+            "admin_district": null,
+            "county": "East Renfrewshire"
+          },
+          {
+            "name": "Wood Farm Lane",
+            "type": "named road",
+            "lat": 53.59495460758531,
+            "lon": -1.768538750911331,
+            "admin_district": "Kirklees",
+            "county": null
+          },
+          {
+            "name": "Wood Farm Close",
+            "type": "named road",
+            "lat": 53.209077572096945,
+            "lon": -2.8337593686346505,
+            "admin_district": null,
+            "county": "Cheshire West and Chester"
+          },
+          {
+            "name": "Wood Farm Close",
+            "type": "named road",
+            "lat": 53.26244214201459,
+            "lon": -2.884150721123955,
+            "admin_district": null,
+            "county": "Cheshire West and Chester"
+          },
+          {
+            "name": "Wood Farm Lane",
+            "type": "named road",
+            "lat": 52.773502970919346,
+            "lon": -1.5375994038865135,
+            "admin_district": "South Derbyshire",
+            "county": "Derbyshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Tuesley",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Tuesley",
+            "type": "hamlet",
+            "lat": 51.167029263062595,
+            "lon": -0.6244667809415843,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Tuesley Corner",
+            "type": "named road",
+            "lat": 51.17860859790553,
+            "lon": -0.6165826345462286,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Tuesley Lane",
+            "type": "section of named road",
+            "lat": 51.177219882693116,
+            "lon": -0.6147357733079639,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Tuesley Lane",
+            "type": "named road",
+            "lat": 51.169793526478784,
+            "lon": -0.6232402379024186,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Tuesley Lane",
+            "type": "section of named road",
+            "lat": 51.16711865256759,
+            "lon": -0.62442121277621,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU 95 42"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.628876,
+        "lat": 51.171712,
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SU 95 42",
+        "lat": 51.17377457217438,
+        "lon": -0.635295362536869
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.171712,
+        "lon": -0.628876,
+        "la": "Waverley",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.14979708109079,
+        "la_centroid_lon": -0.6327293391700743
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.628876,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.171712,
+        "picked_source": "postcode:GU7 2JR",
+        "sigma_m": 300,
+        "confidence": "high",
+        "evidence": "The site postcode GU7 2JR (Wood Farm) and the grid reference SU9542 (from the map sheet label) are within 500m of each other. The map also shows Tuesley hamlet nearby, which matches the geocoded location."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

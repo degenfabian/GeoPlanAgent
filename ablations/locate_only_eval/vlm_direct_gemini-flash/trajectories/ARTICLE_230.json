@@ -1,0 +1,60 @@
+{
+  "case": "ARTICLE:230",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.1185,
+    "lon": 0.2245,
+    "reasoning": "The document refers to Ordnance Survey Parcel 7100 in Great Abington, and the map shows a triangular field bounded by the A604 (now A11), the River Granta, and a track near Hildersham Wood."
+  },
+  "err_km": 1.3918534349835163,
+  "gt_centroids": [
+    {
+      "lat": 52.11677036868277,
+      "lon": 0.24468942774469554
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 52.1185,
+        "reasoning": "The document refers to Ordnance Survey Parcel 7100 in Great Abington, and the map shows a triangular field bounded by the A604 (now A11), the River Granta, and a track near Hildersham Wood.",
+        "lon": 0.2245
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

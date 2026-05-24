@@ -1,0 +1,355 @@
+{
+  "case": "A4D15",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4674,
+    "top_lon": -2.602,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Cotham Road South / Redland Green Road midpoint",
+    "evidence": "The map shows the Cotham and Redland Conservation Area. I found centroids for Redland Green Road (northwest) at 51.4725, -2.6063 and Cotham Road South (southeast) at 51.4623, -2.5978. The midpoint of these two major boundary markers provides a reliable center for the conservation area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14950668943157838,
+  "gt_centroids": [
+    {
+      "lat": 51.4684646015398,
+      "lon": -2.600681704917082
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Cotham Park"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Redland Green Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Bristol",
+        "road_a": "Cotham Road South",
+        "road_b": "Cotham Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "High Kingsdown"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cotham Park",
+        "la_filter": "Bristol",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Cotham Park",
+            "type": "named road",
+            "lat": 51.464133252413454,
+            "lon": -2.5987797711467087,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Cotham Park North",
+            "type": "named road",
+            "lat": 51.466406731419966,
+            "lon": -2.599054268347086,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redland Green Road",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Redland Green Road",
+            "type": "named road",
+            "lat": 51.472528863084364,
+            "lon": -2.6062757335759006,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Bristol for: ['Cotham Road South']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "High Kingsdown",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Cotham Road South",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Cranbrook Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Gloucester Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Bristol",
+        "lon": -2.6,
+        "lat": 51.468
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cotham Road South",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Cotham Road South",
+            "type": "named road",
+            "lat": 51.462268187731155,
+            "lon": -2.5977621356661165,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cranbrook Road",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Cranbrook Road",
+            "type": "named road",
+            "lat": 51.47429030762021,
+            "lon": -2.5994599330725348,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Gloucester Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Gloucester Road",
+            "type": "named road",
+            "lat": 51.50016614825527,
+            "lon": -2.7003850873783244,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Gloucester Road",
+            "type": "named road",
+            "lat": 51.481154415608366,
+            "lon": -2.588116051262897,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Gloucester Lane",
+            "type": "named road",
+            "lat": 51.45721994514818,
+            "lon": -2.578841526448354,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Gloucester Street",
+            "type": "named road",
+            "lat": 51.455673030458975,
+            "lon": -2.6227618683474963,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Gloucester Street",
+            "type": "named road",
+            "lat": 51.459740584038855,
+            "lon": -2.5872793132235934,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.468,
+        "lon": -2.6,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows the Cotham and Redland Conservation Area. I found centroids for Redland Green Road (northwest) at 51.4725, -2.6063 and Cotham Road South (southeast) at 51.4623, -2.5978. The midpoint of these two major boundary markers provides a reliable center for the conservation area.",
+        "confidence": "high",
+        "top_lon": -2.602,
+        "picked_source": "place:Cotham Road South / Redland Green Road midpoint",
+        "top_lat": 51.4674,
+        "sigma_m": 1500
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

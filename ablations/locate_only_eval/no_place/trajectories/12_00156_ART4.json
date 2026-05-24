@@ -1,0 +1,275 @@
+{
+  "case": "12:00156:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.614,
+    "top_lon": 1.202,
+    "sigma_m": 800,
+    "confidence": "high",
+    "picked_source": "road:Braymeadow Lane",
+    "evidence": "The map shows a large site between Colney and Little Melton. Braymeadow Lane forms the southern boundary, and the B1108 (Watton Road) is to the north. The grid reference TG10NE (approx TG 17 07) aligns perfectly with the Braymeadow Lane coordinates.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.39701593397821394,
+  "gt_centroids": [
+    {
+      "lat": 52.616178717481645,
+      "lon": 1.206658783269228
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "road": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 10NE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Braymeadow Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "C169",
+        "road_a": "B1108",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'TG 10NE'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Braymeadow Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Braymeadow Lane",
+            "lat": 52.61233942565262,
+            "lon": 1.2001407634871988,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Braymeadow Lane",
+            "lat": 52.61080113828573,
+            "lon": 1.2037675878113379,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Braymeadow Lane",
+            "lat": 52.61423244890837,
+            "lon": 1.1964701057393166,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Braymeadow Lane",
+            "lat": 52.615688503391276,
+            "lon": 1.1952920270884735,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['B1108', 'C169']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 170 070"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Watton Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.6123,
+        "lon": 1.2001,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG 170 070",
+        "lat": 52.61781428835785,
+        "lon": 1.204896345131307
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Watton Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Watton Road",
+            "lat": 52.62531557998124,
+            "lon": 1.2213984188077187,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.6261900116888,
+            "lon": 1.2253202947740787,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.626996932690325,
+            "lon": 1.2289594286014445,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.627079289661644,
+            "lon": 1.2293410451810765,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.62716403817542,
+            "lon": 1.2297338502849495,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6123,
+        "lon": 1.2001,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lon": 1.202,
+        "top_lat": 52.614,
+        "evidence": "The map shows a large site between Colney and Little Melton. Braymeadow Lane forms the southern boundary, and the B1108 (Watton Road) is to the north. The grid reference TG10NE (approx TG 17 07) aligns perfectly with the Braymeadow Lane coordinates.",
+        "picked_source": "road:Braymeadow Lane",
+        "confidence": "high",
+        "sigma_m": 800
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

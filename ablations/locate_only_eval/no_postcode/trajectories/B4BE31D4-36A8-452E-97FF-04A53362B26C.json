@@ -1,0 +1,261 @@
+{
+  "case": "B4BE31D4-36A8-452E-97FF-04A53362B26C",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.131,
+    "top_lon": 1.271,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR2842/2942/2841/2941 junction",
+    "evidence": "The site is 'Land at Coombe Road' and the map lists four OS grid sheets (TR2842, TR2942, TR2841, TR2941) which meet at a central point. The road search for Coombe Road in Dover returns segments consistent with this intersection (approx 51.131, 1.271).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.4379497819195784,
+  "gt_centroids": [
+    {
+      "lat": 51.12887589738372,
+      "lon": 1.2762851220266649
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 4,
+      "road": 1,
+      "place": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2842"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2942"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2841"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2941"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Coombe Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2842",
+        "lat": 51.13615448857655,
+        "lon": 1.2648636561190143
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2942",
+        "lat": 51.13575490383888,
+        "lon": 1.2791329131768567
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2841",
+        "lat": 51.12717706111898,
+        "lon": 1.2642300690667696
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2941",
+        "lat": 51.12677760368672,
+        "lon": 1.2784965688477414
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Coombe Road",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Coombe Road",
+            "lat": 51.1250263024243,
+            "lon": 1.2456913352736394,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Coombe Road",
+            "lat": 51.128470897526626,
+            "lon": 1.262677058554149,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Coombe Road",
+            "lat": 51.13245297574782,
+            "lon": 1.2811269979481739,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "White Cliffs Business Park",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.13,
+        "lon": 1.27,
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "White Cliffs Business Park",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.13,
+        "lon": 1.27,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.131,
+        "evidence": "The site is 'Land at Coombe Road' and the map lists four OS grid sheets (TR2842, TR2942, TR2841, TR2941) which meet at a central point. The road search for Coombe Road in Dover returns segments consistent with this intersection (approx 51.131, 1.271).",
+        "top_lon": 1.271,
+        "confidence": "high",
+        "sigma_m": 400,
+        "picked_source": "grid_ref:TR2842/2942/2841/2941 junction",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

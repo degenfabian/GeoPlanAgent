@@ -1,0 +1,283 @@
+{
+  "case": "A003S",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6321954809933,
+    "top_lon": -0.40619790361015,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:PE9 3DN",
+    "evidence": "Postcode PE9 3DN matches the site address 'Bramley House, Main Street, Barnack' and is confirmed to be within the Peterborough Local Authority. The map shows the site at the junction of Main Street and Orchard Road, which aligns with the postcode location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09713596560084363,
+  "gt_centroids": [
+    {
+      "lat": 52.63260229349844,
+      "lon": -0.40492417751074616
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bramley House, Main Street, Barnack",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "PE9 3DN",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Barnack Methodist Church",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bramley House, Main Street, Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "PE9 3DN",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "PE9 3DN",
+            "type": "postcode",
+            "lat": 52.63219548099334,
+            "lon": -0.40619790361014957,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barnack Methodist Church",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Main Street, Barnack",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.40619790361015,
+        "la": "Peterborough",
+        "lat": 52.6321954809933
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Main Street, Barnack",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6321954809933,
+        "lon": -0.40619790361015,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Barnack"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barnack",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Barnack",
+            "type": "village",
+            "lat": 52.63225751588454,
+            "lon": -0.4094760662085537,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Barnack Avenue",
+            "type": "named road",
+            "lat": 54.532763304177394,
+            "lon": -1.1926538170897678,
+            "admin_district": null,
+            "county": "Middlesbrough"
+          },
+          {
+            "name": "Barnack Close",
+            "type": "named road",
+            "lat": 53.4038400677772,
+            "lon": -2.554167968912289,
+            "admin_district": null,
+            "county": "Warrington"
+          },
+          {
+            "name": "Barnack Avenue",
+            "type": "named road",
+            "lat": 52.3846480271041,
+            "lon": -1.5179421147744037,
+            "admin_district": "Coventry",
+            "county": null
+          },
+          {
+            "name": "Barnack Drive",
+            "type": "named road",
+            "lat": 52.29578364115824,
+            "lon": -1.5905799321148222,
+            "admin_district": "Warwick",
+            "county": "Warwickshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "postcode:PE9 3DN",
+        "top_lat": 52.6321954809933,
+        "evidence": "Postcode PE9 3DN matches the site address 'Bramley House, Main Street, Barnack' and is confirmed to be within the Peterborough Local Authority. The map shows the site at the junction of Main Street and Orchard Road, which aligns with the postcode location.",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lon": -0.40619790361015,
+        "sigma_m": 300
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

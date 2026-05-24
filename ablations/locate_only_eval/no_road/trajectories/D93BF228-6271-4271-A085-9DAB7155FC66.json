@@ -1,0 +1,264 @@
+{
+  "case": "D93BF228-6271-4271-A085-9DAB7155FC66",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.266842,
+    "top_lon": 1.388418,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "intersect:Waldershare Avenue x Princes Drive",
+    "evidence": "The map shows a large Article 4 area at Sandwich Bay Estate. The intersection of Waldershare Avenue and Princes Drive (found at 51.2668, 1.3884) is centrally located within the residential portion of the hatched area. This is consistent with the grid references (TR 35 56/57/58/59) which cover this coastal strip.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3255785398558473,
+  "gt_centroids": [
+    {
+      "lat": 51.26440173112788,
+      "lon": 1.3858319744514085
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 4,
+      "place": 1,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 355 565"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 355 575"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 355 585"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 355 595"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandwich Bay Estate",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Dover",
+        "road_b": "Princes Drive",
+        "road_a": "Waldershare Avenue"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 355 565",
+        "lat": 51.25941831914824,
+        "lon": 1.3746654396058249
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 355 575",
+        "lat": 51.26839453777826,
+        "lon": 1.3753235380940685
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 355 585",
+        "lat": 51.27737073647775,
+        "lon": 1.3759819757874026
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 355 595",
+        "lat": 51.286346915243385,
+        "lon": 1.3766407529160096
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandwich Bay Estate",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sandwich Bay Estate",
+            "type": "village",
+            "lat": 51.266146317085045,
+            "lon": 1.384951756073922,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Waldershare Avenue",
+          "Princes Drive"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.266842,
+            "lon": 1.388418,
+            "roads": [
+              "Waldershare Avenue",
+              "Princes Drive"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.388418,
+        "la": "Dover",
+        "lat": 51.266842
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.266842,
+        "lon": 1.388418,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 500,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "evidence": "The map shows a large Article 4 area at Sandwich Bay Estate. The intersection of Waldershare Avenue and Princes Drive (found at 51.2668, 1.3884) is centrally located within the residential portion of the hatched area. This is consistent with the grid references (TR 35 56/57/58/59) which cover this coastal strip.",
+        "top_lon": 1.388418,
+        "picked_source": "intersect:Waldershare Avenue x Princes Drive",
+        "top_lat": 51.266842
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

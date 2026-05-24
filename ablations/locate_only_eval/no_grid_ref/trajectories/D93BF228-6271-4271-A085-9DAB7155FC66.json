@@ -1,0 +1,328 @@
+{
+  "case": "D93BF228-6271-4271-A085-9DAB7155FC66",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.266146317085,
+    "top_lon": 1.38495175607392,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Sandwich Bay Estate",
+    "evidence": "The map shows the Sandwich Bay Estate with Waldershare Avenue and Cambridge Avenue. The 'Sandwich Bay Estate' place hit and the road centroids for Waldershare and Cambridge Avenues cluster tightly around this coordinate. Verified inside Dover LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.20342666481554464,
+  "gt_centroids": [
+    {
+      "lat": 51.26440173112788,
+      "lon": 1.3858319744514085
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "road": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandwich Bay Estate",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandwich Bay Bird Observatory",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Worth"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "Waldershare Avenue"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "Cambridge Avenue"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandwich Bay Estate",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sandwich Bay Estate",
+            "type": "village",
+            "lat": 51.266146317085045,
+            "lon": 1.384951756073922,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandwich Bay Bird Observatory",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Worth",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Worth",
+            "type": "village",
+            "lat": 51.25559411454889,
+            "lon": 1.3427622229679996,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Worthington Street",
+            "type": "named road",
+            "lat": 51.12645355077843,
+            "lon": 1.3107223457585444,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Worth Hill",
+            "type": "hill or mountain",
+            "lat": 51.25894582502547,
+            "lon": 1.34571505325278,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Worth Primary School",
+            "type": "primary education",
+            "lat": 51.25665080768268,
+            "lon": 1.3485873720506143,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Waldershare Avenue",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Waldershare Avenue",
+            "lat": 51.265969676148266,
+            "lon": 1.380617207266464,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Waldershare Avenue",
+            "lat": 51.265825558158255,
+            "lon": 1.3833675219898545,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Waldershare Avenue",
+            "lat": 51.2664931493655,
+            "lon": 1.386692571557165,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Cambridge Avenue",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Cambridge Avenue",
+            "lat": 51.26352727507637,
+            "lon": 1.3891056658461045,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Dover",
+        "road_a": "Waldershare Avenue",
+        "road_b": "Cambridge Avenue"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Waldershare Avenue",
+          "Cambridge Avenue"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lat": 51.265,
+        "lon": 1.385
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.265,
+        "lon": 1.385,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 400,
+        "top_lon": 1.38495175607392,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows the Sandwich Bay Estate with Waldershare Avenue and Cambridge Avenue. The 'Sandwich Bay Estate' place hit and the road centroids for Waldershare and Cambridge Avenues cluster tightly around this coordinate. Verified inside Dover LA.",
+        "picked_source": "place:Sandwich Bay Estate",
+        "top_lat": 51.266146317085,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

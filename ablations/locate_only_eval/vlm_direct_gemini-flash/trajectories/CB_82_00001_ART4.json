@@ -1,0 +1,60 @@
+{
+  "case": "CB:82:00001:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.9485,
+    "lon": -0.6485,
+    "reasoning": "The document refers to land surrounding the Sandhouse Public House on Watling Street, Heath and Reach, which is identified on the site plan as the area near the Sandhouse Pumping Station and Sandhouse Inn."
+  },
+  "err_km": 1.486135721011822,
+  "gt_centroids": [
+    {
+      "lat": 51.96019181649211,
+      "lon": -0.6379932226801931
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -0.6485,
+        "reasoning": "The document refers to land surrounding the Sandhouse Public House on Watling Street, Heath and Reach, which is identified on the site plan as the area near the Sandhouse Pumping Station and Sandhouse Inn.",
+        "lat": 51.9485
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

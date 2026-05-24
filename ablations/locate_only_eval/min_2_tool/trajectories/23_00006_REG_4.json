@@ -1,0 +1,145 @@
+{
+  "case": "23:00006:REG_4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5134436169631,
+    "top_lon": -0.16046326615033,
+    "sigma_m": 5000,
+    "confidence": "high",
+    "picked_source": "la_centroid",
+    "evidence": "The map shows the entire City of Westminster. The provided postcode SW1E 6QP (Westminster City Hall) falls within the borough. Using the LA centroid as the center for this district-wide order.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0014725019357845742,
+  "gt_centroids": [
+    {
+      "lat": 51.51344560997917,
+      "lon": -0.16044222960568932
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 3,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Westminster",
+        "query": "SW1E 6QP"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "SW1E 6QP",
+        "la_filter": "Westminster",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "SW1E 6QP",
+            "type": "postcode",
+            "lat": 51.49755195228505,
+            "lon": -0.13737723639211014,
+            "admin_district": "City of Westminster",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.13737723639211,
+        "la": "Westminster",
+        "lat": 51.4975519522851
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.4975519522851,
+        "lon": -0.13737723639211,
+        "la": "Westminster",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.51344361696313,
+        "la_centroid_lon": -0.16046326615032958
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the entire City of Westminster. The provided postcode SW1E 6QP (Westminster City Hall) falls within the borough. Using the LA centroid as the center for this district-wide order.",
+        "top_lat": 51.5134436169631,
+        "picked_source": "la_centroid",
+        "top_lon": -0.16046326615033,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 5000
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,285 @@
+{
+  "case": "115",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5027549461277,
+    "top_lon": -0.0968205427904514,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Southwark",
+    "evidence": "The map shows the Southwark Central Activities Zone, which covers the northern part of Southwark along the Thames. The centroid of the settlement 'Southwark' (51.5027, -0.0968) sits centrally within this zone, which is bounded by the Thames to the north and extends south towards Elephant and Castle.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3516241664167422,
+  "gt_centroids": [
+    {
+      "lat": 51.50042737620308,
+      "lon": -0.09338180307829284
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Southwark Central Activities Zone",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Southwark",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Southwark Central Activities Zone",
+        "la_filter": "Southwark",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Southwark",
+        "la_filter": "Southwark",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Southwark",
+            "type": "other settlement",
+            "lat": 51.502754946127716,
+            "lon": -0.09682054279045142,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          },
+          {
+            "name": "Southwark",
+            "type": "railway station",
+            "lat": 51.50388675322954,
+            "lon": -0.10507305885442546,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          },
+          {
+            "name": "Southwark Park Road",
+            "type": "section of named road",
+            "lat": 51.492334160588825,
+            "lon": -0.06613860347988897,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          },
+          {
+            "name": "Southwark Park Road",
+            "type": "section of named road",
+            "lat": 51.495055933246256,
+            "lon": -0.05942525903192172,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          },
+          {
+            "name": "Southwark Bridge Road",
+            "type": "named road",
+            "lat": 51.50278097091536,
+            "lon": -0.09676182324636147,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Southwark",
+        "query": "Borough High Street"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Southwark",
+        "query": "Elephant and Castle"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Borough High Street",
+        "la_filter": "Southwark",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Borough High Street",
+            "type": "named road",
+            "lat": 51.503390799062366,
+            "lon": -0.09167885157319887,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          },
+          {
+            "name": "Borough High Street",
+            "type": "section of named road",
+            "lat": 51.507876021822845,
+            "lon": -0.08768709153500753,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          },
+          {
+            "name": "Borough High Street",
+            "type": "section of named road",
+            "lat": 51.50520754700756,
+            "lon": -0.08948473875873372,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          },
+          {
+            "name": "Borough High Street",
+            "type": "section of named road",
+            "lat": 51.50641850974055,
+            "lon": -0.08819482663692052,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Elephant and Castle",
+        "la_filter": "Southwark",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Elephant and Castle",
+            "type": "named road",
+            "lat": 51.49463604045729,
+            "lon": -0.10078909975299209,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          },
+          {
+            "name": "Elephant and Castle",
+            "type": "section of named road",
+            "lat": 51.49540432515027,
+            "lon": -0.10103088860984756,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          },
+          {
+            "name": "Elephant and Castle",
+            "type": "railway station",
+            "lat": 51.49396487139504,
+            "lon": -0.09877134050600286,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          },
+          {
+            "name": "Elephant and Castle",
+            "type": "railway station",
+            "lat": 51.49590337402893,
+            "lon": -0.10075082814038837,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "evidence": "The map shows the Southwark Central Activities Zone, which covers the northern part of Southwark along the Thames. The centroid of the settlement 'Southwark' (51.5027, -0.0968) sits centrally within this zone, which is bounded by the Thames to the north and extends south towards Elephant and Castle.",
+        "top_lat": 51.5027549461277,
+        "sigma_m": 1500,
+        "picked_source": "place:Southwark",
+        "top_lon": -0.0968205427904514,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

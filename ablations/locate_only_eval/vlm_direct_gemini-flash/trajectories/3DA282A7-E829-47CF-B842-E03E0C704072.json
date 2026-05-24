@@ -1,0 +1,68 @@
+{
+  "case": "3DA282A7-E829-47CF-B842-E03E0C704072",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.154,
+    "lon": 1.368,
+    "reasoning": "The document describes land at Townsend Farm in St Margaret's-at-Cliffe, with the provided map showing the site north of Dover Road and west of the village center, corresponding to OS grid reference TR 34 SE.SW."
+  },
+  "err_km": 1.028551812850147,
+  "gt_centroids": [
+    {
+      "lat": 51.16156670781039,
+      "lon": 1.3764831649445817
+    },
+    {
+      "lat": 51.16226458361999,
+      "lon": 1.3838849737352805
+    },
+    {
+      "lat": 51.16617025141209,
+      "lon": 1.3866151330451562
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document describes land at Townsend Farm in St Margaret's-at-Cliffe, with the provided map showing the site north of Dover Road and west of the village center, corresponding to OS grid reference TR 34 SE.SW.",
+        "lat": 51.154,
+        "lon": 1.368
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

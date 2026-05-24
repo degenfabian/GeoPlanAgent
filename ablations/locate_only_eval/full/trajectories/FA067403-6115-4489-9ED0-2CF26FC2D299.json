@@ -1,0 +1,234 @@
+{
+  "case": "FA067403-6115-4489-9ED0-2CF26FC2D299",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.313677,
+    "top_lon": 1.263305,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Westmarsh Drove",
+    "evidence": "The site is located on Westmarsh Drove, north of Westmarsh Drove Farm. Grid references TR2761 and TR2762 provided in the map legend align perfectly with the road geometry of Westmarsh Drove. Postcode CT16 3PJ is the council office (letterhead). Picked the northern road segment centroid which sits between the two grid squares.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.16516428830037183,
+  "gt_centroids": [
+    {
+      "lat": 51.31221627130935,
+      "lon": 1.2628740529093625
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "postcode": 1,
+      "place": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2761"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2762"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PJ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Westmarsh Drove Farm",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "Westmarsh Drove"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2761",
+        "lat": 51.30712215966077,
+        "lon": 1.26264172433534
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2762",
+        "lat": 51.31609932366517,
+        "lon": 1.2632790840649746
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CT16 3PJ",
+        "lat": 51.15436636168577,
+        "lon": 1.294785094400513,
+        "admin_district": "Dover District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Westmarsh Drove Farm",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Westmarsh Drove",
+        "la_filter": "Dover",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Westmarsh Drove",
+            "lat": 51.309800290630484,
+            "lon": 1.2628151118330335,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Westmarsh Drove",
+            "lat": 51.313677216887115,
+            "lon": 1.2633047252515763,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.26330472525158,
+        "lat": 51.3136772168871,
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.3136772168871,
+        "lon": 1.26330472525158,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.313677,
+        "evidence": "The site is located on Westmarsh Drove, north of Westmarsh Drove Farm. Grid references TR2761 and TR2762 provided in the map legend align perfectly with the road geometry of Westmarsh Drove. Postcode CT16 3PJ is the council office (letterhead). Picked the northern road segment centroid which sits between the two grid squares.",
+        "sigma_m": 400,
+        "confidence": "high",
+        "picked_source": "road:Westmarsh Drove",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.263305
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

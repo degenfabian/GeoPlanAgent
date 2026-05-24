@@ -1,0 +1,386 @@
+{
+  "case": "983981FC-89B6-466B-A76B-2FC9F050B5CF",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.224,
+    "top_lon": 1.403,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Middle Street",
+    "evidence": "The map shows the Middle Street Conservation Area in Deal, Kent. Multiple road centroids for Middle Street and Beach Street cluster around 51.224, 1.403. The town centroid for Deal is also nearby. The provided postcode CT16 3PJ is in Dover town and appears to be a clerical error (likely the council office postcode).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.03359876701337718,
+  "gt_centroids": [
+    {
+      "lat": 51.224125483688674,
+      "lon": 1.403438900219047
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 4,
+      "intersect": 1,
+      "road": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PJ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Middle Street Deal Conservation Area"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Deal Pier"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Dover",
+        "road_a": "Middle Street",
+        "road_b": "Broad Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CT16 3PJ",
+        "lat": 51.15436636168577,
+        "lon": 1.294785094400513,
+        "admin_district": "Dover District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Middle Street Deal Conservation Area",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Deal Pier",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Dover for: ['Middle Street', 'Broad Street']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Deal",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Middle Street",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Beach Street",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Victoria Park"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Deal",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Deal",
+            "type": "town",
+            "lat": 51.222722255775075,
+            "lon": 1.399969271127063,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Deal",
+            "type": "railway station",
+            "lat": 51.223106569182704,
+            "lon": 1.3985078168815668,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Deal Road",
+            "type": "section of named road",
+            "lat": 51.22044638917592,
+            "lon": 1.3391104063786883,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Deal Road",
+            "type": "section of named road",
+            "lat": 51.26673869944976,
+            "lon": 1.3389975467792488,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Deal Road",
+            "type": "named road",
+            "lat": 51.25742758483381,
+            "lon": 1.3371467969329893,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Middle Street",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Middle Street",
+            "lat": 51.225151149009974,
+            "lon": 1.4033645186693948,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Middle Street",
+            "lat": 51.22477897109877,
+            "lon": 1.4034802958848092,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Middle Street",
+            "lat": 51.22271905766692,
+            "lon": 1.4036791759485518,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Middle Street",
+            "lat": 51.222269840711036,
+            "lon": 1.4036603348541228,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Middle Street",
+            "lat": 51.22727290662328,
+            "lon": 1.4032489799314263,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Beach Street",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Beach Street",
+            "lat": 51.22486483359414,
+            "lon": 1.4042387262877412,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Beach Street",
+            "lat": 51.22389905487385,
+            "lon": 1.4043822850058238,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Beach Street",
+            "lat": 51.222664543584436,
+            "lon": 1.4043017920019838,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Beach Street",
+            "lat": 51.22266320426634,
+            "lon": 1.4045022411181254,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Beach Street",
+            "lat": 51.22198055749308,
+            "lon": 1.404591566241324,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Park",
+        "la_filter": "Dover",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Victoria Park",
+            "type": "named road",
+            "lat": 51.127800292096396,
+            "lon": 1.3187382298251764,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Victoria Park Mews",
+            "type": "other settlement",
+            "lat": 51.127964775193554,
+            "lon": 1.3189644578304522,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "road:Middle Street",
+        "top_lat": 51.224,
+        "verified_inside_admin_region": true,
+        "sigma_m": 500,
+        "evidence": "The map shows the Middle Street Conservation Area in Deal, Kent. Multiple road centroids for Middle Street and Beach Street cluster around 51.224, 1.403. The town centroid for Deal is also nearby. The provided postcode CT16 3PJ is in Dover town and appears to be a clerical error (likely the council office postcode).",
+        "confidence": "high",
+        "top_lon": 1.403
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

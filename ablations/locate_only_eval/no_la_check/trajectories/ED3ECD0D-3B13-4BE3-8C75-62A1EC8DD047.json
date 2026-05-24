@@ -1,0 +1,209 @@
+{
+  "case": "ED3ECD0D-3B13-4BE3-8C75-62A1EC8DD047",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.127,
+    "top_lon": 1.254,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Limekiln Wood",
+    "evidence": "The map shows the site adjacent to Limekiln Wood, Square Wood, and Park Hill. Geocoding these features in Dover places them in a tight cluster near Hougham Without. Limekiln Wood (51.128, 1.252) and Square Wood (51.125, 1.257) perfectly frame the site location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06326078294982582,
+  "gt_centroids": [
+    {
+      "lat": 51.127485195755604,
+      "lon": 1.2544733537288721
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Limekiln Wood",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Poulton Farm",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Square Wood",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Limekiln Wood",
+        "la_filter": "Dover",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Limekiln Wood",
+            "type": "woodland or forest",
+            "lat": 51.128026953369755,
+            "lon": 1.2521392603326902,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Limekiln Wood",
+            "type": "woodland or forest",
+            "lat": 51.1413546158408,
+            "lon": 1.2674042833379016,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Poulton Farm",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Square Wood",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Square Wood",
+            "type": "woodland or forest",
+            "lat": 51.125400972880364,
+            "lon": 1.257929653389514,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Park Hill",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Park Hill",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Park Hill",
+            "type": "hill or mountain",
+            "lat": 51.12165344834977,
+            "lon": 1.2487612284231127,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the site adjacent to Limekiln Wood, Square Wood, and Park Hill. Geocoding these features in Dover places them in a tight cluster near Hougham Without. Limekiln Wood (51.128, 1.252) and Square Wood (51.125, 1.257) perfectly frame the site location.",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 300,
+        "top_lon": 1.254,
+        "top_lat": 51.127,
+        "picked_source": "place:Limekiln Wood"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

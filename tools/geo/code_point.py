@@ -32,8 +32,6 @@ import os
 from pathlib import Path
 from typing import Dict, Optional
 
-# Repo root. Three .parent steps because this file lives at
-# tools.geo.code_point.py after the 2026-05-13 reorg.
 ROOT = Path(__file__).resolve().parent.parent.parent
 CSV_DIR = ROOT / "os_opendata" / "code_point_open" / "csv" / "Data" / "CSV"
 _CODELIST_XLSX = (ROOT / "os_opendata" / "code_point_open" / "csv" / "Doc"

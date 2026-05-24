@@ -1,0 +1,318 @@
+{
+  "case": "71",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.520493,
+    "top_lon": -0.227121,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "road:Bracewell Road",
+    "evidence": "The site is clearly identified as 1-55 Brewster Gardens and 2-56 Bracewell Road. The intersection of Brewster Gardens and North Pole Road (51.51999, -0.225642) and the centroid of Bracewell Road (51.52049, -0.22712) align perfectly with the map image. Although technically just outside the LBHF boundary (likely on the border with RBKC), it is the correct location for the planning direction.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.026331145892029926,
+  "gt_centroids": [
+    {
+      "lat": 51.5205890919682,
+      "lon": -0.22677317479897516
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 2,
+      "intersect": 1,
+      "road": 3,
+      "la_check": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "W10 6AR"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Hammersmith and Fulham",
+        "road_a": "Brewster Gardens",
+        "road_b": "North Pole Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Bracewell Road",
+        "la": "Hammersmith and Fulham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "W6 9JU"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "W10 6AR",
+        "lat": 51.521078975064675,
+        "lon": -0.2233365121158268,
+        "admin_district": "Kensington and Chelsea London Boro"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Brewster Gardens",
+          "North Pole Road"
+        ],
+        "la_filter": "Hammersmith and Fulham",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.51999,
+            "lon": -0.225642,
+            "roads": [
+              "Brewster Gardens",
+              "North Pole Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bracewell Road",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "W6 9JU",
+        "lat": 51.491996517208754,
+        "lon": -0.23398919546080546,
+        "admin_district": "Hammersmith and Fulham London Boro"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Hammersmith and Fulham",
+        "query": "Brewster Gardens"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Hammersmith and Fulham",
+        "lat": 51.5210789750647,
+        "lon": -0.223336512115827
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Hammersmith and Fulham",
+        "lat": 51.51999,
+        "lon": -0.225642
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Brewster Gardens",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5210789750647,
+        "lon": -0.223336512115827,
+        "la": "Hammersmith and Fulham",
+        "inside_la": false,
+        "distance_km_approx": 0.3,
+        "la_centroid_lat": 51.49500022199581,
+        "la_centroid_lon": -0.22078679338528695
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.51999,
+        "lon": -0.225642,
+        "la": "Hammersmith and Fulham",
+        "inside_la": false,
+        "distance_km_approx": 0.08,
+        "la_centroid_lat": 51.49500022199581,
+        "la_centroid_lon": -0.22078679338528695
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Bracewell Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bracewell Road",
+        "la_filter": null,
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Bracewell Road",
+            "lat": 53.78336243489024,
+            "lon": -2.66848457850878,
+            "in_la": null
+          },
+          {
+            "name": "Bracewell Road",
+            "lat": 53.590067287373124,
+            "lon": -1.8578985495792188,
+            "in_la": null
+          },
+          {
+            "name": "Bracewell Road",
+            "lat": 53.59041770883651,
+            "lon": -1.8568145609836635,
+            "in_la": null
+          },
+          {
+            "name": "Bracewell Road",
+            "lat": 51.520493284419494,
+            "lon": -0.2271214045358234,
+            "in_la": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is clearly identified as 1-55 Brewster Gardens and 2-56 Bracewell Road. The intersection of Brewster Gardens and North Pole Road (51.51999, -0.225642) and the centroid of Bracewell Road (51.52049, -0.22712) align perfectly with the map image. Although technically just outside the LBHF boundary (likely on the border with RBKC), it is the correct location for the planning direction.",
+        "sigma_m": 200,
+        "top_lat": 51.520493,
+        "verified_inside_admin_region": false,
+        "top_lon": -0.227121,
+        "picked_source": "road:Bracewell Road",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

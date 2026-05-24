@@ -1,0 +1,266 @@
+{
+  "case": "22",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5001,
+    "top_lon": -0.1898,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "road:Kensington Square",
+    "evidence": "The site is 17 Kensington Square, located between Kensington Square and South End. Road centroids for Kensington Square and South End cluster around this point, and the postcode W8 5HH (Maria Assumpta College, visible on map) confirms the immediate vicinity.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.02502310220966615,
+  "gt_centroids": [
+    {
+      "lat": 51.499906536446645,
+      "lon": -0.18961534201466854
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 2,
+      "intersect": 2,
+      "postcode": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Kensington Square",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Kensington Square",
+        "road_b": "South End",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "W8 5HH"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Kensington Square",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Kensington Square",
+            "lat": 51.500575924659564,
+            "lon": -0.19008085626306354,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Kensington Square",
+            "lat": 51.500688046541164,
+            "lon": -0.18948568699261814,
+            "in_la": "Kensington and Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Kensington Square",
+          "South End"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "W8 5HH",
+        "lat": 51.50023229097104,
+        "lon": -0.19083647361696104,
+        "admin_district": "Kensington and Chelsea London Boro"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "South End",
+        "road_b": "Ansdell Terrace",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "South End",
+          "Ansdell Terrace"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "South End"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "South End",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "South End",
+            "lat": 51.49944932106302,
+            "lon": -0.18926643520653794,
+            "in_la": "Kensington and Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.1898,
+        "la": "Kensington and Chelsea",
+        "lat": 51.5001
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5001,
+        "lon": -0.1898,
+        "la": "Kensington and Chelsea",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.50120516305225,
+        "la_centroid_lon": -0.19222073817151708
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "The site is 17 Kensington Square, located between Kensington Square and South End. Road centroids for Kensington Square and South End cluster around this point, and the postcode W8 5HH (Maria Assumpta College, visible on map) confirms the immediate vicinity.",
+        "top_lon": -0.1898,
+        "top_lat": 51.5001,
+        "picked_source": "road:Kensington Square",
+        "confidence": "high",
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

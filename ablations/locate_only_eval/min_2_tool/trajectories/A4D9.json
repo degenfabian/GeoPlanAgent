@@ -1,0 +1,241 @@
+{
+  "case": "A4D9",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4063771064387,
+    "top_lon": -2.63181052463659,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Peart Drive",
+    "evidence": "The map shows a large site bounded by Highridge Road, Peart Drive, and The Ridings. Geocoding Peart Drive and Sherrin Way in Bristol yields a tight cluster. Peart Drive is centrally located within the site boundary shown on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.04058645560560894,
+  "gt_centroids": [
+    {
+      "lat": 51.40610223670786,
+      "lon": -2.63219551263015
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sherrin Way",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Peart Drive"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Highridge Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sherrin Way",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sherrin Way",
+            "type": "named road",
+            "lat": 51.40558322618498,
+            "lon": -2.628953001015419,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Peart Drive",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Peart Drive",
+            "type": "named road",
+            "lat": 51.40637710643871,
+            "lon": -2.63181052463659,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Highridge Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Highridge Road",
+            "type": "section of named road",
+            "lat": 51.4119897372656,
+            "lon": -2.626452780082003,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Highridge Road",
+            "type": "named road",
+            "lat": 51.434474170419406,
+            "lon": -2.6084042218591246,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Highridge Road",
+            "type": "named road",
+            "lat": 51.40755911608172,
+            "lon": -2.632718212729913,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Highridge",
+            "type": "suburban area",
+            "lat": 51.416051923982224,
+            "lon": -2.6251566128664083,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Highridge Crescent",
+            "type": "named road",
+            "lat": 51.41276870539064,
+            "lon": -2.6237026798920287,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.4063771064387,
+        "la": "Bristol",
+        "lon": -2.63181052463659
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.4063771064387,
+        "lon": -2.63181052463659,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -2.63181052463659,
+        "confidence": "high",
+        "sigma_m": 200,
+        "evidence": "The map shows a large site bounded by Highridge Road, Peart Drive, and The Ridings. Geocoding Peart Drive and Sherrin Way in Bristol yields a tight cluster. Peart Drive is centrally located within the site boundary shown on the map.",
+        "picked_source": "place:Peart Drive",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.4063771064387
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

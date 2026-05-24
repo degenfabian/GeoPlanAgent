@@ -1,0 +1,64 @@
+{
+  "case": "A4aSHP1",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.5575,
+    "lon": -0.1645,
+    "reasoning": "The document describes an Article 4 Direction for properties 32-90 South Hill Park, London NW3, which are clearly shown on the attached planning map adjacent to Hampstead No. 1 Pond."
+  },
+  "err_km": 0.028470030791347453,
+  "gt_centroids": [
+    {
+      "lat": 51.55823490456909,
+      "lon": -0.16447646242657094
+    },
+    {
+      "lat": 51.55726326920307,
+      "lon": -0.1646568805145372
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -0.1645,
+        "lat": 51.5575,
+        "reasoning": "The document describes an Article 4 Direction for properties 32-90 South Hill Park, London NW3, which are clearly shown on the attached planning map adjacent to Hampstead No. 1 Pond."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,257 @@
+{
+  "case": "Ar4.22",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7476210301578,
+    "top_lon": -0.303697781006587,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Brick Knoll Park",
+    "evidence": "The site is clearly identified as Brick Knoll Park, east of Ashley Road. Geocoding 'Brick Knoll Park' in St Albans returns a precise road location that matches the map's layout (intersecting Ashley Road and near Alban Way). Verified inside St Albans LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.07354939598633399,
+  "gt_centroids": [
+    {
+      "lat": 51.7488485424684,
+      "lon": -0.3056777855799243
+    },
+    {
+      "lat": 51.748182076396866,
+      "lon": -0.30313191742434364
+    },
+    {
+      "lat": 51.7497568853022,
+      "lon": -0.30582842634337476
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Brick Knoll Park"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Ashley Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Alban Way",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Brick Knoll Park",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Brick Knoll Park",
+            "type": "named road",
+            "lat": 51.747621030157816,
+            "lon": -0.30369778100658706,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ashley Road",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Ashley Road",
+            "type": "named road",
+            "lat": 51.74941677044113,
+            "lon": -0.3053834159387839,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Ashley Gardens",
+            "type": "named road",
+            "lat": 51.82471778562103,
+            "lon": -0.3795685770666685,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Alban Way",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Alban Way",
+            "type": "named road",
+            "lat": 51.74976040980987,
+            "lon": -0.2764545680325281,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Alban Way",
+            "type": "section of named road",
+            "lat": 51.74973258823368,
+            "lon": -0.3029667650350263,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Albany Mews",
+            "type": "named road",
+            "lat": 51.72140911613326,
+            "lon": -0.36005662248339443,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Alban Mews",
+            "type": "named road",
+            "lat": 51.7516880804785,
+            "lon": -0.3094997973294157,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Albany Court",
+            "type": "named road",
+            "lat": 51.812352493461894,
+            "lon": -0.3471539576703388,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "St Albans",
+        "lon": -0.303697781006587,
+        "lat": 51.7476210301578
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.7476210301578,
+        "lon": -0.303697781006587,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.7476210301578,
+        "top_lon": -0.303697781006587,
+        "sigma_m": 200,
+        "verified_inside_admin_region": true,
+        "picked_source": "place:Brick Knoll Park",
+        "confidence": "high",
+        "evidence": "The site is clearly identified as Brick Knoll Park, east of Ashley Road. Geocoding 'Brick Knoll Park' in St Albans returns a precise road location that matches the map's layout (intersecting Ashley Road and near Alban Way). Verified inside St Albans LA."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

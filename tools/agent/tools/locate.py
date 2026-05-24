@@ -2,12 +2,21 @@
 
 `propose_centers` always delegates to the live LLM-locate sub-agent
 (`tools.agent.locate_agent.run_locate`). The sub-agent reads pdf_info,
-views the rendered map image, and calls 6 offline geocoders
-(postcode/grid_ref/place/road/intersect/la_check) to return ONE
-picked (lat, lon, sigma_m, confidence, source). Pydantic enforces
-the LocatePick shape; if the agent loop fails entirely run_locate
-returns an emergency LA-centroid LocatePick. The worker is
-guaranteed at least one candidate.
+views the rendered map image, and calls the `place(q, la=None)` OS
+Open Names geocoder (typically 2-4 times per case, composing
+queries from the site_address, parish, and labels read off the
+map image) to return ONE picked (lat, lon, sigma_m, confidence,
+source). Pydantic enforces the LocatePick shape; if the agent loop
+fails entirely run_locate returns an emergency LA-centroid LocatePick.
+The worker is guaranteed at least one candidate.
+
+Production ships the place-only kit. Five additional geocoders
+(postcode, grid_ref, road, intersect, la_check) are implemented in
+``tools.agent.locate_agent`` and remain available via the factory's
+``disabled_tools`` parameter, but they are kept only for the paper-
+ablation harness in ``ablations/locate_only_eval/`` — the locate-stage
+ablation showed 1-tool ≈ 6-tool on IoU, and shipping place-only keeps
+the prompt + tool schema sent to the LLM minimal.
 """
 
 from __future__ import annotations
@@ -35,9 +44,13 @@ def propose_centers(
     feedback telling the sub-agent why the previous pick was wrong, so
     it picks from a DIFFERENT signal type next time.
 
-    The sub-agent has 6 offline geocoder tools (postcode, grid_ref, place,
-    road, intersect, la_check), views the rendered map image, and returns
-    one picked (lat, lon, sigma_m, confidence, source).
+    In production the sub-agent has one offline geocoder tool — place
+    (OS Open Names) — and views the rendered map image to compose 2-4
+    queries before returning one picked (lat, lon, sigma_m, confidence,
+    source). The five other geocoders implemented in
+    ``tools.agent.locate_agent`` (postcode, grid_ref, road, intersect,
+    la_check) are off by default; they remain available via the factory's
+    ``disabled_tools`` parameter for paper-ablation reproducibility.
 
     If the sub-agent loop fails entirely (validation retries exhausted,
     HTTP error, budget exceeded), run_locate emits an emergency
@@ -57,8 +70,7 @@ def propose_centers(
 
     Returns:
         {"success": True, "n_candidates": 1, "candidates": [{...}],
-         "engine": "live_llm_locate", "evidence": str,
-         "verified_inside_admin_region": bool}
+         "engine": "live_llm_locate", "evidence": str}
         — "candidates" is always a one-element list (this call returns
         exactly one pick).
     """
@@ -115,6 +127,7 @@ def propose_centers(
         match_context=match_context,
         prior_messages=state.locate_message_history or None,
         extra_terms=extra_terms,
+        disabled_tools=getattr(state, "locate_disabled_tools", frozenset()),
     )
     state.locate_message_history = new_history
 
@@ -135,5 +148,4 @@ def propose_centers(
         "candidates": [cand],
         "engine": "live_llm_locate",
         "evidence": pick.evidence,
-        "verified_inside_admin_region": pick.verified_inside_admin_region,
     }

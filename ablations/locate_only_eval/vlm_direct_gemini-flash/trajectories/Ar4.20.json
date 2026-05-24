@@ -1,0 +1,60 @@
+{
+  "case": "Ar4.20",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.7445,
+    "lon": -0.323,
+    "reasoning": "The document identifies the Cunningham Avenue Article 4 Direction area in St Albans, which corresponds to the residential street Cunningham Avenue (AL1 4JJ)."
+  },
+  "err_km": 0.02651365053877426,
+  "gt_centroids": [
+    {
+      "lat": 51.74462455605985,
+      "lon": -0.3226716168656488
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document identifies the Cunningham Avenue Article 4 Direction area in St Albans, which corresponds to the residential street Cunningham Avenue (AL1 4JJ).",
+        "lon": -0.323,
+        "lat": 51.7445
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

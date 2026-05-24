@@ -1,0 +1,219 @@
+{
+  "case": "B4BE31D4-36A8-452E-97FF-04A53362B26C",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.132384,
+    "top_lon": 1.28131,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Coombe Road",
+    "evidence": "The site is 'Land at Coombe Road, Dover'. The grid reference TR2842 and the Coombe Road place search results cluster tightly. The postcode CT16 3PJ is for the Council Offices (letterhead) and was correctly identified as such.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.5245098925325429,
+  "gt_centroids": [
+    {
+      "lat": 51.12887589738372,
+      "lon": 1.2762851220266649
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 1,
+      "grid_ref": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PJ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Coombe Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2842"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CT16 3PJ",
+        "lat": 51.15436636168577,
+        "lon": 1.294785094400513,
+        "admin_district": "Dover District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coombe Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Coombe Road",
+            "type": "named road",
+            "lat": 51.12709047554427,
+            "lon": 1.2599212392287553,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe Road",
+            "type": "named road",
+            "lat": 51.132383566036495,
+            "lon": 1.281310001078637,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe Road",
+            "type": "section of named road",
+            "lat": 51.13132709544699,
+            "lon": 1.2766460036764113,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe",
+            "type": "hamlet",
+            "lat": 51.27057496120895,
+            "lon": 1.2921992526431263,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe Avenue",
+            "type": "named road",
+            "lat": 51.763592750478374,
+            "lon": -0.7476402678415394,
+            "admin_district": null,
+            "county": "Buckinghamshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2842",
+        "lat": 51.13615448857655,
+        "lon": 1.2648636561190143
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.1323835660365,
+        "la": "Dover",
+        "lon": 1.28131000107864
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1323835660365,
+        "lon": 1.28131000107864,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.28131,
+        "top_lat": 51.132384,
+        "picked_source": "place:Coombe Road",
+        "evidence": "The site is 'Land at Coombe Road, Dover'. The grid reference TR2842 and the Coombe Road place search results cluster tightly. The postcode CT16 3PJ is for the Council Offices (letterhead) and was correctly identified as such.",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "sigma_m": 400
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

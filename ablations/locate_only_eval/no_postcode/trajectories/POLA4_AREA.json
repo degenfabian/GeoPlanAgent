@@ -1,0 +1,280 @@
+{
+  "case": "POLA4_AREA",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.43936,
+    "top_lon": -3.56467,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Polsham Park",
+    "evidence": "The Polsham Conservation Area is centered on Polsham Park and the intersection of Torquay Road and Lower Polsham Road in Paignton. Polsham Park (road) and the intersection provide a tight cluster.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09556111993266692,
+  "gt_centroids": [
+    {
+      "lat": 50.439963345396436,
+      "lon": -3.563709078948666
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Polsham Conservation Area",
+        "la": "Torbay"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Torbay",
+        "query": "Polsham Park"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Lower Polsham Road",
+        "road_a": "Torquay Road",
+        "la": "Torbay"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Torbay",
+        "query": "Parkfield Sports Centre"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Polsham Conservation Area",
+        "la_filter": "Torbay",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Polsham Park",
+        "la_filter": "Torbay",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Polsham Park",
+            "type": "named road",
+            "lat": 50.43936036892348,
+            "lon": -3.5646767185969646,
+            "admin_district": null,
+            "county": "Torbay"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Torquay Road",
+          "Lower Polsham Road"
+        ],
+        "la_filter": "Torbay",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 50.440569,
+            "lon": -3.567068,
+            "roads": [
+              "Torquay Road",
+              "Lower Polsham Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Parkfield Sports Centre",
+        "la_filter": "Torbay",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Torbay",
+        "query": "Victoria Park"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Torbay",
+        "query": "Redcliffe Hotel"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -3.56467,
+        "la": "Torbay",
+        "lat": 50.43936
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Park",
+        "la_filter": "Torbay",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Victoria Park Road",
+            "type": "named road",
+            "lat": 50.476145847150605,
+            "lon": -3.527359149492745,
+            "admin_district": null,
+            "county": "Torbay"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redcliffe Hotel",
+        "la_filter": "Torbay",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.43936,
+        "lon": -3.56467,
+        "la": "Torbay",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.44063775419868,
+        "la_centroid_lon": -3.5302061322721014
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "confidence": "high",
+        "picked_source": "place:Polsham Park",
+        "evidence": "The Polsham Conservation Area is centered on Polsham Park and the intersection of Torquay Road and Lower Polsham Road in Paignton. Polsham Park (road) and the intersection provide a tight cluster.",
+        "top_lat": 50.43936,
+        "top_lon": -3.56467,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

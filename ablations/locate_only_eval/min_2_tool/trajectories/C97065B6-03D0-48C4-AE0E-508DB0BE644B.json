@@ -1,0 +1,340 @@
+{
+  "case": "C97065B6-03D0-48C4-AE0E-508DB0BE644B",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1879139684815,
+    "top_lon": 1.24185678565621,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Mill Lane x Sibert's Close",
+    "evidence": "The site is located in Shepherdswell, Dover. Geocoding 'Sibert's Close' and 'Mill Lane' (both visible on the map and in pdf_info) yields coordinates in Shepherdswell that are approximately 150m apart. The picked coordinate is on Mill Lane, which forms the eastern boundary of the site.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3354605410553387,
+  "gt_centroids": [
+    {
+      "lat": 51.18853460325564,
+      "lon": 1.23714633612713
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Shepherdswell"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Mill Lane, Shepherdswell",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sibert's Close, Shepherdswell",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Shepherdswell",
+            "type": "railway station",
+            "lat": 51.187821443462965,
+            "lon": 1.2299271424683944,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell",
+            "type": "railway station",
+            "lat": 51.18961223558278,
+            "lon": 1.2302242122526912,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell Road",
+            "type": "section of named road",
+            "lat": 51.19958033556873,
+            "lon": 1.2615893603883515,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell Road",
+            "type": "named road",
+            "lat": 51.19768617242354,
+            "lon": 1.252736654834536,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mill Lane, Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sibert's Close, Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Mill Lane",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sibert's Close",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Church Hill, Shepherdswell",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mill Lane",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Mill Lane",
+            "type": "named road",
+            "lat": 52.90383175342851,
+            "lon": -1.8325813648416298,
+            "admin_district": "Derbyshire Dales",
+            "county": "Derbyshire"
+          },
+          {
+            "name": "Mill Lane",
+            "type": "named road",
+            "lat": 51.18791396848151,
+            "lon": 1.2418567856562104,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Mill Lane",
+            "type": "named road",
+            "lat": 51.26088707411408,
+            "lon": 1.2626760409837314,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Mill Lane",
+            "type": "named road",
+            "lat": 51.25274547136999,
+            "lon": 1.3376245462358771,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Mill Lane",
+            "type": "section of named road",
+            "lat": 51.21964054581792,
+            "lon": 1.3377199425800723,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sibert's Close",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sibert's Close",
+            "type": "named road",
+            "lat": 51.186533278042376,
+            "lon": 1.241044174139498,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Church Hill, Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.1879139684815,
+        "la": "Dover",
+        "lon": 1.24185678565621
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1879139684815,
+        "lon": 1.24185678565621,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.24185678565621,
+        "sigma_m": 200,
+        "picked_source": "intersect:Mill Lane x Sibert's Close",
+        "evidence": "The site is located in Shepherdswell, Dover. Geocoding 'Sibert's Close' and 'Mill Lane' (both visible on the map and in pdf_info) yields coordinates in Shepherdswell that are approximately 150m apart. The picked coordinate is on Mill Lane, which forms the eastern boundary of the site.",
+        "top_lat": 51.1879139684815,
+        "confidence": "high",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

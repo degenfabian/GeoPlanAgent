@@ -1,0 +1,64 @@
+{
+  "case": "A4D8A_merged",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.663,
+    "lon": -0.195,
+    "reasoning": "The document defines Article 4 Directions for the Monken Hadley Conservation Area in the London Borough of Barnet, centered around Hadley Green and the church of St Mary the Virgin."
+  },
+  "err_km": 0.25988203234586643,
+  "gt_centroids": [
+    {
+      "lat": 51.66066617921087,
+      "lon": -0.1947982032086669
+    },
+    {
+      "lat": 51.66528182483707,
+      "lon": -0.19904722511536274
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document defines Article 4 Directions for the Monken Hadley Conservation Area in the London Borough of Barnet, centered around Hadley Green and the church of St Mary the Virgin.",
+        "lon": -0.195,
+        "lat": 51.663
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

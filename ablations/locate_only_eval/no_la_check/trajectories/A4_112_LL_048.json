@@ -1,0 +1,284 @@
+{
+  "case": "A4_112:LL:048",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.66052,
+    "top_lon": -1.17621,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Sangha Close",
+    "evidence": "The site is located at Sangha Close, which was found via place search. This coordinate (52.6605, -1.1762) is perfectly consistent with the map image showing Sangha Close adjacent to Lyn Close (52.6602, -1.1775) and Hallgate Drive (52.6595, -1.1756).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.00888872822318085,
+  "gt_centroids": [
+    {
+      "lat": 52.660494935911096,
+      "lon": -1.1760848512624487
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 1,
+      "road": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sangha Close",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Leicester Frith Farm",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Sangha Close",
+        "la": "Leicester",
+        "road_b": "Hallgate Drive"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sangha Close",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sangha Close",
+            "type": "named road",
+            "lat": 52.66052033251831,
+            "lon": -1.1762061784390931,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Leicester Frith Farm",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Sangha Close",
+          "Hallgate Drive"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Hallgate Drive",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Lyn Close",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hallgate Drive",
+        "la_filter": "Leicester",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Hallgate Drive",
+            "lat": 52.65781976089983,
+            "lon": -1.1741070176987933,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Hallgate Drive",
+            "lat": 52.65836919005148,
+            "lon": -1.1746957278548493,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Hallgate Drive",
+            "lat": 52.659534151460456,
+            "lon": -1.1756714680216478,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Lyn Close",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Lyn Close",
+            "lat": 52.66023532444874,
+            "lon": -1.1775034475379014,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Farm Lodge",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Farm Lodge",
+        "la_filter": "Leicester",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Farm Lodge Reservoir",
+            "type": "inland water",
+            "lat": 53.55821347174601,
+            "lon": -2.3483433007771755,
+            "admin_district": "Bury",
+            "county": null
+          },
+          {
+            "name": "Farm Lodge Grove",
+            "type": "named road",
+            "lat": 52.6705733039251,
+            "lon": -2.4543811902984043,
+            "admin_district": null,
+            "county": "Telford and Wrekin"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lon": -1.17621,
+        "sigma_m": 200,
+        "picked_source": "place:Sangha Close",
+        "verified_inside_admin_region": true,
+        "top_lat": 52.66052,
+        "evidence": "The site is located at Sangha Close, which was found via place search. This coordinate (52.6605, -1.1762) is perfectly consistent with the map image showing Sangha Close adjacent to Lyn Close (52.6602, -1.1775) and Hallgate Drive (52.6595, -1.1756)."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

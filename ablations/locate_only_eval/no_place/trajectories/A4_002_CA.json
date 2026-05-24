@@ -1,0 +1,383 @@
+{
+  "case": "A4_002:CA",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.628027,
+    "top_lon": -1.119433,
+    "sigma_m": 800,
+    "confidence": "med",
+    "picked_source": "postcode:LE2 1AB",
+    "evidence": "The map shows the South Highfields Conservation Area in Leicester. Postcode LE2 1AB (London Road area) falls within this district and aligns with the road network shown. The site is bounded by London Road and Melbourne Road.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.11297231513289645,
+  "gt_centroids": [
+    {
+      "lat": 52.62918847406824,
+      "lon": -1.1189698155996506
+    },
+    {
+      "lat": 52.63015653769887,
+      "lon": -1.1223950485763752
+    },
+    {
+      "lat": 52.62720787894073,
+      "lon": -1.1184427852038663
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 5,
+      "la_check": 1,
+      "intersect": 1,
+      "postcode": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "South Highfields Conservation Area"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Highfields",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -1.13,
+        "lat": 52.63,
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "South Highfields Conservation Area",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Highfields",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.63,
+        "lon": -1.13,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "London Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Evington Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Melbourne Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "London Road",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "London Road",
+            "lat": 52.62384597483951,
+            "lon": -1.1151119834337313,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "London Road",
+            "lat": 52.62334303041928,
+            "lon": -1.1147150647489315,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "London Road",
+            "lat": 52.623485559087825,
+            "lon": -1.1144973951658435,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "London Road",
+            "lat": 52.62321364375103,
+            "lon": -1.11445967171922,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "London Road",
+            "lat": 52.62334634546291,
+            "lon": -1.1142563819940812,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Evington Road",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Evington Road",
+            "lat": 52.62439475009877,
+            "lon": -1.1038100812294214,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Evington Road",
+            "lat": 52.62450043558768,
+            "lon": -1.1047090769920505,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Evington Road",
+            "lat": 52.62466348130063,
+            "lon": -1.1054665638475494,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Evington Road",
+            "lat": 52.62485488652984,
+            "lon": -1.1060990150561592,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Evington Road",
+            "lat": 52.6250305157082,
+            "lon": -1.1067380714723587,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Melbourne Road",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Melbourne Road",
+            "lat": 52.63185823702129,
+            "lon": -1.1135365277733984,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Melbourne Road",
+            "lat": 52.63459528224336,
+            "lon": -1.113553626232288,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Melbourne Road",
+            "lat": 52.635070741057284,
+            "lon": -1.1134184179557183,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Melbourne Road",
+            "lat": 52.63553781895543,
+            "lon": -1.1133646480756718,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Melbourne Road",
+            "lat": 52.635992077003216,
+            "lon": -1.113399797384154,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Evington Road",
+        "la": "Leicester",
+        "road_a": "London Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Leicester for: ['Evington Road']"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "LE2 1AB"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "LE2 1AB",
+        "lat": 52.62802696607551,
+        "lon": -1.1194334828833856,
+        "admin_district": "City of Leicester (B)"
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "med",
+        "sigma_m": 800,
+        "top_lon": -1.119433,
+        "evidence": "The map shows the South Highfields Conservation Area in Leicester. Postcode LE2 1AB (London Road area) falls within this district and aligns with the road network shown. The site is bounded by London Road and Melbourne Road.",
+        "top_lat": 52.628027,
+        "picked_source": "postcode:LE2 1AB",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

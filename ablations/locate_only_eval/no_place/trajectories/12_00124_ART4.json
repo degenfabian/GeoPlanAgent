@@ -1,0 +1,374 @@
+{
+  "case": "12:00124:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.4843916041759,
+    "top_lon": 1.60613863768792,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:NR34 0AL",
+    "evidence": "The map shows St Mary's Row and Waveney Cottages in Aldeby. Postcode NR34 0AL corresponds to St Mary's Row in Aldeby, South Norfolk, which matches the map labels and the admin region.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.013566115640886844,
+  "gt_centroids": [
+    {
+      "lat": 52.48442741803966,
+      "lon": 1.6063301522986413
+    },
+    {
+      "lat": 52.48384000079339,
+      "lon": 1.6043370628673683
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "road": 4,
+      "postcode": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_b": "Beccles Road",
+        "road_a": "St Mary's Row"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Waveney Cottages"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "St Mary's Row"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: [\"St Mary's Row\"]"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Waveney Cottages",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "St Mary's Row",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Beccles Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Waterheath Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_b": "Waterheath Road",
+        "road_a": "Beccles Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Beccles Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Beccles Road",
+            "lat": 52.52697636483947,
+            "lon": 1.5561035475495688,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Beccles Road",
+            "lat": 52.52836956989461,
+            "lon": 1.55613428457321,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Beccles Road",
+            "lat": 52.52609396438293,
+            "lon": 1.5565238589639487,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Beccles Road",
+            "lat": 52.52981098350045,
+            "lon": 1.5574476612898895,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Beccles Road",
+            "lat": 52.53054789121842,
+            "lon": 1.5586925323258154,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Waterheath Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Waterheath Road",
+            "lat": 52.49229397635477,
+            "lon": 1.586454788045503,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Waterheath Road",
+            "lat": 52.4923648538346,
+            "lon": 1.5865555325810903,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Waterheath Road",
+            "lat": 52.491836412837486,
+            "lon": 1.590072371479794,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Waterheath Road",
+            "lat": 52.49206393811787,
+            "lon": 1.5963836946321763,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Waterheath Road",
+            "lat": 52.48964800920393,
+            "lon": 1.5982984761331467,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Beccles Road",
+          "Waterheath Road"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR34 0AJ"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR34 0AL"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "NR34 0AJ",
+        "lat": 52.47938555480594,
+        "lon": 1.596565894421755,
+        "admin_district": "South Norfolk District"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "NR34 0AL",
+        "lat": 52.48439160417593,
+        "lon": 1.60613863768792,
+        "admin_district": "South Norfolk District"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.4843916041759,
+        "la": "South Norfolk",
+        "lon": 1.60613863768792
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.4843916041759,
+        "lon": 1.60613863768792,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows St Mary's Row and Waveney Cottages in Aldeby. Postcode NR34 0AL corresponds to St Mary's Row in Aldeby, South Norfolk, which matches the map labels and the admin region.",
+        "picked_source": "postcode:NR34 0AL",
+        "sigma_m": 300,
+        "confidence": "high",
+        "top_lat": 52.4843916041759,
+        "verified_inside_admin_region": true,
+        "top_lon": 1.60613863768792
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

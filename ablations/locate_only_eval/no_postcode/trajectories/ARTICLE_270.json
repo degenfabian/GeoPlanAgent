@@ -1,0 +1,328 @@
+{
+  "case": "ARTICLE:270",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.2492689130623,
+    "top_lon": 0.118890648895692,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Clay Close Lane",
+    "evidence": "The site is 'Land at Clay Close Lane, Impington'. The road 'Clay Close Lane' was found in South Cambridgeshire, and the map shows the site (Allotment Gardens) immediately north of this lane, near St Andrew's Church. The road centroid aligns perfectly with the village of Impington.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1663725414192551,
+  "gt_centroids": [
+    {
+      "lat": 52.250641330591804,
+      "lon": 0.11791722012995197
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "road": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "St Andrew's Church Impington"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Clay Close Lane",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Burgoynes Road",
+        "la": "South Cambridgeshire",
+        "road_a": "Clay Close Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Burgoynes House Impington",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Andrew's Church Impington",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Clay Close Lane",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Clay Close Lane",
+            "lat": 52.249268913062316,
+            "lon": 0.1188906488956919,
+            "in_la": "South Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Cambridgeshire for: ['Burgoynes Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Burgoynes House Impington",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Andrew's Church",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Impington",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "Burgoynes Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Cambridgeshire",
+        "lat": 52.2492689130623,
+        "lon": 0.118890648895692
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Andrew's Church",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "St Andrew's Church of England Primary School",
+            "type": "primary education",
+            "lat": 51.70341361217212,
+            "lon": -0.9092398284824913,
+            "admin_district": "South Oxfordshire",
+            "county": "Oxfordshire"
+          },
+          {
+            "name": "St Andrew's Church of England Primary School",
+            "type": "primary education",
+            "lat": 51.612547878097224,
+            "lon": -2.444975585327646,
+            "admin_district": null,
+            "county": "South Gloucestershire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Impington",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Impington",
+            "type": "village",
+            "lat": 52.24784145447854,
+            "lon": 0.10923247504481892,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "Impington Lane",
+            "type": "section of named road",
+            "lat": 52.251115802961564,
+            "lon": 0.1086552794544216,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "Impington Lane",
+            "type": "section of named road",
+            "lat": 52.250051360886005,
+            "lon": 0.11286804259357207,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "Impington International Sixth Form",
+            "type": "further education",
+            "lat": 52.246159381216394,
+            "lon": 0.11679949444133768,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Burgoynes Road",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.2492689130623,
+        "lon": 0.118890648895692,
+        "la": "South Cambridgeshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.17283510081104,
+        "la_centroid_lon": 0.08123824327654822
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "top_lat": 52.2492689130623,
+        "picked_source": "road:Clay Close Lane",
+        "evidence": "The site is 'Land at Clay Close Lane, Impington'. The road 'Clay Close Lane' was found in South Cambridgeshire, and the map shows the site (Allotment Gardens) immediately north of this lane, near St Andrew's Church. The road centroid aligns perfectly with the village of Impington.",
+        "top_lon": 0.118890648895692,
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

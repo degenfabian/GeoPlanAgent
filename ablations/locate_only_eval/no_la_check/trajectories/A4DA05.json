@@ -1,0 +1,345 @@
+{
+  "case": "A4DA05",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.70843,
+    "top_lon": -2.29154,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Collinge Fold Lane",
+    "evidence": "The site is located at Collinge Fold Farm, accessed via Collinge Fold Lane. The intersection of Burnley Road and Hazel Grove (53.7098, -2.2897) and the centroid of Collinge Fold Lane (53.7084, -2.2915) provide a tight cluster for the site location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.10009484237059191,
+  "gt_centroids": [
+    {
+      "lat": 53.70932867676488,
+      "lon": -2.291452303601004
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Rossendale",
+        "query": "Collinge Fold Farm"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Constable Lee Bridge",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Rossendale",
+        "road_b": "Hazel Grove",
+        "road_a": "Burnley Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Rossendale",
+        "query": "Collinge Fold Lane"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Collinge Fold Farm",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Constable Lee Bridge",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Burnley Road",
+          "Hazel Grove"
+        ],
+        "la_filter": "Rossendale",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 53.709813,
+            "lon": -2.289661,
+            "roads": [
+              "Burnley Road",
+              "Hazel Grove"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Collinge Fold Lane",
+        "la_filter": "Rossendale",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Collinge Fold Lane",
+            "lat": 53.70843194756601,
+            "lon": -2.2915367599388476,
+            "in_la": "Rossendale"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Paul's Primary School",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Leabrook Poultry Farm",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Paul's Primary School",
+        "la_filter": "Rossendale",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "St Paul's Primary School",
+            "type": "primary education",
+            "lat": 55.78884333250507,
+            "lon": -4.061761869912108,
+            "admin_district": null,
+            "county": "South Lanarkshire"
+          },
+          {
+            "name": "St Paul's Primary School",
+            "type": "primary education",
+            "lat": 55.84543783108255,
+            "lon": -4.171271174123869,
+            "admin_district": null,
+            "county": "Glasgow City"
+          },
+          {
+            "name": "St Paul's Primary School",
+            "type": "primary education",
+            "lat": 51.471392688397685,
+            "lon": -2.119548352153601,
+            "admin_district": null,
+            "county": "Wiltshire"
+          },
+          {
+            "name": "St Paul's Primary School",
+            "type": "primary education",
+            "lat": 51.37031747073262,
+            "lon": -0.30513589434462896,
+            "admin_district": "Kingston upon Thames",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Leabrook Poultry Farm",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Rawtenstall",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Rawtenstall",
+        "la_filter": "Rossendale",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Rawtenstall",
+            "type": "town",
+            "lat": 53.700838907085995,
+            "lon": -2.2875246980261488,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Rawtenstall",
+            "type": "railway station",
+            "lat": 53.69840055772342,
+            "lon": -2.2922941933497505,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Rawtenstall Road",
+            "type": "named road",
+            "lat": 53.69571560220766,
+            "lon": -2.316068399046958,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Rawtenstall Bus Station",
+            "type": "bus station",
+            "lat": 53.701240500254,
+            "lon": -2.284967595752819,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Rawtenstall Balladen Community Primary School",
+            "type": "primary education",
+            "lat": 53.69247176607607,
+            "lon": -2.290905286001726,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "sigma_m": 300,
+        "evidence": "The site is located at Collinge Fold Farm, accessed via Collinge Fold Lane. The intersection of Burnley Road and Hazel Grove (53.7098, -2.2897) and the centroid of Collinge Fold Lane (53.7084, -2.2915) provide a tight cluster for the site location.",
+        "top_lat": 53.70843,
+        "top_lon": -2.29154,
+        "confidence": "high",
+        "picked_source": "road:Collinge Fold Lane"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

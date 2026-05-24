@@ -1,0 +1,308 @@
+{
+  "case": "C97065B6-03D0-48C4-AE0E-508DB0BE644B",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.18638,
+    "top_lon": 1.23943,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR 2647 4800",
+    "evidence": "The grid reference TR 2647-2648 from the map footer provides a precise location. The map shows the site between Mill Lane and Church Hill in Shepherdswell, which aligns with the grid reference coordinates. Verified inside Dover district.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.28762874183497217,
+  "gt_centroids": [
+    {
+      "lat": 51.18853460325564,
+      "lon": 1.23714633612713
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 5,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 2647 4800"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Shepherdswell"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Mill House Shepherdswell"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Mill Lane",
+        "road_b": "Sibert's Close",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 2647 4800",
+        "lat": 51.186380122315676,
+        "lon": 1.2394303586381994
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Shepherdswell",
+            "type": "railway station",
+            "lat": 51.187821443462965,
+            "lon": 1.2299271424683944,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell",
+            "type": "railway station",
+            "lat": 51.18961223558278,
+            "lon": 1.2302242122526912,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell Road",
+            "type": "section of named road",
+            "lat": 51.19958033556873,
+            "lon": 1.2615893603883515,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Shepherdswell Road",
+            "type": "named road",
+            "lat": 51.19768617242354,
+            "lon": 1.252736654834536,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mill House Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Dover for: [\"Sibert's Close\"]"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "St Andrews Gardens Shepherdswell"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Mill Lane Shepherdswell"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Andrews Gardens Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Mill Lane Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Church Hill Shepherdswell"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.18638,
+        "la": "Dover",
+        "lon": 1.23943
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Church Hill Shepherdswell",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.18638,
+        "lon": 1.23943,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The grid reference TR 2647-2648 from the map footer provides a precise location. The map shows the site between Mill Lane and Church Hill in Shepherdswell, which aligns with the grid reference coordinates. Verified inside Dover district.",
+        "top_lon": 1.23943,
+        "confidence": "high",
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "picked_source": "grid_ref:TR 2647 4800",
+        "top_lat": 51.18638
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

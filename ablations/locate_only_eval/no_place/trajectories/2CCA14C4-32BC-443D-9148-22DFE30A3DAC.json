@@ -1,0 +1,312 @@
+{
+  "case": "2CCA14C4-32BC-443D-9148-22DFE30A3DAC",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.14127,
+    "top_lon": 1.25879,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR 280 430",
+    "evidence": "The map explicitly references OS sheets TR 2843 NW/NE. A 6-figure grid ref TR 280 430 (derived from the sheet prefix and map context) lands exactly on the Palmtree Hill Plantation / Kearsney Court area in Temple Ewell. Postcode CT16 1LZ is nearby but slightly south.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.9484329706037019,
+  "gt_centroids": [
+    {
+      "lat": 51.14909693283401,
+      "lon": 1.2641933968857286
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "grid_ref": 3,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 1LZ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 2843 NW"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 2843 NE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Dover",
+        "road_a": "Alkham Valley Road",
+        "road_b": "Abbey Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CT16 1LZ",
+        "lat": 51.125372905553135,
+        "lon": 1.3133037676580233,
+        "admin_district": "Dover District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 2843 NW",
+        "lat": 51.14513189650306,
+        "lon": 1.2654975689953827
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 2843 NE",
+        "lat": 51.14513189650306,
+        "lon": 1.2654975689953827
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Dover for: ['Alkham Valley Road']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Abbey Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lat": 51.14513,
+        "lon": 1.2655
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Abbey Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Abbey Road",
+            "lat": 51.133189861004595,
+            "lon": 1.254173528246374,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Abbey Road",
+            "lat": 51.133510109621135,
+            "lon": 1.2624045975588016,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Abbey Road",
+            "lat": 51.13317476792585,
+            "lon": 1.2774774313727388,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Abbey Road",
+            "lat": 51.13384010473765,
+            "lon": 1.2728352005306514,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Abbey Road",
+            "lat": 51.13389265901139,
+            "lon": 1.2711415927240435,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.14513,
+        "lon": 1.2655,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 280 430"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 280 430",
+        "lat": 51.141271342665355,
+        "lon": 1.2587903130694358
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.25879,
+        "la": "Dover District",
+        "lat": 51.14127
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.14127,
+        "lon": 1.25879,
+        "la": "Dover District",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "confidence": "high",
+        "picked_source": "grid_ref:TR 280 430",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.25879,
+        "evidence": "The map explicitly references OS sheets TR 2843 NW/NE. A 6-figure grid ref TR 280 430 (derived from the sheet prefix and map context) lands exactly on the Palmtree Hill Plantation / Kearsney Court area in Temple Ewell. Postcode CT16 1LZ is nearby but slightly south.",
+        "top_lat": 51.14127
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

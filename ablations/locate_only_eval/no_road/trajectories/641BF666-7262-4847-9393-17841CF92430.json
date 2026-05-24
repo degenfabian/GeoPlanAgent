@@ -1,0 +1,236 @@
+{
+  "case": "641BF666-7262-4847-9393-17841CF92430",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.2748787834997,
+    "top_lon": 1.33964552532809,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "place:Sandwich",
+    "evidence": "The map shows the Sandwich Walled Town Conservation Area. The place search for 'Sandwich' (Dover) aligns perfectly with the grid references (TR3257, TR3358) provided in the map's metadata. Postcode CT16 3PG is the council office (letterhead).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1155236676309626,
+  "gt_centroids": [
+    {
+      "lat": 51.27589222175795,
+      "lon": 1.340011153800493
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "postcode": 1,
+      "place": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3257"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3358"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PG"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandwich"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3257",
+        "lat": 51.26919707318794,
+        "lon": 1.3316478395968685
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3358",
+        "lat": 51.277765054562465,
+        "lon": 1.3466100191599673
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CT16 3PG' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandwich",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Sandwich",
+            "type": "town",
+            "lat": 51.27487878349973,
+            "lon": 1.339645525328093,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sandwich",
+            "type": "railway station",
+            "lat": 51.269601201081876,
+            "lon": 1.3430194575279453,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sandwich Street",
+            "type": "named road",
+            "lat": 54.965086323926855,
+            "lon": -1.5544924449641349,
+            "admin_district": "Newcastle upon Tyne",
+            "county": null
+          },
+          {
+            "name": "Sandwich Road",
+            "type": "named road",
+            "lat": 55.024461723027265,
+            "lon": -1.459810886077594,
+            "admin_district": "North Tyneside",
+            "county": null
+          },
+          {
+            "name": "Sandwich Grove",
+            "type": "named road",
+            "lat": 54.71277819432742,
+            "lon": -1.2479576414001936,
+            "admin_district": null,
+            "county": "Hartlepool"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lat": 51.2748787834997,
+        "lon": 1.33964552532809
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.2748787834997,
+        "lon": 1.33964552532809,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Sandwich",
+        "top_lat": 51.2748787834997,
+        "sigma_m": 1000,
+        "confidence": "high",
+        "evidence": "The map shows the Sandwich Walled Town Conservation Area. The place search for 'Sandwich' (Dover) aligns perfectly with the grid references (TR3257, TR3358) provided in the map's metadata. Postcode CT16 3PG is the council office (letterhead).",
+        "top_lon": 1.33964552532809,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

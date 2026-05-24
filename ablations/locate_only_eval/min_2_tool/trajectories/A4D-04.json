@@ -1,0 +1,281 @@
+{
+  "case": "A4D-04",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.169,
+    "top_lon": -0.761,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "intersect:Frensham/Hankley/Tilford",
+    "evidence": "The site covers a large area between Frensham Common, Hankley Common, and Tilford Reeds. The centroid of these three points (approx 51.169, -0.761) aligns perfectly with the hatched area on the map. Waverley is the modern LA for the historic Hambledon Rural District.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.2318049618788243,
+  "gt_centroids": [
+    {
+      "lat": 51.16017788702342,
+      "lon": -0.7716843425634584
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Hambledon",
+        "query": "Frensham Common"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Hambledon",
+        "query": "Hankley Common"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Hambledon",
+        "query": "Tilford Reeds"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Millbridge",
+        "la": "Hambledon"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Frensham Common",
+        "la_filter": "Hambledon",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Frensham Common",
+            "type": "other landcover",
+            "lat": 51.16047421089795,
+            "lon": -0.7784396680930405,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hankley Common",
+        "la_filter": "Hambledon",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Hankley Common",
+            "type": "other landcover",
+            "lat": 51.16628105631108,
+            "lon": -0.7400695852994964,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Hankley Common",
+            "type": "named road",
+            "lat": 51.426934989524106,
+            "lon": -0.7787421351284054,
+            "admin_district": null,
+            "county": "Bracknell Forest"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Tilford Reeds",
+        "la_filter": "Hambledon",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Tilford Reeds",
+            "type": "hamlet",
+            "lat": 51.182458639011806,
+            "lon": -0.7653967762619992,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Millbridge",
+        "la_filter": "Hambledon",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Millbridge",
+            "type": "named road",
+            "lat": 56.202645586017496,
+            "lon": -3.4203070112417837,
+            "admin_district": null,
+            "county": "Perth and Kinross"
+          },
+          {
+            "name": "Millbridge",
+            "type": "section of named road",
+            "lat": 53.34503496196842,
+            "lon": -1.775780920797968,
+            "admin_district": "High Peak",
+            "county": "Derbyshire"
+          },
+          {
+            "name": "Millbridge",
+            "type": "named road",
+            "lat": 53.34616027728044,
+            "lon": -1.7767063154000533,
+            "admin_district": "High Peak",
+            "county": "Derbyshire"
+          },
+          {
+            "name": "Millbridge",
+            "type": "village",
+            "lat": 51.1745387563114,
+            "lon": -0.7871232916321811,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Millbridge Plantation",
+            "type": "woodland or forest",
+            "lat": 54.366429277192125,
+            "lon": -3.3963590571807076,
+            "admin_district": null,
+            "county": "Cumberland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.765,
+        "lat": 51.168,
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.168,
+        "lon": -0.765,
+        "la": "Waverley",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.14979708109079,
+        "la_centroid_lon": -0.6327293391700743
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.761,
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Frensham/Hankley/Tilford",
+        "confidence": "high",
+        "top_lat": 51.169,
+        "sigma_m": 1500,
+        "evidence": "The site covers a large area between Frensham Common, Hankley Common, and Tilford Reeds. The centroid of these three points (approx 51.169, -0.761) aligns perfectly with the hatched area on the map. Waverley is the modern LA for the historic Hambledon Rural District."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

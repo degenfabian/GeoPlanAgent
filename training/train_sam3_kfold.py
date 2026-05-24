@@ -1,53 +1,21 @@
-"""SAM3 LoRA fine-tuning — 5-fold CV with combined semantic + instance loss.
+"""SAM3 LoRA fine-tuning — 5-fold CV, combined semantic + instance loss.
 
-Each of the 5 folds trains a fresh LoRA adapter on ~96 train / ~24 val
-cases (deterministic md5(case_name) % 5 split). Both segmentation
-heads contribute to the loss:
+Each fold trains a fresh adapter on ~96 train / ~24 val cases (md5(case_name) % 5
+split). Semantic head: focal + dice + surface (ramped over 15 epochs). Instance
+head: focal + dice on the best-IoU slot; no presence loss so the other slots stay
+diverse for instance-mode inference. Per-fold checkpoints saved under
+models/sam3_lora/fold_<k>/. fold_assignment.json is mirrored from training/dataset/
+to models/ so production can resolve checkpoints without the training set.
 
-  semantic_seg          focal + dice + surface (ramped over first 15
-                         epochs). The model's main mask output.
-  instance pred_masks   best-IoU proposal across the N slots →
-                         focal + dice on that one. No presence loss:
-                         we want the other N-1 slots to stay diverse
-                         so the agent's `mode='instance'` flow gets
-                         useful alternatives at inference.
-
-Per-fold checkpoints land in models/sam3_lora/fold_<k>/:
-  latest/                    PEFT adapter + trainer_state.pt sidecar
-                             (~150 MB: LoRA+heads adapter + AdamW moment
-                             buffers + scheduler + epoch/history); rewritten
-                             every epoch as the resume target. Safely
-                             deletable after training completes.
-  adapter_config.json        rewritten when val IoU improves; PEFT
-  adapter_model.safetensors    publication format (~76 MB total for LoRA
-                             + saved heads). Production loads via
-                             tools.extraction.sam3.load_sam3_ft, which
-                             reads this format directly via
-                             PeftModel.from_pretrained.
-  training_meta.json         epoch / best_val_iou / config that PEFT's
-                             save_pretrained drops on its own.
-  history.json               per-epoch train/val loss + IoU for analysis
-
-fold_assignment.json (case_name → fold index) is mirrored from
-training/dataset/ to models/sam3_lora/ so production can look up the
-per-case checkpoint at inference time without colocating the training
-set.
-
-For reproducibility, every random source is seeded from --seed (default
-42). With --bf16 disabled and the same seed + dataset, two runs of the
-same fold produce bit-identical results on the same hardware. With bf16
-on you get tiny float-rounding deltas but the trajectory is the same.
-
-See training/README.md for the full data-pipeline reproduction recipe
-(auto-label → review → build-curated-set → train).
+Seed: --seed (default 42). --bf16 off + same seed = bit-identical on same hardware.
+See training/README.md for the full data-pipeline recipe.
 
 Usage:
     cd training && uv run python train_sam3_kfold.py
     cd training && uv run python train_sam3_kfold.py --folds 0,1,2 --epochs 25
     cd training && uv run python train_sam3_kfold.py --resume
 
-Wall: roughly 1.5-2 hours per fold on Apple MPS with bf16. Start
-overnight if running all 5.
+Wall: ~1.5–2 h per fold on Apple MPS with bf16.
 """
 
 from __future__ import annotations
@@ -306,12 +274,8 @@ def instance_loss(pred_masks, pred_logits, presence_logits, gt_mask):
 
     cost = -iou
     if pred_logits is not None and pred_logits.numel() > 0:
-        # Class-cost coefficient is small (0.05). At init sigmoid(cls)≈0.5
-        # so the cls term contributes ~0.025; raw IoU on a 16× downsampled
-        # mask is often <0.05 too, so a larger coefficient (originally 0.5)
-        # would dominate matching with random cls signal in early epochs
-        # and lock matching onto a randomly-initialised slot. With 0.05
-        # the IoU term steers matching while cls only breaks ties.
+        # Small (0.05) cls weight: lets IoU steer matching while cls breaks ties.
+        # Larger coefficients let random cls signal dominate matching in early epochs.
         cls_for_match = pred_logits.reshape(-1)[:N]
         cost = cost - 0.05 * torch.sigmoid(cls_for_match)
     best_idx = int(cost.argmin().item())

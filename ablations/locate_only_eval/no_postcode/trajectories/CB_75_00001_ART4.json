@@ -1,0 +1,291 @@
+{
+  "case": "CB:75:00001:ART4",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.7095,
+    "top_lon": -2.4398,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Maumbury Rings",
+    "evidence": "The map shows a distinctive circular earthwork identified in pdf_info as Maumbury Rings in Dorchester. Road geometry matches Weymouth Avenue (A354) running north-south through the site. Coordinates centered on the Rings/Weymouth Ave junction.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 191.2453751850842,
+  "gt_centroids": [
+    {
+      "lat": 51.94923779700328,
+      "lon": -0.5316660978663318
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Maumbury Rings"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Maumbury Rings",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Dorchester"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Dorchester",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Dorchester",
+            "type": "village",
+            "lat": 51.64412125595226,
+            "lon": -1.165774066433401,
+            "admin_district": "South Oxfordshire",
+            "county": "Oxfordshire"
+          },
+          {
+            "name": "Dorchester",
+            "type": "town",
+            "lat": 50.71532095062615,
+            "lon": -2.4381344717358946,
+            "admin_district": null,
+            "county": "Dorset"
+          },
+          {
+            "name": "Dorchester Court",
+            "type": "named road",
+            "lat": 55.88879111751256,
+            "lon": -4.31530252148791,
+            "admin_district": null,
+            "county": "Glasgow City"
+          },
+          {
+            "name": "Dorchester Place",
+            "type": "named road",
+            "lat": 55.88761393734202,
+            "lon": -4.314336849346149,
+            "admin_district": null,
+            "county": "Glasgow City"
+          },
+          {
+            "name": "Dorchester Avenue",
+            "type": "named road",
+            "lat": 55.890336488009744,
+            "lon": -4.31485082469886,
+            "admin_district": null,
+            "county": "Glasgow City"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dorset",
+        "query": "Maumbury Rings"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Maumbury Rings",
+        "la_filter": "Dorset",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Weymouth Avenue",
+        "la": "Dorset"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Weymouth Avenue",
+        "la_filter": "Dorset",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Weymouth Avenue",
+            "lat": 50.70853553515166,
+            "lon": -2.4408026716354407,
+            "in_la": "Dorset"
+          },
+          {
+            "name": "Weymouth Avenue",
+            "lat": 50.70914921505136,
+            "lon": -2.4402277675773023,
+            "in_la": "Dorset"
+          },
+          {
+            "name": "Weymouth Avenue",
+            "lat": 50.70951850664049,
+            "lon": -2.4398931668135706,
+            "in_la": "Dorset"
+          },
+          {
+            "name": "Weymouth Avenue",
+            "lat": 50.709948382683855,
+            "lon": -2.4394938374910353,
+            "in_la": "Dorset"
+          },
+          {
+            "name": "Weymouth Avenue",
+            "lat": 50.71048038734603,
+            "lon": -2.4389944032578894,
+            "in_la": "Dorset"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dorset Council",
+        "lon": -2.4408,
+        "lat": 50.7085
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.7085,
+        "lon": -2.4408,
+        "la": "Dorset Council",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.806321959940966,
+        "la_centroid_lon": -2.3334460447768595
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Maumbury Rings",
+        "top_lat": 50.7095,
+        "sigma_m": 300,
+        "confidence": "high",
+        "evidence": "The map shows a distinctive circular earthwork identified in pdf_info as Maumbury Rings in Dorchester. Road geometry matches Weymouth Avenue (A354) running north-south through the site. Coordinates centered on the Rings/Weymouth Ave junction.",
+        "top_lon": -2.4398,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,318 @@
+{
+  "case": "12:00141:ART4",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.658404,
+    "top_lon": 1.200472,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TG165115",
+    "evidence": "The map shows a site on 'Parklands' off 'West End' in Costessey. The grid reference TG1611/TG1711 from the map footer points to this area. A refined grid ref TG165115 aligns perfectly with the West End road centroids in Costessey.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06654288938368313,
+  "gt_centroids": [
+    {
+      "lat": 52.658995430218226,
+      "lon": 1.2006225075185237
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "place": 3,
+      "intersect": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG161111"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Parklands, Costessey"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Falcon Lodge, Costessey"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_b": "West End",
+        "road_a": "Parklands"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG161111",
+        "lat": 52.65497351911765,
+        "lon": 1.1943055510453642
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Parklands, Costessey",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Falcon Lodge, Costessey",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Parklands']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "West End",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Costessey"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "West End",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "West End",
+            "lat": 52.65963363678481,
+            "lon": 1.2009917878902108,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.65871383506571,
+            "lon": 1.2044364616302121,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.658667963626534,
+            "lon": 1.2078177606980185,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.65901525178464,
+            "lon": 1.2094403379061376,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "West End",
+            "lat": 52.66585589681674,
+            "lon": 1.1962905133142714,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Costessey",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Costessey",
+            "type": "village",
+            "lat": 52.659132738761286,
+            "lon": 1.2101092657767871,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Costessey Lane",
+            "type": "section of named road",
+            "lat": 52.66867002011816,
+            "lon": 1.218235175612989,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Costessey Road",
+            "type": "section of named road",
+            "lat": 52.67893136373368,
+            "lon": 1.1943233469757526,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Costessey Lane",
+            "type": "section of named road",
+            "lat": 52.67911368613791,
+            "lon": 1.1644171473000267,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Costessey Lane",
+            "type": "named road",
+            "lat": 52.672262597491276,
+            "lon": 1.1599715317293797,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG165115"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG165115",
+        "lat": 52.658404354801654,
+        "lon": 1.2004718866579536
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "grid_ref:TG165115",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.200472,
+        "top_lat": 52.658404,
+        "evidence": "The map shows a site on 'Parklands' off 'West End' in Costessey. The grid reference TG1611/TG1711 from the map footer points to this area. A refined grid ref TG165115 aligns perfectly with the West End road centroids in Costessey.",
+        "sigma_m": 300
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

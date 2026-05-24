@@ -1,21 +1,4 @@
-"""Phase 2 worker: PydanticAI Agent with all tools registered.
-
-The worker `_agent` is decorated by the tool modules under
-tools.agent.tools.{locate,match,verify} at import time via
-@_agent.tool — so this module must be importable BEFORE those tool
-modules.
-
-Defines:
-  - _agent — the worker Agent instance
-  - _strip_old_images — history processor that drops binary images from
-    older messages to keep token cost flat
-  - validate_boundary_outcome — output validator enforcing that
-    status='accepted' has a committed geojson, and that
-    status='district_lookup' produced a geojson via lookup_district.
-    Post-commit visual review is delegated to the optional critic
-    (enable_critic=True), so the worker no longer self-verifies.
-  - build_system_prompt — registers WORKER_SYSTEM_PROMPT
-"""
+"""Phase 2 worker Agent + output validator + history processor."""
 
 from __future__ import annotations
 
@@ -30,21 +13,11 @@ load_dotenv()
 
 
 def _strip_old_images(messages):
-    """Replace BinaryContent in messages older than KEEP_RECENT with a
-    placeholder. Without this, multi-image tool returns (e.g. match_at
-    panels) get replayed every subsequent turn — token cost grows
-    quadratically.
+    """Drop images from messages older than KEEP_RECENT to bound token cost.
 
-    We REBIND ``part.content`` to a fresh list rather than mutating the
-    existing list in place. pydantic-ai's history-processor mechanism
-    is called every turn (and the critic rehand passes
-    ``worker_result.all_messages()`` back in as ``message_history`` of
-    the next call), so the same list object is reached repeatedly. An
-    in-place mutation cascades — each rehand iteration strips more
-    history off the ORIGINAL result, and the on-disk message_log
-    written later (in ``runtime.extract_message_log``) sees the
-    stripped state for every prior turn. The rebind keeps the original
-    list intact and only the freshly-built copy carries placeholders.
+    Rebinds ``part.content`` rather than mutating in place — the same list
+    objects are passed back into pydantic-ai across critic rehands, and an
+    in-place strip would cascade and corrupt the on-disk message_log.
     """
     KEEP_RECENT = 4
     if len(messages) <= KEEP_RECENT:
@@ -80,9 +53,7 @@ def _strip_old_images(messages):
             try:
                 part.content = new_content
             except Exception:
-                # If the part is frozen (e.g. pydantic immutable
-                # model), fall back to in-place mutation — better
-                # one-time stripping than a token-cost blowup.
+                # Frozen part: fall back to in-place to avoid a token blowup.
                 content[:] = new_content
     return messages
 
@@ -94,7 +65,6 @@ _agent = Agent(
     retries=5,
     output_retries=3,
     history_processors=[_strip_old_images],
-    # temperature=0 for reproducible runs.
     model_settings={"temperature": 0},
 )
 
@@ -103,22 +73,11 @@ _agent = Agent(
 async def validate_boundary_outcome(
     ctx: RunContext[AgentState], out: BoundaryOutcome
 ) -> BoundaryOutcome:
-    """Enforce that required tool calls happened before accepting an outcome.
-
-    Pydantic-AI raises ModelRetry on failure and the agent has to submit
-    again after filling the gap. Post-commit visual review is no longer
-    the worker's responsibility — the optional independent critic
-    (enable_critic=True) handles that role.
-    """
+    """Raise ModelRetry if accepted/district_lookup is submitted without the prerequisite tool calls."""
     state = ctx.deps
     state.last_output = out
 
-    # Use the union total (summed across all area_groups) when
-    # available — primary-group n_inliers alone underreports
-    # multi-group docs. ``commit_match`` writes ``total_inliers``
-    # into ``state.current_result`` for every successful commit; for
-    # old/legacy cached state we fall back to the primary-group's
-    # ``match_info.n_inliers``.
+    # Prefer the union total across area_groups; fall back to primary group's n_inliers.
     cr = state.current_result or {}
     mi = cr.get("match_info") or {}
     final_inl = (
@@ -133,11 +92,7 @@ async def validate_boundary_outcome(
     if out.final_n_inliers != final_inl:
         out.final_n_inliers = final_inl
 
-    # district_lookup requires only that lookup_district succeeded.
-    # The polygon comes from OS BoundaryLine and cannot be refined via
-    # SAM3 or re-projection. If the agent suspects the wrong district
-    # was looked up, the recovery is to call lookup_district again with
-    # a different '|'-alternate name.
+    # district_lookup: polygon must come from a successful lookup_district call.
     if out.status == "district_lookup":
         if state.current_result.get("geojson") is None:
             raise ModelRetry(

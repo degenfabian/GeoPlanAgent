@@ -1,0 +1,286 @@
+{
+  "case": "A4D14",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4858853299838,
+    "top_lon": -2.54116925753593,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "grid_ref:ST 6276 362520E 176465N",
+    "evidence": "The map explicitly provides a high-precision OS grid reference (ST 6276 362520E 176465N) which aligns perfectly with the site address 'Blackberry Hill, Stapleton' and is verified inside the Bristol admin region.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.026890582659827352,
+  "gt_centroids": [
+    {
+      "lat": 51.48566575912615,
+      "lon": -2.541332013595114
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 2,
+      "postcode": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "ST 6276 362520E 176465N"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Grove Wood"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "BS9 1LT"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "BS1 5UY"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "ST 6276 362520E 176465N",
+        "lat": 51.48588532998377,
+        "lon": -2.5411692575359313
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Grove Wood",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Grove Wood",
+            "type": "named road",
+            "lat": 55.8356948830698,
+            "lon": -4.052519727290069,
+            "admin_district": null,
+            "county": "North Lanarkshire"
+          },
+          {
+            "name": "Grove Wood",
+            "type": "woodland or forest",
+            "lat": 55.83325486509027,
+            "lon": -4.0457801747963815,
+            "admin_district": null,
+            "county": "North Lanarkshire"
+          },
+          {
+            "name": "Grove Wood",
+            "type": "woodland or forest",
+            "lat": 53.93111658635255,
+            "lon": -2.3137946396301863,
+            "admin_district": "Ribble Valley",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Grove Wood",
+            "type": "woodland or forest",
+            "lat": 53.664409387496725,
+            "lon": -1.1834440807200355,
+            "admin_district": null,
+            "county": "North Yorkshire"
+          },
+          {
+            "name": "Grove Wood",
+            "type": "woodland or forest",
+            "lat": 52.767926306018545,
+            "lon": -1.6465790029808294,
+            "admin_district": "South Derbyshire",
+            "county": "Derbyshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "BS9 1LT",
+        "lat": 51.474268416259065,
+        "lon": -2.6260099855484267,
+        "admin_district": "City of Bristol (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'BS1 5UY' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Blackberry Hill"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.4858853299838,
+        "lon": -2.54116925753593,
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Blackberry Hill",
+        "la_filter": "Bristol",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Blackberry Hill",
+            "type": "named road",
+            "lat": 51.483440861790235,
+            "lon": -2.54478378234629,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Blackberry Hill",
+            "type": "section of named road",
+            "lat": 51.48588637509776,
+            "lon": -2.546757188400573,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Blackberry Hill Hospital",
+            "type": "hospital",
+            "lat": 51.4848755898861,
+            "lon": -2.5378449470562985,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.4858853299838,
+        "lon": -2.54116925753593,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -2.54116925753593,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.4858853299838,
+        "confidence": "high",
+        "sigma_m": 200,
+        "picked_source": "grid_ref:ST 6276 362520E 176465N",
+        "evidence": "The map explicitly provides a high-precision OS grid reference (ST 6276 362520E 176465N) which aligns perfectly with the site address 'Blackberry Hill, Stapleton' and is verified inside the Bristol admin region."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

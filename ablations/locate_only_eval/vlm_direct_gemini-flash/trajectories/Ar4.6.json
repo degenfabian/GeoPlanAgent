@@ -1,0 +1,60 @@
+{
+  "case": "Ar4.6",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.7485,
+    "lon": -0.3345,
+    "reasoning": "The document defines an Article 4 Direction area in St Albans centered on Sopwell Lane and Albert Street, with the map on page 4 showing the intersection of these streets and Holywell Hill."
+  },
+  "err_km": 0.2823712306262119,
+  "gt_centroids": [
+    {
+      "lat": 51.74862092594286,
+      "lon": -0.3385970579771725
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 51.7485,
+        "lon": -0.3345,
+        "reasoning": "The document defines an Article 4 Direction area in St Albans centered on Sopwell Lane and Albert Street, with the map on page 4 showing the intersection of these streets and Holywell Hill."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

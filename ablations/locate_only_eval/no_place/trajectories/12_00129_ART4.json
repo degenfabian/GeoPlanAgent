@@ -1,0 +1,278 @@
+{
+  "case": "12:00129:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.591,
+    "top_lon": 1.28,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "grid_ref:TG 222 043",
+    "evidence": "The site is located at Harford Farm, between the A140 (Ipswich Road) and Caistor St Edmund. The map shows the site bounded by the A140 to the west and the railway to the east. Grid references TG 220 040 and TG 225 045 bracket the area perfectly. Picked center is within the blue boundary.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.31243617240152527,
+  "gt_centroids": [
+    {
+      "lat": 52.588214903805756,
+      "lon": 1.2806120267684353
+    },
+    {
+      "lat": 52.59346740495619,
+      "lon": 1.2822672088020546
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 3,
+      "grid_ref": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Long Plantation",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Ipswich Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "A140",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 230 040"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Long Plantation",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Ipswich Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ipswich Road",
+            "lat": 52.58868294946071,
+            "lon": 1.2750674116562895,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Ipswich Road",
+            "lat": 52.58869173825641,
+            "lon": 1.274602026960485,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Ipswich Road",
+            "lat": 52.59005467291582,
+            "lon": 1.2747777057337613,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Ipswich Road",
+            "lat": 52.59278296015844,
+            "lon": 1.2747703413045255,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Ipswich Road",
+            "lat": 52.594320692991374,
+            "lon": 1.2748076402146185,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "A140",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG 230 040",
+        "lat": 52.58846057938457,
+        "lon": 1.2913522927994197
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 220 040"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 225 045"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.592,
+        "lon": 1.28,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG 220 040",
+        "lat": 52.58886959047035,
+        "lon": 1.276616060521668
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG 225 045",
+        "lat": 52.5931528199916,
+        "lon": 1.2843200464890254
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.592,
+        "lon": 1.28,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "grid_ref:TG 222 043",
+        "sigma_m": 500,
+        "evidence": "The site is located at Harford Farm, between the A140 (Ipswich Road) and Caistor St Edmund. The map shows the site bounded by the A140 to the west and the railway to the east. Grid references TG 220 040 and TG 225 045 bracket the area perfectly. Picked center is within the blue boundary.",
+        "top_lat": 52.591,
+        "top_lon": 1.28,
+        "confidence": "high",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

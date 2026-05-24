@@ -1,0 +1,187 @@
+{
+  "case": "A002S",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6326,
+    "top_lon": -0.4129,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:PE9 3EZ",
+    "evidence": "The site address 'Bay Tree Cottage, Stamford Road, Barnack, PE9 3EZ' matches the postcode PE9 3EZ, which falls within the Peterborough admin region. The map labels (Rock Cottage, Rose Cottage) confirm the location along Stamford Road in Barnack.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.017624689969039656,
+  "gt_centroids": [
+    {
+      "lat": 52.632534858867096,
+      "lon": -0.4126619172659531
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "PE9 3EZ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Peterborough",
+        "query": "Stamford Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "PE9 3EZ",
+        "lat": 52.63260060672965,
+        "lon": -0.41293616330453176,
+        "admin_district": "City of Peterborough (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Stamford Road",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Stamford Road",
+            "lat": 52.63361310897173,
+            "lon": -0.41545677501085165,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Stamford Road",
+            "lat": 52.63329874726126,
+            "lon": -0.41438121103959136,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Stamford Road",
+            "lat": 52.633320269574234,
+            "lon": -0.4139740654663525,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Stamford Road",
+            "lat": 52.63293054766574,
+            "lon": -0.4138010835447543,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Stamford Road",
+            "lat": 52.63217914968999,
+            "lon": -0.4127735032492689,
+            "in_la": "Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.6326,
+        "la": "Peterborough",
+        "lon": -0.4129
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6326,
+        "lon": -0.4129,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site address 'Bay Tree Cottage, Stamford Road, Barnack, PE9 3EZ' matches the postcode PE9 3EZ, which falls within the Peterborough admin region. The map labels (Rock Cottage, Rose Cottage) confirm the location along Stamford Road in Barnack.",
+        "top_lat": 52.6326,
+        "sigma_m": 300,
+        "picked_source": "postcode:PE9 3EZ",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lon": -0.4129
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

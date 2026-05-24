@@ -1,0 +1,341 @@
+{
+  "case": "35046BA6-A370-41C1-8316-8797AF1524DD",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.175,
+    "top_lon": 1.205,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Lydden Hill",
+    "evidence": "The map shows Lydden Circuit (Motor Racing) adjacent to the A2 Dover Road. Geocoding 'Lydden Hill' in Dover returns coordinates on the A2 immediately adjacent to the circuit. The grid references TR2346 and TR2446 also confirm this location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.22948677841485488,
+  "gt_centroids": [
+    {
+      "lat": 51.176945513658914,
+      "lon": 1.2060985720900135
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lydden Circuit"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Five Oaks Farm, Denton with Wootton"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Denton with Wootton"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lydden Circuit",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Five Oaks Farm, Denton with Wootton",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Denton with Wootton",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Lydden Hill"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wootton",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Denton"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lydden Hill",
+        "la_filter": "Dover",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Lydden Hill",
+            "type": "named road",
+            "lat": 51.169230638903656,
+            "lon": 1.224320492575413,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Lydden Hill",
+            "type": "section of named road",
+            "lat": 51.16378811858487,
+            "lon": 1.231179520095686,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wootton",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Wootton",
+            "type": "village",
+            "lat": 51.17378950854844,
+            "lon": 1.1793935410632341,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Wootton Lane",
+            "type": "section of named road",
+            "lat": 51.164500790888056,
+            "lon": 1.1769660663624466,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Wootton Lane",
+            "type": "named road",
+            "lat": 51.16620115428919,
+            "lon": 1.1769542277487943,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Wootton Lane",
+            "type": "section of named road",
+            "lat": 51.17305869757098,
+            "lon": 1.1788138134478654,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Denton",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Denton",
+            "type": "village",
+            "lat": 51.181261641265664,
+            "lon": 1.1685591484310165,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Denton Lane",
+            "type": "named road",
+            "lat": 51.17727554532812,
+            "lon": 1.1732512433775597,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Denton Park",
+            "type": "other landcover",
+            "lat": 51.17409850955342,
+            "lon": 1.1713301928349331,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Denton Wood",
+            "type": "woodland or forest",
+            "lat": 51.169637801651724,
+            "lon": 1.1669891993724064,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Denton Lane",
+            "type": "section of named road",
+            "lat": 51.1761447475052,
+            "lon": 1.175806532174841,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lydden Race Circuit",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lydden Race Circuit",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows Lydden Circuit (Motor Racing) adjacent to the A2 Dover Road. Geocoding 'Lydden Hill' in Dover returns coordinates on the A2 immediately adjacent to the circuit. The grid references TR2346 and TR2446 also confirm this location.",
+        "picked_source": "place:Lydden Hill",
+        "sigma_m": 400,
+        "top_lon": 1.205,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 51.175
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

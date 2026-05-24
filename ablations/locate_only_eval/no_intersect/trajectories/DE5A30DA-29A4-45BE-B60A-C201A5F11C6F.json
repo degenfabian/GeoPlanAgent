@@ -1,0 +1,218 @@
+{
+  "case": "DE5A30DA-29A4-45BE-B60A-C201A5F11C6F",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1537434938596,
+    "top_lon": 1.37464197182249,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Droveway Gardens",
+    "evidence": "The site is explicitly named 'Land at Droveway Gardens' in the map title and pdf_info. The road 'Droveway Gardens' was found in the correct Local Authority (Dover) and its centroid aligns perfectly with the village of St Margaret's at Cliffe shown on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.23314764664452015,
+  "gt_centroids": [
+    {
+      "lat": 51.15331515523218,
+      "lon": 1.3779143124253197
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "road": 1,
+      "grid_ref": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Droveway Gardens, St Margaret's at Cliffe"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Margaret's at Cliffe",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Droveway Gardens",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 36 44"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Droveway Gardens, St Margaret's at Cliffe",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Margaret's at Cliffe",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "St Margaret's at Cliffe",
+            "type": "village",
+            "lat": 51.154223031313414,
+            "lon": 1.3713980535583459,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Droveway Gardens",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Droveway Gardens",
+            "lat": 51.15374349385958,
+            "lon": 1.3746419718224936,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 36 44",
+        "lat": 51.15086186292679,
+        "lon": 1.3803207606075063
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.1537434938596,
+        "lon": 1.37464197182249,
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1537434938596,
+        "lon": 1.37464197182249,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "picked_source": "road:Droveway Gardens",
+        "top_lat": 51.1537434938596,
+        "evidence": "The site is explicitly named 'Land at Droveway Gardens' in the map title and pdf_info. The road 'Droveway Gardens' was found in the correct Local Authority (Dover) and its centroid aligns perfectly with the village of St Margaret's at Cliffe shown on the map.",
+        "verified_inside_admin_region": true,
+        "sigma_m": 300,
+        "top_lon": 1.37464197182249
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

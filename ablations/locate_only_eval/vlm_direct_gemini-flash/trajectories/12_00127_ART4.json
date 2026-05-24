@@ -1,0 +1,64 @@
+{
+  "case": "12:00127:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.4945,
+    "lon": 1.2985,
+    "reasoning": "The document specifies O.S. parcels 670 and 726 in the parish of Hempnall, Norfolk, which correspond to fields at Turkey Row, south of the village center."
+  },
+  "err_km": 1.1843338356079431,
+  "gt_centroids": [
+    {
+      "lat": 52.48593406515655,
+      "lon": 1.3088957223593745
+    },
+    {
+      "lat": 52.48418898990687,
+      "lon": 1.309110521940893
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": 1.2985,
+        "lat": 52.4945,
+        "reasoning": "The document specifies O.S. parcels 670 and 726 in the parish of Hempnall, Norfolk, which correspond to fields at Turkey Row, south of the village center."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

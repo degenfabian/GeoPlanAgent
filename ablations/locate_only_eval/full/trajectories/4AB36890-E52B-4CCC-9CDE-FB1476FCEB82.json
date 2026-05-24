@@ -1,0 +1,356 @@
+{
+  "case": "4AB36890-E52B-4CCC-9CDE-FB1476FCEB82",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.166337919965,
+    "top_lon": 1.3789350204035,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Old Bottom Free Down",
+    "evidence": "The site is located at 'Old Bottom Free Down' as explicitly labeled on the map and confirmed by the place geocoder. This location is consistent with the site address 'Land at Kingsdown Road, St. Margaret's-at-Cliffe' and falls within the Dover admin region.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3845742178747672,
+  "gt_centroids": [
+    {
+      "lat": 51.16352199808495,
+      "lon": 1.3821372197890454
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 5,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 34 SE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St. Margaret's-at-Cliffe",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Barrow Mount",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Kingsdown Road",
+        "road_b": "The Droveway",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'TR 34 SE'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St. Margaret's-at-Cliffe",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barrow Mount",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Kingsdown Road",
+          "The Droveway"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Margaret's at Cliffe"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Kingsdown Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bockell Hill"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Old Bottom Free Down"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Margaret's at Cliffe",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "St Margaret's at Cliffe",
+            "type": "village",
+            "lat": 51.154223031313414,
+            "lon": 1.3713980535583459,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Kingsdown Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.205509874311005,
+            "lon": 1.4024808272492049,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.20228111458364,
+            "lon": 1.4023069872330225,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.200397324541484,
+            "lon": 1.4025476384451352,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.18916870039809,
+            "lon": 1.4024972389384933,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.19212553735629,
+            "lon": 1.4024516088494872,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bockell Hill",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Bockell Hill",
+            "type": "hill or mountain",
+            "lat": 51.15488973653388,
+            "lon": 1.3862939562931165,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Old Bottom Free Down",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Old Bottom Free Down",
+            "type": "other landcover",
+            "lat": 51.16633791996495,
+            "lon": 1.3789350204034962,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.166337919965,
+        "la": "Dover",
+        "lon": 1.3789350204035
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.166337919965,
+        "lon": 1.3789350204035,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lat": 51.166337919965,
+        "top_lon": 1.3789350204035,
+        "picked_source": "place:Old Bottom Free Down",
+        "sigma_m": 400,
+        "confidence": "high",
+        "evidence": "The site is located at 'Old Bottom Free Down' as explicitly labeled on the map and confirmed by the place geocoder. This location is consistent with the site address 'Land at Kingsdown Road, St. Margaret's-at-Cliffe' and falls within the Dover admin region."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

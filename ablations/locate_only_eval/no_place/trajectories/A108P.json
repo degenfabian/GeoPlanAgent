@@ -1,0 +1,235 @@
+{
+  "case": "A108P",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.56,
+    "top_lon": -0.255,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "intersect:Oundle Road x New Road",
+    "evidence": "The map shows a large area in Woodston, Peterborough, bounded by Oundle Road, New Road, and London Road. Intersections of these roads (Oundle x New and London x New) and the centroid of Belsize Avenue (which runs through the site) all cluster around this coordinate.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.07127344771973645,
+  "gt_centroids": [
+    {
+      "lat": 52.5348614532122,
+      "lon": -0.269282392317978
+    },
+    {
+      "lat": 52.559365781249205,
+      "lon": -0.2548472907921313
+    },
+    {
+      "lat": 52.5876828775095,
+      "lon": -0.24108131416269787
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Oundle Road",
+        "road_b": "New Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "New Road",
+        "la": "Peterborough",
+        "road_a": "London Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Belsize Avenue",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Oundle Road",
+          "New Road"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.564055,
+            "lon": -0.255052,
+            "roads": [
+              "Oundle Road",
+              "New Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "New Road"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.559042,
+            "lon": -0.249261,
+            "roads": [
+              "London Road",
+              "New Road"
+            ]
+          },
+          {
+            "lat": 52.50347,
+            "lon": -0.291163,
+            "roads": [
+              "London Road",
+              "New Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Belsize Avenue",
+        "la_filter": "Peterborough",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Belsize Avenue",
+            "lat": 52.55853531518143,
+            "lon": -0.25725510919230515,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "Belsize Avenue",
+            "lat": 52.5570989843991,
+            "lon": -0.254354319890066,
+            "in_la": "Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Peterborough",
+        "lon": -0.255,
+        "lat": 52.56
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.56,
+        "lon": -0.255,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "intersect:Oundle Road x New Road",
+        "evidence": "The map shows a large area in Woodston, Peterborough, bounded by Oundle Road, New Road, and London Road. Intersections of these roads (Oundle x New and London x New) and the centroid of Belsize Avenue (which runs through the site) all cluster around this coordinate.",
+        "verified_inside_admin_region": true,
+        "top_lat": 52.56,
+        "sigma_m": 500,
+        "top_lon": -0.255,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

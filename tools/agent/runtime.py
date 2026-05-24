@@ -83,6 +83,9 @@ def prepare_worker_state(
     case_name: Optional[str],
     verbose: bool,
     locate_model: str = "google/gemini-3-flash-preview",
+    locate_disabled_tools: frozenset = frozenset(
+        {"postcode", "grid_ref", "road", "intersect", "la_check"}
+    ),
 ) -> Tuple[AgentState, list]:
     """Build AgentState + worker user_parts (summary JSON + primary page image)."""
     state = AgentState(
@@ -95,6 +98,7 @@ def prepare_worker_state(
         sam3_state=sam3,
         case_name=case_name,
         locate_model=locate_model,
+        locate_disabled_tools=locate_disabled_tools,
     )
     state.pdf_info = {k: v for k, v in pdf_info.items() if not k.startswith("_")}
 

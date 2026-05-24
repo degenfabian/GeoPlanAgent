@@ -44,9 +44,6 @@ import torchvision.models as tv_models
 import torchvision.transforms as T
 
 
-# Repo root. After the 2026-05-13 tools/ reorganization this file moved from
-# tools/rotation_classifier.py to tools/io/rotation_classifier.py — three
-# .parent steps now to reach the repo root (was two before the reorg).
 _REPO = Path(__file__).resolve().parent.parent.parent
 _CKPT_PATH = _REPO / "models" / "rotation_classifier" / "best.pt"
 _KFOLD_DIR = _REPO / "models" / "rotation_classifier_kfold"

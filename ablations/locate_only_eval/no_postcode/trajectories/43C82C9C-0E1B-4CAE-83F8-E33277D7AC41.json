@@ -1,0 +1,307 @@
+{
+  "case": "43C82C9C-0E1B-4CAE-83F8-E33277D7AC41",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.152,
+    "top_lon": 1.376,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:St Margaret's-at-Cliffe Primary School",
+    "evidence": "The site is located between Sea Street and Droveway Gardens in St Margaret's-at-Cliffe. Multiple signals (Primary School, Portal House School, and road centroids) cluster tightly around this coordinate. The grid reference TR3644 also covers this 1km square.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.04368581685968818,
+  "gt_centroids": [
+    {
+      "lat": 51.1519486995278,
+      "lon": 1.3766209773135476
+    },
+    {
+      "lat": 51.15331504731796,
+      "lon": 1.3779144721309602
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 2,
+      "intersect": 1,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3644"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Margaret's-at-Cliffe Primary School",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Droveway Gardens",
+        "la": "Dover",
+        "road_a": "Sea Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3644",
+        "lat": 51.15086186292679,
+        "lon": 1.3803207606075063
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Margaret's-at-Cliffe Primary School",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "St Margaret's-at-Cliffe Primary School",
+            "type": "primary education",
+            "lat": 51.153001179368104,
+            "lon": 1.375084946515249,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Sea Street",
+          "Droveway Gardens"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Portal House School",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Sea Street",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Droveway Gardens",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Portal House School",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Portal House School",
+            "type": "special needs education",
+            "lat": 51.152556666160436,
+            "lon": 1.374280124243319,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Sea Street",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Sea Street",
+            "lat": 51.15238751396618,
+            "lon": 1.3737565879871585,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Sea Street",
+            "lat": 51.15299113384169,
+            "lon": 1.3729328090896393,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Sea Street",
+            "lat": 51.15116154361325,
+            "lon": 1.3764083277584687,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Droveway Gardens",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Droveway Gardens",
+            "lat": 51.15374349385958,
+            "lon": 1.3746419718224936,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.152,
+        "la": "Dover",
+        "lon": 1.376
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.152,
+        "lon": 1.376,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "picked_source": "place:St Margaret's-at-Cliffe Primary School",
+        "evidence": "The site is located between Sea Street and Droveway Gardens in St Margaret's-at-Cliffe. Multiple signals (Primary School, Portal House School, and road centroids) cluster tightly around this coordinate. The grid reference TR3644 also covers this 1km square.",
+        "top_lon": 1.376,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.152,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

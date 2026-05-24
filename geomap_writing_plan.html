@@ -1,0 +1,1871 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plan2Map Writing Plan</title>
+  <style>
+    :root {
+      --ink: #18222c;
+      --muted: #5e6b76;
+      --paper: #f6f3ed;
+      --panel: #ffffff;
+      --line: #d9d1c6;
+      --blue: #dcebf6;
+      --blue-ink: #1e5c82;
+      --green: #dff0e6;
+      --green-ink: #236a4a;
+      --amber: #f6e5ba;
+      --amber-ink: #83560e;
+      --rose: #f4dfe3;
+      --rose-ink: #873145;
+      --violet: #ebe3f4;
+      --violet-ink: #5e427a;
+      --slate: #e7edf1;
+      --slate-ink: #3c5364;
+      --shadow: 0 14px 38px rgba(28, 37, 46, 0.11);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--blue-ink);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
+
+    .lang-input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: flex-end;
+      padding: 8px 0 18px;
+      background: linear-gradient(180deg, rgba(246, 243, 237, 0.96), rgba(246, 243, 237, 0));
+    }
+
+    .lang-toggle {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 8px 22px rgba(28, 37, 46, 0.08);
+    }
+
+    .lang-toggle label {
+      min-width: 92px;
+      padding: 9px 12px;
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 760;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #lang-zh:checked ~ .shell .lang-toggle label[for="lang-zh"],
+    #lang-en:checked ~ .shell .lang-toggle label[for="lang-en"] {
+      background: var(--ink);
+      color: #ffffff;
+    }
+
+    .lang-content {
+      display: none;
+    }
+
+    #lang-zh:checked ~ .shell .lang-content.zh,
+    #lang-en:checked ~ .shell .lang-content.en {
+      display: block;
+    }
+
+    header {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+
+    .eyebrow {
+      color: var(--blue-ink);
+      font-size: 13px;
+      font-weight: 780;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 960px;
+      margin: 0;
+      font-size: 52px;
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 930px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.68;
+    }
+
+    .thesis {
+      margin-top: 22px;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-left: 6px solid var(--blue-ink);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .thesis strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--blue-ink);
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    .thesis p {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.55;
+    }
+
+    section {
+      margin-top: 30px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .hint {
+      max-width: 540px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 18px;
+      box-shadow: 0 10px 28px rgba(28, 37, 46, 0.07);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 11px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 34px;
+      height: 28px;
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 840;
+    }
+
+    .b-blue { background: var(--blue-ink); }
+    .b-green { background: var(--green-ink); }
+    .b-amber { background: var(--amber-ink); }
+    .b-rose { background: var(--rose-ink); }
+    .b-violet { background: var(--violet-ink); }
+    .b-slate { background: var(--slate-ink); }
+
+    .card h3 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.62;
+    }
+
+    .card ul,
+    .checklist {
+      margin: 12px 0 0;
+      padding-left: 20px;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.58;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fbfaf7;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .storyline {
+      display: grid;
+      gap: 12px;
+      counter-reset: story;
+    }
+
+    .story-step {
+      display: grid;
+      grid-template-columns: 62px 1fr;
+      gap: 14px;
+      align-items: stretch;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 8px 22px rgba(28, 37, 46, 0.06);
+      overflow: hidden;
+    }
+
+    .story-step::before {
+      counter-increment: story;
+      content: counter(story);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--blue);
+      color: var(--blue-ink);
+      font-size: 24px;
+      font-weight: 860;
+    }
+
+    .story-step div {
+      padding: 15px 16px 15px 0;
+    }
+
+    .story-step h3 {
+      margin: 0 0 7px;
+      font-size: 17px;
+      line-height: 1.25;
+    }
+
+    .story-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.62;
+    }
+
+    .data-flow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .data-box {
+      position: relative;
+      min-height: 146px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 18px;
+      box-shadow: 0 9px 24px rgba(28, 37, 46, 0.06);
+    }
+
+    .data-box::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -18px;
+      width: 22px;
+      height: 2px;
+      background: #9ba8b3;
+    }
+
+    .data-box:last-child::after {
+      display: none;
+    }
+
+    .data-box h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .data-box p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.58;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 10px 28px rgba(28, 37, 46, 0.07);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+      line-height: 1.52;
+    }
+
+    th {
+      background: #efe8dc;
+      color: #25313c;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .source-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .source-list li {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 14px 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.58;
+    }
+
+    .source-list strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+    }
+
+    .callout {
+      border: 1px solid #e0c68d;
+      border-left: 6px solid var(--amber-ink);
+      border-radius: 8px;
+      background: #fffaf0;
+      padding: 16px 18px;
+      color: #5f4b1e;
+      font-size: 14px;
+      line-height: 1.64;
+    }
+
+    .shot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 14px 0;
+    }
+
+    .shot-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 10px 28px rgba(28, 37, 46, 0.07);
+      overflow: hidden;
+    }
+
+    .shot-card img {
+      display: block;
+      width: 100%;
+      height: 220px;
+      object-fit: contain;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .shot-card figcaption {
+      padding: 12px 14px 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .shot-card figcaption strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    code {
+      padding: 1px 5px;
+      border-radius: 5px;
+      background: #f0eee9;
+      color: #26313c;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.95em;
+    }
+
+    @media (max-width: 900px) {
+      .shell {
+        width: min(100vw - 20px, 1180px);
+        padding-top: 14px;
+      }
+
+      .topbar {
+        justify-content: stretch;
+      }
+
+      .lang-toggle {
+        width: 100%;
+      }
+
+      .lang-toggle label {
+        flex: 1;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .grid.two,
+      .grid.three,
+      .data-flow,
+      .shot-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .data-box::after {
+        display: none;
+      }
+
+      .story-step {
+        grid-template-columns: 48px 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <input class="lang-input" type="radio" name="language" id="lang-zh" checked />
+  <input class="lang-input" type="radio" name="language" id="lang-en" />
+
+  <main class="shell">
+    <div class="topbar">
+      <div class="lang-toggle" role="group" aria-label="Language toggle">
+        <label for="lang-zh">中文</label>
+        <label for="lang-en">English</label>
+      </div>
+    </div>
+
+    <article class="lang-content zh">
+      <header>
+        <div class="eyebrow">Plan2Map / GeoPlanAgent writing plan</div>
+        <h1>Plan2Map 的 benchmark-first 论文故事线</h1>
+        <p class="lead">
+          这个写作计划按 Paper2Poster 的命名层级重排：Plan2Map 是 task / benchmark / dataset，
+          GeoPlanAgent 是解决这个 benchmark 的任务分解 agent，实验和诊断分析用来支撑 EMNLP 投稿。
+        </p>
+        <div class="thesis">
+          <strong>一句话 thesis</strong>
+          <p>规划记录数字化不是单纯 OCR 或看图分割，而是需要文本、地图、地理定位和几何输出共同推理的新任务。</p>
+        </div>
+      </header>
+
+      <section>
+        <div class="section-title">
+          <h2>借鉴 Paper2Poster 的命名层级</h2>
+          <p class="hint">关键不是照搬名字，而是照搬层级：X2Y 命名 benchmark/task，XAgent 命名方法。</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>层级</th>
+                <th>Paper2Poster 写法</th>
+                <th>Plan2Map 建议写法</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Title</td>
+                <td><code>Paper2Poster: Towards Multimodal Poster Automation from Scientific Papers</code></td>
+                <td><code>Plan2Map: A Multimodal Benchmark for Digitising UK Planning Records into Geospatial Boundaries</code></td>
+              </tr>
+              <tr>
+                <td>Benchmark / task</td>
+                <td><code>Paper2Poster</code>：paper -> single-page poster。</td>
+                <td><code>Plan2Map</code>：planning PDF -> WGS84 GeoJSON Polygon / MultiPolygon。</td>
+              </tr>
+              <tr>
+                <td>Method / agent</td>
+                <td><code>PosterAgent</code>：Parser -> Planner -> Painter-Commenter。</td>
+                <td><code>GeoPlanAgent</code>：Reader -> Locate -> Matcher/Segmentation -> Commit/Critic。</td>
+              </tr>
+              <tr>
+                <td>一句话任务框架</td>
+                <td>multimodal context compression。</td>
+                <td>multimodal geospatial grounding / document-to-geometry reasoning。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="grid three" style="margin-top: 14px;">
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">Rule</span><h3>不要混名</h3></div>
+            <p>不要写 “we introduce GeoPlanAgent, a benchmark”。更清楚的是：we introduce Plan2Map, and propose GeoPlanAgent。</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-green">Abstract</span><h3>方向正确，最后微调</h3></div>
+            <p>最新版 abstract 已经是合适的中等长度版本：problem -> Plan2Map task/benchmark -> GeoPlanAgent -> results -> diagnostic insight。现在不要反复改 abstract，先修正文骨架和结果口径，最后再微调一句收尾。</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-violet">Figure 1</span><h3>两个问题并列</h3></div>
+            <p>像 Paper2Poster 的 “How to create / how to evaluate”：Plan2Map 可以画成 “How to digitise planning records / how to evaluate geospatial boundaries”。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>四个贡献</h2>
+          <p class="hint">建议在 Introduction 结尾直接用这四条贡献组织全文。</p>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">C1</span><h3>Plan2Map：公开且人工审核的 benchmark</h3></div>
+            <p>我们基于 UK public-sector planning data 构建 Plan2Map：Article 4 planning PDF 与 GeoJSON polygon 成对数据，并人工核实 PDF 中边界与 polygon 是否对应。</p>
+            <div class="pill-row"><span class="pill">public data</span><span class="pill">manual QA</span><span class="pill">paired PDF/geometry</span></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-green">C2</span><h3>新的多模态地理推理任务</h3></div>
+            <p>任务输入是 Article 4 planning PDF，输出是 WGS84 Polygon 或 MultiPolygon 坐标。它要求系统从规划文档文本中提取空间线索，理解地图符号，将局部地图定位到真实地理空间，并输出 GIS geometry。</p>
+            <div class="pill-row"><span class="pill">PDF -> polygon</span><span class="pill">spatial evidence</span><span class="pill">cartography</span></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-violet">C3</span><h3>GeoPlanAgent：基于任务分解的方法</h3></div>
+            <p>GeoPlanAgent 把复杂任务拆成 Reader、Locate、map registration、SAM3-LoRA segmentation、projection 和 commit verification，避免纯 VLM single-shot 直接画 polygon 的不稳定。</p>
+            <div class="pill-row"><span class="pill">decomposition</span><span class="pill">tool use</span><span class="pill">verifiable states</span></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-rose">C4</span><h3>详细诊断分析</h3></div>
+            <p>通过 direct VLM baselines、核心 component ablations、segmentation/locate 诊断和 failure taxonomy，解释系统在哪些 case 成功、在哪些 case 失败，以及失败由哪个模块引起。Oracle-style probes 可以作为可选 appendix，而不是主文承诺。</p>
+            <div class="pill-row"><span class="pill">baselines</span><span class="pill">ablations</span><span class="pill">failure taxonomy</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>EMNLP 定位策略</h2>
+          <p class="hint">目标是让 reviewer 先看到 NLP/LLM/多模态文档理解贡献，再看到 GIS 工具细节。</p>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">Fit</span><h3>主会长文，benchmark/resource 叙事</h3></div>
+            <p>EMNLP 2026 明确欢迎 empirical NLP、new resource、evaluation methodology、LLM agents 和 multimodality。Plan2Map + GeoPlanAgent 应该投主会长文，而不是 demo 或 industry track。</p>
+            <ul>
+              <li>主定位：Resources and Evaluation + Multimodality and Language Grounding。</li>
+              <li>副定位：LLM Agents、Information Extraction、NLP Applications。</li>
+              <li>可呼应 theme track：data as a bottleneck and responsibility；from models to systems and ecosystems。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-amber">Tone</span><h3>不要写成 GIS 工程论文</h3></div>
+            <p>主文要强调“规划文档中的地理 grounding”：模型不是做法律推理，而是从正文、schedule、title block 和地图 layout 中抽取空间 evidence，再通过工具得到可验证 geometry。</p>
+            <ul>
+              <li>把 OS tiles、RANSAC、SAM3 细节压到 appendix。</li>
+              <li>主文每个模块都对应一个 NLP/agent failure mode。</li>
+              <li>结果部分避免只报 IoU，要解释 direct VLM 为什么不够。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="table-wrap" style="margin-top: 14px;">
+          <table>
+            <thead>
+              <tr>
+                <th>EMNLP 要求/机会</th>
+                <th>Plan2Map / GeoPlanAgent 应对</th>
+                <th>写作动作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Long paper 8 pages through ARR</td>
+                <td>主文必须紧凑；pipeline 细节和 prompts 放 appendix。</td>
+                <td>按 8 页规划：Intro 1、Related 0.7、Benchmark 1.5、Task/Metrics 0.8、Method 1.5、Experiments 1.5、Analysis/Limits 1。</td>
+              </tr>
+              <tr>
+                <td>Paper integrity / unverifiable references risk</td>
+                <td>不要留下 <code>(?)</code>、<code>[TBD]</code>、未解析 LaTeX label 或不可查 citation。</td>
+                <td>提交前跑 citation 和 label checklist；所有政府、OS、模型、工具引用都要可验证。</td>
+              </tr>
+              <tr>
+                <td>Responsible NLP checklist / limitations</td>
+                <td>公开数据、政府来源、许可、地理偏差和潜在个人信息都要明确。</td>
+                <td>单独写 Limitations 和 Ethics/Data Release，说明 OGL、PDF 外链、UK-specific bias、non-transferability。</td>
+              </tr>
+              <tr>
+                <td>Double-blind review</td>
+                <td>数据 release 和代码链接需要匿名处理。</td>
+                <td>匿名 repo 或 appendix 链接；不要出现作者机构、私有路径、不可匿名项目页。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout" style="margin-top: 14px;">
+          截至 2026-05-21，EMNLP 2026 官方 CFP 写明：ARR submission deadline 是 2026-05-25 AoE，long paper 8 pages、short paper 4 pages；accepted final version 可多 1 页。写作计划应按 8 页主文倒排。
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>数据与任务定义</h2>
+          <p class="hint">这里要写得非常具体，让 reviewer 一眼明白 benchmark 的输入、输出和人工审核标准。</p>
+        </div>
+        <div class="data-flow">
+          <div class="data-box">
+            <h3>Input</h3>
+            <p>Article 4 direction 的 planning PDF，来自 Planning Data 中的 <code>document-url</code> 字段。PDF 可能包含扫描页、规划文本、schedule、地图、图例、边界线和 title block。</p>
+          </div>
+          <div class="data-box">
+            <h3>Output</h3>
+            <p>对应 <code>article-4-direction-area</code> 的 <code>geometry</code> 字段，即 WGS84 Polygon 或 MultiPolygon，可用 GeoJSON 表示。</p>
+          </div>
+          <div class="data-box">
+            <h3>Human QA</h3>
+            <p>人工检查 PDF 中可见边界和 polygon 是否一致；保留明确对应样本，去除边界不清楚、模糊对应和不对应样本。</p>
+          </div>
+        </div>
+        <div class="table-wrap" style="margin-top: 14px;">
+          <table>
+            <thead>
+              <tr>
+                <th>字段</th>
+                <th>论文中怎么写</th>
+                <th>为什么重要</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>document-url</code></td>
+                <td>模型可见的 PDF 输入。</td>
+                <td>把 benchmark 定义成 document-to-geometry，而不是只看地图截图。</td>
+              </tr>
+              <tr>
+                <td><code>geometry</code></td>
+                <td>目标 polygon，多数为 MultiPolygon WKT/GeoJSON。</td>
+                <td>提供可计算的 IoU、F1、centroid error。</td>
+              </tr>
+              <tr>
+                <td><code>quality</code></td>
+                <td>平台质量字段，如 authoritative。</td>
+                <td>说明政府平台的来源质量，但不替代人工核验。</td>
+              </tr>
+              <tr>
+                <td>QA label</td>
+                <td><code>keep</code> / unclear / ambiguous / mismatch / removed。</td>
+                <td>明确 benchmark 只评估可验证的 PDF-polygon pairs。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>任务定义 vs. 挑战</h2>
+          <p class="hint">任务定义只回答 input/output/metrics；挑战解释为什么这个 input-output mapping 难。</p>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head"><span class="badge b-green">Task</span><h3>Plan2Map 要求系统做什么</h3></div>
+            <p>给定一个 UK planning-record PDF <code>D</code>，系统输出一个有效的 WGS84 GeoJSON Polygon 或 MultiPolygon <code>Gpred</code>，表示文档指定的 planning boundary。</p>
+            <ul>
+              <li>输入：PDF 本身，包括文本、地图、图例和页面布局。</li>
+              <li>输出：可计算、可验证的真实地理坐标 polygon。</li>
+              <li>评估：<code>Gtrue</code> 只在 evaluation 时使用，用于 IoU、F1、centroid error 和 valid-output rate。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-rose">Challenge</span><h3>间接地理重建</h3></div>
+            <p>难点不是法律推理，而是 indirect geospatial reconstruction：PDF 里只有分散的文本线索和局部地图，没有目标 WGS84 geometry。系统必须找到相关证据、定位地图、解释边界符号，并输出合法 GeoJSON。</p>
+            <ul>
+              <li>只 OCR：能读出地址，但不能画出 georeferenced polygon。</li>
+              <li>只分割：能找出图上的边界，但不知道它在英国哪里。</li>
+              <li>只 geocode：能找到中心点，但不能恢复 boundary shape。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid three" style="margin-top: 14px;">
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">1</span><h3>Evidence discovery</h3></div>
+            <p>系统先要判断证据在哪里：notice、schedule、title block、map page、inset map 或单独的 map PDF。这个问题支撑 Reader 和 page/map selection 的必要性。</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-green">2</span><h3>Geospatial grounding</h3></div>
+            <p>PDF 地图通常没有 WGS84 坐标；系统要把地名、道路、postcode、grid reference 和局部地图锚定到真实英国坐标系。</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-violet">3</span><h3>Geometry reconstruction</h3></div>
+            <p>最终答案不是 mask 或描述，而是 valid Polygon/MultiPolygon；hatching、holes、disconnected regions 和错定位都会变成几何错误。</p>
+          </div>
+        </div>
+        <div class="callout" style="margin-top: 14px;">
+          推荐图注句子：The challenge is indirect geospatial reconstruction: the source PDF contains scattered textual and cartographic evidence, but not the target WGS84 geometry.
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>六个挑战面：示意图口径</h2>
+          <p class="hint">每个 challenge 都要锚定到 PDF 里的具体元素，而不是抽象说“很复杂”。</p>
+        </div>
+        <div class="grid three">
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">1</span><h3>Textual spatial evidence</h3></div>
+            <p>正文、schedule、title、map labels 提供地址、道路、行政区、排除项和目标边界描述。它们是空间线索，不是法律推理本身。</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-amber">2</span><h3>Heterogeneous planning maps</h3></div>
+            <p>不同 LPA 的地图比例尺、符号、颜色、hatching、透明填充和扫描质量都不同，不能假设统一视觉样式。</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-green">3</span><h3>Implicit geolocation</h3></div>
+            <p>PDF 通常没有 WGS84 坐标；系统要从 postcode、road name、grid reference、place name、parish 等锚点推断真实位置。</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-slate">4</span><h3>Scanned / skewed PDFs</h3></div>
+            <p>旧 PDF 可能旋转、低分辨率、OCR 噪声强或边界线褪色，导致直接读取和视觉分割都不稳定。</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-rose">5</span><h3>Boundary ambiguity</h3></div>
+            <p>目标边界可能是红线、虚线、斜线填充、多个 disconnected polygons，或被 “excluding No. 10” 之类文本修正。</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-violet">6</span><h3>Geometric output</h3></div>
+            <p>最终答案不是说明文字或 mask，而是有效 WGS84 Polygon/MultiPolygon；任何错定位都会变成几何错误。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>数据集中可用的示意图候选</h2>
+          <p class="hint">基于对导入的 <code>no 10 dataset</code> 的快速扫描：270 个 case 有 GeoJSON，285 个 PDF，9 个 case 有多个 PDF，约 211 个 case 呈现低文本/扫描件特征。下面是做 Figure 1 时最适合截图或裁剪的候选。</p>
+        </div>
+        <div class="shot-grid">
+          <figure class="shot-card">
+            <img src="assets/challenge_examples/a4d4a1_scanned.jpg" alt="A4D4A1 scanned planning PDF preview" loading="lazy" />
+            <figcaption><strong>A4D4A1 / 7010002555</strong>扫描件、倾斜和低文本抽取，适合展示输入文档本身就不稳定。</figcaption>
+          </figure>
+          <figure class="shot-card">
+            <img src="assets/challenge_examples/a4ba1_boundary.jpg" alt="A4Ba1 Belsize map with red hatching" loading="lazy" />
+            <figcaption><strong>A4Ba1 / 7010002607</strong>红色 hatching、红线和街道底图交织，适合展示 boundary ambiguity。</figcaption>
+          </figure>
+          <figure class="shot-card">
+            <img src="assets/challenge_examples/a4ec3a1_complex_output.jpg" alt="A4EC3a1 complex Article 4 map preview" loading="lazy" />
+            <figcaption><strong>A4EC3a1 / 7010002614</strong>复杂城市区域，目标有约 595 个 polygons 和 7,530 个顶点。</figcaption>
+          </figure>
+          <figure class="shot-card">
+            <img src="assets/challenge_examples/a108p_text_maps.jpg" alt="A108P text page and multiple map pages preview" loading="lazy" />
+            <figcaption><strong>A108P / 7010004981</strong>文字页加多张地图，说明文本提供 spatial evidence。</figcaption>
+          </figure>
+          <figure class="shot-card">
+            <img src="assets/challenge_examples/a4d01_insets.jpg" alt="A4D01 overview and inset map page" loading="lazy" />
+            <figcaption><strong>A4D01 / 7010002547</strong>overview、多个 inset 和 callout 同页出现，适合说明 map/page selection。</figcaption>
+          </figure>
+          <figure class="shot-card">
+            <img src="assets/challenge_examples/geldeston_implicit_geo.jpg" alt="Geldeston scanned local map without explicit coordinates" loading="lazy" />
+            <figcaption><strong>12:00126:ART4 / 7010005077</strong>局部扫描地图没有直接坐标，需要从地名和道路锚定位置。</figcaption>
+          </figure>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>挑战面</th>
+                <th>候选 case / GeoJSON</th>
+                <th>PDF / 页码</th>
+                <th>看到的证据</th>
+                <th>示意图用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Textual spatial evidence</td>
+                <td><code>A108P</code> / <code>7010004981</code></td>
+                <td><code>A108P, Houses in Multiple Occupation...</code>，p.1 与 p.4-6</td>
+                <td>第一页是 Article 4 文字说明，后面三页是不同区域地图；任务需要把 ward/place 名称、HMO 语境和地图区域对应起来。</td>
+                <td>用第一页文字 + 一张 map page 说明“文本不是法律推理，而是空间线索”。</td>
+              </tr>
+              <tr>
+                <td>Heterogeneous planning maps</td>
+                <td><code>A4D01</code> / <code>7010002547</code></td>
+                <td><code>Map-of-Article-4-Notices-April-2012.pdf</code>，p.1</td>
+                <td>同一页包含 borough overview、多个 inset map、callout 和不同尺度的局部图；这不是统一风格的单张 GIS 图。</td>
+                <td>适合展示“一个 PDF 页面里有 overview + inset + annotation”的复杂版式。</td>
+              </tr>
+              <tr>
+                <td>Implicit geolocation</td>
+                <td><code>12:00126:ART4</code> / <code>7010005077</code></td>
+                <td><code>geldestontandg-ppys1.pdf</code>，p.7</td>
+                <td>扫描地图只给出 Geldeston、道路和局部地籍/街区线索，没有直接 WGS84 坐标；系统必须从地名和地图内容定位。</td>
+                <td>适合在图里标出“local map has no coordinates; geolocation comes from textual/map anchors”。</td>
+              </tr>
+              <tr>
+                <td>Scanned / skewed PDFs</td>
+                <td><code>A4D4A1</code> / <code>7010002555</code></td>
+                <td><code>A4D04-Article4ForHampsteadGardenSuburbConservationArea.pdf</code>，p.1、p.19</td>
+                <td>22 页扫描件，自动提取文本接近 0；页面有淡化、倾斜、复印痕迹，p.19 包含扫描地图。</td>
+                <td>可以裁剪封面/正文页和 map page，展示 OCR 与视觉定位同时受影响。</td>
+              </tr>
+              <tr>
+                <td>Boundary ambiguity</td>
+                <td><code>A4Ba1</code> / <code>7010002607</code></td>
+                <td><code>Belsize map.pdf</code>，p.1</td>
+                <td>地图有密集红色 hatching、红色边界线和道路底图；GeoJSON 为 74 个 polygons、约 1,391 个顶点。</td>
+                <td>适合展示“红色符号不只是一个干净轮廓”，模型要判断哪些 marks 构成目标 boundary。</td>
+              </tr>
+              <tr>
+                <td>Geometric output</td>
+                <td><code>A4EC3a1</code> / <code>7010002614</code></td>
+                <td><code>Appendix 1 - Article 4 Direction CAZ KQ including plan.pdf</code>，p.2</td>
+                <td>目标 GeoJSON 有约 595 个 polygons、7,530 个顶点；PDF 中是城市底图上的复杂红色区域。</td>
+                <td>适合放在输出端，强调答案必须是 valid WGS84 MultiPolygon，而不是截图或自然语言描述。</td>
+              </tr>
+              <tr>
+                <td>Multi-document / page selection</td>
+                <td><code>A4Ba1</code> / <code>7010002607</code></td>
+                <td>一个 notice/schedule PDF + 一个 <code>Belsize map.pdf</code></td>
+                <td>同一 case 有单独的长 notice/schedule 文档和 map 文件；系统要选出真正用于边界恢复的页面/文件。</td>
+                <td>可作为 Figure 1 的辅助 callout，解释为什么 Reader 和 page/map selection 是必要模块。</td>
+              </tr>
+              <tr>
+                <td>Disconnected / hole-rich areas</td>
+                <td><code>116</code> / <code>7010003532</code></td>
+                <td><code>Railway Arches Article 4 Direction all.pdf</code>，p.1-7</td>
+                <td>GeoJSON 有 55 个 polygons、28 个 holes、约 2,481 个顶点；PDF 同时包含文字 notice、schedule 和多个签章页。</td>
+                <td>适合在 appendix/analysis 图里展示 MultiPolygon 和 holes 对 scoring 的影响。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout" style="margin-top: 14px;">
+          使用建议：Figure 1 主图可以用 <code>A4D4A1</code> 展示扫描输入，用 <code>A4Ba1</code> 展示地图边界歧义，用 <code>A4EC3a1</code> 展示复杂 GeoJSON 输出；<code>A108P</code> 或 <code>A4D01</code> 适合作为 inset，说明文本/多地图选择为什么需要任务分解。
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>相关任务与 baseline 策略</h2>
+          <p class="hint">目前没有完全等价的 PDF-to-WGS84-polygon 任务；写法上应把相邻工作分成“可跑 baseline”和“只做 related work”。</p>
+        </div>
+        <div class="grid three">
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">Claim</span><h3>核心定位</h3></div>
+            <p>Plan2Map 的空白不是“没人做地图”或“没人做文档理解”，而是没有把 planning PDF、地图视觉、隐式地理定位和 GeoJSON 输出放在同一个可验证 benchmark 中。</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-green">Use</span><h3>主文应跑的 baseline</h3></div>
+            <p>优先跑能直接回答论文论点的 baseline：direct VLM PDF-to-GeoJSON、map-only segmentation、VLM geocode-from-PDF、Collapsed Reader/no dedicated Reader、commit/critic variants。这里 Collapsed Reader 保留 PDFInfo schema，只检验独立 Reader phase 是否有价值。</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-amber">Avoid</span><h3>不要硬凑不可比 baseline</h3></div>
+            <p>MapReader、QGIS/GDAL、UrbanPlanBench、LegalBench 这些更适合放在 related work 或 oracle/semi-manual discussion；不要把它们包装成完整端到端 Plan2Map baseline。</p>
+          </div>
+        </div>
+        <div class="table-wrap" style="margin-top: 14px;">
+          <table>
+            <thead>
+              <tr>
+                <th>相邻方向</th>
+                <th>代表工作/工具</th>
+                <th>和 Plan2Map 的关系</th>
+                <th>论文里怎么用</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Document understanding / DocVQA</td>
+                <td><a href="https://arxiv.org/abs/2007.00398">DocVQA</a></td>
+                <td>关注从文档回答问题，说明 multimodal document understanding 的背景；但输出通常是文本答案，不是 GIS polygon。</td>
+                <td>放 Related Work。强调 Plan2Map 从 document QA 扩展到 document-to-geometry grounding。</td>
+              </tr>
+              <tr>
+                <td>Map digitisation / vectorisation</td>
+                <td><a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0298217">Historical map vectorization benchmark</a>；<a href="https://kasra-hosseini.com/papers/2024/mapreader-joss/">MapReader</a></td>
+                <td>覆盖地图图像识别、分割或矢量化的一部分；但通常不从 planning PDF 出发，也不解决文本证据和真实世界定位。</td>
+                <td>放 Related Work；实验上只和 vanilla/fine-tuned SAM 做 map-boundary segmentation 级别对比。</td>
+              </tr>
+              <tr>
+                <td>Classical GIS pipeline</td>
+                <td><a href="https://docs.qgis.org/3.44/en/docs/user_manual/managing_data_source/georeferencer.html">QGIS Georeferencer</a>；<a href="https://gdal.org/en/stable/programs/gdal_polygonize.html">GDAL polygonize</a></td>
+                <td>提供人工/半人工 georeferencing 和 raster-to-vector 的经典工具，但需要人为控制点、清晰栅格或 oracle-like 输入。</td>
+                <td>作为 classical GIS reference；不要作为端到端 automatic baseline，除非明确标成 semi-manual/oracle。</td>
+              </tr>
+              <tr>
+                <td>Remote-sensing / geospatial VLM</td>
+                <td><a href="https://arxiv.org/abs/2003.07333">RSVQA</a>；<a href="https://arxiv.org/abs/2311.15826">GeoChat</a></td>
+                <td>说明视觉-语言模型已经进入 geospatial imagery，但输入多为遥感图像或地理问答，不是扫描规划 PDF 与 Article 4 边界。</td>
+                <td>放 Related Work；用来证明 Plan2Map 是文档、地图和 GIS 输出交叉的新设置。</td>
+              </tr>
+              <tr>
+                <td>Planning / legal AI</td>
+                <td><a href="https://arxiv.org/abs/2504.21027">UrbanPlanBench</a>；<a href="https://papers.nips.cc/paper_files/paper/2023/hash/89e44582fd28ddfea1ea4dcb0ebbf4b0-Abstract-Datasets_and_Benchmarks.html">LegalBench</a></td>
+                <td>覆盖规划/法律文本理解和推理，但 Plan2Map 的关键不是法律判断，而是从规划记录中恢复可验证地理边界。</td>
+                <td>放 Related Work；可用一句话澄清“we do not benchmark legal reasoning; we benchmark geospatial grounding from planning records.”</td>
+              </tr>
+              <tr>
+                <td>直接多模态模型 baseline</td>
+                <td>Frontier VLM PDF-to-GeoJSON；VLM map-image-to-mask/polygon；VLM geocode-from-PDF</td>
+                <td>这是最重要的实验对照：如果单个 VLM 能直接从 PDF 输出 polygon，则任务分解没有必要。</td>
+                <td>作为主实验 baseline。PDF-to-GeoJSON 用 30-50 个 stratified subset 报告为 stress test，不和 full benchmark 完全等价比较。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout" style="margin-top: 14px;">
+          推荐 Related Work 句式：Prior work studies document VQA, map vectorization, geospatial VLMs, and planning/legal reasoning separately. Plan2Map differs by requiring a system to jointly read a public planning record, identify spatial evidence, ground a local map in real-world coordinates, and emit a valid WGS84 geometry.
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>向 Paper2Poster 学习的故事结构</h2>
+          <p class="hint">Paper2Poster 的节奏是：先定义新任务和 benchmark，再提出 PosterAgent；Plan2Map 也应该这样写。</p>
+        </div>
+        <div class="storyline">
+          <div class="story-step">
+            <div><h3>先定义新任务</h3><p>像 Paper2Poster 在 3.1 明确 “Given a scientific paper... generate a single-page poster” 一样，Plan2Map 要明确 “Given a planning PDF... output a WGS84 GeoJSON boundary”。</p></div>
+          </div>
+          <div class="story-step">
+            <div><h3>再推出 Plan2Map benchmark</h3><p>数据不是附录，而是主贡献：公开 planning PDFs、政府 polygon、结构化 metadata、人工审核标签和可复现实验 split。</p></div>
+          </div>
+          <div class="story-step">
+            <div><h3>建立评价体系</h3><p>像 Paper2Poster 有 Visual Quality、Textual Coherence、VLM-as-Judge、PaperQuiz，Plan2Map 要有 GeoJSON IoU、F1、centroid error 和 valid-output rate，再补诊断指标。</p></div>
+          </div>
+          <div class="story-step">
+            <div><h3>用 direct baselines 制造转折</h3><p>如果任务只是“看图画边界”，frontier VLM 应该可以直接解决。实验显示它们不够稳定，于是自然引出任务分解。</p></div>
+          </div>
+          <div class="story-step">
+            <div><h3>提出 GeoPlanAgent</h3><p>像 PosterAgent 是 top-down, visual-in-the-loop，GeoPlanAgent 可以写成 document-grounded, geospatial-tool-in-the-loop：Reader、Locate、Matcher/Segmenter、Commit/Critic。</p></div>
+          </div>
+          <div class="story-step">
+            <div><h3>用诊断分析收尾</h3><p>强调 bimodal distribution：系统要么几乎完全对，要么完全错。failure analysis、核心 ablation 和可选 oracle-style probes 是这篇文章的成熟度来源。</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>推荐 EMNLP 长文大纲</h2>
+          <p class="hint">按 8 页主文规划；技术细节、prompts、更多可视化和附加 ablation 放 appendix。</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Section</th>
+                <th>写作意图</th>
+                <th>必须包含</th>
+                <th>页数预算</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1. Introduction</td>
+                <td>把问题从“政府 PDF 很多”推进到“缺少可验证的 PDF-to-polygon benchmark”。</td>
+                <td>现实痛点、任务定义、direct VLM 不足、四个贡献。</td>
+                <td>1.0</td>
+              </tr>
+              <tr>
+                <td>2. Related Work</td>
+                <td>说明现有工作覆盖局部能力，但没有联合评估 planning PDF、地图、地理定位和 GeoJSON。</td>
+                <td>document understanding、map digitisation、geospatial VLM、planning/legal AI、tool agents。</td>
+                <td>0.7</td>
+              </tr>
+              <tr>
+                <td>3. Benchmark</td>
+                <td>这是主贡献节，要详细说明数据来源、配对逻辑、人工审核和许可。</td>
+                <td>数据规模、字段、PDF-polygon pairing、过滤规则、metadata、release format。</td>
+                <td>1.4</td>
+              </tr>
+              <tr>
+                <td>4. Task and Metrics</td>
+                <td>把 benchmark 转成可复现任务和评价协议。</td>
+                <td>输入输出 schema、IoU/F1/centroid error、no-polygon 计分、stratified analysis。</td>
+                <td>0.7</td>
+              </tr>
+              <tr>
+                <td>5. GeoPlanAgent</td>
+                <td>按任务分解讲方法，不要像工具清单。</td>
+                <td>Reader、Locate、Worker/match_at、SAM3-LoRA、projection、commit、critic。</td>
+                <td>1.4</td>
+              </tr>
+              <tr>
+                <td>6. Experiments</td>
+                <td>先主结果，再按 causal questions 组织 ablation。</td>
+                <td>direct VLM、no critic、with critic、segmentation、locate、matching、commit。</td>
+                <td>1.5</td>
+              </tr>
+              <tr>
+                <td>7. Analysis and Discussion</td>
+                <td>解释为什么 task 难，以及 benchmark 如何暴露模型能力缺口。</td>
+                <td>bimodal success/failure、wrong-area、wrong-page、district false success、mask errors、可选 oracle-style probes。</td>
+                <td>0.9</td>
+              </tr>
+              <tr>
+                <td>8. Limitations and Release</td>
+                <td>诚实处理 UK-specific、公开许可和 PDF 重分发边界。</td>
+                <td>UK geocoder dependence、coverage bias、OGL attribution、PDF URL/script release policy。</td>
+                <td>0.4 + required section</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>最新版 PDF 修订计划</h2>
+          <p class="hint">最新版 abstract 和 introduction 的核心方向已经清楚；下一轮重点是修正文里的旧稿残留、命名口径、Section 5 和实验组织。</p>
+        </div>
+        <div class="grid three">
+          <div class="card">
+            <div class="card-head"><span class="badge b-rose">P0</span><h3>正文骨架和任务定义</h3></div>
+            <ul>
+              <li>Introduction 前三段基本可用，但必须把 “we introduce GeoPlan Agent, a benchmark...” 改成 “we introduce Plan2Map ... and propose GeoPlanAgent ...”。</li>
+              <li>贡献列表改成四条：public benchmark、new PDF-to-GeoJSON task、GeoPlanAgent method、diagnostic analysis。</li>
+              <li>第 5.1 节 “planning documents summarisation” 是旧稿残留，整体替换为 <code>Task and Evaluation Protocol</code>。</li>
+              <li>正式任务定义写成：输入 planning PDF <code>D</code>，系统输出 <code>G_pred</code>；<code>G_true</code> 只作为 evaluation-time reference。</li>
+              <li>删除 “Google Map API”“Gemini-2.5/GPT-4/Claude-3 泛泛 benchmark” 等和当前实验不一致的句子。</li>
+              <li>把 “joint legal-text reading” 改成 “spatial evidence extraction from planning text, schedules, and maps”。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-amber">P1</span><h3>数据、方法和实验口径</h3></div>
+            <ul>
+              <li>Dataset source 应写 Planning Data / Article 4 direction area / OGL，而不是 “UK planning authority sources [TBD]”。</li>
+              <li>解释 208 document-level benchmark cases 和 211 annotated map masks 的关系；不要写 “211-case dataset less five duplicates = 208”。</li>
+              <li>补一句 manual QA：保留 PDF boundary 与 GeoJSON 明确对应的样本，剔除 unclear / mismatched / ambiguous cases。</li>
+              <li>Method 主文只讲 Reader、Locate、match/register、SAM segmentation、projection、commit/critic 分别解决什么 failure surface。</li>
+              <li>把 MINIMA、RANSAC、Delaunay、scale perturbation、OCR cascade、ResNet rotation 细节移到 appendix。</li>
+              <li>把 “model physically cannot return free text” 改成 “schema-constrained outputs reduce malformed intermediate states”。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">P2</span><h3>结果重排和提交清理</h3></div>
+            <ul>
+              <li>Results 先给 end-to-end table：GeoPlanAgent no critic / + critic，并解释 bimodal distribution。</li>
+              <li>Ablations 按 claim 写：VLM/SAM segmentation、SAM fine-tuning、critic/commit、Locate/Collapsed Reader/tool ablations；没有结果的实验不要在主文承诺。</li>
+              <li>明确当前 VLM-direct 表是 map-mask segmentation baseline，不是 full PDF-to-GeoJSON baseline。</li>
+              <li>清空 <code>(?)</code>、<code>fig:</code>、<code>tab:</code>、<code>subsection:</code>、<code>eq:</code>、<code>appendix:</code> 等未解析引用。</li>
+              <li>修正 table placement，尤其 Table 3 不要看起来插在 Ablations 开头；Limitations 补 OGL/data release/anonymized release 口径。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout" style="margin-top: 14px;">
+          推荐写作顺序：1. 修 Introduction 命名和贡献；2. 用 <code>Task and Evaluation Protocol</code> 替换 Section 5；3. 收紧 Dataset 来源、QA 和 208/211 解释；4. 压缩 Method 成 reader-friendly overview；5. 按 claim 重排 Results/Ablations；6. 清理 citations/labels 并把工程细节移到 appendix；7. 最后微调 abstract。
+        </div>
+      </section>
+
+
+      <section>
+        <div class="section-title">
+          <h2>许可与数据发布 checklist</h2>
+          <p class="hint">这是论文和数据 release 都需要写清楚的部分。</p>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head"><span class="badge b-amber">L</span><h3>可以明确写的事实</h3></div>
+            <ul>
+              <li>Planning Data 的 Article 4 direction area 数据集页面列出 6,838 areas、95 data providers、OGL v3.0 和 © Crown copyright and database right 2026。</li>
+              <li>Area entity 页面展示 <code>geometry</code> 和 linked <code>article-4-direction</code>。</li>
+              <li>Direction entity 页面展示 <code>document-url</code>，即 PDF 来源。</li>
+              <li>OGL v3.0 允许复制、发布、分发、改编和商业/非商业使用，但需要 attribution。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-rose">!</span><h3>需要谨慎处理</h3></div>
+            <ul>
+              <li>OGL 不覆盖 personal data、第三方权利、logo/crest 等例外。</li>
+              <li>Planning Data terms 提醒外链来源网站可能有自己的 terms、privacy policy 和 licence。</li>
+              <li>建议优先发布 metadata、polygons、annotations、source URLs 和 download scripts；PDF 文件本体只有在确认 linked LPA source 允许重分发后再打包。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout" style="margin-top: 14px;">
+          推荐 attribution 文案：Contains public sector information licensed under the Open Government Licence v3.0. © Crown copyright and database right 2026.
+        </div>
+        <ul class="source-list" style="margin-top: 14px;">
+          <li><strong>Article 4 direction area dataset</strong><a href="https://www.planning.data.gov.uk/dataset/article-4-direction-area">https://www.planning.data.gov.uk/dataset/article-4-direction-area</a></li>
+          <li><strong>Area entity with geometry</strong><a href="https://www.planning.data.gov.uk/entity/7010006951">https://www.planning.data.gov.uk/entity/7010006951</a></li>
+          <li><strong>Direction entity with document-url</strong><a href="https://www.planning.data.gov.uk/entity/6101560">https://www.planning.data.gov.uk/entity/6101560</a></li>
+          <li><strong>Planning Data terms</strong><a href="https://www.planning.data.gov.uk/terms-and-conditions/">https://www.planning.data.gov.uk/terms-and-conditions/</a></li>
+          <li><strong>Open Government Licence v3.0</strong><a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/</a></li>
+          <li><strong>EMNLP 2026 main conference CFP</strong><a href="https://2026.emnlp.org/calls/main_conference_papers/">https://2026.emnlp.org/calls/main_conference_papers/</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Figure / table plan</h2>
+          <p class="hint">这些图表可以按 Paper2Poster 的“overview + benchmark + pipeline + evaluation”节奏来排。</p>
+        </div>
+        <div class="grid three">
+          <div class="card"><div class="card-head"><span class="badge b-blue">F1</span><h3>Plan2Map overview</h3></div><p>像 Paper2Poster Figure 1：左边问 how to digitise planning records，右边问 how to evaluate geospatial boundaries。</p></div>
+          <div class="card"><div class="card-head"><span class="badge b-green">F2</span><h3>Dataset pipeline</h3></div><p>Planning Data entity -> Article 4 PDF -> area geometry -> manual QA -> released Plan2Map split。</p></div>
+          <div class="card"><div class="card-head"><span class="badge b-violet">F3</span><h3>GeoPlanAgent pipeline</h3></div><p>Reader -> Locate -> match_at -> SAM3-LoRA -> projection -> commit/critic。</p></div>
+          <div class="card"><div class="card-head"><span class="badge b-amber">T1</span><h3>Results on Plan2Map</h3></div><p>Direct VLM、GeoPlanAgent no critic、GeoPlanAgent + critic；报告 IoU、F1、centroid error、cost。</p></div>
+          <div class="card"><div class="card-head"><span class="badge b-rose">T2</span><h3>Ablation table</h3></div><p>按 segmentation、locate、matching、commit、critic 分组，而不是随机罗列。</p></div>
+          <div class="card"><div class="card-head"><span class="badge b-slate">T3</span><h3>Failure taxonomy</h3></div><p>wrong-area、wrong-page、district false success、bad mask、no polygon；给数量和例子。</p></div>
+        </div>
+      </section>
+    </article>
+
+    <article class="lang-content en">
+      <header>
+        <div class="eyebrow">Plan2Map / GeoPlanAgent writing plan</div>
+        <h1>A benchmark-first narrative for Plan2Map</h1>
+        <p class="lead">
+          This writing plan follows the naming hierarchy used by Paper2Poster: Plan2Map is the task, benchmark, and dataset;
+          GeoPlanAgent is the decomposition-based agent for that benchmark, supported by diagnostic experiments for an EMNLP submission.
+        </p>
+        <div class="thesis">
+          <strong>One-sentence thesis</strong>
+          <p>Planning-record digitisation is a multimodal geospatial reasoning task: systems must convert public planning PDFs into verified WGS84 GeoJSON boundaries.</p>
+        </div>
+      </header>
+
+      <section>
+        <div class="section-title">
+          <h2>Naming Pattern Borrowed From Paper2Poster</h2>
+          <p class="hint">The lesson is not just the catchy name; it is the clean hierarchy: X2Y names the benchmark/task, XAgent names the method.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Paper2Poster pattern</th>
+                <th>Plan2Map recommendation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Title</td>
+                <td><code>Paper2Poster: Towards Multimodal Poster Automation from Scientific Papers</code></td>
+                <td><code>Plan2Map: A Multimodal Benchmark for Digitising UK Planning Records into Geospatial Boundaries</code></td>
+              </tr>
+              <tr>
+                <td>Benchmark / task</td>
+                <td><code>Paper2Poster</code>: paper -> single-page poster.</td>
+                <td><code>Plan2Map</code>: planning PDF -> WGS84 GeoJSON Polygon / MultiPolygon.</td>
+              </tr>
+              <tr>
+                <td>Method / agent</td>
+                <td><code>PosterAgent</code>: Parser -> Planner -> Painter-Commenter.</td>
+                <td><code>GeoPlanAgent</code>: Reader -> Locate -> Matcher/Segmentation -> Commit/Critic.</td>
+              </tr>
+              <tr>
+                <td>One-line framing</td>
+                <td>multimodal context compression.</td>
+                <td>multimodal geospatial grounding / document-to-geometry reasoning.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="grid three" style="margin-top: 14px;">
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">Rule</span><h3>Do not mix names</h3></div>
+            <p>Do not write “we introduce GeoPlanAgent, a benchmark.” Write: we introduce Plan2Map, and propose GeoPlanAgent.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-green">Abstract</span><h3>Direction is right; polish last</h3></div>
+            <p>The latest abstract is a suitable medium-length version: problem -> Plan2Map task/benchmark -> GeoPlanAgent -> results -> diagnostic insight. Do not keep rewriting it now; fix the paper body and result framing first, then polish the final sentence.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-violet">Figure 1</span><h3>Two questions side by side</h3></div>
+            <p>Mirror Paper2Poster’s “how to create / how to evaluate” figure: “how to digitise planning records / how to evaluate geospatial boundaries.”</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Four Contributions</h2>
+          <p class="hint">Use these four contributions to organize the end of the introduction and the rest of the paper.</p>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">C1</span><h3>Plan2Map: a public, manually reviewed benchmark</h3></div>
+            <p>We build Plan2Map from paired Article 4 planning PDFs and GeoJSON polygons in UK public-sector planning data, then manually verify that each polygon corresponds to the boundary drawn in the source PDF.</p>
+            <div class="pill-row"><span class="pill">public data</span><span class="pill">manual QA</span><span class="pill">paired PDF/geometry</span></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-green">C2</span><h3>A new multimodal geospatial task</h3></div>
+            <p>The input is an Article 4 planning PDF and the output is WGS84 Polygon or MultiPolygon coordinates. The task requires systems to extract spatial evidence from planning-document text, interpret cartographic symbols, ground local map imagery in real-world geography, and emit valid GIS geometry.</p>
+            <div class="pill-row"><span class="pill">PDF -> polygon</span><span class="pill">spatial evidence</span><span class="pill">cartography</span></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-violet">C3</span><h3>GeoPlanAgent as the decomposition method</h3></div>
+            <p>GeoPlanAgent decomposes the task into Reader, Locate, map registration, SAM3-LoRA segmentation, projection, and commit verification, replacing brittle single-shot VLM polygon prediction with verifiable intermediate states.</p>
+            <div class="pill-row"><span class="pill">decomposition</span><span class="pill">tool use</span><span class="pill">verifiable states</span></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-rose">C4</span><h3>Detailed diagnostic analysis</h3></div>
+            <p>We use direct VLM baselines, essential component ablations, segmentation/locate diagnostics, and a failure taxonomy to explain when the system succeeds, when it fails, and which module is responsible. Oracle-style probes can be optional appendix material rather than a main-paper promise.</p>
+            <div class="pill-row"><span class="pill">baselines</span><span class="pill">ablations</span><span class="pill">failure taxonomy</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>EMNLP Positioning Strategy</h2>
+          <p class="hint">The goal is to foreground NLP, LLM, and multimodal document-understanding contributions before GIS implementation detail.</p>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">Fit</span><h3>Main-conference long paper, benchmark/resource framing</h3></div>
+            <p>EMNLP 2026 explicitly welcomes empirical NLP, new resources, evaluation methodology, LLM agents, and multimodality. Plan2Map + GeoPlanAgent should target the main conference long-paper track rather than demo or industry.</p>
+            <ul>
+              <li>Primary topics: Resources and Evaluation + Multimodality and Language Grounding.</li>
+              <li>Secondary topics: LLM Agents, Information Extraction, NLP Applications.</li>
+              <li>Theme-track resonance: data as a bottleneck and responsibility; from models to systems and ecosystems.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-amber">Tone</span><h3>Do not read like a GIS engineering paper</h3></div>
+            <p>The main paper should emphasize geospatial grounding from planning documents: models are not doing legal reasoning; they extract spatial evidence from prose, schedules, title blocks, and map layout, then use tools to produce verifiable geometry.</p>
+            <ul>
+              <li>Move OS tiles, RANSAC, and SAM3 training details to the appendix.</li>
+              <li>In the main text, tie each module to an NLP/agent failure mode.</li>
+              <li>In results, explain why direct VLM prediction is insufficient, not just that IoU improves.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="table-wrap" style="margin-top: 14px;">
+          <table>
+            <thead>
+              <tr>
+                <th>EMNLP requirement/opportunity</th>
+                <th>Plan2Map / GeoPlanAgent response</th>
+                <th>Writing action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Long paper: 8 pages through ARR</td>
+                <td>The main paper must be compact; pipeline details and prompts belong in the appendix.</td>
+                <td>Budget 8 pages: Intro 1, Related 0.7, Benchmark 1.5, Task/Metrics 0.8, Method 1.5, Experiments 1.5, Analysis/Limits 1.</td>
+              </tr>
+              <tr>
+                <td>Paper integrity / unverifiable-reference risk</td>
+                <td>No <code>(?)</code>, <code>[TBD]</code>, unresolved LaTeX labels, or unverifiable citations can remain.</td>
+                <td>Run a citation and label checklist before submission; every government, OS, model, and tool citation must be verifiable.</td>
+              </tr>
+              <tr>
+                <td>Responsible NLP checklist / limitations</td>
+                <td>Public data, government sources, licence, geographic bias, and possible personal data must be explicit.</td>
+                <td>Add dedicated Limitations and Ethics/Data Release text covering OGL, PDF links, UK-specific bias, and non-transferability.</td>
+              </tr>
+              <tr>
+                <td>Double-blind review</td>
+                <td>Data release and code links need anonymized handling.</td>
+                <td>Use an anonymous repository or appendix link; remove author institutions, private paths, and non-anonymous project pages.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout" style="margin-top: 14px;">
+          As of 2026-05-21, the official EMNLP 2026 CFP lists the ARR submission deadline as 2026-05-25 AoE, with 8 pages for long papers and 4 pages for short papers; accepted final versions receive one extra content page. Plan the main paper around the 8-page limit.
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Dataset and Task Definition</h2>
+          <p class="hint">Make this concrete so reviewers immediately understand the benchmark input, output, and manual verification standard.</p>
+        </div>
+        <div class="data-flow">
+          <div class="data-box">
+            <h3>Input</h3>
+            <p>The planning PDF from the <code>document-url</code> field of an Article 4 direction. A PDF may include scanned pages, planning-document text, schedules, maps, legends, boundary marks, and title blocks.</p>
+          </div>
+          <div class="data-box">
+            <h3>Output</h3>
+            <p>The corresponding <code>geometry</code> field from <code>article-4-direction-area</code>, represented as a WGS84 Polygon or MultiPolygon in GeoJSON.</p>
+          </div>
+          <div class="data-box">
+            <h3>Human QA</h3>
+            <p>Human annotators check whether the visible boundary in the PDF matches the polygon. Keep clear matches and remove unclear, ambiguous, or mismatched cases.</p>
+          </div>
+        </div>
+        <div class="table-wrap" style="margin-top: 14px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>How to describe it</th>
+                <th>Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>document-url</code></td>
+                <td>The PDF input visible to the model.</td>
+                <td>Defines the benchmark as document-to-geometry, not map-image-only segmentation.</td>
+              </tr>
+              <tr>
+                <td><code>geometry</code></td>
+                <td>The target polygon, often MultiPolygon WKT or GeoJSON.</td>
+                <td>Supports computable IoU, F1, and centroid-error evaluation.</td>
+              </tr>
+              <tr>
+                <td><code>quality</code></td>
+                <td>A platform quality field such as authoritative.</td>
+                <td>Describes source status but does not replace manual verification.</td>
+              </tr>
+              <tr>
+                <td>QA label</td>
+                <td><code>keep</code> / unclear / ambiguous / mismatch / removed.</td>
+                <td>Makes explicit that the benchmark evaluates only verifiable PDF-polygon pairs.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Task Definition vs. Challenges</h2>
+          <p class="hint">The task definition should specify input, output, and metrics; the challenges should explain why the mapping is hard.</p>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head"><span class="badge b-green">Task</span><h3>What Plan2Map asks systems to do</h3></div>
+            <p>Given a UK planning-record PDF <code>D</code>, the system outputs a valid WGS84 GeoJSON Polygon or MultiPolygon <code>Gpred</code> representing the planning boundary specified by the document.</p>
+            <ul>
+              <li>Input: the PDF itself, including text, maps, legends, and page layout.</li>
+              <li>Output: a computable, verifiable polygon in real-world coordinates.</li>
+              <li>Evaluation: <code>Gtrue</code> is used only at evaluation time for IoU, F1, centroid error, and valid-output rate.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-rose">Challenge</span><h3>Indirect geospatial reconstruction</h3></div>
+            <p>The hard part is not legal reasoning. The PDF contains scattered textual clues and local maps, but not the target WGS84 geometry. A system must find the relevant evidence, geolocate the map, interpret boundary symbols, and emit valid GeoJSON.</p>
+            <ul>
+              <li>OCR alone can recover addresses, but not a georeferenced polygon.</li>
+              <li>Segmentation alone can find a drawn boundary, but not where it sits in the UK.</li>
+              <li>Geocoding alone can find a centre point, but not the boundary shape.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid three" style="margin-top: 14px;">
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">1</span><h3>Evidence discovery</h3></div>
+            <p>The system must first decide where the evidence is: notice, schedule, title block, map page, inset map, or a separate map PDF. This motivates Reader and page/map selection.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-green">2</span><h3>Geospatial grounding</h3></div>
+            <p>Planning maps usually lack WGS84 coordinates; the system grounds place names, roads, postcodes, grid references, and local map context in real UK coordinates.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-violet">3</span><h3>Geometry reconstruction</h3></div>
+            <p>The final answer is not a mask or description but valid Polygon/MultiPolygon geometry; hatching, holes, disconnected regions, and wrong localization all become geometric errors.</p>
+          </div>
+        </div>
+        <div class="callout" style="margin-top: 14px;">
+          Suggested figure caption: The challenge is indirect geospatial reconstruction: the source PDF contains scattered textual and cartographic evidence, but not the target WGS84 geometry.
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Six Challenge Surfaces For The Figure</h2>
+          <p class="hint">Each challenge should be anchored to a concrete element in the source PDF, not described as generic complexity.</p>
+        </div>
+        <div class="grid three">
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">1</span><h3>Textual spatial evidence</h3></div>
+            <p>Prose, schedules, titles, and map labels provide addresses, roads, authorities, exclusions, and target-boundary descriptions. They are spatial clues, not legal reasoning itself.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-amber">2</span><h3>Heterogeneous planning maps</h3></div>
+            <p>Maps vary across LPAs in scale, symbols, colour, hatching, translucent fills, and scan quality, so systems cannot assume one visual style.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-green">3</span><h3>Implicit geolocation</h3></div>
+            <p>The PDF usually contains no WGS84 coordinates; systems infer real location from postcodes, road names, grid references, place names, and parishes.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-slate">4</span><h3>Scanned / skewed PDFs</h3></div>
+            <p>Legacy PDFs may be rotated, low-resolution, OCR-noisy, or faded, making both text extraction and visual segmentation unstable.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-rose">5</span><h3>Boundary ambiguity</h3></div>
+            <p>The target may be a red edge, dashed line, hatched fill, multiple disconnected polygons, or modified by text such as “excluding No. 10.”</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-violet">6</span><h3>Geometric output</h3></div>
+            <p>The answer is not a description or mask, but a valid WGS84 Polygon/MultiPolygon; any wrong localization becomes a geometric error.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Dataset-Grounded Figure Candidates</h2>
+          <p class="hint">A quick scan of the imported <code>no 10 dataset</code> found 270 cases with GeoJSON, 285 PDFs, 9 multi-PDF cases, and roughly 211 cases with low-text/scanned-PDF characteristics. These are candidate examples for Figure 1, not final annotations.</p>
+        </div>
+        <div class="shot-grid">
+          <figure class="shot-card">
+            <img src="assets/challenge_examples/a4d4a1_scanned.jpg" alt="A4D4A1 scanned planning PDF preview" loading="lazy" />
+            <figcaption><strong>A4D4A1 / 7010002555</strong>Scanned, skewed, low-text pages showing that the document input itself is unstable.</figcaption>
+          </figure>
+          <figure class="shot-card">
+            <img src="assets/challenge_examples/a4ba1_boundary.jpg" alt="A4Ba1 Belsize map with red hatching" loading="lazy" />
+            <figcaption><strong>A4Ba1 / 7010002607</strong>Red hatching, boundary marks, and street-map context create boundary ambiguity.</figcaption>
+          </figure>
+          <figure class="shot-card">
+            <img src="assets/challenge_examples/a4ec3a1_complex_output.jpg" alt="A4EC3a1 complex Article 4 map preview" loading="lazy" />
+            <figcaption><strong>A4EC3a1 / 7010002614</strong>Complex urban area with roughly 595 polygons and 7,530 target vertices.</figcaption>
+          </figure>
+          <figure class="shot-card">
+            <img src="assets/challenge_examples/a108p_text_maps.jpg" alt="A108P text page and multiple map pages preview" loading="lazy" />
+            <figcaption><strong>A108P / 7010004981</strong>Text page plus multiple maps, illustrating text as spatial evidence.</figcaption>
+          </figure>
+          <figure class="shot-card">
+            <img src="assets/challenge_examples/a4d01_insets.jpg" alt="A4D01 overview and inset map page" loading="lazy" />
+            <figcaption><strong>A4D01 / 7010002547</strong>Overview, multiple insets, and callouts on one page motivate map/page selection.</figcaption>
+          </figure>
+          <figure class="shot-card">
+            <img src="assets/challenge_examples/geldeston_implicit_geo.jpg" alt="Geldeston scanned local map without explicit coordinates" loading="lazy" />
+            <figcaption><strong>12:00126:ART4 / 7010005077</strong>A local scanned map with no explicit coordinates; geolocation must come from place and road anchors.</figcaption>
+          </figure>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Challenge surface</th>
+                <th>Candidate case / GeoJSON</th>
+                <th>PDF / page</th>
+                <th>Observed evidence</th>
+                <th>Use in the figure</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Textual spatial evidence</td>
+                <td><code>A108P</code> / <code>7010004981</code></td>
+                <td><code>A108P, Houses in Multiple Occupation...</code>, p.1 and p.4-6</td>
+                <td>The first page contains Article 4 prose, followed by three map pages. The system must connect ward/place names, the HMO context, and the mapped areas.</td>
+                <td>Use one text page plus one map page to show that text provides spatial clues rather than legal reasoning.</td>
+              </tr>
+              <tr>
+                <td>Heterogeneous planning maps</td>
+                <td><code>A4D01</code> / <code>7010002547</code></td>
+                <td><code>Map-of-Article-4-Notices-April-2012.pdf</code>, p.1</td>
+                <td>A single page combines a borough overview, multiple inset maps, callouts, and different local scales; it is not a uniform GIS export.</td>
+                <td>Show the overview + inset + annotation layout as a concrete map-layout challenge.</td>
+              </tr>
+              <tr>
+                <td>Implicit geolocation</td>
+                <td><code>12:00126:ART4</code> / <code>7010005077</code></td>
+                <td><code>geldestontandg-ppys1.pdf</code>, p.7</td>
+                <td>The scanned map gives Geldeston, roads, parcels, and local street evidence, but no direct WGS84 coordinates; location must be inferred from anchors.</td>
+                <td>Label it as “local map has no coordinates; geolocation comes from textual/map anchors.”</td>
+              </tr>
+              <tr>
+                <td>Scanned / skewed PDFs</td>
+                <td><code>A4D4A1</code> / <code>7010002555</code></td>
+                <td><code>A4D04-Article4ForHampsteadGardenSuburbConservationArea.pdf</code>, p.1 and p.19</td>
+                <td>A 22-page scanned document with near-zero extracted text; pages show fading, skew, photocopy artifacts, and a scanned map page.</td>
+                <td>Crop the cover/text page and map page to show that OCR and visual localization are both affected.</td>
+              </tr>
+              <tr>
+                <td>Boundary ambiguity</td>
+                <td><code>A4Ba1</code> / <code>7010002607</code></td>
+                <td><code>Belsize map.pdf</code>, p.1</td>
+                <td>The map contains dense red hatching, red boundary marks, and a street basemap; the GeoJSON has 74 polygons and about 1,391 vertices.</td>
+                <td>Use it to show that red marks are not a clean contour; the model must infer which marks form the target boundary.</td>
+              </tr>
+              <tr>
+                <td>Geometric output</td>
+                <td><code>A4EC3a1</code> / <code>7010002614</code></td>
+                <td><code>Appendix 1 - Article 4 Direction CAZ KQ including plan.pdf</code>, p.2</td>
+                <td>The target GeoJSON contains about 595 polygons and 7,530 vertices; the PDF shows a complex red area on an urban basemap.</td>
+                <td>Place this near the output side to emphasize that the answer must be valid WGS84 MultiPolygon geometry, not a screenshot or description.</td>
+              </tr>
+              <tr>
+                <td>Multi-document / page selection</td>
+                <td><code>A4Ba1</code> / <code>7010002607</code></td>
+                <td>one notice/schedule PDF plus <code>Belsize map.pdf</code></td>
+                <td>The case contains a long notice/schedule document and a separate map file; the system must select the page/file that actually supports boundary recovery.</td>
+                <td>Use as an auxiliary callout explaining why Reader and page/map selection are necessary modules.</td>
+              </tr>
+              <tr>
+                <td>Disconnected / hole-rich areas</td>
+                <td><code>116</code> / <code>7010003532</code></td>
+                <td><code>Railway Arches Article 4 Direction all.pdf</code>, p.1-7</td>
+                <td>The GeoJSON contains 55 polygons, 28 holes, and about 2,481 vertices; the PDF includes notices, schedules, and multiple signature pages.</td>
+                <td>Useful for an appendix or analysis figure about how MultiPolygons and holes affect scoring.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout" style="margin-top: 14px;">
+          Suggested use: build the main Figure 1 around <code>A4D4A1</code> for scanned input, <code>A4Ba1</code> for boundary ambiguity, and <code>A4EC3a1</code> for complex GeoJSON output. <code>A108P</code> or <code>A4D01</code> can serve as insets showing why text evidence and map/page selection motivate task decomposition.
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Related Tasks and Baseline Strategy</h2>
+          <p class="hint">There is no exact prior PDF-to-WGS84-polygon benchmark; separate runnable baselines from work that belongs in related work.</p>
+        </div>
+        <div class="grid three">
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">Claim</span><h3>Core positioning</h3></div>
+            <p>The gap is not that nobody studies maps or documents. The gap is the absence of a verifiable benchmark that combines planning PDFs, map vision, implicit geolocation, and GeoJSON boundary output.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-green">Use</span><h3>Baselines to run in the main paper</h3></div>
+            <p>Prioritize baselines that directly test the paper’s claims: direct VLM PDF-to-GeoJSON, map-only segmentation, VLM geocode-from-PDF, Collapsed Reader/no dedicated Reader, and commit/critic variants. Collapsed Reader keeps the PDFInfo schema and tests whether the dedicated Reader phase adds value.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-amber">Avoid</span><h3>Do not force incomparable baselines</h3></div>
+            <p>MapReader, QGIS/GDAL, UrbanPlanBench, and LegalBench are better used as related work or oracle/semi-manual discussion, not as complete end-to-end Plan2Map baselines.</p>
+          </div>
+        </div>
+        <div class="table-wrap" style="margin-top: 14px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Adjacent area</th>
+                <th>Representative work/tool</th>
+                <th>Relation to Plan2Map</th>
+                <th>How to use it in the paper</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Document understanding / DocVQA</td>
+                <td><a href="https://arxiv.org/abs/2007.00398">DocVQA</a></td>
+                <td>Provides context for multimodal document understanding, but the output is typically a textual answer rather than a GIS polygon.</td>
+                <td>Use in Related Work. Position Plan2Map as moving from document QA to document-to-geometry grounding.</td>
+              </tr>
+              <tr>
+                <td>Map digitisation / vectorisation</td>
+                <td><a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0298217">Historical map vectorization benchmark</a>; <a href="https://kasra-hosseini.com/papers/2024/mapreader-joss/">MapReader</a></td>
+                <td>Covers map-image recognition, segmentation, or vectorization, but usually does not start from planning PDFs or solve textual evidence and real-world grounding jointly.</td>
+                <td>Use in Related Work; experimentally compare only at the map-boundary segmentation level via vanilla/fine-tuned SAM.</td>
+              </tr>
+              <tr>
+                <td>Classical GIS pipeline</td>
+                <td><a href="https://docs.qgis.org/3.44/en/docs/user_manual/managing_data_source/georeferencer.html">QGIS Georeferencer</a>; <a href="https://gdal.org/en/stable/programs/gdal_polygonize.html">GDAL polygonize</a></td>
+                <td>Offers classical manual/semi-manual georeferencing and raster-to-vector tooling, but requires human control points, clean rasters, or oracle-like inputs.</td>
+                <td>Use as classical GIS context; do not present as an automatic end-to-end baseline unless explicitly labeled semi-manual/oracle.</td>
+              </tr>
+              <tr>
+                <td>Remote-sensing / geospatial VLM</td>
+                <td><a href="https://arxiv.org/abs/2003.07333">RSVQA</a>; <a href="https://arxiv.org/abs/2311.15826">GeoChat</a></td>
+                <td>Shows VLM progress on geospatial imagery, but the input is usually remote-sensing imagery or geospatial QA rather than scanned planning PDFs and Article 4 boundaries.</td>
+                <td>Use in Related Work to show Plan2Map is a new intersection of documents, maps, and GIS outputs.</td>
+              </tr>
+              <tr>
+                <td>Planning / legal AI</td>
+                <td><a href="https://arxiv.org/abs/2504.21027">UrbanPlanBench</a>; <a href="https://papers.nips.cc/paper_files/paper/2023/hash/89e44582fd28ddfea1ea4dcb0ebbf4b0-Abstract-Datasets_and_Benchmarks.html">LegalBench</a></td>
+                <td>Studies planning/legal text understanding and reasoning, while Plan2Map focuses on recovering verifiable geographic boundaries from planning records.</td>
+                <td>Use in Related Work; clarify that “we do not benchmark legal reasoning; we benchmark geospatial grounding from planning records.”</td>
+              </tr>
+              <tr>
+                <td>Direct multimodal model baselines</td>
+                <td>Frontier VLM PDF-to-GeoJSON; VLM map-image-to-mask/polygon; VLM geocode-from-PDF</td>
+                <td>This is the key experimental contrast: if a single VLM can output polygons directly from PDFs, decomposition is unnecessary.</td>
+                <td>Use as main experimental baselines. Report PDF-to-GeoJSON on a 30-50 case stratified subset as a stress test, not as a fully equivalent full-benchmark comparison.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout" style="margin-top: 14px;">
+          Suggested Related Work sentence: Prior work studies document VQA, map vectorization, geospatial VLMs, and planning/legal reasoning separately. Plan2Map differs by requiring a system to jointly read a public planning record, identify spatial evidence, ground a local map in real-world coordinates, and emit a valid WGS84 geometry.
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Storyline Inspired By Paper2Poster</h2>
+          <p class="hint">Paper2Poster first defines the task and benchmark, then proposes PosterAgent; Plan2Map should follow the same hierarchy.</p>
+        </div>
+        <div class="storyline">
+          <div class="story-step">
+            <div><h3>Define the new task first</h3><p>As Paper2Poster states “Given a scientific paper... generate a single-page poster,” Plan2Map should state “Given a planning PDF... output a WGS84 GeoJSON boundary.”</p></div>
+          </div>
+          <div class="story-step">
+            <div><h3>Then introduce the Plan2Map benchmark</h3><p>The dataset is not appendix material. It is the central contribution: public planning PDFs, government polygons, structured metadata, manual QA labels, and reproducible splits.</p></div>
+          </div>
+          <div class="story-step">
+            <div><h3>Establish the evaluation suite</h3><p>Just as Paper2Poster uses Visual Quality, Textual Coherence, VLM-as-Judge, and PaperQuiz, Plan2Map should foreground GeoJSON IoU, F1, centroid error, valid-output rate, and diagnostic metrics.</p></div>
+          </div>
+          <div class="story-step">
+            <div><h3>Use direct baselines as the turn</h3><p>If the task were just visual boundary tracing, frontier VLMs should solve it directly. Their instability motivates decomposition.</p></div>
+          </div>
+          <div class="story-step">
+            <div><h3>Present GeoPlanAgent</h3><p>As PosterAgent is top-down and visual-in-the-loop, describe GeoPlanAgent as document-grounded and geospatial-tool-in-the-loop: Reader, Locate, Matcher/Segmenter, Commit/Critic.</p></div>
+          </div>
+          <div class="story-step">
+            <div><h3>Close with diagnosis</h3><p>Emphasize the bimodal distribution: the system is often nearly perfect or completely wrong. Failure analysis, essential ablations, and optional oracle-style probes make the paper feel mature.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Recommended EMNLP Long-Paper Outline</h2>
+          <p class="hint">Plan around an 8-page main paper; move technical details, prompts, extra visualizations, and additional ablations to the appendix.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Section</th>
+                <th>Writing intent</th>
+                <th>Must include</th>
+                <th>Page budget</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1. Introduction</td>
+                <td>Move from public planning PDFs as a real bottleneck to the lack of a verifiable PDF-to-polygon benchmark.</td>
+                <td>Motivation, task definition, direct VLM gap, four contributions.</td>
+                <td>1.0</td>
+              </tr>
+              <tr>
+                <td>2. Related Work</td>
+                <td>Show that prior work covers pieces of the task but not the joint PDF, map, geolocation, and GeoJSON problem.</td>
+                <td>Document understanding, map digitisation, geospatial VLMs, planning/legal AI, tool agents.</td>
+                <td>0.7</td>
+              </tr>
+              <tr>
+                <td>3. Benchmark</td>
+                <td>This is the main contribution section. Detail the source, pairing logic, manual QA, and licensing.</td>
+                <td>Scale, fields, PDF-polygon pairing, filtering rules, metadata, release format.</td>
+                <td>1.4</td>
+              </tr>
+              <tr>
+                <td>4. Task and Metrics</td>
+                <td>Turn the benchmark into a reproducible task and evaluation protocol.</td>
+                <td>Input/output schema, IoU/F1/centroid error, no-polygon scoring, stratified analysis.</td>
+                <td>0.7</td>
+              </tr>
+              <tr>
+                <td>5. GeoPlanAgent</td>
+                <td>Explain the method as task decomposition, not as a list of tools.</td>
+                <td>Reader, Locate, Worker/match_at, SAM3-LoRA, projection, commit, critic.</td>
+                <td>1.4</td>
+              </tr>
+              <tr>
+                <td>6. Experiments</td>
+                <td>Report main results first, then organize ablations around causal questions.</td>
+                <td>Direct VLM, no critic, with critic, segmentation, locate, matching, commit.</td>
+                <td>1.5</td>
+              </tr>
+              <tr>
+                <td>7. Analysis and Discussion</td>
+                <td>Explain why the task is hard and how the benchmark exposes model capability gaps.</td>
+                <td>Bimodal success/failure, wrong-area, wrong-page, district false success, mask errors, optional oracle-style probes.</td>
+                <td>0.9</td>
+              </tr>
+              <tr>
+                <td>8. Limitations and Release</td>
+                <td>Handle UK-specific dependencies, public licensing, and PDF redistribution boundaries honestly.</td>
+                <td>UK geocoder dependence, coverage bias, OGL attribution, PDF URL/script release policy.</td>
+                <td>0.4 + required section</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Latest PDF Revision Plan</h2>
+          <p class="hint">The latest abstract and introduction now have the right direction; the next pass should fix old-draft residue, naming, Section 5, and experiment framing.</p>
+        </div>
+        <div class="grid three">
+          <div class="card">
+            <div class="card-head"><span class="badge b-rose">P0</span><h3>Paper skeleton and task definition</h3></div>
+            <ul>
+              <li>The first three introduction paragraphs are mostly usable, but replace “we introduce GeoPlan Agent, a benchmark...” with “we introduce Plan2Map ... and propose GeoPlanAgent ...”.</li>
+              <li>Rewrite the contributions as four items: public benchmark, new PDF-to-GeoJSON task, GeoPlanAgent method, and diagnostic analysis.</li>
+              <li>Section 5.1, “planning documents summarisation,” is old-draft residue; replace it with <code>Task and Evaluation Protocol</code>.</li>
+              <li>Define the formal task as: input planning PDF <code>D</code>, system output <code>G_pred</code>; <code>G_true</code> is only an evaluation-time reference.</li>
+              <li>Delete “Google Map API” and generic “Gemini-2.5/GPT-4/Claude-3 benchmark” text, which does not match the current experiments.</li>
+              <li>Replace “joint legal-text reading” with “spatial evidence extraction from planning text, schedules, and maps.”</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-amber">P1</span><h3>Dataset, method, and experiment framing</h3></div>
+            <ul>
+              <li>The dataset source should name Planning Data / Article 4 direction area / OGL instead of “UK planning authority sources [TBD].”</li>
+              <li>Explain the relationship between 208 document-level benchmark cases and 211 annotated map masks; do not write “211-case dataset less five duplicates = 208.”</li>
+              <li>Add the manual-QA rule: keep cases where the PDF boundary and GeoJSON clearly correspond; remove unclear, mismatched, or ambiguous cases.</li>
+              <li>In the main Method section, describe which failure surface each module addresses: Reader, Locate, match/register, SAM segmentation, projection, commit/critic.</li>
+              <li>Move MINIMA, RANSAC, Delaunay, scale perturbation, OCR cascade, and ResNet rotation details to the appendix.</li>
+              <li>Replace “model physically cannot return free text” with “schema-constrained outputs reduce malformed intermediate states.”</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-blue">P2</span><h3>Results reorder and submission cleanup</h3></div>
+            <ul>
+              <li>Start Results with the end-to-end table: GeoPlanAgent no critic / + critic, then explain the bimodal distribution.</li>
+              <li>Organize ablations by claim: VLM/SAM segmentation, SAM fine-tuning, critic/commit, Locate/Collapsed Reader/tool ablations; do not promise unavailable results in the main text.</li>
+              <li>State that the current VLM-direct table is a map-mask segmentation baseline, not a full PDF-to-GeoJSON baseline.</li>
+              <li>Clear unresolved <code>(?)</code>, <code>fig:</code>, <code>tab:</code>, <code>subsection:</code>, <code>eq:</code>, and <code>appendix:</code> references.</li>
+              <li>Fix table placement, especially Table 3 appearing at the start of Ablations; add OGL/data-release/anonymized-release wording to Limitations.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout" style="margin-top: 14px;">
+          Recommended writing order: 1. fix Introduction naming and contributions; 2. replace Section 5 with <code>Task and Evaluation Protocol</code>; 3. tighten Dataset source, QA, and 208/211 explanation; 4. compress Method into a reader-friendly overview; 5. reorder Results/Ablations by claim; 6. resolve labels/citations and move engineering details to the appendix; 7. polish the abstract last.
+        </div>
+      </section>
+
+
+      <section>
+        <div class="section-title">
+          <h2>Licence and Data Release Checklist</h2>
+          <p class="hint">This needs to be explicit in both the paper and the dataset release.</p>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head"><span class="badge b-amber">L</span><h3>Facts safe to state</h3></div>
+            <ul>
+              <li>The Planning Data Article 4 direction area dataset page lists 6,838 areas, 95 data providers, OGL v3.0, and © Crown copyright and database right 2026.</li>
+              <li>The area entity page exposes <code>geometry</code> and a linked <code>article-4-direction</code>.</li>
+              <li>The direction entity page exposes <code>document-url</code>, the source PDF URL.</li>
+              <li>OGL v3.0 allows copying, publication, distribution, adaptation, and commercial or non-commercial use, subject to attribution.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="badge b-rose">!</span><h3>Handle carefully</h3></div>
+            <ul>
+              <li>OGL does not cover personal data, third-party rights, logos, crests, and other listed exemptions.</li>
+              <li>Planning Data terms warn that linked external source websites may have their own terms, privacy policies, and licences.</li>
+              <li>Prefer releasing metadata, polygons, annotations, source URLs, and download scripts; redistribute PDF files only after verifying the linked LPA source permits it.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout" style="margin-top: 14px;">
+          Recommended attribution: Contains public sector information licensed under the Open Government Licence v3.0. © Crown copyright and database right 2026.
+        </div>
+        <ul class="source-list" style="margin-top: 14px;">
+          <li><strong>Article 4 direction area dataset</strong><a href="https://www.planning.data.gov.uk/dataset/article-4-direction-area">https://www.planning.data.gov.uk/dataset/article-4-direction-area</a></li>
+          <li><strong>Area entity with geometry</strong><a href="https://www.planning.data.gov.uk/entity/7010006951">https://www.planning.data.gov.uk/entity/7010006951</a></li>
+          <li><strong>Direction entity with document-url</strong><a href="https://www.planning.data.gov.uk/entity/6101560">https://www.planning.data.gov.uk/entity/6101560</a></li>
+          <li><strong>Planning Data terms</strong><a href="https://www.planning.data.gov.uk/terms-and-conditions/">https://www.planning.data.gov.uk/terms-and-conditions/</a></li>
+          <li><strong>Open Government Licence v3.0</strong><a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/</a></li>
+          <li><strong>EMNLP 2026 main conference CFP</strong><a href="https://2026.emnlp.org/calls/main_conference_papers/">https://2026.emnlp.org/calls/main_conference_papers/</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Figure and Table Plan</h2>
+          <p class="hint">Arrange these in the same rhythm as Paper2Poster: overview, benchmark, pipeline, evaluation.</p>
+        </div>
+        <div class="grid three">
+          <div class="card"><div class="card-head"><span class="badge b-blue">F1</span><h3>Plan2Map overview</h3></div><p>Mirror Paper2Poster Figure 1: how to digitise planning records on one side, how to evaluate geospatial boundaries on the other.</p></div>
+          <div class="card"><div class="card-head"><span class="badge b-green">F2</span><h3>Dataset pipeline</h3></div><p>Planning Data entity -> Article 4 PDF -> area geometry -> manual QA -> released Plan2Map split.</p></div>
+          <div class="card"><div class="card-head"><span class="badge b-violet">F3</span><h3>GeoPlanAgent pipeline</h3></div><p>Reader -> Locate -> match_at -> SAM3-LoRA -> projection -> commit/critic.</p></div>
+          <div class="card"><div class="card-head"><span class="badge b-amber">T1</span><h3>Results on Plan2Map</h3></div><p>Direct VLM, GeoPlanAgent no critic, GeoPlanAgent + critic; report IoU, F1, centroid error, and cost.</p></div>
+          <div class="card"><div class="card-head"><span class="badge b-rose">T2</span><h3>Ablation table</h3></div><p>Group by segmentation, locate, matching, commit, and critic rather than listing experiments randomly.</p></div>
+          <div class="card"><div class="card-head"><span class="badge b-slate">T3</span><h3>Failure taxonomy</h3></div><p>Wrong-area, wrong-page, district false success, bad mask, no polygon; include counts and examples.</p></div>
+        </div>
+      </section>
+    </article>
+  </main>
+</body>
+</html>

@@ -1,0 +1,391 @@
+{
+  "case": "A4D-24",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.132,
+    "top_lon": -0.44,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "intersect:Somersbury Lane x Great Copse",
+    "evidence": "The site is 'Land at Norley Farm' on Horsham Road. Somersbury Lane (51.1289, -0.4301) and Great Copse (51.1351, -0.4475) are listed as alternative names/locations. The grid ref TQ0838 (approx 51.13, -0.45) confirms this cluster. Norley Farm is located between Cranleigh and Ewhurst.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.5921593009531055,
+  "gt_centroids": [
+    {
+      "lat": 51.1333140203058,
+      "lon": -0.44822405983230423
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Norley Farm"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Great Copse"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Somersbury Lane",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Norley Farm",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Great Copse",
+        "la_filter": "Waverley",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Great Copse",
+            "type": "woodland or forest",
+            "lat": 51.14173769638521,
+            "lon": -0.5878650248066962,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Great Copse",
+            "type": "woodland or forest",
+            "lat": 51.09620728092127,
+            "lon": -0.6324386771793185,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Great Copse",
+            "type": "woodland or forest",
+            "lat": 51.135112722692696,
+            "lon": -0.4475779648164334,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Great Copse",
+            "type": "woodland or forest",
+            "lat": 51.176037651035124,
+            "lon": -0.4943009054579149,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Somersbury Lane",
+        "la_filter": "Waverley",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Somersbury Lane",
+            "type": "named road",
+            "lat": 51.128989994097175,
+            "lon": -0.4301617705412274,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Somersbury Lane",
+            "type": "section of named road",
+            "lat": 51.1190022768784,
+            "lon": -0.4317433889743593,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Somersbury Wood",
+            "type": "woodland or forest",
+            "lat": 51.12685283001069,
+            "lon": -0.4190444407233676,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Coxlands",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Horsham Road Cranleigh"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coxlands",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Horsham Road Cranleigh",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Horsham Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Horsham Road",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Horsham Road",
+            "type": "named road",
+            "lat": 51.13855932664486,
+            "lon": -0.5277399290041606,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Horsham Road",
+            "type": "named road",
+            "lat": 51.1307865948593,
+            "lon": -0.46867520540858093,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Horsham Road",
+            "type": "section of named road",
+            "lat": 51.13538435053554,
+            "lon": -0.48058681431018435,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Horsham Road",
+            "type": "named road",
+            "lat": 51.09985724742695,
+            "lon": -0.500333184900229,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Horsham Road",
+            "type": "section of named road",
+            "lat": 51.10714111838699,
+            "lon": -0.5136965241783122,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Ewhurst"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ewhurst",
+        "la_filter": "Waverley",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Ewhurst",
+            "type": "village",
+            "lat": 51.15054361200257,
+            "lon": -0.44009704466577265,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Ewhurst Green",
+            "type": "village",
+            "lat": 51.142047160244374,
+            "lon": -0.43483674368584885,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Ewhurst Road",
+            "type": "named road",
+            "lat": 51.1436968880936,
+            "lon": -0.47945615924430823,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Ewhurst Church of England Infants School (Aided)",
+            "type": "primary education",
+            "lat": 51.15261432509379,
+            "lon": -0.44230074348926673,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.44,
+        "sigma_m": 500,
+        "evidence": "The site is 'Land at Norley Farm' on Horsham Road. Somersbury Lane (51.1289, -0.4301) and Great Copse (51.1351, -0.4475) are listed as alternative names/locations. The grid ref TQ0838 (approx 51.13, -0.45) confirms this cluster. Norley Farm is located between Cranleigh and Ewhurst.",
+        "picked_source": "intersect:Somersbury Lane x Great Copse",
+        "confidence": "high",
+        "top_lat": 51.132,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

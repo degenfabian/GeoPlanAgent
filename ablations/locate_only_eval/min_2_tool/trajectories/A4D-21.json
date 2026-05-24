@@ -1,0 +1,316 @@
+{
+  "case": "A4D-21",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.175,
+    "top_lon": -0.63,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Portsmouth Road x Tuesley",
+    "evidence": "The site is identified as Wood Farm on Portsmouth Road, near Tuesley. The map shows the site between Portsmouth Road and the Tuesley area. The coordinates for Portsmouth Road (51.1781) and Tuesley (51.1670) place the site in this immediate vicinity.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.47043392826902014,
+  "gt_centroids": [
+    {
+      "lat": 51.17081586058412,
+      "lon": -0.6290014972656658
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wood Farm, Portsmouth Road, Godalming",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Tuesley",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wood Farm, Portsmouth Road, Godalming",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Tuesley",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Tuesley",
+            "type": "hamlet",
+            "lat": 51.167029263062595,
+            "lon": -0.6244667809415843,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Tuesley Corner",
+            "type": "named road",
+            "lat": 51.17860859790553,
+            "lon": -0.6165826345462286,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Tuesley Lane",
+            "type": "section of named road",
+            "lat": 51.177219882693116,
+            "lon": -0.6147357733079639,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Tuesley Lane",
+            "type": "named road",
+            "lat": 51.169793526478784,
+            "lon": -0.6232402379024186,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Tuesley Lane",
+            "type": "section of named road",
+            "lat": 51.16711865256759,
+            "lon": -0.62442121277621,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Portsmouth Road, Godalming",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wood Farm, Godalming",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Portsmouth Road, Godalming",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wood Farm, Godalming",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Portsmouth Road",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.175,
+        "lon": -0.63,
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Portsmouth Road",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Portsmouth Road",
+            "type": "named road",
+            "lat": 51.13607513027213,
+            "lon": -0.7119763078017107,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Portsmouth Road",
+            "type": "section of named road",
+            "lat": 51.10525189580605,
+            "lon": -0.7445146539693375,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Portsmouth Road",
+            "type": "section of named road",
+            "lat": 51.11213030334997,
+            "lon": -0.7360853000350118,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Portsmouth Road",
+            "type": "section of named road",
+            "lat": 51.17216414971318,
+            "lon": -0.6445121620582438,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Portsmouth Road",
+            "type": "section of named road",
+            "lat": 51.17816920053469,
+            "lon": -0.6266103405673067,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.175,
+        "lon": -0.63,
+        "la": "Waverley",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.14979708109079,
+        "la_centroid_lon": -0.6327293391700743
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "evidence": "The site is identified as Wood Farm on Portsmouth Road, near Tuesley. The map shows the site between Portsmouth Road and the Tuesley area. The coordinates for Portsmouth Road (51.1781) and Tuesley (51.1670) place the site in this immediate vicinity.",
+        "sigma_m": 500,
+        "top_lon": -0.63,
+        "picked_source": "place:Portsmouth Road x Tuesley",
+        "top_lat": 51.175,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

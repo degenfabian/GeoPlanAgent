@@ -1,0 +1,219 @@
+{
+  "case": "23:53161:ART4",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.76258,
+    "top_lon": 1.10994,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "place:Reepham",
+    "evidence": "The map title 'Reepham Article 4 Direction' and pdf_info both point to Reepham. The place search for Reepham (town) and a grid reference for the town center align closely. NR7 0DU is the council office (Thorpe Lodge) and is ignored as a site location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.11332347253205276,
+  "gt_centroids": [
+    {
+      "lat": 52.7624974919124,
+      "lon": 1.1116186711757081
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "grid_ref": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "Reepham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Thorpe Lodge",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 101 228"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Reepham",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Reepham",
+            "type": "town",
+            "lat": 52.76258294263695,
+            "lon": 1.1099384443446518,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Reepham Road",
+            "type": "named road",
+            "lat": 52.6978348306445,
+            "lon": 1.208983066742091,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Reepham Road",
+            "type": "section of named road",
+            "lat": 52.72346399892882,
+            "lon": 1.1470259218804428,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Reepham Road",
+            "type": "section of named road",
+            "lat": 52.69248680887362,
+            "lon": 1.2181524323613264,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Reepham Road",
+            "type": "section of named road",
+            "lat": 52.7728055839395,
+            "lon": 1.0477060367632782,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thorpe Lodge",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG 101 228",
+        "lat": 52.76235308784145,
+        "lon": 1.1132132039129428
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.11,
+        "lat": 52.7625,
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.7625,
+        "lon": 1.11,
+        "la": "Broadland",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.70119443642098,
+        "la_centroid_lon": 1.3101886931294198
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map title 'Reepham Article 4 Direction' and pdf_info both point to Reepham. The place search for Reepham (town) and a grid reference for the town center align closely. NR7 0DU is the council office (Thorpe Lodge) and is ignored as a site location.",
+        "top_lat": 52.76258,
+        "sigma_m": 1000,
+        "verified_inside_admin_region": true,
+        "top_lon": 1.10994,
+        "picked_source": "place:Reepham",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

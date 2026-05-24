@@ -1,0 +1,374 @@
+{
+  "case": "SSA405",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.565,
+    "top_lon": -2.28,
+    "sigma_m": 1000,
+    "confidence": "med",
+    "picked_source": "road:Bridgnorth Road (Shipley)",
+    "evidence": "The site is 'Clive View' on Bridgnorth Road in Shipley. While the postcode WV8 1PX is for the Council Offices in Codsall, the village of Shipley sits on the border of South Staffordshire and Shropshire. Bridgnorth Road (A454) runs through it. Picked a central point on Bridgnorth Road within the Shipley area.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 1.2138899524431537,
+  "gt_centroids": [
+    {
+      "lat": 52.560697028601574,
+      "lon": -2.263495447576833
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 6,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "WV8 1PX"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Clive View"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Shipley Cottages",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Shipley",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "WV8 1PX",
+        "lat": 52.62566656951965,
+        "lon": -2.191960842481458,
+        "admin_district": "South Staffordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Clive View",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shipley Cottages",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shipley",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Shipley Lane",
+            "type": "named road",
+            "lat": 52.66727037415327,
+            "lon": -1.8371378177907607,
+            "admin_district": "Lichfield",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Shipley Close",
+            "type": "named road",
+            "lat": 52.79201009667579,
+            "lon": -1.6498837131523754,
+            "admin_district": "East Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Shipley Mow",
+            "type": "named road",
+            "lat": 51.49066051430133,
+            "lon": -2.4812215083909064,
+            "admin_district": null,
+            "county": "South Gloucestershire"
+          },
+          {
+            "name": "Shipley Close",
+            "type": "named road",
+            "lat": 50.42553309658328,
+            "lon": -3.8293811561584588,
+            "admin_district": "South Hams",
+            "county": "Devon"
+          },
+          {
+            "name": "Shipley Road",
+            "type": "section of named road",
+            "lat": 51.01632685381683,
+            "lon": -0.35300397609752054,
+            "admin_district": "Horsham",
+            "county": "West Sussex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Shipley, Shropshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Bridgnorth Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shipley, Shropshire",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bridgnorth Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Bridgnorth Road",
+            "lat": 52.520999846233344,
+            "lon": -2.188156132520105,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Bridgnorth Road",
+            "lat": 52.51986608321093,
+            "lon": -2.185540691444273,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Bridgnorth Road",
+            "lat": 52.51923876177424,
+            "lon": -2.184280074803945,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Bridgnorth Road",
+            "lat": 52.518765086111,
+            "lon": -2.1835561945514574,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Bridgnorth Road",
+            "lat": 52.518321264661154,
+            "lon": -2.182795390625979,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Shipley, Pattingham"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.565,
+        "la": "South Staffordshire",
+        "lon": -2.28
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shipley, Pattingham",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.565,
+        "lon": -2.28,
+        "la": "South Staffordshire",
+        "inside_la": false,
+        "distance_km_approx": 0.94,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Shipley, Wolverhampton"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shipley, Wolverhampton",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": false,
+        "picked_source": "road:Bridgnorth Road (Shipley)",
+        "confidence": "med",
+        "sigma_m": 1000,
+        "top_lat": 52.565,
+        "top_lon": -2.28,
+        "evidence": "The site is 'Clive View' on Bridgnorth Road in Shipley. While the postcode WV8 1PX is for the Council Offices in Codsall, the village of Shipley sits on the border of South Staffordshire and Shropshire. Bridgnorth Road (A454) runs through it. Picked a central point on Bridgnorth Road within the Shipley area."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

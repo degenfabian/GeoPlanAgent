@@ -1,0 +1,206 @@
+{
+  "case": "Ar4.25",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7702,
+    "top_lon": -0.3275,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Porters Wood x Valley Road",
+    "evidence": "The map shows an industrial area bounded by Porters Wood, Soothouse Spring, and Valley Road. Geocoding these roads in St Albans yields a tight cluster. The pick is the intersection of Porters Wood and Valley Road.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.22232305974092095,
+  "gt_centroids": [
+    {
+      "lat": 51.77171599966879,
+      "lon": -0.32539338340246393
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Porters Wood"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Soothouse Spring"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Porters Wood",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Porters Wood",
+            "type": "named road",
+            "lat": 51.771349739713116,
+            "lon": -0.32620135081189633,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Soothouse Spring",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Soothouse Spring",
+            "type": "named road",
+            "lat": 51.770428208345784,
+            "lon": -0.3252643749960621,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Soothouse Spring",
+            "type": "woodland or forest",
+            "lat": 51.770479259938085,
+            "lon": -0.32821916783903093,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Valley Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Valley Road",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Valley Road",
+            "type": "section of named road",
+            "lat": 51.769136411353465,
+            "lon": -0.32610930869861904,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Valley Road",
+            "type": "named road",
+            "lat": 51.76948947388199,
+            "lon": -0.3269078681724741,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Valley Rise",
+            "type": "named road",
+            "lat": 51.82056644575612,
+            "lon": -0.32521956374231614,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 200,
+        "picked_source": "intersect:Porters Wood x Valley Road",
+        "top_lat": 51.7702,
+        "top_lon": -0.3275,
+        "evidence": "The map shows an industrial area bounded by Porters Wood, Soothouse Spring, and Valley Road. Geocoding these roads in St Albans yields a tight cluster. The pick is the intersection of Porters Wood and Valley Road."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

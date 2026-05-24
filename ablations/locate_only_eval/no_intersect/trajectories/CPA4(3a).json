@@ -1,0 +1,338 @@
+{
+  "case": "CPA4(3a)",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5618448838046,
+    "top_lon": 0.584868163949162,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:SS7 1TF",
+    "evidence": "The postcode SS7 1TF is located on Bread and Cheese Hill (London Road) which forms the southern boundary of the site. This is corroborated by the 'Coombe Wood' place name and 'Rhoda Road North' road hits which cluster within 500-800m.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.9972174142387574,
+  "gt_centroids": [
+    {
+      "lat": 51.56519074636219,
+      "lon": 0.571483266138213
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "grid_ref": 1,
+      "place": 3,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SS7 1TF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ7888SW"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Coombe Wood"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Thundersley Christian Spiritualist Church"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SS7 1TF",
+        "lat": 51.56184488380458,
+        "lon": 0.5848681639491619,
+        "admin_district": "Castle Point District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'TQ7888SW'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coombe Wood",
+        "la_filter": "Castle Point",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Coombe Wood",
+            "type": "woodland or forest",
+            "lat": 51.56542370364884,
+            "lon": 0.5713914382920157,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thundersley Christian Spiritualist Church",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Bread and Cheese Hill",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Rhoda Road North",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.5618448838046,
+        "lon": 0.584868163949162,
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bread and Cheese Hill",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Rhoda Road North",
+        "la_filter": "Castle Point",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Rhoda Road North",
+            "lat": 51.566185338008815,
+            "lon": 0.5688803246632985,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Rhoda Road North",
+            "lat": 51.56720380616869,
+            "lon": 0.569395204540355,
+            "in_la": "Castle Point"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5618448838046,
+        "lon": 0.584868163949162,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Thundersley",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thundersley",
+        "la_filter": "Castle Point",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Thundersley",
+            "type": "other settlement",
+            "lat": 51.56837374890278,
+            "lon": 0.5767098343944206,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          },
+          {
+            "name": "Thundersley Park Road",
+            "type": "section of named road",
+            "lat": 51.562497216047035,
+            "lon": 0.5736071023352078,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          },
+          {
+            "name": "Thundersley Park Road",
+            "type": "named road",
+            "lat": 51.55806541270943,
+            "lon": 0.5677732717780761,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          },
+          {
+            "name": "Thundersley Park Road",
+            "type": "section of named road",
+            "lat": 51.55686998053989,
+            "lon": 0.5673308067400136,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          },
+          {
+            "name": "Thundersley Grove",
+            "type": "named road",
+            "lat": 51.563880478394395,
+            "lon": 0.5757342411834883,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lon": 0.584868163949162,
+        "sigma_m": 300,
+        "picked_source": "postcode:SS7 1TF",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.5618448838046,
+        "evidence": "The postcode SS7 1TF is located on Bread and Cheese Hill (London Road) which forms the southern boundary of the site. This is corroborated by the 'Coombe Wood' place name and 'Rhoda Road North' road hits which cluster within 500-800m."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

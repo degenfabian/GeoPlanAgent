@@ -1,0 +1,390 @@
+{
+  "case": "A4D11",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.475,
+    "top_lon": -2.603,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "place:Redland/Bishopston midpoint",
+    "evidence": "The map shows a large area covering Redland and Bishopston. The center point (51.475, -2.603) is between the centroids for Redland and Bishopston, aligning with the central features like Linden Road and Cranbrook Road shown on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.13699179266054654,
+  "gt_centroids": [
+    {
+      "lat": 51.47443244555778,
+      "lon": -2.6012444210396635
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Redland Green Farm",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Redland High School",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Redland Road",
+        "road_b": "Cranbrook Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redland Green Farm",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redland High School",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Redland Road",
+          "Cranbrook Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Redland Green",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "HMP Bristol",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Linden Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redland Green",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Redland Green Road",
+            "type": "named road",
+            "lat": 51.472528863084364,
+            "lon": -2.6062757335759006,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "HMP Bristol",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Linden Road",
+        "la_filter": "Bristol",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Linden Road",
+            "lat": 51.478188100098656,
+            "lon": -2.606465989967818,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Linden Road",
+            "lat": 51.477797917261896,
+            "lon": -2.6054033255852938,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Linden Road",
+            "lat": 51.47912819392983,
+            "lon": -2.6089768217490072,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Redland"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Bishopston"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redland",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Redland",
+            "type": "suburban area",
+            "lat": 51.470685930769285,
+            "lon": -2.606208104035755,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Redland",
+            "type": "railway station",
+            "lat": 51.4684493850964,
+            "lon": -2.598749912582719,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Redland Road",
+            "type": "named road",
+            "lat": 51.47024233093829,
+            "lon": -2.6050504656643882,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Redland Court Road",
+            "type": "named road",
+            "lat": 51.47195497901203,
+            "lon": -2.6024815811785786,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Redland Hill",
+            "type": "named road",
+            "lat": 51.47160401412701,
+            "lon": -2.6129438587771006,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bishopston",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Bishopston",
+            "type": "suburban area",
+            "lat": 51.47509411883146,
+            "lon": -2.600521563063225,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Bristol",
+        "lon": -2.603,
+        "lat": 51.475
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.475,
+        "lon": -2.603,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -2.603,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 51.475,
+        "evidence": "The map shows a large area covering Redland and Bishopston. The center point (51.475, -2.603) is between the centroids for Redland and Bishopston, aligning with the central features like Linden Road and Cranbrook Road shown on the map.",
+        "sigma_m": 1000,
+        "picked_source": "place:Redland/Bishopston midpoint"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,238 @@
+{
+  "case": "Ar4.15",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.80705,
+    "top_lon": -0.40284,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:AL3 7PR",
+    "evidence": "The site is 'Bylands Meadow' at the rear of 'Bylands House' on Dunstable Road, Redbourn. Postcode AL3 7PR maps to Dunstable Road in Redbourn and aligns with the road geometry and labels (Bylands House) seen on the map. Verified inside St Albans.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2905568935644048,
+  "gt_centroids": [
+    {
+      "lat": 51.80765936804887,
+      "lon": -0.3987304032130273
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 2,
+      "postcode": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Dunstable Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Bylands Meadow"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Dunstable Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Dunstable Road",
+            "lat": 51.806425774960715,
+            "lon": -0.4013328757263665,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Dunstable Road",
+            "lat": 51.804674217240986,
+            "lon": -0.39992162736201653,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Dunstable Road",
+            "lat": 51.80391695081774,
+            "lon": -0.39934202045948347,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Dunstable Road",
+            "lat": 51.80332848799949,
+            "lon": -0.3989033044940684,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Dunstable Road",
+            "lat": 51.80256176357399,
+            "lon": -0.39831297120320275,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bylands Meadow",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL3 7PR"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL3 7PQ"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL3 7PR",
+        "lat": 51.80705259149653,
+        "lon": -0.402844692169126,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL3 7PQ",
+        "lat": 51.80069577322503,
+        "lon": -0.39626737083528624,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.40284,
+        "la": "St Albans",
+        "lat": 51.80705
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.80705,
+        "lon": -0.40284,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "picked_source": "postcode:AL3 7PR",
+        "confidence": "high",
+        "top_lon": -0.40284,
+        "evidence": "The site is 'Bylands Meadow' at the rear of 'Bylands House' on Dunstable Road, Redbourn. Postcode AL3 7PR maps to Dunstable Road in Redbourn and aligns with the road geometry and labels (Bylands House) seen on the map. Verified inside St Albans.",
+        "sigma_m": 300,
+        "top_lat": 51.80705
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

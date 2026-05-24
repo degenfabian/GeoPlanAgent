@@ -1,0 +1,390 @@
+{
+  "case": "23:53149:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.792,
+    "top_lon": 1.022,
+    "sigma_m": 1200,
+    "confidence": "med",
+    "picked_source": "place:Foulsham Airfield",
+    "evidence": "Foulsham Airfield (RAF Foulsham) is located north of Foulsham village. The map shows Barnards Farm to the south of the site. Coordinates are centered on the airfield area between Foulsham and Guestwick.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.7932964012242969,
+  "gt_centroids": [
+    {
+      "lat": 52.79886166689419,
+      "lon": 1.0187695263861591
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Foulsham Airfield",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "Barnards Farm Foulsham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "Foulsham"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Foulsham Airfield",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barnards Farm Foulsham",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Foulsham",
+        "la_filter": "Broadland",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Foulsham",
+            "type": "village",
+            "lat": 52.783833859557035,
+            "lon": 1.0116937643790804,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Foulsham Road",
+            "type": "named road",
+            "lat": 52.792008292307926,
+            "lon": 1.0440941725146413,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Foulsham Primary School",
+            "type": "primary education",
+            "lat": 52.78218873928242,
+            "lon": 1.0091922462748957,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Foulsham Road",
+            "type": "section of named road",
+            "lat": 52.793522333638,
+            "lon": 1.0460692076766702,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Barnards Farm"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "RAF Foulsham"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Barnards Farm",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Barnards Farm",
+            "type": "named road",
+            "lat": 50.69949895642488,
+            "lon": -3.0949435676048194,
+            "admin_district": "East Devon",
+            "county": "Devon"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "RAF Foulsham",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Guestwick"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Themelthorpe"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Guestwick",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Guestwick",
+            "type": "hamlet",
+            "lat": 52.80183823133087,
+            "lon": 1.0566516923022378,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Guestwick",
+            "type": "named road",
+            "lat": 51.211734700664366,
+            "lon": 0.30363123192649777,
+            "admin_district": "Tonbridge and Malling",
+            "county": "Kent"
+          },
+          {
+            "name": "Guestwick Green",
+            "type": "named road",
+            "lat": 52.654836949163425,
+            "lon": -1.0679371726122842,
+            "admin_district": null,
+            "county": "City of Leicester"
+          },
+          {
+            "name": "Guestwick Green",
+            "type": "hamlet",
+            "lat": 52.79564212812748,
+            "lon": 1.0475675001325355,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Guestwick Road",
+            "type": "named road",
+            "lat": 52.81667177425557,
+            "lon": 1.0494996218460189,
+            "admin_district": "North Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Themelthorpe",
+        "la_filter": null,
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Themelthorpe",
+            "type": "hamlet",
+            "lat": 52.77455659328846,
+            "lon": 1.047457710625485,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Themelthorpe Road",
+            "type": "named road",
+            "lat": 52.76316608309023,
+            "lon": 1.0325929064070223,
+            "admin_district": "Breckland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Themelthorpe Road",
+            "type": "section of named road",
+            "lat": 52.755209153920234,
+            "lon": 1.0251326591848777,
+            "admin_district": "Breckland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Broadland",
+        "lon": 1.02,
+        "lat": 52.79
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.79,
+        "lon": 1.02,
+        "la": "Broadland",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.70119443642098,
+        "la_centroid_lon": 1.3101886931294198
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "med",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.022,
+        "picked_source": "place:Foulsham Airfield",
+        "sigma_m": 1200,
+        "top_lat": 52.792,
+        "evidence": "Foulsham Airfield (RAF Foulsham) is located north of Foulsham village. The map shows Barnards Farm to the south of the site. Coordinates are centered on the airfield area between Foulsham and Guestwick."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

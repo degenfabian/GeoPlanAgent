@@ -1,0 +1,76 @@
+{
+  "case": "12:00114:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.5704,
+    "lon": 1.1125,
+    "reasoning": "The document specifies multiple properties on Church Street, Wymondham, with postcode NR18 0PH, and the provided map shows the affected sites clustered around the intersection of Church Street and Damgate Street."
+  },
+  "err_km": 0.16908431763170767,
+  "gt_centroids": [
+    {
+      "lat": 52.57049129101415,
+      "lon": 1.1099062653915162
+    },
+    {
+      "lat": 52.5706982228472,
+      "lon": 1.1100466925207282
+    },
+    {
+      "lat": 52.57039472768636,
+      "lon": 1.1096958107372474
+    },
+    {
+      "lat": 52.570783693071874,
+      "lon": 1.109554701024202
+    },
+    {
+      "lat": 52.570505887877395,
+      "lon": 1.109364883243188
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 52.5704,
+        "lon": 1.1125,
+        "reasoning": "The document specifies multiple properties on Church Street, Wymondham, with postcode NR18 0PH, and the provided map shows the affected sites clustered around the intersection of Church Street and Damgate Street."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

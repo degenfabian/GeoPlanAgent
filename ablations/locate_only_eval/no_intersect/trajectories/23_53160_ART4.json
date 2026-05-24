@@ -1,0 +1,295 @@
+{
+  "case": "23:53160:ART4",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.70365,
+    "top_lon": 1.40606,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Charles Close",
+    "evidence": "The map shows an Article 4 Direction area centered on Charles Close in Wroxham. Road search for Charles Close in Broadland returned a cluster of segments at this location, which is consistent with the village of Wroxham. Verified inside Broadland LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1639211641483905,
+  "gt_centroids": [
+    {
+      "lat": 52.705099433875546,
+      "lon": 1.4065038937917476
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR7 0DU"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Charles Close, Wroxham",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wroxham Conservation Area",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Charles Close",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR7 0DU' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Charles Close, Wroxham",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wroxham Conservation Area",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Charles Close",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Charles Close",
+            "lat": 52.70321313315928,
+            "lon": 1.4069624252869637,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Charles Close",
+            "lat": 52.703168030272366,
+            "lon": 1.4090253151045466,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Charles Close",
+            "lat": 52.7042267754049,
+            "lon": 1.4052160423760465,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Charles Close",
+            "lat": 52.70365273998051,
+            "lon": 1.4060653862975747,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Charles Close",
+            "lat": 52.703766676985865,
+            "lon": 1.4080121819656801,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Broadland",
+        "query": "Wroxham"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Broadland",
+        "lon": 1.40606,
+        "lat": 52.70365
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wroxham",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Wroxham",
+            "type": "village",
+            "lat": 52.7066178772019,
+            "lon": 1.40152414472359,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wroxham Road",
+            "type": "named road",
+            "lat": 52.726857355281744,
+            "lon": 1.3765686877277317,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wroxham Road",
+            "type": "section of named road",
+            "lat": 52.680677874537594,
+            "lon": 1.3701317712970684,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wroxham Road",
+            "type": "named road",
+            "lat": 52.67092538502902,
+            "lon": 1.3496441325084632,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wroxham Broad",
+            "type": "inland water",
+            "lat": 52.69695844960819,
+            "lon": 1.4165238372873519,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.70365,
+        "lon": 1.40606,
+        "la": "Broadland",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.70119443642098,
+        "la_centroid_lon": 1.3101886931294198
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows an Article 4 Direction area centered on Charles Close in Wroxham. Road search for Charles Close in Broadland returned a cluster of segments at this location, which is consistent with the village of Wroxham. Verified inside Broadland LA.",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.40606,
+        "top_lat": 52.70365,
+        "sigma_m": 300,
+        "picked_source": "road:Charles Close"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

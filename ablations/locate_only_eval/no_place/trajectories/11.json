@@ -1,0 +1,222 @@
+{
+  "case": "11",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.329476,
+    "top_lon": -3.116416,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:CH60 9HW",
+    "evidence": "The site is identified as 'Field north of 98 Pipers Lane'. Postcode CH60 9HW corresponds to Pipers Lane in Heswall and aligns with the house numbers (98, 101) and house names (Marshfield, Hillhead) visible on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.6591191100504057,
+  "gt_centroids": [
+    {
+      "lat": 53.33330904797972,
+      "lon": -3.1239873884388842
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 2,
+      "postcode": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Wirral",
+        "query": "Pipers Lane"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Pipers Lane",
+        "la_filter": "Wirral",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Piper's Lane",
+        "la": "Wirral"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Piper's Lane",
+        "la_filter": "Wirral",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Piper's Lane",
+            "lat": 53.32974699362137,
+            "lon": -3.117729821130357,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Piper's Lane",
+            "lat": 53.32958502457476,
+            "lon": -3.1172676044820586,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Piper's Lane",
+            "lat": 53.32915330781862,
+            "lon": -3.116332859429387,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Piper's Lane",
+            "lat": 53.33425073393923,
+            "lon": -3.1248832655046406,
+            "in_la": "Wirral"
+          },
+          {
+            "name": "Piper's Lane",
+            "lat": 53.3306618226391,
+            "lon": -3.1208286035897554,
+            "in_la": "Wirral"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CH60 9HW"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CH60 9HW",
+        "lat": 53.32947613572416,
+        "lon": -3.116416368519441,
+        "admin_district": "Wirral District (B)"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -3.11641636851944,
+        "la": "Wirral",
+        "lat": 53.3294761357242
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 53.3294761357242,
+        "lon": -3.11641636851944,
+        "la": "Wirral",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 53.36836475621285,
+        "la_centroid_lon": -3.092689487184164
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 53.329476,
+        "evidence": "The site is identified as 'Field north of 98 Pipers Lane'. Postcode CH60 9HW corresponds to Pipers Lane in Heswall and aligns with the house numbers (98, 101) and house names (Marshfield, Hillhead) visible on the map.",
+        "confidence": "high",
+        "top_lon": -3.116416,
+        "picked_source": "postcode:CH60 9HW",
+        "sigma_m": 300,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

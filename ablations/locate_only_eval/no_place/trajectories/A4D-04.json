@@ -1,0 +1,290 @@
+{
+  "case": "A4D-04",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.15737,
+    "top_lon": -0.77186,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "grid_ref:SU8540",
+    "evidence": "The map shows a large area covering Frensham Common and Hankley Common. The grid square SU8540 (lat 51.157, lon -0.778) is centrally located within the hatched site area on the provided OS map extract. Verified inside Waverley (Hambledon RD).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.31246300884930456,
+  "gt_centroids": [
+    {
+      "lat": 51.16017788702342,
+      "lon": -0.7716843425634584
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 5,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU84"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU8539"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "A287",
+        "road_a": "Bacon Lane",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Waverley",
+        "query": "The Reeds Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'SU84'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SU8539",
+        "lat": 51.14838540925891,
+        "lon": -0.7790161421406423
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Waverley for: ['Bacon Lane', 'A287']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Reeds Road",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Reeds Road",
+            "lat": 51.18108018086934,
+            "lon": -0.7747289302154584,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "The Reeds Road",
+            "lat": 51.18239387866928,
+            "lon": -0.7718039641909347,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "The Reeds Road",
+            "lat": 51.18295878018446,
+            "lon": -0.7693048311992882,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "The Reeds Road",
+            "lat": 51.18325624002253,
+            "lon": -0.765104694016097,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "The Reeds Road",
+            "lat": 51.18432472563699,
+            "lon": -0.7603855456762885,
+            "in_la": "Waverley"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU8540"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU8640"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU8639"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.15737,
+        "lon": -0.77186,
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SU8540",
+        "lat": 51.157375365994554,
+        "lon": -0.7787788919902995
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SU8640",
+        "lat": 51.15722526036933,
+        "lon": -0.7644830080566485
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SU8639",
+        "lat": 51.14823535153207,
+        "lon": -0.7647230344021622
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.15737,
+        "lon": -0.77186,
+        "la": "Waverley",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.14979708109079,
+        "la_centroid_lon": -0.6327293391700743
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows a large area covering Frensham Common and Hankley Common. The grid square SU8540 (lat 51.157, lon -0.778) is centrally located within the hatched site area on the provided OS map extract. Verified inside Waverley (Hambledon RD).",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 1500,
+        "top_lat": 51.15737,
+        "picked_source": "grid_ref:SU8540",
+        "top_lon": -0.77186
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

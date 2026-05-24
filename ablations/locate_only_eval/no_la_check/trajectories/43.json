@@ -1,0 +1,376 @@
+{
+  "case": "43",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.48521,
+    "top_lon": -0.17779,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Chelsea Park Gardens",
+    "evidence": "The site is centered on Chelsea Park Gardens. Intersections with Beaufort Street and the road centroid for Chelsea Park Gardens align perfectly with the map layout.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.032891762180946436,
+  "gt_centroids": [
+    {
+      "lat": 51.48550045352857,
+      "lon": -0.1777000711816154
+    },
+    {
+      "lat": 51.485521342732085,
+      "lon": -0.17628486045343517
+    },
+    {
+      "lat": 51.485122481972795,
+      "lon": -0.17704039353741613
+    },
+    {
+      "lat": 51.48464922350568,
+      "lon": -0.17716765034836776
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 3,
+      "road": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Chelsea Park Gardens",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Beaufort Street",
+        "la": "Kensington and Chelsea",
+        "road_a": "Chelsea Park Gardens"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "The Vale",
+        "road_a": "Chelsea Park Gardens",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Andrew's Church Chelsea",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Chelsea Park Gardens",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Chelsea Park Gardens",
+            "type": "named road",
+            "lat": 51.485210699376374,
+            "lon": -0.17779133002904296,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Chelsea Park Gardens",
+          "Beaufort Street"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 3,
+        "intersections": [
+          {
+            "lat": 51.485017,
+            "lon": -0.17633,
+            "roads": [
+              "Chelsea Park Gardens",
+              "Beaufort Street"
+            ]
+          },
+          {
+            "lat": 51.485675,
+            "lon": -0.177009,
+            "roads": [
+              "Chelsea Park Gardens",
+              "Beaufort Street"
+            ]
+          },
+          {
+            "lat": 51.485611,
+            "lon": -0.176926,
+            "roads": [
+              "Chelsea Park Gardens",
+              "Beaufort Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Chelsea Park Gardens",
+          "The Vale"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Andrew's Church Chelsea",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Chelsea Park Gardens",
+        "la": "Kensington and Chelsea",
+        "road_b": "Elm Park Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Chelsea Park Dwellings"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Kensington and Chelsea for: ['Elm Park Road']"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Chelsea Park Dwellings",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "The Vale",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Elm Park Road",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Vale",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "The Vale",
+            "lat": 51.48516401130079,
+            "lon": -0.17507820504676397,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "The Vale",
+            "lat": 51.485671520701636,
+            "lon": -0.17561967058961347,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "The Vale",
+            "lat": 51.48625564043294,
+            "lon": -0.17617249455197787,
+            "in_la": "Kensington and Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Elm Park Road",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Elm Park Road",
+            "lat": 51.48549730201781,
+            "lon": -0.17887454871134914,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Elm Park Road",
+            "lat": 51.48590211412444,
+            "lon": -0.1780158249768619,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Elm Park Road",
+            "lat": 51.486210301012946,
+            "lon": -0.1773049736263088,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Elm Park Road",
+            "lat": 51.486422089271,
+            "lon": -0.17675639671988574,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Elm Park Road",
+            "lat": 51.486788474579654,
+            "lon": -0.17574073008952515,
+            "in_la": "Kensington and Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 200,
+        "evidence": "The site is centered on Chelsea Park Gardens. Intersections with Beaufort Street and the road centroid for Chelsea Park Gardens align perfectly with the map layout.",
+        "top_lat": 51.48521,
+        "top_lon": -0.17779,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "picked_source": "place:Chelsea Park Gardens"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,317 @@
+{
+  "case": "8CAFB06E-C92F-41CC-B701-6A38171FFAC2",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.123,
+    "top_lon": 1.27,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Elms Hill",
+    "evidence": "The map shows land at Elms Vale between Elms Hill and Coombe Road. The road 'Elms Hill' was geocoded to 51.121, 1.264, which aligns with the 'Elms Farm' and 'Elms Hill' labels on the map. The site is just north-east of this point.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14990536202873725,
+  "gt_centroids": [
+    {
+      "lat": 51.12420041163268,
+      "lon": 1.2709775812117592
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "road": 3,
+      "intersect": 1,
+      "la_check": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 24 SE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "Elms Vale Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "Coombe Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Dover",
+        "road_b": "Coombe Road",
+        "road_a": "Elms Vale Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'TR 24 SE'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Elms Vale Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Elms Vale Road",
+            "lat": 51.12535199521321,
+            "lon": 1.284013839137149,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Elms Vale Road",
+            "lat": 51.12530606084425,
+            "lon": 1.2843679353530821,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Elms Vale Road",
+            "lat": 51.124713659308085,
+            "lon": 1.287284115414759,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Elms Vale Road",
+            "lat": 51.12407020067765,
+            "lon": 1.290490260329943,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Elms Vale Road",
+            "lat": 51.12398371714295,
+            "lon": 1.2910058363452983,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Coombe Road",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Coombe Road",
+            "lat": 51.1250263024243,
+            "lon": 1.2456913352736394,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Coombe Road",
+            "lat": 51.128470897526626,
+            "lon": 1.262677058554149,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Coombe Road",
+            "lat": 51.13245297574782,
+            "lon": 1.2811269979481739,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Elms Vale Road",
+          "Coombe Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Elms Hill",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.275,
+        "la": "Dover",
+        "lat": 51.125
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Elms Hill",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Elms Hill",
+            "lat": 51.121175760330665,
+            "lon": 1.2642869486177069,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.125,
+        "lon": 1.275,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.12117,
+        "la": "Dover",
+        "lon": 1.26428
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.12117,
+        "lon": 1.26428,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 500,
+        "top_lon": 1.27,
+        "evidence": "The map shows land at Elms Vale between Elms Hill and Coombe Road. The road 'Elms Hill' was geocoded to 51.121, 1.264, which aligns with the 'Elms Farm' and 'Elms Hill' labels on the map. The site is just north-east of this point.",
+        "top_lat": 51.123,
+        "picked_source": "road:Elms Hill",
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

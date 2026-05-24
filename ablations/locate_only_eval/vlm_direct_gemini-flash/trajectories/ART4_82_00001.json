@@ -1,0 +1,60 @@
+{
+  "case": "ART4:82:00001",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 50.905,
+    "lon": -1.79,
+    "reasoning": "The Article 4 direction covers land in the Avon Valley between Horseport, Ellingham, North Gorley, and Drove End Farm, as shown on the map centered south of Fordingbridge."
+  },
+  "err_km": 0.6838258589130083,
+  "gt_centroids": [
+    {
+      "lat": 50.899383790509155,
+      "lon": -1.7939731067815639
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The Article 4 direction covers land in the Avon Valley between Horseport, Ellingham, North Gorley, and Drove End Farm, as shown on the map centered south of Fordingbridge.",
+        "lon": -1.79,
+        "lat": 50.905
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

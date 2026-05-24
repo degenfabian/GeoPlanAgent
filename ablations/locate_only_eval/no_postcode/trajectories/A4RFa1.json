@@ -1,0 +1,334 @@
+{
+  "case": "A4RFa1",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.556,
+    "top_lon": -0.184,
+    "sigma_m": 800,
+    "confidence": "high",
+    "picked_source": "place:Redington Road / Frognal Lane area",
+    "evidence": "The site is the Redington/Frognal Conservation Area. Coordinates are centered between Redington Road, Frognal Lane, and Branch Hill, all of which are within the Camden LA. University College School also confirms the southern extent.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.28864622954068114,
+  "gt_centroids": [
+    {
+      "lat": 51.55672960189808,
+      "lon": -0.18800681737347094
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Redington Road",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Frognal Lane",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "University College School",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redington Road",
+        "la_filter": "Camden",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Redington Road",
+            "type": "named road",
+            "lat": 51.55803361947348,
+            "lon": -0.18779353251695174,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          },
+          {
+            "name": "Redington Gardens",
+            "type": "named road",
+            "lat": 51.558608041989736,
+            "lon": -0.1865588903268369,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Frognal Lane",
+        "la_filter": "Camden",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Frognal Lane",
+            "type": "named road",
+            "lat": 51.5538112043633,
+            "lon": -0.18572551034968723,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          },
+          {
+            "name": "Frognal",
+            "type": "named road",
+            "lat": 51.5539014438076,
+            "lon": -0.18225996516371176,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          },
+          {
+            "name": "Frognal Close",
+            "type": "named road",
+            "lat": 51.55339388284381,
+            "lon": -0.1825831165212684,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          },
+          {
+            "name": "Frognal Rise",
+            "type": "named road",
+            "lat": 51.5584920331081,
+            "lon": -0.1808074251492607,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          },
+          {
+            "name": "Frognal Way",
+            "type": "named road",
+            "lat": 51.554419158057215,
+            "lon": -0.1814315273413668,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "University College School",
+        "la_filter": "Camden",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "University College School",
+            "type": "further education,non state primary education,non state secondary education",
+            "lat": 51.55329205023759,
+            "lon": -0.1806542758663273,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          },
+          {
+            "name": "University College School Junior Branch",
+            "type": "non state primary education",
+            "lat": 51.55698031747133,
+            "lon": -0.17958384972879843,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          },
+          {
+            "name": "University College School Pre-Prep",
+            "type": "primary education",
+            "lat": 51.54571345938274,
+            "lon": -0.17730776697509537,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Redington Road",
+        "road_b": "Frognal Lane",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Redington Road",
+          "Frognal Lane"
+        ],
+        "la_filter": "Camden",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Branch Hill",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Branch Hill",
+        "la_filter": "Camden",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Branch Hill",
+            "type": "named road",
+            "lat": 51.560040300906664,
+            "lon": -0.1826499732174122,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Camden",
+        "lon": -0.184,
+        "lat": 51.556
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.556,
+        "lon": -0.184,
+        "la": "Camden",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.546390811083704,
+        "la_centroid_lon": -0.15742226323007869
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lon": -0.184,
+        "picked_source": "place:Redington Road / Frognal Lane area",
+        "sigma_m": 800,
+        "top_lat": 51.556,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is the Redington/Frognal Conservation Area. Coordinates are centered between Redington Road, Frognal Lane, and Branch Hill, all of which are within the Camden LA. University College School also confirms the southern extent."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

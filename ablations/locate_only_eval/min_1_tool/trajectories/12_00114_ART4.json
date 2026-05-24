@@ -1,0 +1,413 @@
+{
+  "case": "12:00114:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5708055470522,
+    "top_lon": 1.10986227142907,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:NR18 0PH",
+    "evidence": "The postcode NR18 0PH (52.5708, 1.1098) and Damgate Street (52.5694, 1.1105) are within 150m of each other in Wymondham. The map shows the intersection of Church Street and Damgate Street, confirming this location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.01725569540483217,
+  "gt_centroids": [
+    {
+      "lat": 52.57049129101415,
+      "lon": 1.1099062653915162
+    },
+    {
+      "lat": 52.5706982228472,
+      "lon": 1.1100466925207282
+    },
+    {
+      "lat": 52.57039472768636,
+      "lon": 1.1096958107372474
+    },
+    {
+      "lat": 52.570783693071874,
+      "lon": 1.109554701024202
+    },
+    {
+      "lat": 52.570505887877395,
+      "lon": 1.109364883243188
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Church Street, Wymondham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "NR18 0PH"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Damgate Street, Wymondham",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Church Street, Wymondham",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "NR18 0PH",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "NR18 0PH",
+            "type": "postcode",
+            "lat": 52.57080554705222,
+            "lon": 1.109862271429069,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Damgate Street, Wymondham",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wymondham",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wymondham",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Wymondham",
+            "type": "town",
+            "lat": 52.57020431915297,
+            "lon": 1.1128897765371646,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wymondham",
+            "type": "railway station",
+            "lat": 52.56545776686534,
+            "lon": 1.1179402392191482,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wymondham Road",
+            "type": "section of named road",
+            "lat": 52.61155400682876,
+            "lon": 1.1190889170434781,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wymondham Road",
+            "type": "named road",
+            "lat": 52.57684555787685,
+            "lon": 1.0745508743640335,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wymondham Road",
+            "type": "section of named road",
+            "lat": 52.57759951582534,
+            "lon": 1.061775222919962,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Church Street",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Church Street",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Church Street",
+            "type": "named road",
+            "lat": 55.54374230183311,
+            "lon": -4.660784163719263,
+            "admin_district": null,
+            "county": "South Ayrshire"
+          },
+          {
+            "name": "Church Street",
+            "type": "named road",
+            "lat": 55.79155786705404,
+            "lon": -4.085705040116064,
+            "admin_district": null,
+            "county": "South Lanarkshire"
+          },
+          {
+            "name": "Church Street",
+            "type": "named road",
+            "lat": 55.77751452697189,
+            "lon": -4.035650278449445,
+            "admin_district": null,
+            "county": "South Lanarkshire"
+          },
+          {
+            "name": "Church Street",
+            "type": "named road",
+            "lat": 55.73644442204675,
+            "lon": -3.9716915243883752,
+            "admin_district": null,
+            "county": "South Lanarkshire"
+          },
+          {
+            "name": "Church Street",
+            "type": "named road",
+            "lat": 55.71241931946199,
+            "lon": -4.094506544489736,
+            "admin_district": null,
+            "county": "South Lanarkshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Abbey Hall, Wymondham",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Abbey Hall, Wymondham",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Damgate Street",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Damgate Street",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Damgate Street",
+            "type": "named road",
+            "lat": 52.56947521633422,
+            "lon": 1.110520827994424,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Damgate",
+            "type": "suburban area",
+            "lat": 52.714146458455154,
+            "lon": 1.635534490514108,
+            "admin_district": "Great Yarmouth",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Damgate",
+            "type": "village",
+            "lat": 52.63245835786825,
+            "lon": 1.5469284832400336,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Damgate Lane",
+            "type": "section of named road",
+            "lat": 52.633001955828895,
+            "lon": 1.5518951913079846,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Damgate Back Lane",
+            "type": "named road",
+            "lat": 52.71273949894681,
+            "lon": 1.6374167724233124,
+            "admin_district": "Great Yarmouth",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "sigma_m": 200,
+        "picked_source": "postcode:NR18 0PH",
+        "top_lat": 52.5708055470522,
+        "top_lon": 1.10986227142907,
+        "evidence": "The postcode NR18 0PH (52.5708, 1.1098) and Damgate Street (52.5694, 1.1105) are within 150m of each other in Wymondham. The map shows the intersection of Church Street and Damgate Street, confirming this location.",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

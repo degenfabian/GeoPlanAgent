@@ -1,0 +1,268 @@
+{
+  "case": "23:53160:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.706,
+    "top_lon": 1.406,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Charles Close x Staitheway Road",
+    "evidence": "Consensus between Charles Close (52.7049, 1.4074) and Staitheway Road (52.7077, 1.4054) in Wroxham. The map shows the site boundary encompassing Charles Close and extending north to Staitheway Road.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.10573676205879347,
+  "gt_centroids": [
+    {
+      "lat": 52.705099433875546,
+      "lon": 1.4065038937917476
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Charles Close, Wroxham",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Staitheway Road, Wroxham",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Charles Close, Wroxham",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Staitheway Road, Wroxham",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Charles Close",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Staitheway Road",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wroxham",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Charles Close",
+        "la_filter": "Broadland",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Charles Close",
+            "type": "named road",
+            "lat": 52.70491010896464,
+            "lon": 1.407432316130304,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Charles Close",
+            "type": "named road",
+            "lat": 52.64297489433554,
+            "lon": 1.5417473948574705,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Staitheway Road",
+        "la_filter": "Broadland",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Staitheway Road",
+            "type": "named road",
+            "lat": 52.70778304222441,
+            "lon": 1.4054203995535497,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wroxham",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Wroxham",
+            "type": "village",
+            "lat": 52.7066178772019,
+            "lon": 1.40152414472359,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wroxham Road",
+            "type": "named road",
+            "lat": 52.726857355281744,
+            "lon": 1.3765686877277317,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wroxham Road",
+            "type": "section of named road",
+            "lat": 52.680677874537594,
+            "lon": 1.3701317712970684,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wroxham Road",
+            "type": "named road",
+            "lat": 52.67092538502902,
+            "lon": 1.3496441325084632,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wroxham Broad",
+            "type": "inland water",
+            "lat": 52.69695844960819,
+            "lon": 1.4165238372873519,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "Consensus between Charles Close (52.7049, 1.4074) and Staitheway Road (52.7077, 1.4054) in Wroxham. The map shows the site boundary encompassing Charles Close and extending north to Staitheway Road.",
+        "confidence": "high",
+        "sigma_m": 300,
+        "top_lat": 52.706,
+        "top_lon": 1.406,
+        "picked_source": "intersect:Charles Close x Staitheway Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

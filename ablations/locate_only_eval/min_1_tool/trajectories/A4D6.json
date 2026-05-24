@@ -1,0 +1,388 @@
+{
+  "case": "A4D6",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4637369164529,
+    "top_lon": -2.55127142714575,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Whitehall",
+    "evidence": "The map shows a large area of East Bristol covering Eastville, Fishponds, Whitehall, and Redfield. The centroid of these four geocoded suburban areas falls near Whitehall/Rose Green, which is central to the red-hatched boundary.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.0266751129368266,
+  "gt_centroids": [
+    {
+      "lat": 51.47223696915572,
+      "lon": -2.545483701252686
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Eastville Park"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fishponds Trading Estate",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "St George's Park"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Eastville Park",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fishponds Trading Estate",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St George's Park",
+        "la_filter": "Bristol",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "St George's Park",
+            "type": "hospital",
+            "lat": 55.17804531742781,
+            "lon": -1.6827461051356696,
+            "admin_district": null,
+            "county": "Northumberland"
+          },
+          {
+            "name": "St George's Park",
+            "type": "named road",
+            "lat": 53.43444941569128,
+            "lon": -3.0460555896506043,
+            "admin_district": "Wirral",
+            "county": null
+          },
+          {
+            "name": "St George's Park",
+            "type": "other landcover",
+            "lat": 50.41053050653857,
+            "lon": -4.674219605131065,
+            "admin_district": null,
+            "county": "Cornwall"
+          },
+          {
+            "name": "St George's Park",
+            "type": "named road",
+            "lat": 51.11655731494019,
+            "lon": 0.2542117196722218,
+            "admin_district": "Tunbridge Wells",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Eastville",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Fishponds"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Whitehall",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Redfield",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Eastville",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Eastville",
+            "type": "suburban area",
+            "lat": 51.47402315077522,
+            "lon": -2.5607830375772367,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fishponds",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Fishponds",
+            "type": "other settlement",
+            "lat": 51.48146726607609,
+            "lon": -2.5280701274842836,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Fishponds Road",
+            "type": "section of named road",
+            "lat": 51.473200812351166,
+            "lon": -2.5521774255191367,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Fishponds Road",
+            "type": "section of named road",
+            "lat": 51.47909205601575,
+            "lon": -2.532362595233225,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Fishponds Road",
+            "type": "named road",
+            "lat": 51.47530155049405,
+            "lon": -2.543261320115977,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Fishponds Church of England Academy",
+            "type": "primary education",
+            "lat": 51.47954569281728,
+            "lon": -2.5334478678548638,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Whitehall",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Whitehall",
+            "type": "suburban area",
+            "lat": 51.46373691645291,
+            "lon": -2.551271427145748,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Whitehall Gardens",
+            "type": "named road",
+            "lat": 51.46366903180398,
+            "lon": -2.5523214336772475,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Whitehall Road",
+            "type": "named road",
+            "lat": 51.4631914179184,
+            "lon": -2.5525459806764057,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Whitehall Primary School",
+            "type": "primary education",
+            "lat": 51.46508494638624,
+            "lon": -2.555231992165723,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Whitehall Avenue",
+            "type": "named road",
+            "lat": 51.46417721716184,
+            "lon": -2.543632980002001,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redfield",
+        "la_filter": "Bristol",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Redfield",
+            "type": "suburban area",
+            "lat": 51.45615262094279,
+            "lon": -2.556001507176517,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Redfield Educate Together Primary Academy",
+            "type": "primary education",
+            "lat": 51.45790003448308,
+            "lon": -2.5553606675178577,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Whitehall",
+        "evidence": "The map shows a large area of East Bristol covering Eastville, Fishponds, Whitehall, and Redfield. The centroid of these four geocoded suburban areas falls near Whitehall/Rose Green, which is central to the red-hatched boundary.",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.4637369164529,
+        "sigma_m": 1500,
+        "top_lon": -2.55127142714575,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

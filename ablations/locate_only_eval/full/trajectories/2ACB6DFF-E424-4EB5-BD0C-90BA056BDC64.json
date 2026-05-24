@@ -1,0 +1,282 @@
+{
+  "case": "2ACB6DFF-E424-4EB5-BD0C-90BA056BDC64",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.290455,
+    "top_lon": 1.326502,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Richborough Hill",
+    "evidence": "The map shows Richborough Hill and Richborough Castle. The grid references TR3259 and TR3360 provided on the map frame the area perfectly. Richborough Hill geocodes to this exact vicinity.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.32594586487264327,
+  "gt_centroids": [
+    {
+      "lat": 51.28833801975405,
+      "lon": 1.3297440581641606
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "postcode": 1,
+      "place": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3259"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3360"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PG"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Richborough Castle"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Richborough Hill"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3259",
+        "lat": 51.28715025119112,
+        "lon": 1.3329480652795234
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3360",
+        "lat": 51.29571793222317,
+        "lon": 1.3479164776256216
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CT16 3PG' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Richborough Castle",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Richborough Hill",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Richborough Hill",
+            "type": "hill or mountain",
+            "lat": 51.29045502007953,
+            "lon": 1.3265024296373862,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Richborough",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.326502,
+        "la": "Dover",
+        "lat": 51.290455
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Richborough",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Richborough Road",
+            "type": "named road",
+            "lat": 51.28725738354088,
+            "lon": 1.327605231794049,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Richborough Road",
+            "type": "section of named road",
+            "lat": 51.28019340410383,
+            "lon": 1.3324440687624246,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Richborough Hill",
+            "type": "hill or mountain",
+            "lat": 51.29045502007953,
+            "lon": 1.3265024296373862,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Richborough Port",
+            "type": "other settlement",
+            "lat": 51.3083934359416,
+            "lon": 1.3488110057688272,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.290455,
+        "lon": 1.326502,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Richborough Hill",
+        "top_lat": 51.290455,
+        "confidence": "high",
+        "sigma_m": 500,
+        "top_lon": 1.326502,
+        "evidence": "The map shows Richborough Hill and Richborough Castle. The grid references TR3259 and TR3360 provided on the map frame the area perfectly. Richborough Hill geocodes to this exact vicinity.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

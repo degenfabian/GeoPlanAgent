@@ -1,0 +1,224 @@
+{
+  "case": "ART4:22:00001",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.85856472927,
+    "top_lon": -1.62540685722346,
+    "sigma_m": 15000,
+    "confidence": "low",
+    "picked_source": "la_centroid",
+    "evidence": "The application is district-wide for the New Forest National Park. The pick is the centroid of the National Park Authority's administrative area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 2.105641678083912,
+  "gt_centroids": [
+    {
+      "lat": 50.857049630206795,
+      "lon": -1.5955044915314045
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "postcode": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "New Forest National Park"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SO41 9ZG"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "New Forest National Park",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SO41 9ZG",
+        "lat": 50.76047900938094,
+        "lon": -1.5463677227985975,
+        "admin_district": "New Forest District"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lyndhurst"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lyndhurst",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Lyndhurst",
+            "type": "suburban area",
+            "lat": 54.92741594544188,
+            "lon": -1.5877086278441421,
+            "admin_district": "Gateshead",
+            "county": null
+          },
+          {
+            "name": "Lyndhurst",
+            "type": "named road",
+            "lat": 53.51296951047626,
+            "lon": -2.9363187079142468,
+            "admin_district": "Sefton",
+            "county": null
+          },
+          {
+            "name": "Lyndhurst",
+            "type": "named road",
+            "lat": 53.56333870786916,
+            "lon": -2.7747336746061353,
+            "admin_district": "West Lancashire",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Lyndhurst",
+            "type": "village",
+            "lat": 50.87247684476967,
+            "lon": -1.5737628024588748,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Lyndhurst Avenue",
+            "type": "named road",
+            "lat": 56.47677303741999,
+            "lon": -3.0115141506719056,
+            "admin_district": null,
+            "county": "Dundee City"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -1.57376280245887,
+        "lat": 50.8724768447697,
+        "la": "New Forest National Park Authority"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.8724768447697,
+        "lon": -1.57376280245887,
+        "la": "New Forest National Park Authority",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.85856472927001,
+        "la_centroid_lon": -1.625406857223459
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -1.62540685722346,
+        "picked_source": "la_centroid",
+        "confidence": "low",
+        "verified_inside_admin_region": true,
+        "sigma_m": 15000,
+        "evidence": "The application is district-wide for the New Forest National Park. The pick is the centroid of the National Park Authority's administrative area.",
+        "top_lat": 50.85856472927
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

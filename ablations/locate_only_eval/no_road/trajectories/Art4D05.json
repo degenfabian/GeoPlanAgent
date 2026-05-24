@@ -1,0 +1,471 @@
+{
+  "case": "Art4D05",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.6860035191737,
+    "top_lon": -2.10989295829466,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Wareham",
+    "evidence": "The map shows the Wareham Conservation Area, centered on the town of Wareham. The town center (The Cross) is the intersection of North, South, East, and West Streets. The 'place' tool for 'Wareham' (town) provides a reliable center for the settlement.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.08224423415843087,
+  "gt_centroids": [
+    {
+      "lat": 50.68673641754148,
+      "lon": -2.1100502225839315
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 9,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 12,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wareham Conservation Area",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wareham",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "North Street",
+        "road_b": "East Street",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wareham Conservation Area",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wareham",
+        "la_filter": "Purbeck",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Wareham",
+            "type": "town",
+            "lat": 50.68600351917367,
+            "lon": -2.1098929582946635,
+            "admin_district": null,
+            "county": "Dorset"
+          },
+          {
+            "name": "Wareham",
+            "type": "railway station",
+            "lat": 50.69275205433661,
+            "lon": -2.115062084964544,
+            "admin_district": null,
+            "county": "Dorset"
+          },
+          {
+            "name": "Wareham Way",
+            "type": "named road",
+            "lat": 54.702602704822574,
+            "lon": -1.6984128682417754,
+            "admin_district": null,
+            "county": "County Durham"
+          },
+          {
+            "name": "Wareham Road",
+            "type": "named road",
+            "lat": 53.83706633841845,
+            "lon": -3.0223602606410522,
+            "admin_district": null,
+            "county": "Blackpool"
+          },
+          {
+            "name": "Wareham Close",
+            "type": "named road",
+            "lat": 53.790609393163884,
+            "lon": -2.7536731515242887,
+            "admin_district": "Preston",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "North Street",
+          "East Street"
+        ],
+        "la_filter": "Purbeck",
+        "n_intersections": 43,
+        "intersections": [
+          {
+            "lat": 58.20588,
+            "lon": -6.354991,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.78373,
+            "lon": -2.315045,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.802513,
+            "lon": -2.319028,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.620746,
+            "lon": -2.149042,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.494372,
+            "lon": -2.623661,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.53658,
+            "lon": -1.378871,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.641949,
+            "lon": -0.607693,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 52.67626,
+            "lon": -2.028931,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 53.191236,
+            "lon": -1.313753,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          },
+          {
+            "lat": 52.601023,
+            "lon": -1.083222,
+            "roads": [
+              "North Street",
+              "East Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Purbeck",
+        "query": "The Quay, Wareham"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Mary's Church, Wareham",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Purbeck",
+        "lat": 50.686,
+        "lon": -2.1098
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Quay, Wareham",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church, Wareham",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": false,
+        "error": "No polygon for LA 'Purbeck'"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Quay, Wareham",
+        "la": "Dorset"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Mary's Church, Wareham",
+        "la": "Dorset"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Westport House, Wareham",
+        "la": "Dorset"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Quay, Wareham",
+        "la_filter": "Dorset",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church, Wareham",
+        "la_filter": "Dorset",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Westport House, Wareham",
+        "la_filter": "Dorset",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Quay, Wareham"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Mary's Church, Wareham"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Quay, Wareham",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church, Wareham",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the Wareham Conservation Area, centered on the town of Wareham. The town center (The Cross) is the intersection of North, South, East, and West Streets. The 'place' tool for 'Wareham' (town) provides a reliable center for the settlement.",
+        "confidence": "high",
+        "verified_inside_admin_region": false,
+        "top_lon": -2.10989295829466,
+        "top_lat": 50.6860035191737,
+        "sigma_m": 500,
+        "picked_source": "place:Wareham"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

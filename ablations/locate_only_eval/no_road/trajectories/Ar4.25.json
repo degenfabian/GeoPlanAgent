@@ -1,0 +1,219 @@
+{
+  "case": "Ar4.25",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.77135,
+    "top_lon": -0.3262,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Porters Wood",
+    "evidence": "The site is an industrial estate bounded by Porters Wood and Soothouse Spring. The intersection of Porters Wood and Valley Road (51.77015, -0.327882) and the road center for Porters Wood (51.77135, -0.32620) align perfectly with the map. Picked the midpoint of the estate.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06882327000260385,
+  "gt_centroids": [
+    {
+      "lat": 51.77171599966879,
+      "lon": -0.32539338340246393
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Porters Wood",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Soothouse Spring"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_a": "Porters Wood",
+        "road_b": "Valley Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Porters Wood",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Porters Wood",
+            "type": "named road",
+            "lat": 51.771349739713116,
+            "lon": -0.32620135081189633,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Soothouse Spring",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Soothouse Spring",
+            "type": "named road",
+            "lat": 51.770428208345784,
+            "lon": -0.3252643749960621,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Soothouse Spring",
+            "type": "woodland or forest",
+            "lat": 51.770479259938085,
+            "lon": -0.32821916783903093,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Porters Wood",
+          "Valley Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.77015,
+            "lon": -0.327882,
+            "roads": [
+              "Porters Wood",
+              "Valley Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.7708,
+        "la": "St Albans",
+        "lon": -0.326
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.7708,
+        "lon": -0.326,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Porters Wood",
+        "sigma_m": 300,
+        "top_lat": 51.77135,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is an industrial estate bounded by Porters Wood and Soothouse Spring. The intersection of Porters Wood and Valley Road (51.77015, -0.327882) and the road center for Porters Wood (51.77135, -0.32620) align perfectly with the map. Picked the midpoint of the estate.",
+        "confidence": "high",
+        "top_lon": -0.3262
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

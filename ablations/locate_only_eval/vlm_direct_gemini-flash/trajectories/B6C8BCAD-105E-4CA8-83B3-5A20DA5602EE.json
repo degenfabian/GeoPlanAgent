@@ -1,0 +1,60 @@
+{
+  "case": "B6C8BCAD-105E-4CA8-83B3-5A20DA5602EE",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.2755,
+    "lon": 1.342,
+    "reasoning": "The document refers to 'The Salutation, Knightrider Street, Sandwich, Kent', a Grade I listed building by Sir Edwin Lutyens, which is clearly marked on the provided planning map."
+  },
+  "err_km": 0.2430880027803288,
+  "gt_centroids": [
+    {
+      "lat": 51.27422567229129,
+      "lon": 1.344839452987397
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": 1.342,
+        "lat": 51.2755,
+        "reasoning": "The document refers to 'The Salutation, Knightrider Street, Sandwich, Kent', a Grade I listed building by Sir Edwin Lutyens, which is clearly marked on the provided planning map."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

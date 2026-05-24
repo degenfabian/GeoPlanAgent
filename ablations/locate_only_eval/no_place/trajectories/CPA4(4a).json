@@ -1,0 +1,411 @@
+{
+  "case": "CPA4(4a)",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.56755,
+    "top_lon": 0.57483,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TQ785885",
+    "evidence": "The OS Sheet reference TQ7888SW and the map labels (Church Road, Coombewood Drive) place the site in Thundersley. A grid reference derived from the sheet prefix (TQ785885) aligns perfectly with the road network and landmarks (Kingston Primary School) shown on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.22458833774275952,
+  "gt_centroids": [
+    {
+      "lat": 51.567398880193345,
+      "lon": 0.5715897583827427
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 3,
+      "postcode": 1,
+      "intersect": 1,
+      "road": 4,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 11,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ 788 888"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SS7 1TF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Church Road",
+        "la": "Castle Point",
+        "road_a": "Thundersley Church Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TQ 788 888",
+        "lat": 51.570151325176546,
+        "lon": 0.5793070530362318
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SS7 1TF",
+        "lat": 51.56184488380458,
+        "lon": 0.5848681639491619,
+        "admin_district": "Castle Point District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Thundersley Church Road",
+          "Church Road"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Thundersley Church Road",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Castle Point",
+        "query": "Church Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 0.5793,
+        "la": "Castle Point",
+        "lat": 51.57015
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Thundersley Church Road",
+        "la_filter": "Castle Point",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Thundersley Church Road",
+            "lat": 51.56625466251108,
+            "lon": 0.5646560647647508,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Thundersley Church Road",
+            "lat": 51.56670866347089,
+            "lon": 0.5656917569269954,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Thundersley Church Road",
+            "lat": 51.566938563078146,
+            "lon": 0.5671044701693005,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Thundersley Church Road",
+            "lat": 51.5672284180677,
+            "lon": 0.5686533405167387,
+            "in_la": "Castle Point"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Church Road",
+        "la_filter": "Castle Point",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Church Road",
+            "lat": 51.56847184213531,
+            "lon": 0.5759288881989534,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Church Road",
+            "lat": 51.57137955835965,
+            "lon": 0.5657455728252859,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Church Road",
+            "lat": 51.57125187011962,
+            "lon": 0.5669471284004197,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Church Road",
+            "lat": 51.5711357225993,
+            "lon": 0.5676147700424049,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Church Road",
+            "lat": 51.57184213328013,
+            "lon": 0.5674082323881092,
+            "in_la": "Castle Point"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.57015,
+        "lon": 0.5793,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Castle Point",
+        "query": "Coombewood Drive"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Lake Drive",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Coombewood Drive",
+        "la_filter": "Castle Point",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Coombewood Drive",
+            "lat": 51.56582446844766,
+            "lon": 0.576284264895968,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Coombewood Drive",
+            "lat": 51.56602269928555,
+            "lon": 0.5746287731412298,
+            "in_la": "Castle Point"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Lake Drive",
+        "la_filter": "Castle Point",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Lake Drive",
+            "lat": 51.56451051296364,
+            "lon": 0.5746876206039037,
+            "in_la": "Castle Point"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ 780 880"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TQ 780 880",
+        "lat": 51.56321845081875,
+        "lon": 0.567371045537834
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ 785 885"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TQ 785 885",
+        "lat": 51.567551646417535,
+        "lon": 0.5748306250873453
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 0.57483,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 51.56755,
+        "evidence": "The OS Sheet reference TQ7888SW and the map labels (Church Road, Coombewood Drive) place the site in Thundersley. A grid reference derived from the sheet prefix (TQ785885) aligns perfectly with the road network and landmarks (Kingston Primary School) shown on the map.",
+        "picked_source": "grid_ref:TQ785885",
+        "sigma_m": 300
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,286 @@
+{
+  "case": "A4DA02",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.6775,
+    "top_lon": -2.3175,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Meadow Park x Milne Street",
+    "evidence": "The map shows the Irwell Vale Conservation Area. Geocoding 'Meadow Park' and 'Milne Street' (both visible on the map) places the site precisely at the village of Irwell Vale. The coordinates for Meadow Park and Milne Street are within 250m of each other.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.07886645687778404,
+  "gt_centroids": [
+    {
+      "lat": 53.67812346598706,
+      "lon": -2.316929117142441
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Rossendale",
+        "query": "Irwell Vale"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Irwell Vale",
+        "la_filter": "Rossendale",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Irwell Vale",
+            "type": "village",
+            "lat": 53.678456068377685,
+            "lon": -2.316923093731341,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Irwell Vale",
+            "type": "railway station",
+            "lat": 53.67640844650161,
+            "lon": -2.316287049725758,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Irwell Vale Road",
+            "type": "section of named road",
+            "lat": 53.68322044386315,
+            "lon": -2.3132646003250636,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Irwell Vale Road",
+            "type": "section of named road",
+            "lat": 53.67876186071788,
+            "lon": -2.3168496963493066,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Irwell Vale Road",
+            "type": "named road",
+            "lat": 53.68201871554524,
+            "lon": -2.31566295219659,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Meadow Park",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Meadow Park",
+        "la_filter": "Rossendale",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Meadow Park",
+            "type": "named road",
+            "lat": 53.676225560024086,
+            "lon": -2.3174664450711533,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Rossendale",
+        "query": "Milne Street"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Milne Street",
+        "la_filter": "Rossendale",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Milne Street",
+            "type": "named road",
+            "lat": 53.678227229072206,
+            "lon": -2.318480665736188,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Milner Street",
+            "type": "named road",
+            "lat": 53.65803597133113,
+            "lon": -2.177121281460374,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hardsough Fold",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hardsough Fold",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lower Cockham",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lower Cockham",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 200,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows the Irwell Vale Conservation Area. Geocoding 'Meadow Park' and 'Milne Street' (both visible on the map) places the site precisely at the village of Irwell Vale. The coordinates for Meadow Park and Milne Street are within 250m of each other.",
+        "top_lon": -2.3175,
+        "picked_source": "intersect:Meadow Park x Milne Street",
+        "confidence": "high",
+        "top_lat": 53.6775
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

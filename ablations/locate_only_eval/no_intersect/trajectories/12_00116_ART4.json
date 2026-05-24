@@ -1,0 +1,472 @@
+{
+  "case": "12:00116:ART4",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.53565,
+    "top_lon": 1.4819,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Market Place, Loddon",
+    "evidence": "The map shows a site east of Market Place in Loddon. Geocoding 'Market Place' in South Norfolk returned a result in Loddon (52.5356, 1.4819), which matches the town centroid and map labels like Holy Trinity Church and High Street.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.24696345296914085,
+  "gt_centroids": [
+    {
+      "lat": 52.534421162669354,
+      "lon": 1.4849415062856708
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 5,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Holy Trinity Church, Loddon",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Market Place, Loddon",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Holy Trinity Church, Loddon",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Market Place, Loddon",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Loddon",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Holy Trinity Church"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Loddon",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Loddon",
+            "type": "town",
+            "lat": 52.535437066073634,
+            "lon": 1.4812472192651958,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Loddon Drive",
+            "type": "named road",
+            "lat": 51.61048842510364,
+            "lon": -1.226842320385021,
+            "admin_district": "South Oxfordshire",
+            "county": "Oxfordshire"
+          },
+          {
+            "name": "Loddon Road",
+            "type": "named road",
+            "lat": 52.55527899889354,
+            "lon": 1.4344628284046836,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Loddon Road",
+            "type": "section of named road",
+            "lat": 52.56955198793479,
+            "lon": 1.4058652165161916,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Loddon Road",
+            "type": "named road",
+            "lat": 52.585414797454135,
+            "lon": 1.370151126568595,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Holy Trinity Church",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Holy Trinity Church of England Primary School",
+            "type": "primary education",
+            "lat": 54.96752101769878,
+            "lon": -1.4430806428389116,
+            "admin_district": "South Tyneside",
+            "county": null
+          },
+          {
+            "name": "Holy Trinity Church of England Primary School",
+            "type": "primary education",
+            "lat": 54.658494417455344,
+            "lon": -1.1903032027136569,
+            "admin_district": null,
+            "county": "Hartlepool"
+          },
+          {
+            "name": "Holy Trinity Church of England Primary School",
+            "type": "primary education",
+            "lat": 53.64976749407283,
+            "lon": -2.9964449818058148,
+            "admin_district": "Sefton",
+            "county": null
+          },
+          {
+            "name": "Holy Trinity Church of England Primary School",
+            "type": "primary education",
+            "lat": 53.5141976179009,
+            "lon": -2.209666267194528,
+            "admin_district": "Manchester",
+            "county": null
+          },
+          {
+            "name": "Holy Trinity Church of England Voluntary Aided Primary School",
+            "type": "primary education",
+            "lat": 53.58992708821389,
+            "lon": -2.293765211365574,
+            "admin_district": "Bury",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Market Place",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "High Street",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Market Place",
+        "la_filter": "South Norfolk",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Market Place",
+            "lat": 52.53565372761238,
+            "lon": 1.4819011963572468,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Market Place",
+            "lat": 52.401758963162024,
+            "lon": 1.2989063954581337,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Market Place",
+            "lat": 52.37643132372118,
+            "lon": 1.1088465545304627,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Market Place",
+            "lat": 52.377161802642185,
+            "lon": 1.108772030748792,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "High Street",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "High Street",
+            "lat": 52.58531474445147,
+            "lon": 1.194394295457397,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.58543919864245,
+            "lon": 1.2028117439314423,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.580387263904306,
+            "lon": 1.1847400353075739,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.58340209611077,
+            "lon": 1.1858438130532576,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.584691745045845,
+            "lon": 1.18842171423933,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Norfolk",
+        "lon": 1.48190119635725,
+        "lat": 52.5356537276124
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5356537276124,
+        "lon": 1.48190119635725,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Church Plain",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Church Plain",
+        "la_filter": "South Norfolk",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Church Plain",
+            "type": "named road",
+            "lat": 52.95183102838432,
+            "lon": 0.8534743749566869,
+            "admin_district": "North Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Church Plain",
+            "type": "named road",
+            "lat": 52.65792484058575,
+            "lon": 1.0345716211928293,
+            "admin_district": "Breckland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Church Plain",
+            "type": "named road",
+            "lat": 52.78318266828243,
+            "lon": 1.4127635320380247,
+            "admin_district": "North Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.4819,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows a site east of Market Place in Loddon. Geocoding 'Market Place' in South Norfolk returned a result in Loddon (52.5356, 1.4819), which matches the town centroid and map labels like Holy Trinity Church and High Street.",
+        "confidence": "high",
+        "top_lat": 52.53565,
+        "sigma_m": 300,
+        "picked_source": "road:Market Place, Loddon"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

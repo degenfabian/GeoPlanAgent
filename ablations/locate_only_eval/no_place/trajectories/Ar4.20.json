@@ -1,0 +1,276 @@
+{
+  "case": "Ar4.20",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7444325717766,
+    "top_lon": -0.322624823457086,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Cunningham Avenue",
+    "evidence": "The map shows the Cunningham Avenue Article 4 Direction area. Geocoding 'Cunningham Avenue' in St Albans provides a precise location that aligns with the road labels on the map (Cunningham Avenue, Cunningham Hill Road). The road centroid is verified to be within the St Albans local authority.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.021589405252966258,
+  "gt_centroids": [
+    {
+      "lat": 51.74462455605985,
+      "lon": -0.3226716168656488
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 1,
+      "road": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_a": "Cunningham Avenue",
+        "road_b": "Cunningham Hill Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Cunningham Hill Road']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Cunningham Avenue"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Cunningham Avenue",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Cunningham Avenue",
+            "lat": 51.74443257177656,
+            "lon": -0.322624823457086,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Cunningham Hill Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Cunningham Hill Road",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Cunningham Hill Road",
+            "lat": 51.74568702429927,
+            "lon": -0.31646687955640607,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Cunningham Hill Road",
+            "lat": 51.7455899961509,
+            "lon": -0.3159707337869984,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Cunningham Hill Road",
+            "lat": 51.74430643461716,
+            "lon": -0.3199004894051094,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "London Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "London Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "London Road",
+            "lat": 51.750720089881156,
+            "lon": -0.33905921983037024,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "London Road",
+            "lat": 51.74900797692352,
+            "lon": -0.3340243875704742,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "London Road",
+            "lat": 51.74873076494631,
+            "lon": -0.33351770598488983,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "London Road",
+            "lat": 51.74945944858308,
+            "lon": -0.33486090436564586,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "London Road",
+            "lat": 51.75003267164383,
+            "lon": -0.33628852217286853,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "St Albans",
+        "lat": 51.7444325717766,
+        "lon": -0.322624823457086
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.7444325717766,
+        "lon": -0.322624823457086,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "picked_source": "road:Cunningham Avenue",
+        "top_lat": 51.7444325717766,
+        "top_lon": -0.322624823457086,
+        "evidence": "The map shows the Cunningham Avenue Article 4 Direction area. Geocoding 'Cunningham Avenue' in St Albans provides a precise location that aligns with the road labels on the map (Cunningham Avenue, Cunningham Hill Road). The road centroid is verified to be within the St Albans local authority.",
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

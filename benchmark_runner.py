@@ -96,7 +96,10 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                   eval_dir="evaluation_data",
                   only_cases=None, force=False,
                   enable_critic=False, critic_max_iters=2,
-                  locate_model="google/gemini-3-flash-preview"):
+                  locate_model="google/gemini-3-flash-preview",
+                  locate_disabled_tools=frozenset(
+                      {"postcode", "grid_ref", "road", "intersect", "la_check"}
+                  )):
     """Run benchmark using the unified tool-calling agent.
 
     Args:
@@ -232,6 +235,7 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                 enable_critic=enable_critic,
                 critic_max_iters=critic_max_iters,
                 locate_model=locate_model,
+                locate_disabled_tools=locate_disabled_tools,
             )
             dt = time.time() - t0
 
@@ -524,6 +528,14 @@ if __name__ == "__main__":
         help="Model alias or OpenRouter identifier for the locate "
              "sub-agent (independent of --model). Default: "
              "google/gemini-3-flash-preview.")
+    parser.add_argument(
+        "--locate-disabled-tools", default=None,
+        help="Comma-separated locate-agent tools to disable for the "
+             "locate sub-agent (e.g. 'la_check' or "
+             "'postcode,grid_ref,road,intersect,la_check' for min_1_tool, "
+             "or '' for the full 6-tool kit). Default (flag not passed) = "
+             "production place-only kit. Vocabulary: postcode, grid_ref, "
+             "place, road, intersect, la_check.")
     parser.add_argument("--max-cases", type=int, default=None)
     parser.add_argument("--start-from", type=int, default=0)
     parser.add_argument("--dpi", type=int, default=200)
@@ -548,7 +560,10 @@ if __name__ == "__main__":
                              "--enable-critic.")
     args = parser.parse_args()
 
-    run_benchmark(
+    # Flag not passed → fall through to run_benchmark's production default
+    # (place-only). Flag passed (even as empty string) → use the requested
+    # kit explicitly, including the empty-string case for the full 6-tool kit.
+    run_kwargs = dict(
         model_name=args.model,
         output_dir=args.output_dir,
         max_cases=args.max_cases,
@@ -561,3 +576,18 @@ if __name__ == "__main__":
         critic_max_iters=args.critic_max_iters,
         locate_model=args.locate_model,
     )
+    if args.locate_disabled_tools is not None:
+        _KNOWN_LOCATE_TOOLS = frozenset(
+            {"postcode", "grid_ref", "place", "road", "intersect", "la_check"})
+        disabled_set = frozenset(
+            t.strip() for t in args.locate_disabled_tools.split(",")
+            if t.strip()
+        )
+        unknown = disabled_set - _KNOWN_LOCATE_TOOLS
+        if unknown:
+            parser.error(
+                f"--locate-disabled-tools: unknown tool(s) {sorted(unknown)}. "
+                f"Known: {sorted(_KNOWN_LOCATE_TOOLS)}")
+        run_kwargs["locate_disabled_tools"] = disabled_set
+
+    run_benchmark(**run_kwargs)

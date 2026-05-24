@@ -1,0 +1,64 @@
+{
+  "case": "12:00124:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.4945,
+    "lon": 1.6145,
+    "reasoning": "The document lists multiple sites in South Norfolk; the first map shows St Mary's Row and Waveney Cottages in Aldeby, which corresponds to the coordinates for St Mary's Row, Aldeby NR34 0AL."
+  },
+  "err_km": 1.2491716846259906,
+  "gt_centroids": [
+    {
+      "lat": 52.48442741803966,
+      "lon": 1.6063301522986413
+    },
+    {
+      "lat": 52.48384000079339,
+      "lon": 1.6043370628673683
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 52.4945,
+        "reasoning": "The document lists multiple sites in South Norfolk; the first map shows St Mary's Row and Waveney Cottages in Aldeby, which corresponds to the coordinates for St Mary's Row, Aldeby NR34 0AL.",
+        "lon": 1.6145
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

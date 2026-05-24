@@ -1,0 +1,330 @@
+{
+  "case": "A4D9",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.406377,
+    "top_lon": -2.63181,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Peart Drive",
+    "evidence": "The site is 'Land at Sherrin Way'. Geocoding 'Sherrin Way' and 'Peart Drive' (which is inside the site boundary on the map) places the site consistently around 51.406, -2.631. The BS1 postcodes in PDF_INFO are for central Bristol and are likely administrative/council addresses, not the site location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.04060150100290164,
+  "gt_centroids": [
+    {
+      "lat": 51.40610223670786,
+      "lon": -2.63219551263015
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "road": 1,
+      "postcode": 2,
+      "intersect": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sherrin Way",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Sherrin Way"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "BS1 2QN"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "BS1 5TR"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Sherrin Way",
+        "road_a": "Highridge Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Highmead Gardens"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sherrin Way",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sherrin Way",
+            "type": "named road",
+            "lat": 51.40558322618498,
+            "lon": -2.628953001015419,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Sherrin Way",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Sherrin Way",
+            "lat": 51.404873732652,
+            "lon": -2.6304671665226262,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sherrin Way",
+            "lat": 51.40424996190376,
+            "lon": -2.6294163080667174,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sherrin Way",
+            "lat": 51.405303205593675,
+            "lon": -2.6300274009694227,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sherrin Way",
+            "lat": 51.40552785174248,
+            "lon": -2.629218208945213,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sherrin Way",
+            "lat": 51.4042308955746,
+            "lon": -2.627942482059319,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'BS1 2QN' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "BS1 5TR",
+        "lat": 51.452607108240244,
+        "lon": -2.6020684520374964,
+        "admin_district": "City of Bristol (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Highridge Road",
+          "Sherrin Way"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Highmead Gardens",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Highmead Gardens",
+            "type": "named road",
+            "lat": 51.40747781256678,
+            "lon": -2.6311212147581298,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Highmead Gardens",
+        "la": "Bristol",
+        "road_a": "Highridge Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Peart Drive"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Highridge Road",
+          "Highmead Gardens"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Peart Drive",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Peart Drive",
+            "type": "named road",
+            "lat": 51.40637710643871,
+            "lon": -2.63181052463659,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "evidence": "The site is 'Land at Sherrin Way'. Geocoding 'Sherrin Way' and 'Peart Drive' (which is inside the site boundary on the map) places the site consistently around 51.406, -2.631. The BS1 postcodes in PDF_INFO are for central Bristol and are likely administrative/council addresses, not the site location.",
+        "top_lon": -2.63181,
+        "picked_source": "place:Peart Drive",
+        "top_lat": 51.406377,
+        "verified_inside_admin_region": true,
+        "sigma_m": 300
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,275 @@
+{
+  "case": "ARTICLE:230",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.116568,
+    "top_lon": 0.245561,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TL 538 488",
+    "evidence": "The map shows a site bounded by the River Granta and the A604 (now A11). The grid reference TL 50 48 in the PDF was low precision, but the map's internal grid lines (48, 49) and the location of 'Hilda's Wood' (TL 539 485) place the site precisely at TL 538 488.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06362308215688542,
+  "gt_centroids": [
+    {
+      "lat": 52.11677036868277,
+      "lon": 0.24468942774469554
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 3,
+      "place": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TL 50 48"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hilda's Wood",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "West Lodge Great Abington",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "Great Abington"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TL 50 48",
+        "lat": 52.11434480691336,
+        "lon": 0.1965188990569145
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hilda's Wood",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Hilda's Wood",
+            "type": "woodland or forest",
+            "lat": 52.11453820639287,
+            "lon": 0.24826318096778704,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "West Lodge Great Abington",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Great Abington",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Great Abington",
+            "type": "village",
+            "lat": 52.11689400551933,
+            "lon": 0.21741514097320971,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "Great Abington Primary School",
+            "type": "primary education",
+            "lat": 52.11681960836629,
+            "lon": 0.23705765996332026,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TL 535 485"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 0.247,
+        "la": "South Cambridgeshire",
+        "lat": 52.1188
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TL 535 485",
+        "lat": 52.11395623327818,
+        "lon": 0.24104776479411977
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.1188,
+        "lon": 0.247,
+        "la": "South Cambridgeshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.17283510081104,
+        "la_centroid_lon": 0.08123824327654822
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TL 538 488"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TL 538 488",
+        "lat": 52.116568005212294,
+        "lon": 0.24556082554668116
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "top_lon": 0.245561,
+        "top_lat": 52.116568,
+        "picked_source": "grid_ref:TL 538 488",
+        "evidence": "The map shows a site bounded by the River Granta and the A604 (now A11). The grid reference TL 50 48 in the PDF was low precision, but the map's internal grid lines (48, 49) and the location of 'Hilda's Wood' (TL 539 485) place the site precisely at TL 538 488.",
+        "confidence": "high",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

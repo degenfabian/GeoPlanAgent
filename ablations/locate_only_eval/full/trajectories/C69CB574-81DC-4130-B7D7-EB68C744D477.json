@@ -1,0 +1,297 @@
+{
+  "case": "C69CB574-81DC-4130-B7D7-EB68C744D477",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1010376036982,
+    "top_lon": 1.23381381441442,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR 2638",
+    "evidence": "The grid reference TR 2638 from the map's title block aligns perfectly with the intersection of New Dover Road and Old Dover Road (approx 300m away) and the parish of Capel-le-Ferne. Verified inside Dover District.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1637842911784151,
+  "gt_centroids": [
+    {
+      "lat": 51.102192332730766,
+      "lon": 1.2300334671131308
+    },
+    {
+      "lat": 51.102435462933414,
+      "lon": 1.2330744300155134
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 4,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 2638"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "The Royal Oak (PH)"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "The Warren"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Capel-le-Ferne",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 2638",
+        "lat": 51.10103760369823,
+        "lon": 1.2338138144144153
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Royal Oak (PH)",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Warren",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "The Warren",
+            "type": "woodland or forest",
+            "lat": 51.233508793288046,
+            "lon": 1.2558087199433516,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Capel-le-Ferne",
+        "la_filter": "Dover",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Capel-le-Ferne",
+            "type": "village",
+            "lat": 51.1012010905364,
+            "lon": 1.20896650332385,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Capel-le-Ferne Primary School",
+            "type": "primary education",
+            "lat": 51.106657703237516,
+            "lon": 1.2130167704287889,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Royal Oak",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Dover",
+        "road_a": "New Dover Road",
+        "road_b": "Old Dover Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lon": 1.23381381441442,
+        "lat": 51.1010376036982
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Royal Oak",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "New Dover Road",
+          "Old Dover Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 51.102528,
+            "lon": 1.229047,
+            "roads": [
+              "New Dover Road",
+              "Old Dover Road"
+            ]
+          },
+          {
+            "lat": 51.099849,
+            "lon": 1.206361,
+            "roads": [
+              "New Dover Road",
+              "Old Dover Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1010376036982,
+        "lon": 1.23381381441442,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lon": 1.23381381441442,
+        "verified_inside_admin_region": true,
+        "evidence": "The grid reference TR 2638 from the map's title block aligns perfectly with the intersection of New Dover Road and Old Dover Road (approx 300m away) and the parish of Capel-le-Ferne. Verified inside Dover District.",
+        "picked_source": "grid_ref:TR 2638",
+        "top_lat": 51.1010376036982,
+        "sigma_m": 400
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

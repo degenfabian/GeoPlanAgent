@@ -1,0 +1,332 @@
+{
+  "case": "B6C8BCAD-105E-4CA8-83B3-5A20DA5602EE",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.273673,
+    "top_lon": 1.343595,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Knightrider Street x Sandown Road",
+    "evidence": "The site 'The Salutation' is clearly shown on the map at the junction of Knightrider Street and Sandown Road. The grid reference TR332581 (derived from the map's OS sheet references) and the road intersection tool both point to this exact location in Sandwich.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.10616351642061465,
+  "gt_centroids": [
+    {
+      "lat": 51.27422567229129,
+      "lon": 1.344839452987397
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "grid_ref": 1,
+      "postcode": 1,
+      "intersect": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Salutation, Sandwich",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 332 581"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PG"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Dover",
+        "road_b": "Sandown Road",
+        "road_a": "Knightrider Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Salutation, Sandwich",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 332 581",
+        "lat": 51.274725599563745,
+        "lon": 1.3428037434941371
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CT16 3PG' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Knightrider Street",
+          "Sandown Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.273673,
+            "lon": 1.343595,
+            "roads": [
+              "Knightrider Street",
+              "Sandown Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "St Clement's Church, Sandwich"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "The Barbican, Sandwich"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Clement's Church, Sandwich",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Barbican, Sandwich",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Sandwich Haven"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Sandwich"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandwich Haven",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sandwich Haven",
+            "type": "tidal water",
+            "lat": 51.308701372717664,
+            "lon": 1.3547032201147649,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandwich",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Sandwich",
+            "type": "town",
+            "lat": 51.27487878349973,
+            "lon": 1.339645525328093,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sandwich",
+            "type": "railway station",
+            "lat": 51.269601201081876,
+            "lon": 1.3430194575279453,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sandwich Bay Estate",
+            "type": "village",
+            "lat": 51.266146317085045,
+            "lon": 1.384951756073922,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sandwich Road",
+            "type": "named road",
+            "lat": 51.22781542457786,
+            "lon": 1.2464098698834851,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Sandwich Road",
+            "type": "section of named road",
+            "lat": 51.24094997096471,
+            "lon": 1.3521894500848424,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 200,
+        "confidence": "high",
+        "picked_source": "intersect:Knightrider Street x Sandown Road",
+        "top_lat": 51.273673,
+        "top_lon": 1.343595,
+        "verified_inside_admin_region": true,
+        "evidence": "The site 'The Salutation' is clearly shown on the map at the junction of Knightrider Street and Sandown Road. The grid reference TR332581 (derived from the map's OS sheet references) and the road intersection tool both point to this exact location in Sandwich."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

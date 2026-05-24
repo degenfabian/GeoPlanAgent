@@ -1,0 +1,64 @@
+{
+  "case": "12:00158:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.3955,
+    "lon": 1.1945,
+    "reasoning": "The document describes land off Harvey Lane, Langmere Road, Hall Lane, and Common Road in Dickleburgh, which corresponds to the fields outlined in red on the provided map at these coordinates."
+  },
+  "err_km": 0.4091596260565928,
+  "gt_centroids": [
+    {
+      "lat": 52.39189082051901,
+      "lon": 1.1933254503458417
+    },
+    {
+      "lat": 52.38883861498935,
+      "lon": 1.1928920415656288
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": 1.1945,
+        "lat": 52.3955,
+        "reasoning": "The document describes land off Harvey Lane, Langmere Road, Hall Lane, and Common Road in Dickleburgh, which corresponds to the fields outlined in red on the provided map at these coordinates."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,257 @@
+{
+  "case": "A4D8",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.497,
+    "top_lon": -2.695,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Avonmouth",
+    "evidence": "The map shows a large area in Avonmouth, Bristol, bounded by the A403, A4, and B4054. The 'Avonmouth' railway station (51.4999, -2.6991) and 'Nelson Point' (51.4974, -2.7087) provide excellent anchors. The site centroid is placed slightly southeast of the station to cover the residential area shown.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1841765008282292,
+  "gt_centroids": [
+    {
+      "lat": 51.498641130976395,
+      "lon": -2.6953597140585575
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Avonmouth Station",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Avonmouth Station",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Avonmouth"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Avonmouth",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Avonmouth",
+            "type": "other settlement",
+            "lat": 51.50073251683644,
+            "lon": -2.698895483224683,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth",
+            "type": "railway station",
+            "lat": 51.49991280883136,
+            "lon": -2.6991422550213136,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth Dock",
+            "type": "named road",
+            "lat": 51.499202441197895,
+            "lon": -2.702156672047621,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth Way West",
+            "type": "named road",
+            "lat": 51.5031954714258,
+            "lon": -2.694481287014368,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth Road",
+            "type": "section of named road",
+            "lat": 51.49831835794442,
+            "lon": -2.692058977641633,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Nelson Point"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Nelson Point",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Nelson Point",
+            "type": "wetland",
+            "lat": 51.497391476411316,
+            "lon": -2.7087409942192133,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "B4054",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "B4054",
+        "la_filter": "Bristol",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "B4054",
+            "type": "section of numbered road",
+            "lat": 51.48527925718086,
+            "lon": -2.638402266104843,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "B4054",
+            "type": "numbered road",
+            "lat": 51.48570375660766,
+            "lon": -2.6397043629187014,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 500,
+        "picked_source": "place:Avonmouth",
+        "top_lat": 51.497,
+        "top_lon": -2.695,
+        "evidence": "The map shows a large area in Avonmouth, Bristol, bounded by the A403, A4, and B4054. The 'Avonmouth' railway station (51.4999, -2.6991) and 'Nelson Point' (51.4974, -2.7087) provide excellent anchors. The site centroid is placed slightly southeast of the station to cover the residential area shown.",
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,371 @@
+{
+  "case": "12:00114:ART4",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5708055470522,
+    "top_lon": 1.10986227142907,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:NR18 0PH",
+    "evidence": "The site postcode NR18 0PH resolves to Church Street in Wymondham, which matches the map labels and the site address. The postcode coordinate (52.5708, 1.1098) is within 300m of the Wymondham town centroid.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.01725569540483217,
+  "gt_centroids": [
+    {
+      "lat": 52.57049129101415,
+      "lon": 1.1099062653915162
+    },
+    {
+      "lat": 52.5706982228472,
+      "lon": 1.1100466925207282
+    },
+    {
+      "lat": 52.57039472768636,
+      "lon": 1.1096958107372474
+    },
+    {
+      "lat": 52.570783693071874,
+      "lon": 1.109554701024202
+    },
+    {
+      "lat": 52.570505887877395,
+      "lon": 1.109364883243188
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 5,
+      "intersect": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR18 0PH"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Abbey Hall Wymondham",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Church Street",
+        "la": "South Norfolk",
+        "road_b": "Damgate Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "NR18 0PH",
+        "lat": 52.57080554705222,
+        "lon": 1.109862271429069,
+        "admin_district": "South Norfolk District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Abbey Hall Wymondham",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Church Street",
+          "Damgate Street"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Church Street Wymondham",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Church Street",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Church Street Wymondham",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Church Street",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Church Street",
+            "lat": 52.63228704953655,
+            "lon": 1.1811025558335493,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Church Street",
+            "lat": 52.63225281955693,
+            "lon": 1.1809054772456138,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Church Street",
+            "lat": 52.63224675258035,
+            "lon": 1.1826368699802337,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Church Street",
+            "lat": 52.63240418532595,
+            "lon": 1.1841851058406747,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Church Street",
+            "lat": 52.63220698422554,
+            "lon": 1.1841357455715482,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wymondham Library",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Wymondham Abbey Hall"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wymondham Library",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wymondham Abbey Hall",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wymondham"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wymondham",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Wymondham",
+            "type": "village",
+            "lat": 52.760452511808346,
+            "lon": -0.7435441216922416,
+            "admin_district": "Melton",
+            "county": "Leicestershire"
+          },
+          {
+            "name": "Wymondham",
+            "type": "named road",
+            "lat": 52.036622599076885,
+            "lon": -0.6936505752561115,
+            "admin_district": null,
+            "county": "Milton Keynes"
+          },
+          {
+            "name": "Wymondham",
+            "type": "town",
+            "lat": 52.57020431915297,
+            "lon": 1.1128897765371646,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wymondham",
+            "type": "railway station",
+            "lat": 52.56545776686534,
+            "lon": 1.1179402392191482,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wymondham Close",
+            "type": "named road",
+            "lat": 52.997131288502516,
+            "lon": -1.1199461262783361,
+            "admin_district": "Gedling",
+            "county": "Nottinghamshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.10986227142907,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "picked_source": "postcode:NR18 0PH",
+        "sigma_m": 300,
+        "evidence": "The site postcode NR18 0PH resolves to Church Street in Wymondham, which matches the map labels and the site address. The postcode coordinate (52.5708, 1.1098) is within 300m of the Wymondham town centroid.",
+        "top_lat": 52.5708055470522
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,277 @@
+{
+  "case": "A108P",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.560752,
+    "top_lon": -0.251805,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Woodston",
+    "evidence": "The map shows the Woodston area of Peterborough. The centroid of Woodston (suburban area) aligns perfectly with the center of the red-outlined site, supported by intersections of Oundle Rd/New Rd and London Rd/Celta Rd which form the site boundaries. Woodston Primary School is also within the site.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2570081670040288,
+  "gt_centroids": [
+    {
+      "lat": 52.5348614532122,
+      "lon": -0.269282392317978
+    },
+    {
+      "lat": 52.559365781249205,
+      "lon": -0.2548472907921313
+    },
+    {
+      "lat": 52.5876828775095,
+      "lon": -0.24108131416269787
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Woodston Primary School",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Peterborough",
+        "road_a": "Oundle Road",
+        "road_b": "New Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Celta Road",
+        "road_a": "London Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Woodston",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Woodston Primary School",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Woodston Primary School",
+            "type": "primary education",
+            "lat": 52.55823204406162,
+            "lon": -0.253453722384669,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Oundle Road",
+          "New Road"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.564055,
+            "lon": -0.255052,
+            "roads": [
+              "Oundle Road",
+              "New Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "Celta Road"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.557499,
+            "lon": -0.249782,
+            "roads": [
+              "London Road",
+              "Celta Road"
+            ]
+          },
+          {
+            "lat": 52.557746,
+            "lon": -0.249756,
+            "roads": [
+              "London Road",
+              "Celta Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Woodston",
+        "la_filter": "Peterborough",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Woodston",
+            "type": "suburban area",
+            "lat": 52.56075213415963,
+            "lon": -0.2518045693257792,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Woodstone Gate",
+            "type": "named road",
+            "lat": 52.556070942861815,
+            "lon": -0.2642342567725194,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Woodston Primary School",
+            "type": "primary education",
+            "lat": 52.55823204406162,
+            "lon": -0.253453722384669,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.251805,
+        "la": "Peterborough",
+        "lat": 52.560752
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.560752,
+        "lon": -0.251805,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "picked_source": "place:Woodston",
+        "top_lat": 52.560752,
+        "top_lon": -0.251805,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows the Woodston area of Peterborough. The centroid of Woodston (suburban area) aligns perfectly with the center of the red-outlined site, supported by intersections of Oundle Rd/New Rd and London Rd/Celta Rd which form the site boundaries. Woodston Primary School is also within the site.",
+        "sigma_m": 500
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

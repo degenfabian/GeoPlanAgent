@@ -1,0 +1,188 @@
+{
+  "case": "Ar4.11",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.735,
+    "top_lon": -0.36,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Ragged Hall Lane",
+    "evidence": "The site is explicitly described as 'Land between Ragged Hall Lane and the M10 Motorway' in St Albans. Road geocoding for Ragged Hall Lane in St Albans places it at approximately 51.734, -0.36. The map shows the site immediately north of this residential road and south of the motorway (now part of the A414/M25 link).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.16800293173757244,
+  "gt_centroids": [
+    {
+      "lat": 51.73573010711402,
+      "lon": -0.36213593141055866
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 1,
+      "place": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Ragged Hall Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "M10 Motorway",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Ragged Hall Lane",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.7338688913522,
+            "lon": -0.3605408201568414,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.73422817489812,
+            "lon": -0.35793643138097797,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.73456261035821,
+            "lon": -0.35639124649171033,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.734390729746764,
+            "lon": -0.3768313260817681,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.73375349810246,
+            "lon": -0.3631481580499941,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "M10 Motorway",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "St Albans",
+        "lon": -0.36,
+        "lat": 51.735
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.735,
+        "lon": -0.36,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lon": -0.36,
+        "evidence": "The site is explicitly described as 'Land between Ragged Hall Lane and the M10 Motorway' in St Albans. Road geocoding for Ragged Hall Lane in St Albans places it at approximately 51.734, -0.36. The map shows the site immediately north of this residential road and south of the motorway (now part of the A414/M25 link).",
+        "top_lat": 51.735,
+        "sigma_m": 400,
+        "picked_source": "road:Ragged Hall Lane"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

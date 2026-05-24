@@ -1,0 +1,309 @@
+{
+  "case": "A4DA05",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.70873,
+    "top_lon": -2.29115,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Collinge Fold Lane",
+    "evidence": "Found Collinge Fold Lane and Hazel Grove in Rossendale. The map shows the site (Collinge Fold Farm) immediately west of the junction of Collinge Fold Lane and Hazel Grove. The coordinates for Hazel Grove (53.7097, -2.2901) and Collinge Fold Lane (53.7087, -2.2911) are within 150m of each other, providing a tight consensus.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06947944230964097,
+  "gt_centroids": [
+    {
+      "lat": 53.70932867676488,
+      "lon": -2.291452303601004
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Rossendale",
+        "query": "Collinge Fold Farm"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Rossendale",
+        "query": "Collinge Fold Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Collinge Fold Lane",
+        "la": "Rossendale",
+        "road_b": "Burnley Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Constable Lee Bridge",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Collinge Fold Farm",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Collinge Fold Lane",
+        "la_filter": "Rossendale",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Collinge Fold Lane",
+            "type": "named road",
+            "lat": 53.70873070096022,
+            "lon": -2.29115387349506,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Collinge Fold Lane",
+          "Burnley Road"
+        ],
+        "la_filter": "Rossendale",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Constable Lee Bridge",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Rossendale",
+        "query": "Hazel Grove"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Burnley Road",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Rossendale",
+        "lon": -2.29115,
+        "lat": 53.70873
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hazel Grove",
+        "la_filter": "Rossendale",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Hazel Grove",
+            "type": "named road",
+            "lat": 53.70602797502834,
+            "lon": -2.1861244363827015,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Hazel Grove",
+            "type": "named road",
+            "lat": 53.709730830457225,
+            "lon": -2.2901457315228453,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Burnley Road",
+        "la_filter": "Rossendale",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Burnley Road",
+            "lat": 53.72231967109214,
+            "lon": -2.1977745313501247,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Burnley Road",
+            "lat": 53.72322583979125,
+            "lon": -2.1978621404689633,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Burnley Road",
+            "lat": 53.72370656068906,
+            "lon": -2.197947752741155,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Burnley Road",
+            "lat": 53.72400754630767,
+            "lon": -2.198017366268039,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Burnley Road",
+            "lat": 53.724169267841454,
+            "lon": -2.198056015038083,
+            "in_la": "Rossendale"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 53.70873,
+        "lon": -2.29115,
+        "la": "Rossendale",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 53.69381770640495,
+        "la_centroid_lon": -2.2673137098881666
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "top_lat": 53.70873,
+        "evidence": "Found Collinge Fold Lane and Hazel Grove in Rossendale. The map shows the site (Collinge Fold Farm) immediately west of the junction of Collinge Fold Lane and Hazel Grove. The coordinates for Hazel Grove (53.7097, -2.2901) and Collinge Fold Lane (53.7087, -2.2911) are within 150m of each other, providing a tight consensus.",
+        "top_lon": -2.29115,
+        "picked_source": "place:Collinge Fold Lane",
+        "confidence": "high",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,309 @@
+{
+  "case": "ART4:15:00001",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.936,
+    "top_lon": -1.799,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Marl Lane x Puddleslosh Lane",
+    "evidence": "The intersection of Marl Lane and Puddleslosh Lane (50.9338, -1.8060) perfectly matches the southwestern corner of the site. Tinkers Cross (50.9396, -1.7970) is just to the northeast, consistent with the map. Whitsbury Road centroids also align with the eastern boundary.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14732470742707576,
+  "gt_centroids": [
+    {
+      "lat": 50.935590098936395,
+      "lon": -1.8009992695298243
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 1,
+      "la_check": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Forres Sandle Manor School",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "New Forest",
+        "road_a": "Marl Lane",
+        "road_b": "Puddleslosh Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Arch Farm Industrial Site",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Tinkers Cross",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Forres Sandle Manor School",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Marl Lane",
+          "Puddleslosh Lane"
+        ],
+        "la_filter": "New Forest",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 50.933808,
+            "lon": -1.805977,
+            "roads": [
+              "Marl Lane",
+              "Puddleslosh Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Arch Farm Industrial Site",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Tinkers Cross",
+        "la_filter": "New Forest",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Tinkers Cross",
+            "type": "village",
+            "lat": 50.93962178193698,
+            "lon": -1.7970244890538716,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandle Dairy Farm",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 50.933808,
+        "la": "New Forest",
+        "lon": -1.805977
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandle Dairy Farm",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.933808,
+        "lon": -1.805977,
+        "la": "New Forest",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.85856472927001,
+        "la_centroid_lon": -1.625406857223459
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Whitsbury Road",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Whitsbury Road",
+        "la_filter": "New Forest",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.932906139154696,
+            "lon": -1.7923508616504273,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.9335015352493,
+            "lon": -1.792661924215556,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.93263967783219,
+            "lon": -1.7921130505288383,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.931881075209816,
+            "lon": -1.7916792834593092,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.931524849107134,
+            "lon": -1.7914808721077093,
+            "in_la": "New Forest"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -1.799,
+        "picked_source": "intersect:Marl Lane x Puddleslosh Lane",
+        "top_lat": 50.936,
+        "sigma_m": 300,
+        "confidence": "high",
+        "evidence": "The intersection of Marl Lane and Puddleslosh Lane (50.9338, -1.8060) perfectly matches the southwestern corner of the site. Tinkers Cross (50.9396, -1.7970) is just to the northeast, consistent with the map. Whitsbury Road centroids also align with the eastern boundary.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

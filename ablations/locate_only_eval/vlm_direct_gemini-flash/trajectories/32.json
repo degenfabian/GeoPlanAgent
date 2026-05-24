@@ -1,0 +1,68 @@
+{
+  "case": "32",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.4868,
+    "lon": -0.1735,
+    "reasoning": "The document specifies properties 4-39 Carlyle Square, SW3, and the provided map shows these properties surrounding the square at the intersection of King's Road and Old Church Street in Chelsea."
+  },
+  "err_km": 0.022246324249255066,
+  "gt_centroids": [
+    {
+      "lat": 51.48700682389442,
+      "lon": -0.1722864926118728
+    },
+    {
+      "lat": 51.48746938625088,
+      "lon": -0.17335540467753452
+    },
+    {
+      "lat": 51.48665402819306,
+      "lon": -0.1732802843039544
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -0.1735,
+        "lat": 51.4868,
+        "reasoning": "The document specifies properties 4-39 Carlyle Square, SW3, and the provided map shows these properties surrounding the square at the intersection of King's Road and Old Church Street in Chelsea."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,346 @@
+{
+  "case": "A4D6",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.47,
+    "top_lon": -2.54,
+    "sigma_m": 2500,
+    "confidence": "med",
+    "picked_source": "place:Whitehall/Eastville centroid",
+    "evidence": "The map shows a large Article 4 area covering Eastville, Fishponds, and Whitehall. The coordinate (51.47, -2.54) is the approximate centroid of this polygon, situated between Fishponds Road and Church Road, and verified within the Bristol LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.4540245957642088,
+  "gt_centroids": [
+    {
+      "lat": 51.47223696915572,
+      "lon": -2.545483701252686
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 5,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Sir John's Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Monarch's Way",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Bristol and Bath Railway Path"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Lodge Causeway",
+        "la": "Bristol",
+        "road_a": "Fishponds Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Sir John's Lane",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Sir John's Lane",
+            "lat": 51.48297019671036,
+            "lon": -2.565740754647002,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sir John's Lane",
+            "lat": 51.477862653901866,
+            "lon": -2.5635482330435444,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sir John's Lane",
+            "lat": 51.47806591961856,
+            "lon": -2.564237590542281,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sir John's Lane",
+            "lat": 51.47817636658063,
+            "lon": -2.564642138125546,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sir John's Lane",
+            "lat": 51.47832265151677,
+            "lon": -2.565147639088526,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Monarch's Way",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bristol and Bath Railway Path",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Bristol for: ['Lodge Causeway']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Fishponds Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Church Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Fishponds Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Fishponds Road",
+            "lat": 51.48180897249797,
+            "lon": -2.5239666047805773,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Fishponds Road",
+            "lat": 51.479666884517705,
+            "lon": -2.530518905495983,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Fishponds Road",
+            "lat": 51.479866871087836,
+            "lon": -2.5300388286334523,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Fishponds Road",
+            "lat": 51.48046360647922,
+            "lon": -2.5292009653232896,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Fishponds Road",
+            "lat": 51.48097499381021,
+            "lon": -2.5286150347115757,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Church Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Church Road",
+            "lat": 51.45988020118342,
+            "lon": -2.5463238968284787,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Church Road",
+            "lat": 51.46003587607279,
+            "lon": -2.545265155481845,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Church Road",
+            "lat": 51.4602258616621,
+            "lon": -2.543999328984252,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Church Road",
+            "lat": 51.46035941385487,
+            "lon": -2.5432763328246626,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Church Road",
+            "lat": 51.45964005028693,
+            "lon": -2.5505671378424766,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.47,
+        "la": "Bristol",
+        "lon": -2.54
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.47,
+        "lon": -2.54,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lat": 51.47,
+        "confidence": "med",
+        "top_lon": -2.54,
+        "picked_source": "place:Whitehall/Eastville centroid",
+        "sigma_m": 2500,
+        "evidence": "The map shows a large Article 4 area covering Eastville, Fishponds, and Whitehall. The coordinate (51.47, -2.54) is the approximate centroid of this polygon, situated between Fishponds Road and Church Road, and verified within the Bristol LA."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

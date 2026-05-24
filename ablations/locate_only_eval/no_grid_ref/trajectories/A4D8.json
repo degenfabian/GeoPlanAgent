@@ -1,0 +1,304 @@
+{
+  "case": "A4D8",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4999128088314,
+    "top_lon": -2.69914225502131,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Avonmouth railway station",
+    "evidence": "The map shows an Article 4 Direction area in Avonmouth, Bristol. The site is centered around Avonmouth Station and Avonmouth Road. The station coordinate (51.4999, -2.6991) is a precise match for the label on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2975766519043781,
+  "gt_centroids": [
+    {
+      "lat": 51.498641130976395,
+      "lon": -2.6953597140585575
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Avonmouth Station",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Avonmouth",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "A4",
+        "la": "Bristol",
+        "road_a": "A403"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Avonmouth Station",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Avonmouth",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Avonmouth",
+            "type": "other settlement",
+            "lat": 51.50073251683644,
+            "lon": -2.698895483224683,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth",
+            "type": "railway station",
+            "lat": 51.49991280883136,
+            "lon": -2.6991422550213136,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth Dock",
+            "type": "named road",
+            "lat": 51.499202441197895,
+            "lon": -2.702156672047621,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth Way West",
+            "type": "named road",
+            "lat": 51.5031954714258,
+            "lon": -2.694481287014368,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth Road",
+            "type": "section of named road",
+            "lat": 51.49831835794442,
+            "lon": -2.692058977641633,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Bristol for: ['A403', 'A4']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Avonmouth Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Portview Road",
+        "la": "Bristol",
+        "road_a": "Avonmouth Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.4999128088314,
+        "lon": -2.69914225502131,
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Avonmouth Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Avonmouth Road",
+            "type": "section of named road",
+            "lat": 51.49831835794442,
+            "lon": -2.692058977641633,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth Road",
+            "type": "section of named road",
+            "lat": 51.49578297301175,
+            "lon": -2.684357076165978,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth",
+            "type": "other settlement",
+            "lat": 51.50073251683644,
+            "lon": -2.698895483224683,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth",
+            "type": "railway station",
+            "lat": 51.49991280883136,
+            "lon": -2.6991422550213136,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth Dock",
+            "type": "named road",
+            "lat": 51.499202441197895,
+            "lon": -2.702156672047621,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Bristol for: ['Avonmouth Road', 'Portview Road']"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.4999128088314,
+        "lon": -2.69914225502131,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows an Article 4 Direction area in Avonmouth, Bristol. The site is centered around Avonmouth Station and Avonmouth Road. The station coordinate (51.4999, -2.6991) is a precise match for the label on the map.",
+        "picked_source": "place:Avonmouth railway station",
+        "sigma_m": 400,
+        "top_lon": -2.69914225502131,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 51.4999128088314
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

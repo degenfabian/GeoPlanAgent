@@ -1,0 +1,60 @@
+{
+  "case": "1D1A9561-7534-409B-9937-29C887F66069",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.1615,
+    "lon": 1.341,
+    "reasoning": "The document describes land in the Parish of Langdon between Martin, Martin Mill, and East Langdon, with the planning map showing the site adjacent to East Langdon County Primary School and The Grange, corresponding to OS grid reference TR 3346."
+  },
+  "err_km": 1.1057118536882533,
+  "gt_centroids": [
+    {
+      "lat": 51.17141271345871,
+      "lon": 1.3422550648650362
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 51.1615,
+        "reasoning": "The document describes land in the Parish of Langdon between Martin, Martin Mill, and East Langdon, with the planning map showing the site adjacent to East Langdon County Primary School and The Grange, corresponding to OS grid reference TR 3346.",
+        "lon": 1.341
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

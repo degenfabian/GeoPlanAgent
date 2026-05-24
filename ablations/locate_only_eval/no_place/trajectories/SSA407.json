@@ -1,0 +1,248 @@
+{
+  "case": "SSA407",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.539597,
+    "top_lon": -2.223329,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:SO 849 935",
+    "evidence": "The map shows a site on Feiashill Road, Trysull, adjacent to Smestow Barn and Slate Houses. Road centroids for Feiashill Road and a grid reference derived from the map's 1km grid lines (84/93) align perfectly at this location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.6529600312709809,
+  "gt_centroids": [
+    {
+      "lat": 52.53377585943938,
+      "lon": -2.2220585187139483
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 2,
+      "la_check": 2,
+      "grid_ref": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Feiashill Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Feiashill Road, Trysull"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Feiashill Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Feiashill Road",
+            "lat": 52.541391035534296,
+            "lon": -2.224001792616432,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Feiashill Road",
+            "lat": 52.53855641540173,
+            "lon": -2.2234183151793556,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Feiashill Road",
+            "lat": 52.54141312333325,
+            "lon": -2.2236124985320425,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Feiashill Road",
+            "lat": 52.53506974716009,
+            "lon": -2.2240279659048316,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Feiashill Road",
+            "lat": 52.53490003347175,
+            "lon": -2.2240198036183125,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Feiashill Road, Trysull",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.5385,
+        "lon": -2.2234,
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5385,
+        "lon": -2.2234,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SO 849 935"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SO 849 935",
+        "lat": 52.539596939255524,
+        "lon": -2.22332865176138
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.53959,
+        "la": "South Staffordshire",
+        "lon": -2.22332
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.53959,
+        "lon": -2.22332,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "picked_source": "grid_ref:SO 849 935",
+        "confidence": "high",
+        "sigma_m": 300,
+        "top_lon": -2.223329,
+        "evidence": "The map shows a site on Feiashill Road, Trysull, adjacent to Smestow Barn and Slate Houses. Road centroids for Feiashill Road and a grid reference derived from the map's 1km grid lines (84/93) align perfectly at this location.",
+        "top_lat": 52.539597
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

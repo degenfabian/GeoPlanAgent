@@ -1,0 +1,261 @@
+{
+  "case": "A108P",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5582320440616,
+    "top_lon": -0.253453722384669,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Woodston Primary School",
+    "evidence": "The map shows a large area in Woodston, Peterborough, bounded by Oundle Road, New Road, and London Road. Tool results for Woodston Primary School, Belsize Avenue, and Celta Road (all visible on the map) cluster tightly around 52.557, -0.254.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1573765476848806,
+  "gt_centroids": [
+    {
+      "lat": 52.5348614532122,
+      "lon": -0.269282392317978
+    },
+    {
+      "lat": 52.559365781249205,
+      "lon": -0.2548472907921313
+    },
+    {
+      "lat": 52.5876828775095,
+      "lon": -0.24108131416269787
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Woodston Primary School"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Oundle Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "New Road Woodston"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Woodston Primary School",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Woodston Primary School",
+            "type": "primary education",
+            "lat": 52.55823204406162,
+            "lon": -0.253453722384669,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Oundle Road",
+        "la_filter": "Peterborough",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Oundle Road",
+            "type": "section of named road",
+            "lat": 52.55444442406493,
+            "lon": -0.28775212642612785,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Oundle Road",
+            "type": "named road",
+            "lat": 52.550332059252646,
+            "lon": -0.31887099815363956,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "New Road Woodston",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Belsize Avenue"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Celta Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Belsize Avenue",
+        "la_filter": "Peterborough",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Belsize Avenue",
+            "type": "named road",
+            "lat": 52.55787384189839,
+            "lon": -0.25599052966946756,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Belsize Wood",
+            "type": "woodland or forest",
+            "lat": 52.595147166781395,
+            "lon": -0.32301744970007035,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Celta Road",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Celta Road",
+            "type": "named road",
+            "lat": 52.556931926540415,
+            "lon": -0.2518679272640321,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.253453722384669,
+        "picked_source": "place:Woodston Primary School",
+        "top_lat": 52.5582320440616,
+        "sigma_m": 500,
+        "evidence": "The map shows a large area in Woodston, Peterborough, bounded by Oundle Road, New Road, and London Road. Tool results for Woodston Primary School, Belsize Avenue, and Celta Road (all visible on the map) cluster tightly around 52.557, -0.254.",
+        "confidence": "high",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

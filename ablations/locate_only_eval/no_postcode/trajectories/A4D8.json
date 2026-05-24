@@ -1,0 +1,343 @@
+{
+  "case": "A4D8",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5007325168364,
+    "top_lon": -2.69889548322468,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Avonmouth",
+    "evidence": "The map shows the residential area of Avonmouth, Bristol, bounded by the A403, A4, and B4054. The 'Avonmouth' settlement and station coordinates from OS Open Names align perfectly with the map labels and the red-hatched Article 4 Direction area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.3376128113455051,
+  "gt_centroids": [
+    {
+      "lat": 51.498641130976395,
+      "lon": -2.6953597140585575
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Avonmouth Station",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "A4",
+        "road_a": "A403",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Avonmouth Docks",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Avonmouth Station",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Bristol for: ['A403', 'A4']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Avonmouth Docks",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Avonmouth Station"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Avonmouth Docks"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "B4054",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Avonmouth Station",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Avonmouth Docks",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "B4054",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Avonmouth"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "B4054"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Avonmouth",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Avonmouth",
+            "type": "other settlement",
+            "lat": 51.50073251683644,
+            "lon": -2.698895483224683,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth",
+            "type": "railway station",
+            "lat": 51.49991280883136,
+            "lon": -2.6991422550213136,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Avonmouth Place",
+            "type": "named road",
+            "lat": 55.94652595525948,
+            "lon": -4.811073066162304,
+            "admin_district": null,
+            "county": "Inverclyde"
+          },
+          {
+            "name": "Avonmouth Square",
+            "type": "named road",
+            "lat": 54.87342698632764,
+            "lon": -1.4320203185463765,
+            "admin_district": "Sunderland",
+            "county": null
+          },
+          {
+            "name": "Avonmouth Road",
+            "type": "named road",
+            "lat": 54.87283551844204,
+            "lon": -1.4323714618266956,
+            "admin_district": "Sunderland",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "B4054",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.69889548322468,
+        "la": "Bristol",
+        "lat": 51.5007325168364
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5007325168364,
+        "lon": -2.69889548322468,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lon": -2.69889548322468,
+        "top_lat": 51.5007325168364,
+        "sigma_m": 500,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows the residential area of Avonmouth, Bristol, bounded by the A403, A4, and B4054. The 'Avonmouth' settlement and station coordinates from OS Open Names align perfectly with the map labels and the red-hatched Article 4 Direction area.",
+        "picked_source": "place:Avonmouth"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,415 @@
+{
+  "case": "12:00125:ART4",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.56058,
+    "top_lon": 1.40195,
+    "sigma_m": 1000,
+    "confidence": "med",
+    "picked_source": "place:Bergh Apton",
+    "evidence": "The map shows Church Road in Bergh Apton, near Street Farm and Stud Farm. The village centroid for Bergh Apton provides a reliable anchor point within the correct Local Authority.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.7935625891096681,
+  "gt_centroids": [
+    {
+      "lat": 52.55357962441475,
+      "lon": 1.3990896823237144
+    },
+    {
+      "lat": 52.55381450395936,
+      "lon": 1.398213591491261
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Bergh Apton"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Street Farm Bergh Apton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_b": "They Street",
+        "road_a": "Church Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Stud Farm Bergh Apton"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bergh Apton",
+        "la_filter": "South Norfolk",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Bergh Apton",
+            "type": "village",
+            "lat": 52.56058068197943,
+            "lon": 1.4019524134486212,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Bergh Apton Road",
+            "type": "named road",
+            "lat": 52.56584195669603,
+            "lon": 1.3884859011086415,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Bergh Apton Road",
+            "type": "section of named road",
+            "lat": 52.56630145146146,
+            "lon": 1.3843738727159887,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Bergh Apton Road",
+            "type": "section of named road",
+            "lat": 52.564721514222775,
+            "lon": 1.3921187799453343,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Street Farm Bergh Apton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['They Street']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Stud Farm Bergh Apton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Church Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Street Farm"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Church Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Church Road",
+            "lat": 52.56678154615677,
+            "lon": 1.3833112578322126,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Church Road",
+            "lat": 52.56780189552799,
+            "lon": 1.3825411493738708,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Church Road",
+            "lat": 52.568497652507645,
+            "lon": 1.382055611779692,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Church Road",
+            "lat": 52.56919275234057,
+            "lon": 1.3817219697699306,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Church Road",
+            "lat": 52.567305906953905,
+            "lon": 1.4372455822588543,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Street Farm",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Street Farm Close",
+            "type": "named road",
+            "lat": 53.32222877773254,
+            "lon": -1.2593031694889407,
+            "admin_district": "Rotherham",
+            "county": null
+          },
+          {
+            "name": "Street Farm Lane",
+            "type": "named road",
+            "lat": 52.30115296256577,
+            "lon": 0.8338939248505156,
+            "admin_district": "West Suffolk",
+            "county": "Suffolk"
+          },
+          {
+            "name": "Street Farm Gardens",
+            "type": "named road",
+            "lat": 52.304972006796,
+            "lon": 1.0393240759970865,
+            "admin_district": "Mid Suffolk",
+            "county": "Suffolk"
+          },
+          {
+            "name": "Street Farm Close",
+            "type": "named road",
+            "lat": 52.03051447719428,
+            "lon": 1.2683152139806502,
+            "admin_district": "East Suffolk",
+            "county": "Suffolk"
+          },
+          {
+            "name": "Street Farm Close",
+            "type": "named road",
+            "lat": 52.144109789490436,
+            "lon": 1.444520592102195,
+            "admin_district": "East Suffolk",
+            "county": "Suffolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Rectory Bergh Apton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Stud Cottage Bergh Apton"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Rectory Bergh Apton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Stud Cottage Bergh Apton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Norfolk",
+        "lon": 1.40195,
+        "lat": 52.56058
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.56058,
+        "lon": 1.40195,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "med",
+        "top_lon": 1.40195,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows Church Road in Bergh Apton, near Street Farm and Stud Farm. The village centroid for Bergh Apton provides a reliable anchor point within the correct Local Authority.",
+        "picked_source": "place:Bergh Apton",
+        "top_lat": 52.56058,
+        "sigma_m": 1000
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

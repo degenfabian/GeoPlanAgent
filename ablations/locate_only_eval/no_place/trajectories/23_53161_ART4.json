@@ -1,0 +1,437 @@
+{
+  "case": "23:53161:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.76258,
+    "top_lon": 1.11069,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Market Place, Reepham",
+    "evidence": "The map shows the Reepham Article 4 Direction area. The road layout matches the junction of Market Place and Church Street in Reepham. Ollands Road (found at 52.763, 1.112) and Market Place (found at 52.762, 1.110) confirm the location in Reepham, Broadland. NR7 0DU is the council office (Thorpe Lodge) and was ignored.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06315671983721835,
+  "gt_centroids": [
+    {
+      "lat": 52.7624974919124,
+      "lon": 1.1116186711757081
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "road": 5,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR7 0DU"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Broadland",
+        "query": "Yarmouth Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Market Place",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR7 0DU' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Yarmouth Road",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.636459243826096,
+            "lon": 1.4600852965825983,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.63666166213207,
+            "lon": 1.4602004096483194,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.63651189792062,
+            "lon": 1.4625720071425377,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.63667448155313,
+            "lon": 1.4622209560736559,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.63650586872959,
+            "lon": 1.4645790831746932,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Market Place",
+        "la_filter": "Broadland",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Market Place",
+            "lat": 52.79532073039524,
+            "lon": 1.2517152006141494,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Market Place",
+            "lat": 52.79521786166674,
+            "lon": 1.2512030729947627,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Market Place",
+            "lat": 52.76258000826518,
+            "lon": 1.1106997245657133,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Church Street",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Broadland",
+        "query": "Back Lane"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Church Street",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Church Street",
+            "lat": 52.727991920596224,
+            "lon": 1.3576357397296506,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Church Street",
+            "lat": 52.72812981544381,
+            "lon": 1.3579047050135395,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Church Street",
+            "lat": 52.727653920277696,
+            "lon": 1.3588372502939126,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Church Street",
+            "lat": 52.727687694320764,
+            "lon": 1.3607304333774584,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Church Street",
+            "lat": 52.72790057348588,
+            "lon": 1.3619445504059366,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Back Lane",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Back Lane",
+            "lat": 52.76911238412011,
+            "lon": 1.1635134234681785,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Back Lane",
+            "lat": 52.75089052089619,
+            "lon": 1.305610204969731,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Back Lane",
+            "lat": 52.7538363901214,
+            "lon": 1.30955943852295,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Back Lane",
+            "lat": 52.753906620931794,
+            "lon": 1.3094679730282393,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Back Lane",
+            "lat": 52.719335139485715,
+            "lon": 1.3872365719285593,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Market Place",
+        "la": "Broadland",
+        "road_b": "Church Street"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Market Place",
+          "Church Street"
+        ],
+        "la_filter": "Broadland",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.821179,
+            "lon": 1.388069,
+            "roads": [
+              "Market Place",
+              "Church Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Ollands Road",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Ollands Road",
+        "la_filter": "Broadland",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Ollands Road",
+            "lat": 52.76326337688122,
+            "lon": 1.1128361612301856,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Ollands Road",
+            "lat": 52.765293246058675,
+            "lon": 1.113724785843386,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Ollands Road",
+            "lat": 52.767288531348854,
+            "lon": 1.1145774449952948,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Ollands Road",
+            "lat": 52.76288804020764,
+            "lon": 1.1127869139992594,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.76258,
+        "lon": 1.11069,
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.76258,
+        "lon": 1.11069,
+        "la": "Broadland",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.70119443642098,
+        "la_centroid_lon": 1.3101886931294198
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.11069,
+        "sigma_m": 500,
+        "confidence": "high",
+        "evidence": "The map shows the Reepham Article 4 Direction area. The road layout matches the junction of Market Place and Church Street in Reepham. Ollands Road (found at 52.763, 1.112) and Market Place (found at 52.762, 1.110) confirm the location in Reepham, Broadland. NR7 0DU is the council office (Thorpe Lodge) and was ignored.",
+        "verified_inside_admin_region": true,
+        "top_lat": 52.76258,
+        "picked_source": "road:Market Place, Reepham"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

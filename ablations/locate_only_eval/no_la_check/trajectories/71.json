@@ -1,0 +1,254 @@
+{
+  "case": "71",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5205,
+    "top_lon": -0.226,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Brewster Gardens x North Pole Road",
+    "evidence": "The site is a block of properties between Brewster Gardens and Bracewell Road. Intersections of these roads with North Pole Road (the southern boundary) place the site at approx 51.520. Postcode W10 6AF (Bracewell Rd) is within 100m.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.054404938452569794,
+  "gt_centroids": [
+    {
+      "lat": 51.5205890919682,
+      "lon": -0.22677317479897516
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "place": 1,
+      "postcode": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Brewster Gardens",
+        "road_b": "North Pole Road",
+        "la": "Hammersmith and Fulham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Bracewell Road",
+        "road_b": "North Pole Road",
+        "la": "Hammersmith and Fulham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Coronation Court",
+        "la": "Hammersmith and Fulham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "W10 6AR"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Brewster Gardens",
+          "North Pole Road"
+        ],
+        "la_filter": "Hammersmith and Fulham",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.51999,
+            "lon": -0.225642,
+            "roads": [
+              "Brewster Gardens",
+              "North Pole Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Bracewell Road",
+          "North Pole Road"
+        ],
+        "la_filter": "Hammersmith and Fulham",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.51972,
+            "lon": -0.226229,
+            "roads": [
+              "Bracewell Road",
+              "North Pole Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coronation Court",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Coronation Court",
+            "type": "named road",
+            "lat": 54.558111714891915,
+            "lon": -1.1564486325322698,
+            "admin_district": null,
+            "county": "Redcar and Cleveland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "W10 6AR",
+        "lat": 51.521078975064675,
+        "lon": -0.2233365121158268,
+        "admin_district": "Kensington and Chelsea London Boro"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "W10 6AF"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "W10 6AW"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "W10 6AF",
+        "lat": 51.5206397689723,
+        "lon": -0.22759138508829715,
+        "admin_district": "Kensington and Chelsea London Boro"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "W10 6AW",
+        "lat": 51.52229514801662,
+        "lon": -0.2222945624997753,
+        "admin_district": "Kensington and Chelsea London Boro"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "intersect:Brewster Gardens x North Pole Road",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 200,
+        "evidence": "The site is a block of properties between Brewster Gardens and Bracewell Road. Intersections of these roads with North Pole Road (the southern boundary) place the site at approx 51.520. Postcode W10 6AF (Bracewell Rd) is within 100m.",
+        "top_lon": -0.226,
+        "top_lat": 51.5205
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

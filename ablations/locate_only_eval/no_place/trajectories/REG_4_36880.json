@@ -1,0 +1,276 @@
+{
+  "case": "REG_4:36880",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.529102,
+    "top_lon": -0.211606,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "intersect:Ilbert Street x Fifth Avenue",
+    "evidence": "The map shows the Queen's Park Estate conservation area. Intersections of Ilbert St/Fifth Ave and Droop St/Third Ave, along with the W10 4QD postcode, cluster tightly around this central point in the estate. Verified inside Westminster.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09771394906338336,
+  "gt_centroids": [
+    {
+      "lat": 51.529931352984015,
+      "lon": -0.2095670050172309
+    },
+    {
+      "lat": 51.53058959142631,
+      "lon": -0.2121373530730833
+    },
+    {
+      "lat": 51.53052568930428,
+      "lon": -0.21409395356591002
+    },
+    {
+      "lat": 51.52735401793875,
+      "lon": -0.20665182733592177
+    },
+    {
+      "lat": 51.52846407065304,
+      "lon": -0.2130202716336745
+    },
+    {
+      "lat": 51.52831176230989,
+      "lon": -0.21098814690784012
+    },
+    {
+      "lat": 51.527440207098294,
+      "lon": -0.2053301387439153
+    },
+    {
+      "lat": 51.52759150094849,
+      "lon": -0.20932793914151238
+    },
+    {
+      "lat": 51.52794131429626,
+      "lon": -0.20877825083214407
+    },
+    {
+      "lat": 51.531308601420655,
+      "lon": -0.20976986638023498
+    },
+    {
+      "lat": 51.52926397739682,
+      "lon": -0.21577464238047708
+    },
+    {
+      "lat": 51.53086529399142,
+      "lon": -0.20957443106223164
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "intersect": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "W10 4QD"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Fifth Avenue",
+        "road_a": "Ilbert Street",
+        "la": "Westminster"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Westminster",
+        "road_a": "Droop Street",
+        "road_b": "Third Avenue"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Oliphant Street",
+        "road_a": "Kilburn Lane",
+        "la": "Westminster"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "W10 4QD",
+        "lat": 51.52958517765208,
+        "lon": -0.2144128240030764,
+        "admin_district": "City of Westminster London Boro"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Ilbert Street",
+          "Fifth Avenue"
+        ],
+        "la_filter": "Westminster",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.529102,
+            "lon": -0.211606,
+            "roads": [
+              "Ilbert Street",
+              "Fifth Avenue"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Droop Street",
+          "Third Avenue"
+        ],
+        "la_filter": "Westminster",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.527182,
+            "lon": -0.207789,
+            "roads": [
+              "Droop Street",
+              "Third Avenue"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Kilburn Lane",
+          "Oliphant Street"
+        ],
+        "la_filter": "Westminster",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.21,
+        "lat": 51.529,
+        "la": "Westminster"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.529,
+        "lon": -0.21,
+        "la": "Westminster",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.51344361696313,
+        "la_centroid_lon": -0.16046326615032958
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows the Queen's Park Estate conservation area. Intersections of Ilbert St/Fifth Ave and Droop St/Third Ave, along with the W10 4QD postcode, cluster tightly around this central point in the estate. Verified inside Westminster.",
+        "top_lat": 51.529102,
+        "confidence": "high",
+        "sigma_m": 500,
+        "top_lon": -0.211606,
+        "picked_source": "intersect:Ilbert Street x Fifth Avenue"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

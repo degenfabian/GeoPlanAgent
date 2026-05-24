@@ -1,0 +1,246 @@
+{
+  "case": "Ar4.28",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.752,
+    "top_lon": -0.335,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Victoria St x Upper Marlborough Rd",
+    "evidence": "The map shows the St Albans City Core Article 4 boundary. Intersections of Victoria Street with Upper Marlborough Road and St Peter's Street, along with the centroid of Bricket Road, consistently place the site at these coordinates. Verified inside St Albans LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.03966700642271659,
+  "gt_centroids": [
+    {
+      "lat": 51.752352670583264,
+      "lon": -0.33508672710519627
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Bricket Road",
+        "la": "St Albans",
+        "road_a": "Victoria Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Victoria Street",
+        "la": "St Albans",
+        "road_b": "Upper Marlborough Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "St Peter's Street",
+        "la": "St Albans",
+        "road_b": "Victoria Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Bricket Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Victoria Street",
+          "Upper Marlborough Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.751258,
+            "lon": -0.334825,
+            "roads": [
+              "Victoria Street",
+              "Upper Marlborough Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "St Peter's Street",
+          "Victoria Street"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.752212,
+            "lon": -0.338658,
+            "roads": [
+              "St Peter's Street",
+              "Victoria Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Bricket Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bricket Road",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Bricket Road",
+            "lat": 51.75193620270461,
+            "lon": -0.3357058612847886,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Bricket Road",
+            "lat": 51.75291395021448,
+            "lon": -0.33520159851537334,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "St Albans",
+        "lat": 51.752,
+        "lon": -0.335
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.752,
+        "lon": -0.335,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the St Albans City Core Article 4 boundary. Intersections of Victoria Street with Upper Marlborough Road and St Peter's Street, along with the centroid of Bricket Road, consistently place the site at these coordinates. Verified inside St Albans LA.",
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Victoria St x Upper Marlborough Rd",
+        "confidence": "high",
+        "top_lon": -0.335,
+        "top_lat": 51.752
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

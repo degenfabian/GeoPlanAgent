@@ -1,0 +1,229 @@
+{
+  "case": "45",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.51387,
+    "top_lon": -0.20403,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Vernon Yard x Kensington Park Road",
+    "evidence": "The site is a terrace on Kensington Park Road between Blenheim Crescent and Westbourne Grove. Vernon Yard and Colville Primary School provide a tight cluster for the specific block.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.050304703472420415,
+  "gt_centroids": [
+    {
+      "lat": 51.51418250701015,
+      "lon": -0.2045556399696226
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "126 Kensington Park Road",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Vernon Yard",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colville Primary School",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "126 Kensington Park Road",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Vernon Yard",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Vernon Yard",
+            "type": "named road",
+            "lat": 51.51386979956501,
+            "lon": -0.20403097136617238,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colville Primary School",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Colville Primary School",
+            "type": "primary education",
+            "lat": 51.51483923762141,
+            "lon": -0.2033298702071498,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kensington Park Road",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kensington Park Road",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Kensington Park Road",
+            "type": "named road",
+            "lat": 51.51253216217128,
+            "lon": -0.2030027020735324,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "Kensington Park School",
+            "type": "further education,non state secondary education",
+            "lat": 51.49599439626687,
+            "lon": -0.17963753899514742,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "Kensington Park Mews",
+            "type": "named road",
+            "lat": 51.51525003481417,
+            "lon": -0.20608091646513088,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "Kensington Park Gardens",
+            "type": "named road",
+            "lat": 51.5114193162556,
+            "lon": -0.20314737189963117,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is a terrace on Kensington Park Road between Blenheim Crescent and Westbourne Grove. Vernon Yard and Colville Primary School provide a tight cluster for the specific block.",
+        "sigma_m": 200,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Vernon Yard x Kensington Park Road",
+        "top_lon": -0.20403,
+        "top_lat": 51.51387
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

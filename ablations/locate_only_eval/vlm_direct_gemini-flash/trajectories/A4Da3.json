@@ -1,0 +1,60 @@
+{
+  "case": "A4Da3",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.4855,
+    "lon": -2.038,
+    "reasoning": "The document describes land at Portway Hill, Rowley Regis, specifically the former Turners Hill, Pancake, and Samson Quarries, which corresponds to the open space at these coordinates."
+  },
+  "err_km": 1.4568597947074957,
+  "gt_centroids": [
+    {
+      "lat": 52.49812701784881,
+      "lon": -2.043740565824094
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document describes land at Portway Hill, Rowley Regis, specifically the former Turners Hill, Pancake, and Samson Quarries, which corresponds to the open space at these coordinates.",
+        "lon": -2.038,
+        "lat": 52.4855
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

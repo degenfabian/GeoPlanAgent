@@ -1,0 +1,289 @@
+{
+  "case": "A4DA04",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.71355,
+    "top_lon": -2.24177,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Far Slack",
+    "evidence": "Found 'Far Slack' (53.7135, -2.2417) which is labeled on the map immediately west of the site. This aligns with the address 'Shawclough, Waterfoot' (Shawclough Mews/View are nearby at 53.704). Fox Hill Farm is the hatched area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1364380926632196,
+  "gt_centroids": [
+    {
+      "lat": 53.714005635037275,
+      "lon": -2.2398449463854417
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fox Hill Farm",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Rossendale",
+        "query": "Higher Slack"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Rossendale",
+        "query": "Hewin Hill"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Far Slack",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fox Hill Farm",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Higher Slack",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hewin Hill",
+        "la_filter": "Rossendale",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Far Slack",
+        "la_filter": "Rossendale",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Far Slack",
+            "type": "valley",
+            "lat": 53.71355038891177,
+            "lon": -2.2417784407056067,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Shawclough",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Shawclough",
+        "la_filter": "Rossendale",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Shawclough Road",
+            "type": "section of named road",
+            "lat": 53.63965289097249,
+            "lon": -2.1786171365318356,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Shawclough Mews",
+            "type": "named road",
+            "lat": 53.704987349776395,
+            "lon": -2.249258017369749,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Shawclough View",
+            "type": "named road",
+            "lat": 53.70410630384154,
+            "lon": -2.2493588415826795,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Rossendale",
+        "query": "Waterfoot"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Waterfoot",
+        "la_filter": "Rossendale",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Waterfoot",
+            "type": "suburban area",
+            "lat": 53.69923791435277,
+            "lon": -2.3330283621576524,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Waterfoot",
+            "type": "suburban area",
+            "lat": 53.69348405017163,
+            "lon": -2.252824598214192,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Waterfoot Primary School",
+            "type": "primary education",
+            "lat": 53.692637856326925,
+            "lon": -2.244808404345004,
+            "admin_district": "Rossendale",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Far Slack",
+        "top_lon": -2.24177,
+        "top_lat": 53.71355,
+        "sigma_m": 400,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "evidence": "Found 'Far Slack' (53.7135, -2.2417) which is labeled on the map immediately west of the site. This aligns with the address 'Shawclough, Waterfoot' (Shawclough Mews/View are nearby at 53.704). Fox Hill Farm is the hatched area."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

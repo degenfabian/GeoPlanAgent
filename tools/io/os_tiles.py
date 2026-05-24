@@ -24,9 +24,6 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-# Repo root. After the 2026-05-13 tools/ reorganization this file moved
-# from tools/os_opendata_tiles.py to tools/io/os_tiles.py — that's why we
-# need three .parent steps instead of two.
 BASE = Path(__file__).resolve().parent.parent.parent
 GPKG_PATH = BASE / "os_opendata" / "OS_Open_Zoomstack.gpkg"
 TILE_CACHE_DIR = BASE / "cache" / "os_opendata_tiles"
@@ -34,11 +31,7 @@ TILE_CACHE_DIR = BASE / "cache" / "os_opendata_tiles"
 # ── Coordinate transforms ────────────────────────────────────────────────────
 
 def _lat_lon_to_tile(lat, lon, zoom):
-    """Convert lat/lon to integer tile (x, y) indices (Web Mercator).
-
-    Thin wrapper over `tools.geo.coords.latlon_to_tile_xy` for backwards-
-    compatibility with internal callers in this module.
-    """
+    """WGS84 → (tx, ty) integer tile indices."""
     from tools.geo.coords import latlon_to_tile_xy
     return latlon_to_tile_xy(lat, lon, zoom)
 
@@ -64,16 +57,7 @@ _gpkg_cache = {}
 
 
 def _read_layer(layer_name, bounds_27700, gpkg_path=None):
-    """Read features from a GeoPackage layer within BNG bounds.
-
-    Args:
-        layer_name: GeoPackage layer name (e.g., 'buildings', 'roads')
-        bounds_27700: (xmin, ymin, xmax, ymax) in EPSG:27700
-        gpkg_path: Path to GeoPackage file
-
-    Returns:
-        GeoDataFrame with features, or None if layer doesn't exist / no features
-    """
+    """Read GeoPackage layer features within BNG bounds; None if empty/missing."""
     import geopandas as gpd
     from shapely.geometry import box
 
@@ -165,19 +149,7 @@ ROAD_WIDTHS_Z17 = {
 
 
 def render_tile(zoom, tx, ty, gpkg_path=None, tile_size=256):
-    """Render a single 256x256 tile from OS Open Zoomstack data.
-
-    Styling mimics UK planning map conventions for LoFTR matching.
-
-    Args:
-        zoom: Web Mercator zoom level
-        tx, ty: Tile coordinates
-        gpkg_path: Path to OS Open Zoomstack GeoPackage
-        tile_size: Output tile size in pixels (default 256)
-
-    Returns:
-        numpy RGB array (tile_size x tile_size x 3) or None on failure
-    """
+    """Render a 256x256 OS Zoomstack tile in UK planning-map style. RGB ndarray or None."""
     if gpkg_path is None:
         gpkg_path = str(GPKG_PATH)
 
@@ -330,15 +302,7 @@ SCHEMATIC_LINE_WIDTHS_Z17 = {
 
 
 def render_tile_schematic(zoom, tx, ty, gpkg_path=None, tile_size=256):
-    """Render a single tile as B&W line art (planning-map style).
-
-    Same coverage (buildings, roads, rail, water) as render_tile() but with a
-    monochrome line-art style designed to make planning-map ↔ tile matching
-    near-same-modal.
-
-    Returns:
-        numpy BGR array (tile_size × tile_size × 3) or None on failure.
-    """
+    """Render an OS Zoomstack tile as monochrome line art (planning-map look)."""
     if gpkg_path is None:
         gpkg_path = str(GPKG_PATH)
     if not os.path.exists(gpkg_path):
@@ -748,25 +712,7 @@ NLS_CACHE_DIR = BASE / "cache" / "nls_historical_tiles"
 
 
 def fetch_historical_grid(lat, lon, zoom, n_tiles_x, n_tiles_y, layer="newpopular"):
-    """Fetch a grid of NLS historical OS tiles.
-
-    Free, no API key. Tiles hosted on S3 by National Library of Scotland.
-
-    Available layers:
-      - "newpopular": OS New Popular 1940s-1950s (zoom 10-16) — best for mid-century docs
-      - "6inch": OS 6-inch 2nd edition 1888-1913 (zoom 10-17) — best for Victorian docs
-      - "10k": OS 10k National Grid 1950s-60s (zoom 10-16) — similar era to newpopular
-
-    Args:
-        lat, lon: Center coordinates (WGS84).
-        zoom: Tile zoom level (will be clamped to layer's range).
-        n_tiles_x, n_tiles_y: Grid dimensions.
-        layer: Which historical layer to use (default "newpopular").
-
-    Returns:
-        Dict with 'image' (numpy RGB), 'zoom', 'tx_min', 'ty_min', etc.
-        Same format as fetch_os_opendata_grid for drop-in use.
-    """
+    """NLS historical OS tile grid (newpopular / 6inch / 10k). Same return shape as fetch_os_opendata_grid."""
     import requests
     from PIL import Image
     from io import BytesIO
@@ -969,21 +915,7 @@ def fetch_os_opendata_roads_for_tile_info(tile_info: dict, gpkg_path=None):
 
 
 def fetch_os_opendata_grid(lat, lon, zoom, n_tiles_x, n_tiles_y, gpkg_path=None):
-    """Fetch a grid of OS OpenData tiles using bulk rendering.
-
-    Same interface as tools.os_tiles.fetch_tile_grid for drop-in replacement.
-    Uses single spatial query per layer for the entire grid (~20x faster than
-    per-tile rendering on cold cache).
-
-    Args:
-        lat, lon: Center coordinates (WGS84).
-        zoom: Tile zoom level (15-19 recommended).
-        n_tiles_x, n_tiles_y: Grid dimensions.
-        gpkg_path: Path to GeoPackage (default: os_opendata/OS_Open_Zoomstack.gpkg)
-
-    Returns:
-        Dict with 'image' (numpy RGB), 'zoom', 'tx_min', 'ty_min', 'nx', 'ny', 'tile_size'.
-    """
+    """Bulk-render a tile grid from OS OpenData; returns dict with image, zoom, tx_min, ty_min, nx, ny, tile_size."""
     cx, cy = _lat_lon_to_tile(lat, lon, zoom)
     half_x = n_tiles_x // 2
     half_y = n_tiles_y // 2

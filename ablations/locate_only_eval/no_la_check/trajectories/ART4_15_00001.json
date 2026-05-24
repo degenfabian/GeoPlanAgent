@@ -1,0 +1,288 @@
+{
+  "case": "ART4:15:00001",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.933808,
+    "top_lon": -1.805977,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Marl Lane x Puddleslosh Lane",
+    "evidence": "The intersection of Marl Lane and Puddleslosh Lane (50.9338, -1.8060) perfectly matches the site's western corner. Postcode SP6 1AS (50.9269, -1.7911) and Whitsbury Road (50.9329, -1.7923) confirm the general location north of Fordingbridge. Picked the intersection as the most precise anchor for the site boundary.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.40117503720346825,
+  "gt_centroids": [
+    {
+      "lat": 50.935590098936395,
+      "lon": -1.8009992695298243
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 2,
+      "place": 3,
+      "intersect": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SP6 1AS"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SO43 7PA"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "New Forest",
+        "query": "Forres Sandle Manor School"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Marl Lane",
+        "la": "New Forest",
+        "road_b": "Puddleslosh Lane"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SP6 1AS",
+        "lat": 50.92693213792325,
+        "lon": -1.791103693214475,
+        "admin_district": "New Forest District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SO43 7PA",
+        "lat": 50.87013594749979,
+        "lon": -1.570529769750998,
+        "admin_district": "New Forest District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Forres Sandle Manor School",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Marl Lane",
+          "Puddleslosh Lane"
+        ],
+        "la_filter": "New Forest",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 50.933808,
+            "lon": -1.805977,
+            "roads": [
+              "Marl Lane",
+              "Puddleslosh Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "New Forest",
+        "query": "Arch Farm Industrial Site"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "New Forest",
+        "query": "Sandle Dairy Farm"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "New Forest",
+        "query": "Whitsbury Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Arch Farm Industrial Site",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandle Dairy Farm",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Whitsbury Road",
+        "la_filter": "New Forest",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.932906139154696,
+            "lon": -1.7923508616504273,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.9335015352493,
+            "lon": -1.792661924215556,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.93263967783219,
+            "lon": -1.7921130505288383,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.931881075209816,
+            "lon": -1.7916792834593092,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.931524849107134,
+            "lon": -1.7914808721077093,
+            "in_la": "New Forest"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The intersection of Marl Lane and Puddleslosh Lane (50.9338, -1.8060) perfectly matches the site's western corner. Postcode SP6 1AS (50.9269, -1.7911) and Whitsbury Road (50.9329, -1.7923) confirm the general location north of Fordingbridge. Picked the intersection as the most precise anchor for the site boundary.",
+        "verified_inside_admin_region": true,
+        "top_lon": -1.805977,
+        "confidence": "high",
+        "sigma_m": 300,
+        "top_lat": 50.933808,
+        "picked_source": "intersect:Marl Lane x Puddleslosh Lane"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

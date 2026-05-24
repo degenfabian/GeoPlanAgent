@@ -1,0 +1,265 @@
+{
+  "case": "A4D-16",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.0947155722616,
+    "top_lon": -0.53393944444627,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Rosemary Lane (Alfold)",
+    "evidence": "The site is Sydney Farm on Rosemary Lane in Alfold. The road search for Rosemary Lane in Waverley returned segments near Alfold (51.0947, -0.5339). A manual grid reference check for Sydney Farm (TQ 028 336) confirms this location. The GU7 postcode is the council office letterhead in Godalming.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.1877366383588912,
+  "gt_centroids": [
+    {
+      "lat": 51.08499433267649,
+      "lon": -0.5409868047750191
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "road": 2,
+      "la_check": 2,
+      "grid_ref": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "GU7 1HR"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Rosemary Lane",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Waverley",
+        "query": "Sydney Farm"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "GU7 1HR",
+        "lat": 51.187070295865894,
+        "lon": -0.6097327533849907,
+        "admin_district": "Waverley District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Rosemary Lane",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Rosemary Lane",
+            "lat": 51.18565345371541,
+            "lon": -0.8254791693753345,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Rosemary Lane",
+            "lat": 51.186636034506236,
+            "lon": -0.8234190447850388,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Rosemary Lane",
+            "lat": 51.09471557226156,
+            "lon": -0.53393944444627,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Rosemary Lane",
+            "lat": 51.09529311110245,
+            "lon": -0.52878693838799,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Rosemary Lane",
+            "lat": 51.09566558585603,
+            "lon": -0.5191416255403241,
+            "in_la": "Waverley"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Sydney Farm",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.53393944444627,
+        "la": "Waverley",
+        "lat": 51.0947155722616
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.609732753384991,
+        "la": "Waverley",
+        "lat": 51.1870702958659
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.0947155722616,
+        "lon": -0.53393944444627,
+        "la": "Waverley",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.14979708109079,
+        "la_centroid_lon": -0.6327293391700743
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1870702958659,
+        "lon": -0.609732753384991,
+        "la": "Waverley",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.14979708109079,
+        "la_centroid_lon": -0.6327293391700743
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ 028 336"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TQ 028 336",
+        "lat": 51.09294803987034,
+        "lon": -0.5327159623053053
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is Sydney Farm on Rosemary Lane in Alfold. The road search for Rosemary Lane in Waverley returned segments near Alfold (51.0947, -0.5339). A manual grid reference check for Sydney Farm (TQ 028 336) confirms this location. The GU7 postcode is the council office letterhead in Godalming.",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "picked_source": "road:Rosemary Lane (Alfold)",
+        "top_lon": -0.53393944444627,
+        "top_lat": 51.0947155722616,
+        "sigma_m": 500
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

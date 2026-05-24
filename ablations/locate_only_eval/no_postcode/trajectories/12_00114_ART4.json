@@ -1,0 +1,486 @@
+{
+  "case": "12:00114:ART4",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5705425673069,
+    "top_lon": 1.110706156794,
+    "sigma_m": 500,
+    "confidence": "med",
+    "picked_source": "road:Damgate Street",
+    "evidence": "The map shows Church Street and Damgate Street in Wymondham. Geocoding Damgate Street in South Norfolk consistently returns coordinates around 52.570, 1.110, which aligns with the town center of Wymondham. The site is at the junction of these streets.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0478110131886587,
+  "gt_centroids": [
+    {
+      "lat": 52.57049129101415,
+      "lon": 1.1099062653915162
+    },
+    {
+      "lat": 52.5706982228472,
+      "lon": 1.1100466925207282
+    },
+    {
+      "lat": 52.57039472768636,
+      "lon": 1.1096958107372474
+    },
+    {
+      "lat": 52.570783693071874,
+      "lon": 1.109554701024202
+    },
+    {
+      "lat": 52.570505887877395,
+      "lon": 1.109364883243188
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "intersect": 1,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 12,
+    "n_turns": 15,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Church Street, Wymondham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Church Street",
+        "la": "South Norfolk",
+        "road_b": "Damgate Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Abbey Hall, Wymondham"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Church Street, Wymondham",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Church Street",
+          "Damgate Street"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Abbey Hall, Wymondham",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wymondham Library",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Church Street"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Damgate Street"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wymondham Library",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Church Street",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Church Street",
+            "lat": 52.63228704953655,
+            "lon": 1.1811025558335493,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Church Street",
+            "lat": 52.63225281955693,
+            "lon": 1.1809054772456138,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Church Street",
+            "lat": 52.63224675258035,
+            "lon": 1.1826368699802337,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Church Street",
+            "lat": 52.63240418532595,
+            "lon": 1.1841851058406747,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Church Street",
+            "lat": 52.63220698422554,
+            "lon": 1.1841357455715482,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Damgate Street",
+        "la_filter": "South Norfolk",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Damgate Street",
+            "lat": 52.56848688793642,
+            "lon": 1.1103126191914139,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Damgate Street",
+            "lat": 52.56948730739804,
+            "lon": 1.1104731247348276,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Damgate Street",
+            "lat": 52.57054256730689,
+            "lon": 1.1107061567939962,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Wymondham Abbey"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Wymondham Library, Back Lane"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wymondham Abbey",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Wymondham Abbey",
+            "type": "railway station",
+            "lat": 52.570297191648415,
+            "lon": 1.1038780044775043,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wymondham Library, Back Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wymondham",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wymondham",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Wymondham",
+            "type": "town",
+            "lat": 52.57020431915297,
+            "lon": 1.1128897765371646,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wymondham",
+            "type": "railway station",
+            "lat": 52.56545776686534,
+            "lon": 1.1179402392191482,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wymondham Road",
+            "type": "section of named road",
+            "lat": 52.61155400682876,
+            "lon": 1.1190889170434781,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wymondham Road",
+            "type": "named road",
+            "lat": 52.57684555787685,
+            "lon": 1.0745508743640335,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Wymondham Road",
+            "type": "section of named road",
+            "lat": 52.57759951582534,
+            "lon": 1.061775222919962,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.570204319153,
+        "la": "South Norfolk",
+        "lon": 1.11288977653716
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.570204319153,
+        "lon": 1.11288977653716,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Church Street, Wymondham, NR18 0PH"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Church Street, Wymondham, NR18 0PH",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 500,
+        "confidence": "med",
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows Church Street and Damgate Street in Wymondham. Geocoding Damgate Street in South Norfolk consistently returns coordinates around 52.570, 1.110, which aligns with the town center of Wymondham. The site is at the junction of these streets.",
+        "picked_source": "road:Damgate Street",
+        "top_lat": 52.5705425673069,
+        "top_lon": 1.110706156794
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

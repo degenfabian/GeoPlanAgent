@@ -1,0 +1,60 @@
+{
+  "case": "SSA410",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.7784,
+    "lon": -2.1245,
+    "reasoning": "The document refers to land at the rear of 'Kevina' in Hyde Lea, Stafford, and the provided map shows the site on the west side of the main road (Hyde Lea Bank) near Bradley Lane, corresponding to postcode ST18 9BG."
+  },
+  "err_km": 0.7214633597093741,
+  "gt_centroids": [
+    {
+      "lat": 52.77638928961494,
+      "lon": -2.134697914890217
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 52.7784,
+        "reasoning": "The document refers to land at the rear of 'Kevina' in Hyde Lea, Stafford, and the provided map shows the site on the west side of the main road (Hyde Lea Bank) near Bradley Lane, corresponding to postcode ST18 9BG.",
+        "lon": -2.1245
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

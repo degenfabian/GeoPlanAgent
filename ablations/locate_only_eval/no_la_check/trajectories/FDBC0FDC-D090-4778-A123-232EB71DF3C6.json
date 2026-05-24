@@ -1,0 +1,274 @@
+{
+  "case": "FDBC0FDC-D090-4778-A123-232EB71DF3C6",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.154,
+    "top_lon": 1.374,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Portal House School",
+    "evidence": "The site is located at Townsend Farm, St Margaret's at Cliffe. The village centroid and Portal House (visible on the map south of the site) align perfectly with the grid reference TR 360 448 derived from the map's OS sheet reference.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.49412499160618967,
+  "gt_centroids": [
+    {
+      "lat": 51.156640153613864,
+      "lon": 1.379698958987455
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 1,
+      "grid_ref": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Townsend Farm, St Margaret's at Cliffe"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Margaret's at Cliffe village",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Dover Road",
+        "la": "Dover",
+        "road_a": "Kingsdown Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 360 448"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Townsend Farm, St Margaret's at Cliffe",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Margaret's at Cliffe village",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "St Margaret's at Cliffe",
+            "type": "village",
+            "lat": 51.154223031313414,
+            "lon": 1.3713980535583459,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Kingsdown Road",
+          "Dover Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 360 448",
+        "lat": 51.154189224827306,
+        "lon": 1.3741275535378592
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Portal House"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Kingsdown Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Portal House",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Portal House School",
+            "type": "special needs education",
+            "lat": 51.152556666160436,
+            "lon": 1.374280124243319,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Kingsdown Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.205509874311005,
+            "lon": 1.4024808272492049,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.20228111458364,
+            "lon": 1.4023069872330225,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.200397324541484,
+            "lon": 1.4025476384451352,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.18916870039809,
+            "lon": 1.4024972389384933,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Kingsdown Road",
+            "lat": 51.19212553735629,
+            "lon": 1.4024516088494872,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 400,
+        "top_lon": 1.374,
+        "confidence": "high",
+        "evidence": "The site is located at Townsend Farm, St Margaret's at Cliffe. The village centroid and Portal House (visible on the map south of the site) align perfectly with the grid reference TR 360 448 derived from the map's OS sheet reference.",
+        "picked_source": "place:Portal House School",
+        "top_lat": 51.154,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

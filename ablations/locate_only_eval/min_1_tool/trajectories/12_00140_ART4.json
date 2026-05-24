@@ -1,0 +1,345 @@
+{
+  "case": "12:00140:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.62267,
+    "top_lon": 1.22347,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Colney",
+    "evidence": "The site is Colney Hall in Colney. While the hall itself didn't return a hit, the village of Colney and Old Watton Road (which borders the area) provide a tight cluster. The village center is at 52.6226, 1.2234, and Old Watton Road is just north at 52.6271. Colney Hall is located between these points.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.2502124450938779,
+  "gt_centroids": [
+    {
+      "lat": 52.6275737481917,
+      "lon": 1.2068023741841298
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 15,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colney Hall",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney Hall",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colney",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Colney",
+            "type": "village",
+            "lat": 52.622669932614215,
+            "lon": 1.2234726492806807,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Road",
+            "type": "named road",
+            "lat": 52.752544987152966,
+            "lon": 0.44268653222217047,
+            "admin_district": "King's Lynn and West Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "section of named road",
+            "lat": 52.611985191518805,
+            "lon": 1.2373287202853533,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "section of named road",
+            "lat": 52.62179408696582,
+            "lon": 1.2236003570884657,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "named road",
+            "lat": 52.60312196190886,
+            "lon": 1.196806436600663,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colney Hall, Norfolk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney Hall, Norfolk",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Watton Road"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Watton Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Watton Road",
+            "type": "named road",
+            "lat": 52.599741230561136,
+            "lon": 0.7861897438687231,
+            "admin_district": "Breckland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "type": "section of named road",
+            "lat": 52.60057733180394,
+            "lon": 0.7861985208014722,
+            "admin_district": "Breckland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "type": "named road",
+            "lat": 52.617077807960754,
+            "lon": 0.7251936343412677,
+            "admin_district": "Breckland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "type": "named road",
+            "lat": 52.63826157487485,
+            "lon": 0.6950408445371942,
+            "admin_district": "Breckland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "type": "named road",
+            "lat": 52.57935151715735,
+            "lon": 0.7471056671590123,
+            "admin_district": "Breckland",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colney Hall, Colney"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney Hall, Colney",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Old Watton Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Old Watton Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Old Watton Road",
+            "type": "named road",
+            "lat": 52.62717041093908,
+            "lon": 1.2239957689104144,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Old Watton Road",
+            "type": "section of named road",
+            "lat": 52.62669523704521,
+            "lon": 1.2232809624293648,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.62267,
+        "evidence": "The site is Colney Hall in Colney. While the hall itself didn't return a hit, the village of Colney and Old Watton Road (which borders the area) provide a tight cluster. The village center is at 52.6226, 1.2234, and Old Watton Road is just north at 52.6271. Colney Hall is located between these points.",
+        "confidence": "high",
+        "top_lon": 1.22347,
+        "picked_source": "place:Colney",
+        "sigma_m": 400,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

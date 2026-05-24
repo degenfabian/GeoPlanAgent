@@ -1,0 +1,302 @@
+{
+  "case": "12:00154:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.624,
+    "top_lon": 1.212,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "intersect:Watton Road x Hethersett Lane",
+    "evidence": "The site is at the junction of Watton Road and Little Melton Lane in Colney. Intersection of Watton Road and Hethersett Lane (nearby) confirms the location. The site is the field immediately east of Ryebeck Plantation.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.36181452059078406,
+  "gt_centroids": [
+    {
+      "lat": 52.62355190915425,
+      "lon": 1.2066908891214172
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_b": "Little Melton Lane",
+        "road_a": "Watton Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Little Melton Lane']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Watton Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Watton Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Watton Road",
+            "lat": 52.62531557998124,
+            "lon": 1.2213984188077187,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.6261900116888,
+            "lon": 1.2253202947740787,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.626996932690325,
+            "lon": 1.2289594286014445,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.627079289661644,
+            "lon": 1.2293410451810765,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Watton Road",
+            "lat": 52.62716403817542,
+            "lon": 1.2297338502849495,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "School Lane"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "School Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "School Lane",
+            "lat": 52.60633556108938,
+            "lon": 1.4168005417841334,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "School Lane",
+            "lat": 52.584278968245265,
+            "lon": 1.413189600952624,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "School Lane",
+            "lat": 52.58523349569888,
+            "lon": 1.4129137987396723,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "School Lane",
+            "lat": 52.61531051532859,
+            "lon": 1.190751462415638,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "School Lane",
+            "lat": 52.61564781668182,
+            "lon": 1.1924488983709356,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Hethersett Lane",
+        "la": "South Norfolk",
+        "road_a": "Watton Road"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Watton Road",
+          "Hethersett Lane"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.624321,
+            "lon": 1.216666,
+            "roads": [
+              "Watton Road",
+              "Hethersett Lane"
+            ]
+          },
+          {
+            "lat": 52.624312,
+            "lon": 1.216622,
+            "roads": [
+              "Watton Road",
+              "Hethersett Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Norfolk",
+        "lat": 52.624321,
+        "lon": 1.216666
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.624321,
+        "lon": 1.216666,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "sigma_m": 400,
+        "top_lon": 1.212,
+        "top_lat": 52.624,
+        "evidence": "The site is at the junction of Watton Road and Little Melton Lane in Colney. Intersection of Watton Road and Hethersett Lane (nearby) confirms the location. The site is the field immediately east of Ryebeck Plantation.",
+        "picked_source": "intersect:Watton Road x Hethersett Lane",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

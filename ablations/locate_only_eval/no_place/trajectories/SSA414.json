@@ -1,0 +1,201 @@
+{
+  "case": "SSA414",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.506,
+    "top_lon": -2.195,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Swindon Road x Hinksford Lane",
+    "evidence": "The map shows a site bounded by Swindon Road and Hinksford Lane. The intersection of these two roads was found at 52.506483, -2.197413, which matches the map geometry perfectly. The site is immediately east of this junction. Verified inside South Staffordshire.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09157787307587507,
+  "gt_centroids": [
+    {
+      "lat": 52.506717553199316,
+      "lon": -2.1943358858532402
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 1,
+      "la_check": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Hinksford Lane",
+        "road_a": "Swindon Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Swindon Road",
+          "Hinksford Lane"
+        ],
+        "la_filter": "South Staffordshire",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.506483,
+            "lon": -2.197413,
+            "roads": [
+              "Swindon Road",
+              "Hinksford Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.197413,
+        "lat": 52.506483,
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.506483,
+        "lon": -2.197413,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Swindon Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Swindon Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Swindon Road",
+            "lat": 52.504105538835134,
+            "lon": -2.1933080654360153,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Swindon Road",
+            "lat": 52.50492939412001,
+            "lon": -2.1952931250841834,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Swindon Road",
+            "lat": 52.505458082004864,
+            "lon": -2.1963301436314433,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Swindon Road",
+            "lat": 52.50615509738347,
+            "lon": -2.197205512274966,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Swindon Road x Hinksford Lane",
+        "confidence": "high",
+        "sigma_m": 300,
+        "evidence": "The map shows a site bounded by Swindon Road and Hinksford Lane. The intersection of these two roads was found at 52.506483, -2.197413, which matches the map geometry perfectly. The site is immediately east of this junction. Verified inside South Staffordshire.",
+        "top_lon": -2.195,
+        "top_lat": 52.506
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

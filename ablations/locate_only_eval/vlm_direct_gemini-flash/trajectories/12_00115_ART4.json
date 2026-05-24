@@ -1,0 +1,60 @@
+{
+  "case": "12:00115:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.51485,
+    "lon": 1.1484,
+    "reasoning": "The document specifies land at 126-134 Norwich Road, Tacolneston, Norfolk, and the map shows these properties adjacent to The Pelican public house."
+  },
+  "err_km": 0.6383154090876236,
+  "gt_centroids": [
+    {
+      "lat": 52.51228460250801,
+      "lon": 1.1568383955477777
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": 1.1484,
+        "reasoning": "The document specifies land at 126-134 Norwich Road, Tacolneston, Norfolk, and the map shows these properties adjacent to The Pelican public house.",
+        "lat": 52.51485
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

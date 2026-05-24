@@ -1,0 +1,352 @@
+{
+  "case": "23:53159:ART4",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.7617785183565,
+    "top_lon": 1.34299317116029,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Badersfield",
+    "evidence": "The site is identified as the RAF Coltishall Conservation Area. Badersfield is the residential area within the former RAF Coltishall base. The map shows a residential layout consistent with the Badersfield village location. NR7 0DU is the Broadland Council office (Thorpe Lodge) postcode, not the site postcode.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.35124881591485446,
+  "gt_centroids": [
+    {
+      "lat": 52.75893790326959,
+      "lon": 1.3407098250230691
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "postcode": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "RAF Coltishall"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR7 0DU"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Thorpe Lodge",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "RAF Coltishall",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR7 0DU' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thorpe Lodge",
+        "la_filter": "Broadland",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Badersfield"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Coltishall"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Thorpe Lodge"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Badersfield",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Badersfield",
+            "type": "village",
+            "lat": 52.76177851835652,
+            "lon": 1.3429931711602892,
+            "admin_district": "North Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coltishall",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Coltishall",
+            "type": "village",
+            "lat": 52.72843610492961,
+            "lon": 1.3577282649246318,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Coltishall",
+            "type": "railway station",
+            "lat": 52.734528453410505,
+            "lon": 1.3585524421362998,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Coltishall",
+            "type": "named road",
+            "lat": 52.38883345487019,
+            "lon": 0.5363954989124985,
+            "admin_district": "West Suffolk",
+            "county": "Suffolk"
+          },
+          {
+            "name": "Coltishall Avenue",
+            "type": "named road",
+            "lat": 53.42700818826583,
+            "lon": -1.261697537886377,
+            "admin_district": "Rotherham",
+            "county": null
+          },
+          {
+            "name": "Coltishall Close",
+            "type": "named road",
+            "lat": 51.82307259165912,
+            "lon": -2.2763490614135784,
+            "admin_district": "Gloucester",
+            "county": "Gloucestershire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thorpe Lodge",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.34299317116029,
+        "la": "Broadland",
+        "lat": 52.7617785183565
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Scottow"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.7617785183565,
+        "lon": 1.34299317116029,
+        "la": "Broadland",
+        "inside_la": false,
+        "distance_km_approx": 0.17,
+        "la_centroid_lat": 52.70119443642098,
+        "la_centroid_lon": 1.3101886931294198
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Scottow",
+        "la_filter": null,
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Scottow",
+            "type": "village",
+            "lat": 52.760987971571716,
+            "lon": 1.377535298030202,
+            "admin_district": "North Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Scottow Road",
+            "type": "named road",
+            "lat": 52.7586836442999,
+            "lon": 1.3315337183194849,
+            "admin_district": "Broadland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Scottow Pond",
+            "type": "inland water",
+            "lat": 52.77303103005872,
+            "lon": 1.3543998227830139,
+            "admin_district": "North Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Scottow Moor Solar Farm",
+            "type": "electricity production",
+            "lat": 52.75333035559238,
+            "lon": 1.3590066421075713,
+            "admin_district": "North Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": false,
+        "confidence": "high",
+        "top_lon": 1.34299317116029,
+        "evidence": "The site is identified as the RAF Coltishall Conservation Area. Badersfield is the residential area within the former RAF Coltishall base. The map shows a residential layout consistent with the Badersfield village location. NR7 0DU is the Broadland Council office (Thorpe Lodge) postcode, not the site postcode.",
+        "top_lat": 52.7617785183565,
+        "sigma_m": 500,
+        "picked_source": "place:Badersfield"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

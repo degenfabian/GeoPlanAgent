@@ -1,0 +1,60 @@
+{
+  "case": "FDBC0FDC-D090-4778-A123-232EB71DF3C6",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.154,
+    "lon": 1.365,
+    "reasoning": "The document describes land formerly part of Townsend Farm in St Margaret's-at-Cliffe, with the planning map showing the site south of Reach Road and east of the village center, corresponding to OS grid reference TR 34 SE."
+  },
+  "err_km": 1.0663523857663118,
+  "gt_centroids": [
+    {
+      "lat": 51.156640153613864,
+      "lon": 1.379698958987455
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": 1.365,
+        "reasoning": "The document describes land formerly part of Townsend Farm in St Margaret's-at-Cliffe, with the planning map showing the site south of Reach Road and east of the village center, corresponding to OS grid reference TR 34 SE.",
+        "lat": 51.154
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

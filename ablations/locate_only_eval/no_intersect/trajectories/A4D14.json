@@ -1,0 +1,271 @@
+{
+  "case": "A4D14",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4859,
+    "top_lon": -2.5376,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "grid_ref:ST 6276 7646",
+    "evidence": "The map explicitly provides a grid reference (ST 6276 7646) and labels the site as Grove Wood on Blackberry Hill. The grid reference falls within the Bristol admin region and aligns perfectly with the road 'Blackberry Hill' found via the road tool.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.25972165351234805,
+  "gt_centroids": [
+    {
+      "lat": 51.48566575912615,
+      "lon": -2.541332013595114
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "postcode": 1,
+      "place": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "ST 6276 7646"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "BS1 5UY"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Grove Wood"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Blackberry Hill"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "ST 6276 7646",
+        "lat": 51.48590156500787,
+        "lon": -2.5376409955504857
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'BS1 5UY' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Grove Wood",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Grove Wood",
+            "type": "named road",
+            "lat": 55.8356948830698,
+            "lon": -4.052519727290069,
+            "admin_district": null,
+            "county": "North Lanarkshire"
+          },
+          {
+            "name": "Grove Wood",
+            "type": "woodland or forest",
+            "lat": 55.83325486509027,
+            "lon": -4.0457801747963815,
+            "admin_district": null,
+            "county": "North Lanarkshire"
+          },
+          {
+            "name": "Grove Wood",
+            "type": "woodland or forest",
+            "lat": 53.93111658635255,
+            "lon": -2.3137946396301863,
+            "admin_district": "Ribble Valley",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Grove Wood",
+            "type": "woodland or forest",
+            "lat": 53.664409387496725,
+            "lon": -1.1834440807200355,
+            "admin_district": null,
+            "county": "North Yorkshire"
+          },
+          {
+            "name": "Grove Wood",
+            "type": "woodland or forest",
+            "lat": 52.767926306018545,
+            "lon": -1.6465790029808294,
+            "admin_district": "South Derbyshire",
+            "county": "Derbyshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Blackberry Hill",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Blackberry Hill",
+            "lat": 51.4837047330924,
+            "lon": -2.5458150272635156,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Blackberry Hill",
+            "lat": 51.483400066401416,
+            "lon": -2.544623300133995,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Blackberry Hill",
+            "lat": 51.482532212234176,
+            "lon": -2.5399849741808507,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Blackberry Hill",
+            "lat": 51.482548336382024,
+            "lon": -2.5403883870551973,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Blackberry Hill",
+            "lat": 51.48256521665145,
+            "lon": -2.5406763147208857,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.5376,
+        "la": "Bristol",
+        "lat": 51.4859
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.4859,
+        "lon": -2.5376,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "grid_ref:ST 6276 7646",
+        "top_lat": 51.4859,
+        "verified_inside_admin_region": true,
+        "evidence": "The map explicitly provides a grid reference (ST 6276 7646) and labels the site as Grove Wood on Blackberry Hill. The grid reference falls within the Bristol admin region and aligns perfectly with the road 'Blackberry Hill' found via the road tool.",
+        "confidence": "high",
+        "sigma_m": 200,
+        "top_lon": -2.5376
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

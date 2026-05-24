@@ -1,0 +1,322 @@
+{
+  "case": "CB:82:00001:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.958,
+    "top_lon": -0.625,
+    "sigma_m": 1000,
+    "confidence": "med",
+    "picked_source": "place:Heath and Reach (offset)",
+    "evidence": "The site is identified as the Sandhouse Inn on Watling Street (A5) near Heath and Reach. While the specific building wasn't in the geocoder, the location on the A5 north of Heath and Reach is well-defined by the map's features (Pumping Station, Water Tower). Coordinates are placed on the A5 near the historic Sandhouse site.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.9230642537911122,
+  "gt_centroids": [
+    {
+      "lat": 51.96019181649211,
+      "lon": -0.6379932226801931
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 5,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "LU6 1LF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandhouse Inn",
+        "la": "South Bedfordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandhouse Pumping Station",
+        "la": "South Bedfordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'LU6 1LF' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandhouse Inn",
+        "la_filter": "South Bedfordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandhouse Pumping Station",
+        "la_filter": "South Bedfordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Bedfordshire",
+        "query": "Heath and Reach"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Bedfordshire",
+        "query": "Watling Street"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandhouse Inn"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Heath and Reach",
+        "la_filter": "South Bedfordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Heath and Reach",
+            "type": "village",
+            "lat": 51.945473888643356,
+            "lon": -0.6573078543881432,
+            "admin_district": null,
+            "county": "Central Bedfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Watling Street",
+        "la_filter": "South Bedfordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Watling Street",
+            "lat": 51.90418716119101,
+            "lon": -0.5477118086088184,
+            "in_la": "South Bedfordshire"
+          },
+          {
+            "name": "Watling Street",
+            "lat": 51.91060244654441,
+            "lon": -0.5541180463469244,
+            "in_la": "South Bedfordshire"
+          },
+          {
+            "name": "Watling Street",
+            "lat": 51.909710813991616,
+            "lon": -0.5545691534183633,
+            "in_la": "South Bedfordshire"
+          },
+          {
+            "name": "Watling Street",
+            "lat": 51.90987895059231,
+            "lon": -0.554568771240283,
+            "in_la": "South Bedfordshire"
+          },
+          {
+            "name": "Watling Street",
+            "lat": 51.9097315366043,
+            "lon": -0.5542211758568859,
+            "in_la": "South Bedfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandhouse Inn",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandhouse"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Bedfordshire",
+        "lon": -0.625,
+        "lat": 51.958
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandhouse",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sandhouse Crescent",
+            "type": "named road",
+            "lat": 53.57859329503166,
+            "lon": -0.6356793740254297,
+            "admin_district": null,
+            "county": "North Lincolnshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.958,
+        "lon": -0.625,
+        "la": "South Bedfordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.07333502885579,
+        "la_centroid_lon": -0.4515285811477848
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is identified as the Sandhouse Inn on Watling Street (A5) near Heath and Reach. While the specific building wasn't in the geocoder, the location on the A5 north of Heath and Reach is well-defined by the map's features (Pumping Station, Water Tower). Coordinates are placed on the A5 near the historic Sandhouse site.",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.958,
+        "top_lon": -0.625,
+        "picked_source": "place:Heath and Reach (offset)",
+        "sigma_m": 1000,
+        "confidence": "med"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

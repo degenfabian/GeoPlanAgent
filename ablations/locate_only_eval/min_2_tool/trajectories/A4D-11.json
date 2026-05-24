@@ -1,0 +1,331 @@
+{
+  "case": "A4D-11",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.233279,
+    "top_lon": -0.776971,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Weybourne",
+    "evidence": "The map and pdf_info specify 'Land off Green Lane, Weybourne, Farnham' and provide a grid reference (4857014860). The village of Weybourne in Waverley matches the location perfectly. Green Lane Farm is visible on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.40020344027408733,
+  "gt_centroids": [
+    {
+      "lat": 51.23024613958444,
+      "lon": -0.7738761876840656
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Green Lane Farm, Weybourne, Farnham",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Green Lane, Weybourne, Farnham"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Green Lane Farm, Weybourne, Farnham",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Green Lane, Weybourne, Farnham",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Weybourne, Farnham",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Green Lane, Farnham",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Weybourne, Farnham",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Green Lane, Farnham",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Weybourne"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Green Lane, Farnham"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Weybourne",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Weybourne",
+            "type": "village",
+            "lat": 51.2332790793999,
+            "lon": -0.7769713806074264,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Weybourne",
+            "type": "village",
+            "lat": 52.94316707836963,
+            "lon": 1.139809939149628,
+            "admin_district": "North Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Weybourne",
+            "type": "railway station",
+            "lat": 52.93284261631704,
+            "lon": 1.150016252872642,
+            "admin_district": "North Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Weybourne Square",
+            "type": "named road",
+            "lat": 54.88527672460666,
+            "lon": -1.3710914492442963,
+            "admin_district": "Sunderland",
+            "county": null
+          },
+          {
+            "name": "Weybourne Lea",
+            "type": "named road",
+            "lat": 54.845813711056415,
+            "lon": -1.3416649843107569,
+            "admin_district": null,
+            "county": "County Durham"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Green Lane, Farnham",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Waverley",
+        "lon": -0.776971380607426,
+        "lat": 51.2332790793999
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.2332790793999,
+        "lon": -0.776971380607426,
+        "la": "Waverley",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.14979708109079,
+        "la_centroid_lon": -0.6327293391700743
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Green Lane Farm",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Green Lane Farm",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.233279,
+        "sigma_m": 500,
+        "picked_source": "place:Weybourne",
+        "evidence": "The map and pdf_info specify 'Land off Green Lane, Weybourne, Farnham' and provide a grid reference (4857014860). The village of Weybourne in Waverley matches the location perfectly. Green Lane Farm is visible on the map.",
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lon": -0.776971
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

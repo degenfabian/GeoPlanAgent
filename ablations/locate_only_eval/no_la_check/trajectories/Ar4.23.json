@@ -1,0 +1,341 @@
+{
+  "case": "Ar4.23",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.825,
+    "top_lon": -0.344,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Coldharbour Lane x Wroxham Way cluster",
+    "evidence": "The site is located on Coldharbour Lane in Harpenden. Road centroids for Coldharbour Lane, Wroxham Way, and Oulton Rise cluster tightly around this coordinate, matching the map layout perfectly.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.12842966015692908,
+  "gt_centroids": [
+    {
+      "lat": 51.826152076748095,
+      "lon": -0.343867225751296
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 1,
+      "road": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Pickford Bridge",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Coldharbour Lane",
+        "road_b": "Wroxham Way",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Coldharbour Lane, Harpenden",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Pickford Bridge",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Coldharbour Lane",
+          "Wroxham Way"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coldharbour Lane, Harpenden",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Coldharbour Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Wroxham Way",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Oulton Rise",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Harpenden",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Coldharbour Lane",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Coldharbour Lane",
+            "lat": 51.82757030259194,
+            "lon": -0.3458494649996466,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Coldharbour Lane",
+            "lat": 51.82902166229988,
+            "lon": -0.3467694162947129,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Coldharbour Lane",
+            "lat": 51.82981212643254,
+            "lon": -0.3474726308912856,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Coldharbour Lane",
+            "lat": 51.825581059345645,
+            "lon": -0.3442982411383828,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Coldharbour Lane",
+            "lat": 51.82458553379847,
+            "lon": -0.3430441439263177,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Wroxham Way",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Wroxham Way",
+            "lat": 51.82374300855173,
+            "lon": -0.34396100243408345,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Wroxham Way",
+            "lat": 51.825050247320696,
+            "lon": -0.3453252040269851,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Oulton Rise",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Oulton Rise",
+            "lat": 51.82473803622628,
+            "lon": -0.3458227600243645,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Harpenden",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Harpenden",
+            "type": "town",
+            "lat": 51.81672671104109,
+            "lon": -0.35707720336806087,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden",
+            "type": "railway station",
+            "lat": 51.81445410792542,
+            "lon": -0.35082003033856496,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden Road",
+            "type": "section of named road",
+            "lat": 51.807996281936695,
+            "lon": -0.30143215039001275,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden Lane",
+            "type": "named road",
+            "lat": 51.80194147423341,
+            "lon": -0.3926698069461324,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Harpenden Road",
+            "type": "named road",
+            "lat": 51.77667957006904,
+            "lon": -0.3368033101096478,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "evidence": "The site is located on Coldharbour Lane in Harpenden. Road centroids for Coldharbour Lane, Wroxham Way, and Oulton Rise cluster tightly around this coordinate, matching the map layout perfectly.",
+        "top_lat": 51.825,
+        "picked_source": "road:Coldharbour Lane x Wroxham Way cluster",
+        "top_lon": -0.344,
+        "sigma_m": 300,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

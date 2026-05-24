@@ -1,0 +1,230 @@
+{
+  "case": "71",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5209,
+    "top_lon": -0.2272,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Brewster Gardens",
+    "evidence": "The map shows a large block between Brewster Gardens and Bracewell Road, just north of North Pole Road. Geocoding Brewster Gardens and Bracewell Road places the site at these coordinates. Although the tool returns Kensington and Chelsea, the map footer explicitly mentions Hammersmith and Fulham, and the site sits on the boundary.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.045467529701831357,
+  "gt_centroids": [
+    {
+      "lat": 51.5205890919682,
+      "lon": -0.22677317479897516
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Brewster Gardens",
+        "la": "Hammersmith and Fulham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Hammersmith and Fulham",
+        "query": "Bracewell Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Brewster Gardens",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Brewster Gardens",
+            "type": "named road",
+            "lat": 51.5212623367219,
+            "lon": -0.2271347819437754,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bracewell Road",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Bracewell Road",
+            "type": "named road",
+            "lat": 51.5207360151716,
+            "lon": -0.22741467750141695,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "Bracewell Close",
+            "type": "named road",
+            "lat": 50.871389115296424,
+            "lon": -2.1543850636963473,
+            "admin_district": null,
+            "county": "Dorset"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Hammersmith and Fulham",
+        "query": "Coronation Court"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "North Pole Road",
+        "la": "Hammersmith and Fulham"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coronation Court",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Coronation Court",
+            "type": "named road",
+            "lat": 54.558111714891915,
+            "lon": -1.1564486325322698,
+            "admin_district": null,
+            "county": "Redcar and Cleveland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "North Pole Road",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "North Pole Road",
+            "type": "section of named road",
+            "lat": 51.51957216310581,
+            "lon": -0.2265662051041081,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "North Pole Road",
+            "type": "section of named road",
+            "lat": 51.51903607872049,
+            "lon": -0.22798515856134124,
+            "admin_district": "Hammersmith and Fulham",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lat": 51.5209,
+        "picked_source": "place:Brewster Gardens",
+        "confidence": "high",
+        "top_lon": -0.2272,
+        "evidence": "The map shows a large block between Brewster Gardens and Bracewell Road, just north of North Pole Road. Geocoding Brewster Gardens and Bracewell Road places the site at these coordinates. Although the tool returns Kensington and Chelsea, the map footer explicitly mentions Hammersmith and Fulham, and the site sits on the boundary.",
+        "sigma_m": 200
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

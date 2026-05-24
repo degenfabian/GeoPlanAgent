@@ -32,8 +32,6 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 
-# Three .parent steps because this file lives at tools.geo.os_names.py
-# after the 2026-05-13 reorg (was tools/os_names.py before).
 DATA_DIR = (Path(__file__).resolve().parent.parent.parent
             / "os_opendata" / "open_names" / "csv" / "Data")
 

@@ -1,0 +1,302 @@
+{
+  "case": "A4D-11",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.2306,
+    "top_lon": -0.77326,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:SU 857 486",
+    "evidence": "The grid reference 4857014860 (interpreted as SU 857 486) aligns perfectly with Green Lane in Weybourne, Farnham, as shown on the map and in pdf_info. Verified inside Waverley.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.05821538243451932,
+  "gt_centroids": [
+    {
+      "lat": 51.23024613958444,
+      "lon": -0.7738761876840656
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 3,
+      "place": 2,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "4857014860"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Green Lane Farm"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Waverley",
+        "query": "Weybourne"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref '4857014860'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Green Lane Farm",
+        "la_filter": "Waverley",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Weybourne",
+        "la_filter": "Waverley",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Weybourne",
+            "type": "village",
+            "lat": 51.2332790793999,
+            "lon": -0.7769713806074264,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Weybourne Road",
+            "type": "section of named road",
+            "lat": 51.233968004017456,
+            "lon": -0.7766379981357454,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          },
+          {
+            "name": "Weybourne Road",
+            "type": "named road",
+            "lat": 51.23253741120475,
+            "lon": -0.7774207361005206,
+            "admin_district": "Waverley",
+            "county": "Surrey"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "485700 148600"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Green Lane",
+        "la": "Waverley"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref '485700 148600'"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Green Lane",
+        "la_filter": "Waverley",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Green Lane",
+            "lat": 51.23227894840745,
+            "lon": -0.7723063598420112,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Green Lane",
+            "lat": 51.23261974079391,
+            "lon": -0.7722919204913996,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Green Lane",
+            "lat": 51.227727146907306,
+            "lon": -0.7714686244601816,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Green Lane",
+            "lat": 51.230035085112725,
+            "lon": -0.7719583034213438,
+            "in_la": "Waverley"
+          },
+          {
+            "name": "Green Lane",
+            "lat": 51.13417553971108,
+            "lon": -0.7582549578378311,
+            "in_la": "Waverley"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU 857 486"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Waverley",
+        "lon": -0.772,
+        "lat": 51.2295
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SU 857 486",
+        "lat": 51.230605505257046,
+        "lon": -0.7732610861510448
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.2295,
+        "lon": -0.772,
+        "la": "Waverley",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.14979708109079,
+        "la_centroid_lon": -0.6327293391700743
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.2306,
+        "sigma_m": 300,
+        "evidence": "The grid reference 4857014860 (interpreted as SU 857 486) aligns perfectly with Green Lane in Weybourne, Farnham, as shown on the map and in pdf_info. Verified inside Waverley.",
+        "top_lon": -0.77326,
+        "picked_source": "grid_ref:SU 857 486",
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

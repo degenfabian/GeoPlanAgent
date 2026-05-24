@@ -1,0 +1,274 @@
+{
+  "case": "A4D8A_merged",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.661,
+    "top_lon": -0.185,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Monken Hadley",
+    "evidence": "The map shows the Monken Hadley Conservation Area, which spans from Monken Hadley village eastwards across Hadley Common. Multiple tool hits for Monken Hadley, Hadley Common, and Camlet Way cluster around this coordinate. Verified inside Barnet.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.6768586634315145,
+  "gt_centroids": [
+    {
+      "lat": 51.66066617921087,
+      "lon": -0.1947982032086669
+    },
+    {
+      "lat": 51.66528182483707,
+      "lon": -0.19904722511536274
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Monken Hadley Conservation Area"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Monken Hadley"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hadley Common",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Barnet",
+        "query": "Camlet Way"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Monken Hadley Conservation Area",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Monken Hadley",
+        "la_filter": "Barnet",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Monken Hadley",
+            "type": "suburban area",
+            "lat": 51.66174570409642,
+            "lon": -0.19620906752000503,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Monken Hadley Common",
+            "type": "woodland or forest",
+            "lat": 51.65914201772996,
+            "lon": -0.17841318348004853,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Monken Hadley Church of England Primary School",
+            "type": "primary education",
+            "lat": 51.66289263810698,
+            "lon": -0.19068340458058686,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hadley Common",
+        "la_filter": "Barnet",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Hadley Common",
+            "type": "section of named road",
+            "lat": 51.65836568206169,
+            "lon": -0.18635283030901623,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Hadley Common",
+            "type": "section of named road",
+            "lat": 51.65933100802528,
+            "lon": -0.18888786230229226,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Camlet Way",
+        "la_filter": "Barnet",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Camlet Way",
+            "lat": 51.66352478968855,
+            "lon": -0.18549317530928872,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Camlet Way",
+            "lat": 51.66170893448259,
+            "lon": -0.191771607157496,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Camlet Way",
+            "lat": 51.662416096168734,
+            "lon": -0.1903187837890934,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Camlet Way",
+            "lat": 51.66296337327367,
+            "lon": -0.1878993148530257,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.185,
+        "lat": 51.661,
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.661,
+        "lon": -0.185,
+        "la": "Barnet",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.616028526273034,
+        "la_centroid_lon": -0.21000945769264093
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.661,
+        "evidence": "The map shows the Monken Hadley Conservation Area, which spans from Monken Hadley village eastwards across Hadley Common. Multiple tool hits for Monken Hadley, Hadley Common, and Camlet Way cluster around this coordinate. Verified inside Barnet.",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "sigma_m": 1500,
+        "top_lon": -0.185,
+        "picked_source": "place:Monken Hadley"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

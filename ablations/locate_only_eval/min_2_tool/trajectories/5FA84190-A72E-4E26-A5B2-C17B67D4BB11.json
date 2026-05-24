@@ -1,0 +1,253 @@
+{
+  "case": "5FA84190-A72E-4E26-A5B2-C17B67D4BB11",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.285,
+    "top_lon": 1.375,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "place:Sandwich Bay Estate",
+    "evidence": "The map shows the foreshore at Sandwich Bay, adjacent to Prince's Golf Links. The 'Sandwich Bay Estate' geocode (51.266, 1.385) aligns perfectly with the coastal location and the OS grid reference TR3559-60 (approx 51.29, 1.37). The site is a long strip of land along the high water mark.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.4036564453944348,
+  "gt_centroids": [
+    {
+      "lat": 51.28834833481014,
+      "lon": 1.3772423523363058
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Prince's Golf Club"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Sandwich Bay"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Prince's Golf Club",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandwich Bay",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sandwich Bay Estate",
+            "type": "village",
+            "lat": 51.266146317085045,
+            "lon": 1.384951756073922,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Prince's Golf Links",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Worth",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Prince's Golf Links",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Worth",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Worth",
+            "type": "village",
+            "lat": 51.25559411454889,
+            "lon": 1.3427622229679996,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Worthington Street",
+            "type": "named road",
+            "lat": 51.12645355077843,
+            "lon": 1.3107223457585444,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Worth Hill",
+            "type": "hill or mountain",
+            "lat": 51.25894582502547,
+            "lon": 1.34571505325278,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Worth Primary School",
+            "type": "primary education",
+            "lat": 51.25665080768268,
+            "lon": 1.3485873720506143,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lon": 1.37,
+        "lat": 51.29
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.29,
+        "lon": 1.37,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lon": 1.375,
+        "picked_source": "place:Sandwich Bay Estate",
+        "verified_inside_admin_region": true,
+        "sigma_m": 1000,
+        "top_lat": 51.285,
+        "evidence": "The map shows the foreshore at Sandwich Bay, adjacent to Prince's Golf Links. The 'Sandwich Bay Estate' geocode (51.266, 1.385) aligns perfectly with the coastal location and the OS grid reference TR3559-60 (approx 51.29, 1.37). The site is a long strip of land along the high water mark."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

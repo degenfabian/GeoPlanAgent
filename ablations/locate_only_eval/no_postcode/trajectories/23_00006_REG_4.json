@@ -1,0 +1,149 @@
+{
+  "case": "23:00006:REG_4",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5134436169631,
+    "top_lon": -0.16046326615033,
+    "sigma_m": 5000,
+    "confidence": "high",
+    "picked_source": "la_centroid",
+    "evidence": "The map and PDF info explicitly state this is a district-wide Article 4 direction for the entire City of Westminster. I have used the LA centroid for Westminster.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0014725019357845742,
+  "gt_centroids": [
+    {
+      "lat": 51.51344560997917,
+      "lon": -0.16044222960568932
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 3,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "City of Westminster"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "City of Westminster",
+        "la_filter": null,
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "City of Westminster",
+            "type": "city",
+            "lat": 51.50098798250397,
+            "lon": -0.12614284353816335,
+            "admin_district": "City of Westminster",
+            "county": "Greater London"
+          },
+          {
+            "name": "City of Westminster College",
+            "type": "further education",
+            "lat": 51.52155829589615,
+            "lon": -0.17489936479570553,
+            "admin_district": "City of Westminster",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.500987982504,
+        "la": "Westminster",
+        "lon": -0.126142843538163
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.500987982504,
+        "lon": -0.126142843538163,
+        "la": "Westminster",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.51344361696313,
+        "la_centroid_lon": -0.16046326615032958
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.5134436169631,
+        "sigma_m": 5000,
+        "evidence": "The map and PDF info explicitly state this is a district-wide Article 4 direction for the entire City of Westminster. I have used the LA centroid for Westminster.",
+        "top_lon": -0.16046326615033,
+        "confidence": "high",
+        "picked_source": "la_centroid",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,318 @@
+{
+  "case": "A108P",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.56075,
+    "top_lon": -0.2518,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Woodston",
+    "evidence": "The map shows the 'Fletton & Woodston Ward' area bounded by Oundle Road, New Road, and London Road. Intersections of Oundle Rd x New Rd and London Rd x New Rd confirm the northern and eastern boundaries. The centroid of the Woodston suburban area falls directly within the site polygon.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.25714553254751416,
+  "gt_centroids": [
+    {
+      "lat": 52.5348614532122,
+      "lon": -0.269282392317978
+    },
+    {
+      "lat": 52.559365781249205,
+      "lon": -0.2548472907921313
+    },
+    {
+      "lat": 52.5876828775095,
+      "lon": -0.24108131416269787
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Woodston"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fletton",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "New Road",
+        "la": "Peterborough",
+        "road_a": "Oundle Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "New Road",
+        "road_a": "London Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Woodston",
+        "la_filter": "Peterborough",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Woodston",
+            "type": "suburban area",
+            "lat": 52.56075213415963,
+            "lon": -0.2518045693257792,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Woodstone Gate",
+            "type": "named road",
+            "lat": 52.556070942861815,
+            "lon": -0.2642342567725194,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Woodston Primary School",
+            "type": "primary education",
+            "lat": 52.55823204406162,
+            "lon": -0.253453722384669,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fletton",
+        "la_filter": "Peterborough",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Fletton Parkway",
+            "type": "named road",
+            "lat": 52.54396173743276,
+            "lon": -0.27417974592872857,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Fletton Avenue",
+            "type": "named road",
+            "lat": 52.56032818201344,
+            "lon": -0.24078634907531263,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Fletton Fields",
+            "type": "named road",
+            "lat": 52.55848188264565,
+            "lon": -0.2448137920631621,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Oundle Road",
+          "New Road"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.564055,
+            "lon": -0.255052,
+            "roads": [
+              "Oundle Road",
+              "New Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "New Road"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.559042,
+            "lon": -0.249261,
+            "roads": [
+              "London Road",
+              "New Road"
+            ]
+          },
+          {
+            "lat": 52.50347,
+            "lon": -0.291163,
+            "roads": [
+              "London Road",
+              "New Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "Fletton & Woodston Ward"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.56,
+        "lon": -0.255,
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fletton & Woodston Ward",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.56,
+        "lon": -0.255,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows the 'Fletton & Woodston Ward' area bounded by Oundle Road, New Road, and London Road. Intersections of Oundle Rd x New Rd and London Rd x New Rd confirm the northern and eastern boundaries. The centroid of the Woodston suburban area falls directly within the site polygon.",
+        "top_lon": -0.2518,
+        "verified_inside_admin_region": true,
+        "top_lat": 52.56075,
+        "picked_source": "place:Woodston",
+        "sigma_m": 500,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

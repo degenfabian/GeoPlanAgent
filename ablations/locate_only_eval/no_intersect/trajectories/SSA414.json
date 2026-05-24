@@ -1,0 +1,311 @@
+{
+  "case": "SSA414",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5055,
+    "top_lon": -2.196,
+    "sigma_m": 250,
+    "confidence": "high",
+    "picked_source": "intersect:Hinksford Lane x Swindon Road",
+    "evidence": "The map shows a site at the junction of Hinksford Lane and Swindon Road, opposite the Old Bush P.H. Geocoding Hinksford village and the intersection of these roads places the site consistently at this location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.17611036480821377,
+  "gt_centroids": [
+    {
+      "lat": 52.506717553199316,
+      "lon": -2.1943358858532402
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Old Bush P.H."
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hinksford Farm House",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Hinksford"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Hinksford Lane"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Old Bush P.H.",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hinksford Farm House",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hinksford",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Hinksford",
+            "type": "village",
+            "lat": 52.50582372517677,
+            "lon": -2.196991875713584,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hinksford Gardens",
+            "type": "named road",
+            "lat": 52.512000342438284,
+            "lon": -2.2019998974132466,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hinksford Lane",
+            "type": "section of named road",
+            "lat": 52.506722047903274,
+            "lon": -2.197393689442016,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hinksford Lane",
+            "type": "named road",
+            "lat": 52.50960611569851,
+            "lon": -2.1984085405790084,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hinksford Lane",
+            "type": "section of named road",
+            "lat": 52.511291250210455,
+            "lon": -2.2013483205168556,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hinksford Lane",
+        "la_filter": "South Staffordshire",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Hinksford Lane",
+            "lat": 52.50969720167332,
+            "lon": -2.199119500582876,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Hinksford Lane",
+            "lat": 52.50723406891519,
+            "lon": -2.197043788634593,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Swindon Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Swindon Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Swindon Road",
+            "lat": 52.504105538835134,
+            "lon": -2.1933080654360153,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Swindon Road",
+            "lat": 52.50492939412001,
+            "lon": -2.1952931250841834,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Swindon Road",
+            "lat": 52.505458082004864,
+            "lon": -2.1963301436314433,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Swindon Road",
+            "lat": 52.50615509738347,
+            "lon": -2.197205512274966,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Staffordshire",
+        "lon": -2.196,
+        "lat": 52.5055
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5055,
+        "lon": -2.196,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "intersect:Hinksford Lane x Swindon Road",
+        "evidence": "The map shows a site at the junction of Hinksford Lane and Swindon Road, opposite the Old Bush P.H. Geocoding Hinksford village and the intersection of these roads places the site consistently at this location.",
+        "top_lat": 52.5055,
+        "verified_inside_admin_region": true,
+        "sigma_m": 250,
+        "top_lon": -2.196,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

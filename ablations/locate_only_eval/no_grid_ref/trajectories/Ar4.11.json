@@ -1,0 +1,398 @@
+{
+  "case": "Ar4.11",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7342,
+    "top_lon": -0.36,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Ragged Hall Lane",
+    "evidence": "The site is explicitly described as 'Land between Ragged Hall Lane and the M10 Motorway'. Ragged Hall Lane centroids in St Albans cluster around 51.734, -0.36. The map shows the site bounded by this road to the south and the motorway (now A414/M1) to the north.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.22490478571855596,
+  "gt_centroids": [
+    {
+      "lat": 51.73573010711402,
+      "lon": -0.36213593141055866
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 3,
+      "place": 2,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 17,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Ragged Hall Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "M10 Motorway",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Ragged Hall Lane",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.7338688913522,
+            "lon": -0.3605408201568414,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.73422817489812,
+            "lon": -0.35793643138097797,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.73456261035821,
+            "lon": -0.35639124649171033,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.734390729746764,
+            "lon": -0.3768313260817681,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ragged Hall Lane",
+            "lat": 51.73375349810246,
+            "lon": -0.3631481580499941,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "M10 Motorway",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "M10",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "M10",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Watling Street",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Watling Street",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Watling Street",
+            "lat": 51.741412629656786,
+            "lon": -0.3488821267352729,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Watling Street",
+            "lat": 51.74055539115974,
+            "lon": -0.34834850217796104,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Watling Street",
+            "lat": 51.739933806081886,
+            "lon": -0.34801790920418857,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Watling Street",
+            "lat": 51.739565065437155,
+            "lon": -0.34800651781618414,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Watling Street",
+            "lat": 51.73948854428748,
+            "lon": -0.34779227207850455,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_a": "Ragged Hall Lane",
+        "road_b": "Watling Street"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Ragged Hall Lane",
+          "Watling Street"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Tippendell Lane"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Tippendell Lane",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Tippendell Lane",
+            "lat": 51.72643641173357,
+            "lon": -0.35496619274097535,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Tippendell Lane",
+            "lat": 51.726662515046506,
+            "lon": -0.3550593415712327,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Tippendell Lane",
+            "lat": 51.72685445398717,
+            "lon": -0.35560259672453315,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Tippendell Lane",
+            "lat": 51.727022442422864,
+            "lon": -0.35571957754877886,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Tippendell Lane",
+            "lat": 51.72760927804694,
+            "lon": -0.35653087149296947,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Tippendell Lane",
+        "la": "St Albans",
+        "road_a": "Ragged Hall Lane"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Tippendell Lane']"
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.36,
+        "lat": 51.734,
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.734,
+        "lon": -0.36,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "sigma_m": 500,
+        "top_lon": -0.36,
+        "picked_source": "road:Ragged Hall Lane",
+        "top_lat": 51.7342,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is explicitly described as 'Land between Ragged Hall Lane and the M10 Motorway'. Ragged Hall Lane centroids in St Albans cluster around 51.734, -0.36. The map shows the site bounded by this road to the south and the motorway (now A414/M1) to the north."
+      }
+    },
+    {
+      "turn": 16,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

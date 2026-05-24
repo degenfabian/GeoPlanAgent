@@ -1,0 +1,256 @@
+{
+  "case": "C69CB574-81DC-4130-B7D7-EB68C744D477",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.10029,
+    "top_lon": 1.24447,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR 272384",
+    "evidence": "The map explicitly references OS sheet TR 2638 and the site is located south of New Dover Road. The grid reference TR 272 384 (from pdf_info) falls exactly on the eastern red-hatched parcel shown on the map, near 'The Warren' and the coastal cliffs. Verified inside Dover district.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.830681064267148,
+  "gt_centroids": [
+    {
+      "lat": 51.102192332730766,
+      "lon": 1.2300334671131308
+    },
+    {
+      "lat": 51.102435462933414,
+      "lon": 1.2330744300155134
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 2638"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 272384"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Dover",
+        "road_b": "Old Dover Road",
+        "road_a": "New Dover Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "New Dover Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 2638",
+        "lat": 51.10103760369823,
+        "lon": 1.2338138144144153
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 272384",
+        "lat": 51.10029218170543,
+        "lon": 1.2444765583793107
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "New Dover Road",
+          "Old Dover Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 51.102528,
+            "lon": 1.229047,
+            "roads": [
+              "New Dover Road",
+              "Old Dover Road"
+            ]
+          },
+          {
+            "lat": 51.099849,
+            "lon": 1.206361,
+            "roads": [
+              "New Dover Road",
+              "Old Dover Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "New Dover Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "New Dover Road",
+            "lat": 51.102612669518734,
+            "lon": 1.2301277303316305,
+            "in_la": "Dover"
+          },
+          {
+            "name": "New Dover Road",
+            "lat": 51.10271406677726,
+            "lon": 1.2313417080437932,
+            "in_la": "Dover"
+          },
+          {
+            "name": "New Dover Road",
+            "lat": 51.10295463978637,
+            "lon": 1.233227261926888,
+            "in_la": "Dover"
+          },
+          {
+            "name": "New Dover Road",
+            "lat": 51.10349483431271,
+            "lon": 1.2371786508958922,
+            "in_la": "Dover"
+          },
+          {
+            "name": "New Dover Road",
+            "lat": 51.10299661000744,
+            "lon": 1.2172937590043427,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.24447,
+        "la": "Dover",
+        "lat": 51.10029
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.10029,
+        "lon": 1.24447,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map explicitly references OS sheet TR 2638 and the site is located south of New Dover Road. The grid reference TR 272 384 (from pdf_info) falls exactly on the eastern red-hatched parcel shown on the map, near 'The Warren' and the coastal cliffs. Verified inside Dover district.",
+        "top_lat": 51.10029,
+        "sigma_m": 400,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "picked_source": "grid_ref:TR 272384",
+        "top_lon": 1.24447
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

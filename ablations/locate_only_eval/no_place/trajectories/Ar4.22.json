@@ -1,0 +1,247 @@
+{
+  "case": "Ar4.22",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.74799,
+    "top_lon": -0.30309,
+    "sigma_m": 250,
+    "confidence": "high",
+    "picked_source": "postcode:AL1 5UG",
+    "evidence": "The site is Brick Knoll Park, bounded by Ashley Road and Camp Road. The postcode AL1 5UG (Brick Knoll Park) and the intersection of Ashley Road/Camp Road confirm the location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.021551987754422387,
+  "gt_centroids": [
+    {
+      "lat": 51.7488485424684,
+      "lon": -0.3056777855799243
+    },
+    {
+      "lat": 51.748182076396866,
+      "lon": -0.30313191742434364
+    },
+    {
+      "lat": 51.7497568853022,
+      "lon": -0.30582842634337476
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "road": 1,
+      "la_check": 1,
+      "postcode": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_a": "Ashley Road",
+        "road_b": "Camp Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Brick Knoll Park",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Ashley Road",
+        "la": "St Albans",
+        "road_b": "Alban Way"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Ashley Road",
+          "Camp Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.74602,
+            "lon": -0.304113,
+            "roads": [
+              "Ashley Road",
+              "Camp Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Brick Knoll Park",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Brick Knoll Park",
+            "lat": 51.74710578691414,
+            "lon": -0.3026669121843814,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Brick Knoll Park",
+            "lat": 51.74759699496794,
+            "lon": -0.30359003446937344,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Brick Knoll Park",
+            "lat": 51.7482365425611,
+            "lon": -0.30273310372411155,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Alban Way']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.303,
+        "lat": 51.7475,
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.7475,
+        "lon": -0.303,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL1 5UG"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL1 5UG",
+        "lat": 51.747989920492685,
+        "lon": -0.3030900206946629,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.74799,
+        "evidence": "The site is Brick Knoll Park, bounded by Ashley Road and Camp Road. The postcode AL1 5UG (Brick Knoll Park) and the intersection of Ashley Road/Camp Road confirm the location.",
+        "top_lon": -0.30309,
+        "picked_source": "postcode:AL1 5UG",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "sigma_m": 250
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

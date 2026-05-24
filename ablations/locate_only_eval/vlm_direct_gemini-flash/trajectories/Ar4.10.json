@@ -1,0 +1,64 @@
+{
+  "case": "Ar4.10",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.7265,
+    "lon": -0.3615,
+    "reasoning": "The site is identified as land to the rear of 2-84 Ragged Hall Lane, Chiswell Green, St Albans, which corresponds to the large field area immediately north of the residential properties on Ragged Hall Lane (AL2 3LD)."
+  },
+  "err_km": 0.8925532697141016,
+  "gt_centroids": [
+    {
+      "lat": 51.73504241055877,
+      "lon": -0.35787113906398915
+    },
+    {
+      "lat": 51.734506221082235,
+      "lon": -0.3605697806397629
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -0.3615,
+        "reasoning": "The site is identified as land to the rear of 2-84 Ragged Hall Lane, Chiswell Green, St Albans, which corresponds to the large field area immediately north of the residential properties on Ragged Hall Lane (AL2 3LD).",
+        "lat": 51.7265
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

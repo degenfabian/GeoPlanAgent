@@ -1,0 +1,336 @@
+{
+  "case": "A4D11",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.477749,
+    "top_lon": -2.605252,
+    "sigma_m": 1500,
+    "confidence": "med",
+    "picked_source": "intersect:Cranbrook Road x Linden Road",
+    "evidence": "The map covers a large area of Redland and Bishopston. The central point of the map area is approximately at the junction of Cranbrook Road and Linden Road (B4054), which was geocoded to 51.4777, -2.6052. This falls within the Bristol admin region.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.4615590684594778,
+  "gt_centroids": [
+    {
+      "lat": 51.47443244555778,
+      "lon": -2.6012444210396635
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 5,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Linden Road",
+        "la": "Bristol",
+        "road_a": "Cranbrook Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Redland Road",
+        "la": "Bristol",
+        "road_b": "Cranbrook Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Linden Road",
+        "la": "Bristol",
+        "road_a": "Coldharbour Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Redland Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Cranbrook Road",
+          "Linden Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.477749,
+            "lon": -2.605252,
+            "roads": [
+              "Cranbrook Road",
+              "Linden Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Redland Road",
+          "Cranbrook Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Coldharbour Road",
+          "Linden Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.47853,
+            "lon": -2.607378,
+            "roads": [
+              "Coldharbour Road",
+              "Linden Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Redland Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Redland Road",
+            "lat": 51.46797246138896,
+            "lon": -2.595114375202738,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Redland Road",
+            "lat": 51.46831018798131,
+            "lon": -2.5961404074805134,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Redland Road",
+            "lat": 51.46878222877196,
+            "lon": -2.597151077323656,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Redland Road",
+            "lat": 51.469368769164355,
+            "lon": -2.5984347874308544,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Redland Road",
+            "lat": 51.46977497767048,
+            "lon": -2.5997606513971743,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Zetland Road",
+        "la": "Bristol",
+        "road_a": "Redland Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Bristol",
+        "road_a": "Cranbrook Road",
+        "road_b": "Zetland Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.6,
+        "lat": 51.475,
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Redland Road",
+          "Zetland Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.469111,
+            "lon": -2.597873,
+            "roads": [
+              "Redland Road",
+              "Zetland Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Cranbrook Road",
+          "Zetland Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.470226,
+            "lon": -2.594181,
+            "roads": [
+              "Cranbrook Road",
+              "Zetland Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.475,
+        "lon": -2.6,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "intersect:Cranbrook Road x Linden Road",
+        "sigma_m": 1500,
+        "evidence": "The map covers a large area of Redland and Bishopston. The central point of the map area is approximately at the junction of Cranbrook Road and Linden Road (B4054), which was geocoded to 51.4777, -2.6052. This falls within the Bristol admin region.",
+        "top_lat": 51.477749,
+        "top_lon": -2.605252,
+        "confidence": "med",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

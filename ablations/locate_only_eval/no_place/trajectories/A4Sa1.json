@@ -1,0 +1,285 @@
+{
+  "case": "A4Sa1",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.544781,
+    "top_lon": -0.183555,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "intersect:Canfield Gardens x Fairhazel Gardens",
+    "evidence": "The map shows the Swiss Cottage Conservation Area, centered around Canfield Gardens, Compayne Gardens, and Fairhazel Gardens. The intersection of Canfield Gardens and Fairhazel Gardens (51.54478, -0.18355) is centrally located within the highlighted Article 4 area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.22321630850158208,
+  "gt_centroids": [
+    {
+      "lat": 51.54385609390288,
+      "lon": -0.18641983354549843
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 3,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Canfield Gardens",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Compayne Gardens",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Greencroft Gardens",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Canfield Gardens",
+        "la": "Camden",
+        "road_b": "Fairhazel Gardens"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Canfield Gardens",
+        "la_filter": "Camden",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Canfield Gardens",
+            "lat": 51.545379044123294,
+            "lon": -0.18257474899205664,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Canfield Gardens",
+            "lat": 51.54621881524806,
+            "lon": -0.18118882770709574,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Canfield Gardens",
+            "lat": 51.546548559383254,
+            "lon": -0.18070694728785888,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Canfield Gardens",
+            "lat": 51.546500584434675,
+            "lon": -0.18080260702351214,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Canfield Gardens",
+            "lat": 51.54645982582007,
+            "lon": -0.18070543887282706,
+            "in_la": "Camden"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Compayne Gardens",
+        "la_filter": "Camden",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Compayne Gardens",
+            "lat": 51.5457702051125,
+            "lon": -0.182995074850958,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Compayne Gardens",
+            "lat": 51.54516331061663,
+            "lon": -0.1902735380686941,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Compayne Gardens",
+            "lat": 51.545300668533955,
+            "lon": -0.18664814575610228,
+            "in_la": "Camden"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Greencroft Gardens",
+        "la_filter": "Camden",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Greencroft Gardens",
+            "lat": 51.543557021598296,
+            "lon": -0.18583263023889746,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Greencroft Gardens",
+            "lat": 51.54485392966723,
+            "lon": -0.18131536358914188,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Greencroft Gardens",
+            "lat": 51.54577126328225,
+            "lon": -0.17987261713931488,
+            "in_la": "Camden"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Canfield Gardens",
+          "Fairhazel Gardens"
+        ],
+        "la_filter": "Camden",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.544781,
+            "lon": -0.183555,
+            "roads": [
+              "Canfield Gardens",
+              "Fairhazel Gardens"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.545,
+        "la": "Camden",
+        "lon": -0.184
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.545,
+        "lon": -0.184,
+        "la": "Camden",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.546390811083704,
+        "la_centroid_lon": -0.15742226323007869
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "intersect:Canfield Gardens x Fairhazel Gardens",
+        "top_lon": -0.183555,
+        "evidence": "The map shows the Swiss Cottage Conservation Area, centered around Canfield Gardens, Compayne Gardens, and Fairhazel Gardens. The intersection of Canfield Gardens and Fairhazel Gardens (51.54478, -0.18355) is centrally located within the highlighted Article 4 area.",
+        "top_lat": 51.544781,
+        "verified_inside_admin_region": true,
+        "sigma_m": 400,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

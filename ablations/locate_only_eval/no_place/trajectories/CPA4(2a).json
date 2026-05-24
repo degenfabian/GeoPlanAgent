@@ -1,0 +1,235 @@
+{
+  "case": "CPA4(2a)",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5457,
+    "top_lon": 0.563658,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:High Street x High Road x Essex Way",
+    "evidence": "The intersection of High Street, High Road, and Essex Way (51.5457, 0.5636) aligns perfectly with the grid reference TQ 7790 8610 (51.5458, 0.5643) and the map labels for South Benfleet. The postcode SS7 1TF is likely a letterhead or nearby office.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.08729279632977614,
+  "gt_centroids": [
+    {
+      "lat": 51.545284972552636,
+      "lon": 0.5625864865263827
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "grid_ref": 1,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SS7 1TF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ 7790 8610"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "High Road",
+        "la": "Castle Point",
+        "road_a": "High Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "High Street",
+        "la": "Castle Point",
+        "road_b": "Essex Way"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SS7 1TF",
+        "lat": 51.56184488380458,
+        "lon": 0.5848681639491619,
+        "admin_district": "Castle Point District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TQ 7790 8610",
+        "lat": 51.545793472213695,
+        "lon": 0.5642982612306057
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "High Street",
+          "High Road"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 51.579908,
+            "lon": 0.598928,
+            "roads": [
+              "High Street",
+              "High Road"
+            ]
+          },
+          {
+            "lat": 51.5457,
+            "lon": 0.563658,
+            "roads": [
+              "High Street",
+              "High Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "High Street",
+          "Essex Way"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.5457,
+            "lon": 0.563658,
+            "roads": [
+              "High Street",
+              "Essex Way"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.5457,
+        "la": "Castle Point",
+        "lon": 0.563658
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.5457,
+        "lon": 0.563658,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The intersection of High Street, High Road, and Essex Way (51.5457, 0.5636) aligns perfectly with the grid reference TQ 7790 8610 (51.5458, 0.5643) and the map labels for South Benfleet. The postcode SS7 1TF is likely a letterhead or nearby office.",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.5457,
+        "sigma_m": 300,
+        "picked_source": "intersect:High Street x High Road x Essex Way",
+        "top_lon": 0.563658,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "case": "12:00158:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.3895,
+    "top_lon": 1.194,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Langmere Road x Hall Lane",
+    "evidence": "The site is bounded by Langmere Road, Hall Lane, and Common Road in Dickleburgh. The intersection of Langmere Road and Hall Lane (52.392, 1.197) aligns perfectly with the map's northeast corner.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.10517485004575558,
+  "gt_centroids": [
+    {
+      "lat": 52.39189082051901,
+      "lon": 1.1933254503458417
+    },
+    {
+      "lat": 52.38883861498935,
+      "lon": 1.1928920415656288
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 1,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Dickleburgh",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_a": "Langmere Road",
+        "road_b": "Hall Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Hall Lane",
+        "la": "South Norfolk",
+        "road_a": "Common Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Dickleburgh",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Dickleburgh",
+            "type": "village",
+            "lat": 52.397165317543816,
+            "lon": 1.185652399881159,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Dickleburgh Moor",
+            "type": "hamlet",
+            "lat": 52.40667320332661,
+            "lon": 1.1925877378154983,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Dickleburgh (Voluntary Controlled) Primary School",
+            "type": "primary education",
+            "lat": 52.39521090453466,
+            "lon": 1.1874227534937847,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Dickleburgh Road",
+            "type": "named road",
+            "lat": 52.40259501093398,
+            "lon": 1.171707332658384,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Dickleburgh Road",
+            "type": "section of named road",
+            "lat": 52.402260637074455,
+            "lon": 1.169757114881649,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Langmere Road",
+          "Hall Lane"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.392193,
+            "lon": 1.196871,
+            "roads": [
+              "Langmere Road",
+              "Hall Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Common Road",
+          "Hall Lane"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.467936,
+            "lon": 1.267393,
+            "roads": [
+              "Common Road",
+              "Hall Lane"
+            ]
+          },
+          {
+            "lat": 52.387063,
+            "lon": 1.195356,
+            "roads": [
+              "Common Road",
+              "Hall Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Norfolk",
+        "lat": 52.392193,
+        "lon": 1.196871
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.392193,
+        "lon": 1.196871,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.3895,
+        "picked_source": "intersect:Langmere Road x Hall Lane",
+        "top_lon": 1.194,
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is bounded by Langmere Road, Hall Lane, and Common Road in Dickleburgh. The intersection of Langmere Road and Hall Lane (52.392, 1.197) aligns perfectly with the map's northeast corner.",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

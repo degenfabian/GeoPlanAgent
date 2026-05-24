@@ -1,0 +1,433 @@
+{
+  "case": "SSA402",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.668,
+    "top_lon": -2.076,
+    "sigma_m": 1000,
+    "confidence": "med",
+    "picked_source": "place:Great Saredon / Little Saredon midpoint",
+    "evidence": "The map shows Blacklees Farm in Saredon. While the farm itself wasn't found, Great Saredon and Little Saredon hamlets are located at 52.674 and 52.662 respectively. The map shows the farm near a road (likely Saredon Road/Lane) and a Tile Works. The picked coordinate is between the two Saredon hamlets where Blacklees Farm is historically located.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 2.408198831853895,
+  "gt_centroids": [
+    {
+      "lat": 52.65489163017929,
+      "lon": -2.0475757928271063
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 8,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Blacklees Farm"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Saredon",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Holly Bush Farm"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Blacklees Farm",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Saredon",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Saredon Road",
+            "type": "named road",
+            "lat": 52.65907449457112,
+            "lon": -2.081077957899375,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Saredon Road",
+            "type": "section of named road",
+            "lat": 52.66754024099612,
+            "lon": -2.054092512890371,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Saredon Lane",
+            "type": "named road",
+            "lat": 52.674205758074855,
+            "lon": -2.078651032606569,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Saredon Road",
+            "type": "section of named road",
+            "lat": 52.670282343344255,
+            "lon": -2.070628877996571,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Saredon Lane",
+            "type": "section of named road",
+            "lat": 52.67672924800029,
+            "lon": -2.0824714409184617,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Holly Bush Farm",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Great Saredon",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Little Saredon",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Campion's Wood",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Great Saredon",
+        "la_filter": "South Staffordshire",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Great Saredon",
+            "type": "hamlet",
+            "lat": 52.67424455022838,
+            "lon": -2.074273463882042,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Great Saredon Road",
+            "type": "section of named road",
+            "lat": 52.66355342198584,
+            "lon": -2.078010845043021,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Great Saredon Road",
+            "type": "named road",
+            "lat": 52.66775375588328,
+            "lon": -2.074676458996837,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Little Saredon",
+        "la_filter": "South Staffordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Little Saredon",
+            "type": "hamlet",
+            "lat": 52.662609672403654,
+            "lon": -2.0777578073871075,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Campion's Wood",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Tile Works",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Blacklees"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Tile Works",
+        "la_filter": "South Staffordshire",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Tile Works Wood",
+            "type": "woodland or forest",
+            "lat": 55.850705081889544,
+            "lon": -3.006560058101084,
+            "admin_district": null,
+            "county": "Midlothian"
+          },
+          {
+            "name": "Tile Works Terrace",
+            "type": "named road",
+            "lat": 51.12618614442491,
+            "lon": -2.990984185121116,
+            "admin_district": null,
+            "county": "Somerset"
+          },
+          {
+            "name": "Tile Works Lane",
+            "type": "named road",
+            "lat": 51.65582934153328,
+            "lon": 0.5360514185727964,
+            "admin_district": "Chelmsford",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Blacklees",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Saredon Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Saredon Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Saredon Road",
+            "lat": 52.661964914242404,
+            "lon": -2.042136737253228,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Saredon Road",
+            "lat": 52.662189715413874,
+            "lon": -2.042844946393609,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Saredon Road",
+            "lat": 52.66412952491533,
+            "lon": -2.0459037664599937,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Saredon Road",
+            "lat": 52.66628826178714,
+            "lon": -2.049134332675043,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Saredon Road",
+            "lat": 52.666907746159715,
+            "lon": -2.049869493574252,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Great Saredon / Little Saredon midpoint",
+        "top_lon": -2.076,
+        "top_lat": 52.668,
+        "evidence": "The map shows Blacklees Farm in Saredon. While the farm itself wasn't found, Great Saredon and Little Saredon hamlets are located at 52.674 and 52.662 respectively. The map shows the farm near a road (likely Saredon Road/Lane) and a Tile Works. The picked coordinate is between the two Saredon hamlets where Blacklees Farm is historically located.",
+        "verified_inside_admin_region": true,
+        "confidence": "med",
+        "sigma_m": 1000
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

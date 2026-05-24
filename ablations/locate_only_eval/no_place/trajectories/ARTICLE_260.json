@@ -1,0 +1,186 @@
+{
+  "case": "ARTICLE:260",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.0805184573806,
+    "top_lon": -0.120807944910853,
+    "sigma_m": 1500,
+    "confidence": "med",
+    "picked_source": "place:North Brook End",
+    "evidence": "The map shows a large area around Abington Pigotts. 'North Brook End' is a distinct label on the western edge of the site. The road tool found North Brook End within South Cambridgeshire, which aligns with the map labels and pdf_info.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 1.221499559708842,
+  "gt_centroids": [
+    {
+      "lat": 52.08298639043287,
+      "lon": -0.10338929152971706
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Abington Pigotts",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Down Hall Farm",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "North Brook End",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Abington Pigotts",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Down Hall Farm",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "North Brook End",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "North Brook End",
+            "lat": 52.08051845738063,
+            "lon": -0.12080794491085338,
+            "in_la": "South Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Cambridgeshire",
+        "lon": -0.120807944910853,
+        "lat": 52.0805184573806
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.0805184573806,
+        "lon": -0.120807944910853,
+        "la": "South Cambridgeshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.17283510081104,
+        "la_centroid_lon": 0.08123824327654822
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 1500,
+        "evidence": "The map shows a large area around Abington Pigotts. 'North Brook End' is a distinct label on the western edge of the site. The road tool found North Brook End within South Cambridgeshire, which aligns with the map labels and pdf_info.",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.120807944910853,
+        "picked_source": "place:North Brook End",
+        "top_lat": 52.0805184573806,
+        "confidence": "med"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

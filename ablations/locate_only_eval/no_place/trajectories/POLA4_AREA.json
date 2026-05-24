@@ -1,0 +1,266 @@
+{
+  "case": "POLA4_AREA",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.44041,
+    "top_lon": -3.564866,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Polsham Park x Lower Polsham Road",
+    "evidence": "The map shows the Polsham Conservation Area in Paignton. The intersection of Polsham Park and Lower Polsham Road is central to the hatched area. Postcode TQ1 3DR is for the Council offices in Torquay and was correctly identified as a letterhead signal.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09580910492882196,
+  "gt_centroids": [
+    {
+      "lat": 50.439963345396436,
+      "lon": -3.563709078948666
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "road": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "TQ1 3DR"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Torbay",
+        "query": "Polsham Park"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Lower Polsham Road",
+        "la": "Torbay"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Torbay",
+        "road_b": "Lower Polsham Road",
+        "road_a": "Polsham Park"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "TQ1 3DR",
+        "lat": 50.46878034366406,
+        "lon": -3.5321242264664225,
+        "admin_district": "Torbay (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Polsham Park",
+        "la_filter": "Torbay",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Polsham Park",
+            "lat": 50.4399476826302,
+            "lon": -3.5648087519489136,
+            "in_la": "Torbay"
+          },
+          {
+            "name": "Polsham Park",
+            "lat": 50.43922387536555,
+            "lon": -3.5645573726389954,
+            "in_la": "Torbay"
+          },
+          {
+            "name": "Polsham Park",
+            "lat": 50.43874553624382,
+            "lon": -3.5641633410062066,
+            "in_la": "Torbay"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Lower Polsham Road",
+        "la_filter": "Torbay",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Lower Polsham Road",
+            "lat": 50.440414720286235,
+            "lon": -3.565190316088471,
+            "in_la": "Torbay"
+          },
+          {
+            "name": "Lower Polsham Road",
+            "lat": 50.440494333390205,
+            "lon": -3.566291422542942,
+            "in_la": "Torbay"
+          },
+          {
+            "name": "Lower Polsham Road",
+            "lat": 50.44035812617036,
+            "lon": -3.562238265018962,
+            "in_la": "Torbay"
+          },
+          {
+            "name": "Lower Polsham Road",
+            "lat": 50.440105874306084,
+            "lon": -3.5612652760547374,
+            "in_la": "Torbay"
+          },
+          {
+            "name": "Lower Polsham Road",
+            "lat": 50.43965385100349,
+            "lon": -3.5602362263303076,
+            "in_la": "Torbay"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Polsham Park",
+          "Lower Polsham Road"
+        ],
+        "la_filter": "Torbay",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 50.44041,
+            "lon": -3.564866,
+            "roads": [
+              "Polsham Park",
+              "Lower Polsham Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 50.44041,
+        "la": "Torbay",
+        "lon": -3.564866
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.44041,
+        "lon": -3.564866,
+        "la": "Torbay",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.44063775419868,
+        "la_centroid_lon": -3.5302061322721014
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "intersect:Polsham Park x Lower Polsham Road",
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "top_lon": -3.564866,
+        "evidence": "The map shows the Polsham Conservation Area in Paignton. The intersection of Polsham Park and Lower Polsham Road is central to the hatched area. Postcode TQ1 3DR is for the Council offices in Torquay and was correctly identified as a letterhead signal.",
+        "confidence": "high",
+        "top_lat": 50.44041
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

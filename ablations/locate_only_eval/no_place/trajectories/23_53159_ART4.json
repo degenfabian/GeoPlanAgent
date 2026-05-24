@@ -1,0 +1,242 @@
+{
+  "case": "23:53159:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.753039,
+    "top_lon": 1.355634,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "grid_ref:TG 265 225",
+    "evidence": "The site is identified as part of the RAF Coltishall Conservation Area. A grid reference for the former airbase (TG 265 225) provides a precise location that matches the layout of the former military housing shown on the map. NR7 0DU was a council letterhead postcode.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 1.1995608039743602,
+  "gt_centroids": [
+    {
+      "lat": 52.75893790326959,
+      "lon": 1.3407098250230691
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "road": 2,
+      "grid_ref": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR7 0DU"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Broadland",
+        "query": "Yarmouth Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR7 0DU' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Yarmouth Road",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.636459243826096,
+            "lon": 1.4600852965825983,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.63666166213207,
+            "lon": 1.4602004096483194,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.63651189792062,
+            "lon": 1.4625720071425377,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.63667448155313,
+            "lon": 1.4622209560736559,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Yarmouth Road",
+            "lat": 52.63650586872959,
+            "lon": 1.4645790831746932,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 265 225"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Broadland",
+        "query": "Lamas Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TG 265 225",
+        "lat": 52.75303917243353,
+        "lon": 1.3556342721963
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Lamas Road",
+        "la_filter": "Broadland",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Lamas Road",
+            "lat": 52.76180803439944,
+            "lon": 1.3399574982991542,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.3556342721963,
+        "la": "Broadland",
+        "lat": 52.7530391724335
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.7530391724335,
+        "lon": 1.3556342721963,
+        "la": "Broadland",
+        "inside_la": false,
+        "distance_km_approx": 0.18,
+        "la_centroid_lat": 52.70119443642098,
+        "la_centroid_lon": 1.3101886931294198
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.355634,
+        "verified_inside_admin_region": false,
+        "confidence": "high",
+        "picked_source": "grid_ref:TG 265 225",
+        "top_lat": 52.753039,
+        "sigma_m": 500,
+        "evidence": "The site is identified as part of the RAF Coltishall Conservation Area. A grid reference for the former airbase (TG 265 225) provides a precise location that matches the layout of the former military housing shown on the map. NR7 0DU was a council letterhead postcode."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

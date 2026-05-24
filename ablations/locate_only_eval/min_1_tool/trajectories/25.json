@@ -1,0 +1,150 @@
+{
+  "case": "25",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5024276756005,
+    "top_lon": -0.193832954957498,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Drayson Mews",
+    "evidence": "The site is 1-27 Drayson Mews. Geocoding 'Drayson Mews' in Kensington and Chelsea returns a precise road location. The map also shows St Mary Abbots Church and Primary School nearby, which aligns with the geocoded school location (~150m east).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.026723016112986782,
+  "gt_centroids": [
+    {
+      "lat": 51.50227840259358,
+      "lon": -0.19353038314176232
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 3,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Drayson Mews"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Drayson Mews",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Drayson Mews",
+            "type": "named road",
+            "lat": 51.502427675600465,
+            "lon": -0.19383295495749847,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "St Mary Abbots Church"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary Abbots Church",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "St Mary Abbots Church of England Primary School",
+            "type": "primary education",
+            "lat": 51.502023598318,
+            "lon": -0.19211992330109268,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.5024276756005,
+        "evidence": "The site is 1-27 Drayson Mews. Geocoding 'Drayson Mews' in Kensington and Chelsea returns a precise road location. The map also shows St Mary Abbots Church and Primary School nearby, which aligns with the geocoded school location (~150m east).",
+        "confidence": "high",
+        "picked_source": "place:Drayson Mews",
+        "top_lon": -0.193832954957498,
+        "sigma_m": 200,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

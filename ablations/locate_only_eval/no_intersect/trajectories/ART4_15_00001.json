@@ -1,0 +1,296 @@
+{
+  "case": "ART4:15:00001",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.93388,
+    "top_lon": -1.80644,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "intersect:Puddleslosh Lane x Marl Lane",
+    "evidence": "The site is bounded by Puddleslosh Lane and Marl Lane. Geocoding Puddleslosh Lane and Marl Lane in New Forest places the site north of Fordingbridge. SP6 1AS is a nearby postcode in Fordingbridge. The intersection of these roads matches the map layout.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.4260514304446015,
+  "gt_centroids": [
+    {
+      "lat": 50.935590098936395,
+      "lon": -1.8009992695298243
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 2,
+      "place": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SP6 1AS"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SO43 7PA"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Forres Sandle Manor School",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Puddleslosh Lane",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SP6 1AS",
+        "lat": 50.92693213792325,
+        "lon": -1.791103693214475,
+        "admin_district": "New Forest District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SO43 7PA",
+        "lat": 50.87013594749979,
+        "lon": -1.570529769750998,
+        "admin_district": "New Forest District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Forres Sandle Manor School",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Puddleslosh Lane",
+        "la_filter": "New Forest",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Puddleslosh Lane",
+            "type": "section of named road",
+            "lat": 50.9397777739177,
+            "lon": -1.7988313219391747,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Puddleslosh Lane",
+            "type": "named road",
+            "lat": 50.93719622135553,
+            "lon": -1.8036811836498245,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Marl Lane",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandle Dairy Farm",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 50.937196,
+        "la": "New Forest",
+        "lon": -1.803681
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Marl Lane",
+        "la_filter": "New Forest",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Marl Lane",
+            "lat": 50.92896813272645,
+            "lon": -1.7980590766956448,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Marl Lane",
+            "lat": 50.92758822061575,
+            "lon": -1.797311493980033,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Marl Lane",
+            "lat": 50.93427121180014,
+            "lon": -1.8092636579561392,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Marl Lane",
+            "lat": 50.93388359977857,
+            "lon": -1.806447019043363,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Marl Lane",
+            "lat": 50.93233786577466,
+            "lon": -1.8029242189124934,
+            "in_la": "New Forest"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandle Dairy Farm",
+        "la_filter": "New Forest",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.937196,
+        "lon": -1.803681,
+        "la": "New Forest",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.85856472927001,
+        "la_centroid_lon": -1.625406857223459
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 50.93388,
+        "confidence": "high",
+        "evidence": "The site is bounded by Puddleslosh Lane and Marl Lane. Geocoding Puddleslosh Lane and Marl Lane in New Forest places the site north of Fordingbridge. SP6 1AS is a nearby postcode in Fordingbridge. The intersection of these roads matches the map layout.",
+        "verified_inside_admin_region": true,
+        "top_lon": -1.80644,
+        "sigma_m": 400,
+        "picked_source": "intersect:Puddleslosh Lane x Marl Lane"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

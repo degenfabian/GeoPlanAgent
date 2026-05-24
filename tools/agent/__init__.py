@@ -1,28 +1,4 @@
-"""Planning-boundary extraction agent — thin orchestrator.
-
-The pipeline is three LLM agents:
-
-  Phase 1 — Reader. One-shot pydantic-ai call (output_type=PDFInfo) over
-            the raw PDF. Each map_page is tagged with category
-            (match/discard), area_group, and boundary clarity/zoom.
-            Pre-rendered for every match page.
-
-  Phase 2 — Worker. PydanticAI loop with tools registered against
-            tools.agent.worker_agent._agent. The canonical loop is:
-              propose_centers → match_at(page=X) → commit_match
-              → submit BoundaryOutcome.
-            Each match_at matches ONE page (one area_group) and each
-            commit_match commits ONE area_group's geojson into the
-            running final-result union. For single-area documents
-            (99% of cases) the loop runs once. For multi-area
-            documents the worker runs the loop per area_group; the
-            final geojson is unioned across all committed groups.
-
-The pure functions for each phase live in tools.agent.runtime; this
-module is just the coordinator + tool-module import (which triggers the
-@_agent.tool decorators at import time so all worker tools are
-registered before run_agent is called).
-"""
+"""run_agent: reader → worker (→ optional critic) over one planning PDF."""
 
 from __future__ import annotations
 
@@ -31,18 +7,14 @@ import traceback
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-# Re-exported schemas for callers that import from tools.agent directly.
 from tools.agent.schemas import (
     BoundaryOutcome,
     PDFInfo,
 )
 from tools.agent.state import AgentState
 
-# Importing these modules triggers the `@_agent.tool` decorators inside
-# them, registering every worker tool against the shared _agent. Order
-# between tool modules doesn't matter, but they MUST be imported AFTER
-# tools.agent.worker_agent (the file that defines _agent itself).
-from tools.agent.tools import (  # noqa: F401  (decorator side-effects)
+# Imports trigger @_agent.tool decorator side-effects; must come after worker_agent.
+from tools.agent.tools import (  # noqa: F401
     locate as _locate_tool,
     match as _match_tool,
     verify as _verify_tool,
@@ -63,41 +35,11 @@ def run_agent(
     enable_critic: bool = False,
     critic_max_iters: int = 2,
     locate_model: str = "google/gemini-3-flash-preview",
+    locate_disabled_tools: frozenset = frozenset(
+        {"postcode", "grid_ref", "road", "intersect", "la_check"}
+    ),
 ) -> Dict[str, Any]:
-    """Run reader → worker on one planning PDF.
-
-    Args:
-        pdf_path: Path to the planning PDF.
-        models_state: Dict with sam3_ft (or sam3_base) and minima models.
-        model_name: OpenRouter model identifier or alias (gemini-flash, …).
-        max_iterations: Soft cap on worker turns. Floor of 25 requests
-            covers healthy hard cases.
-        dpi: PDF rendering DPI for the planning map pages.
-        verbose: Print phase headers and progress.
-        case_name: Override for the case identifier (used by k-fold SAM3
-            adapter routing). Defaults to the PDF's parent directory.
-        case_dir: Where to flush pdf_info.json + partial_state.json on
-            crash. Optional.
-        enable_critic: If True, after the worker submits, run an independent
-            LLM critic that compares all stored match_attempts and may
-            instruct the worker to switch or re-locate. The worker's first
-            committed polygon is also captured (snapshot) so the
-            returned dict carries BOTH no-critic and with-critic outcomes
-            from the same run (two-in-one ablation).
-        critic_max_iters: max critic-rejection iterations before forcing
-            accept. Ignored when enable_critic is False.
-        locate_model: Model alias or OpenRouter identifier for the
-            locate sub-agent (independent of ``model_name``, which
-            governs the reader + worker). Default
-            ``google/gemini-3-flash-preview`` matches the previous
-            hardcoded value.
-
-    Returns:
-        Dict with keys including geojson, mask, match_info, agent_accepted,
-        agent_reason, agent_stats, message_log. When enable_critic is
-        True, also includes worker_first_geojson (snapshot) so downstream
-        can score the no-critic baseline.
-    """
+    """Run reader → worker on one planning PDF. Returns geojson, mask, stats."""
     from tools.agent._model import resolve_model_name
     model_name = resolve_model_name(model_name)
 
@@ -129,6 +71,7 @@ def run_agent(
         pdf_path=pdf_path, sam3=sam3, minima_matcher=models_state["minima"],
         pdf_info=pdf_info, dpi=dpi, case_name=case_name, verbose=verbose,
         locate_model=locate_model,
+        locate_disabled_tools=locate_disabled_tools,
     )
 
     if verbose:
@@ -174,11 +117,9 @@ def run_agent(
                   f"inliers={outcome.final_n_inliers} "
                   f"rotation_checked={outcome.rotation_checked}")
 
-    # ── Phase 3 (optional): independent critic loop ───────────────────────
-    # We snapshot the worker's first committed polygon BEFORE entering
-    # the critic loop, so that even if the critic crashes mid-loop, the
-    # no-critic baseline is preserved in the return dict (distinguishes
-    # critic-crash from critic-disabled in downstream telemetry).
+    # ── Phase 3 (optional): critic loop ───────────────────────────────────
+    # Snapshot the worker's first commit so critic-crash and critic-disabled
+    # stay distinguishable downstream.
     critic_result: Optional[Dict[str, Any]] = None
     worker_first_geojson_snapshot: Optional[dict] = None
     can_run_critic = (
@@ -188,10 +129,7 @@ def run_agent(
         and outcome.status != "district_lookup"
     )
     if can_run_critic:
-        # Deep-copy so a future refactor that mutates state.current_result
-        # in place (rather than rebinding the dict each commit_match)
-        # cannot retroactively corrupt the no-critic baseline used on
-        # the critic-error path.
+        # Deep-copy: protect the snapshot from any future in-place mutation.
         import copy as _copy
         worker_first_geojson_snapshot = _copy.deepcopy(
             state.current_result.get("geojson"))
@@ -220,10 +158,6 @@ def run_agent(
             }
 
     # Write critic-panel PNGs to disk for post-hoc debugging.
-    #   critic_panel_iter{N}.png            — stacked overview of all
-    #                                         shown candidates per iter
-    #   critic_panel_iter{N}_cand{id}.png   — the per-candidate images
-    #                                         the LLM actually saw
     if (critic_result is not None
             and "error" not in critic_result
             and case_dir is not None):
@@ -235,7 +169,6 @@ def run_agent(
                     continue
                 _path = case_dir / f"critic_panel_iter{_i}.png"
                 _cv2.imwrite(str(_path), _p)
-            # Per-candidate images — these are exactly what the LLM saw.
             for _i, _cands in enumerate(
                     critic_result.get("per_cand_panels_by_iter") or []):
                 for _cid, _cp in _cands or []:
@@ -256,11 +189,8 @@ def run_agent(
               f"inliers={mi.get('n_inliers', 0)}, "
               f"reason={state.accept_reason[:100]}")
 
-    # When the critic ran AND triggered rehands, the post-critic
-    # worker_result carries the FULL conversation including the rehand
-    # sub-turns. Use it for log extraction so the on-disk message log
-    # captures critic-triggered worker activity (otherwise the rehand
-    # turns are lost from disk).
+    # If the critic triggered rehands, the post-critic result has the full
+    # conversation including those sub-turns — use it for log extraction.
     log_source_result = result
     if critic_result is not None and "error" not in critic_result:
         final_wr = critic_result.get("final_worker_result")
@@ -277,9 +207,7 @@ def run_agent(
 
     agent_stats = _rt.collect_agent_stats(state, pdf_info, result, extracted_stats)
 
-    # Embed critic telemetry in agent_stats (tokens, iterations, n_rejections).
-    # The actual geojsons are passed separately so build_run_agent_return
-    # can include them at the top level.
+    # Critic telemetry into agent_stats; geojsons go through build_run_agent_return.
     if critic_result is not None and "error" not in critic_result:
         agent_stats["critic"] = {
             "n_rejections": critic_result.get("n_rejections", 0),

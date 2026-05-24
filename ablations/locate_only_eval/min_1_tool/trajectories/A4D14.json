@@ -1,0 +1,254 @@
+{
+  "case": "A4D14",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.485886,
+    "top_lon": -2.5395,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:ST 6276 362520E 176465N",
+    "evidence": "The map and pdf_info provide a specific grid reference (ST 6276 362520E 176465N) and address (Grove Wood, Blackberry Hill, Stapleton). Geocoding 'Blackberry Hill' in Bristol places us exactly at the site shown on the map, adjacent to the hospital and Stapleton village.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.12919473357842098,
+  "gt_centroids": [
+    {
+      "lat": 51.48566575912615,
+      "lon": -2.541332013595114
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Grove Wood",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Blackberry Hill"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Grove Wood",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Grove Wood",
+            "type": "named road",
+            "lat": 55.8356948830698,
+            "lon": -4.052519727290069,
+            "admin_district": null,
+            "county": "North Lanarkshire"
+          },
+          {
+            "name": "Grove Wood",
+            "type": "woodland or forest",
+            "lat": 55.83325486509027,
+            "lon": -4.0457801747963815,
+            "admin_district": null,
+            "county": "North Lanarkshire"
+          },
+          {
+            "name": "Grove Wood",
+            "type": "woodland or forest",
+            "lat": 53.93111658635255,
+            "lon": -2.3137946396301863,
+            "admin_district": "Ribble Valley",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Grove Wood",
+            "type": "woodland or forest",
+            "lat": 53.664409387496725,
+            "lon": -1.1834440807200355,
+            "admin_district": null,
+            "county": "North Yorkshire"
+          },
+          {
+            "name": "Grove Wood",
+            "type": "woodland or forest",
+            "lat": 52.767926306018545,
+            "lon": -1.6465790029808294,
+            "admin_district": "South Derbyshire",
+            "county": "Derbyshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Blackberry Hill",
+        "la_filter": "Bristol",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Blackberry Hill",
+            "type": "named road",
+            "lat": 51.483440861790235,
+            "lon": -2.54478378234629,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Blackberry Hill",
+            "type": "section of named road",
+            "lat": 51.48588637509776,
+            "lon": -2.546757188400573,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Blackberry Hill Hospital",
+            "type": "hospital",
+            "lat": 51.4848755898861,
+            "lon": -2.5378449470562985,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Stapleton",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Stapleton",
+        "la_filter": "Bristol",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Stapleton",
+            "type": "village",
+            "lat": 51.481299208333034,
+            "lon": -2.554723336147487,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Stapleton Close",
+            "type": "named road",
+            "lat": 51.482149202658825,
+            "lon": -2.5537112052201794,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Stapleton Road",
+            "type": "named road",
+            "lat": 51.46799528276957,
+            "lon": -2.56711542746578,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Stapleton Road",
+            "type": "railway station",
+            "lat": 51.46758732927473,
+            "lon": -2.56594428342116,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "confidence": "high",
+        "picked_source": "grid_ref:ST 6276 362520E 176465N",
+        "top_lat": 51.485886,
+        "evidence": "The map and pdf_info provide a specific grid reference (ST 6276 362520E 176465N) and address (Grove Wood, Blackberry Hill, Stapleton). Geocoding 'Blackberry Hill' in Bristol places us exactly at the site shown on the map, adjacent to the hospital and Stapleton village.",
+        "verified_inside_admin_region": true,
+        "top_lon": -2.5395
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

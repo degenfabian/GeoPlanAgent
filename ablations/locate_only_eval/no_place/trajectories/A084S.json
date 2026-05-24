@@ -1,0 +1,224 @@
+{
+  "case": "A084S",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6349978612515,
+    "top_lon": -0.349527279331478,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:PE6 7DU",
+    "evidence": "The site address '27 West Street, Helpston' matches the site postcode PE6 7DU. The map shows the site at number 27 on West Street, near the junction with Crossberry Way. The postcode and intersection are in tight agreement.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1197084670491447,
+  "gt_centroids": [
+    {
+      "lat": 52.63495411444385,
+      "lon": -0.3477548435993574
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "PE6 7DU"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "West Street",
+        "la": "Peterborough",
+        "road_b": "Crossberry Way"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "West Street",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "PE6 7DU",
+        "lat": 52.6349978612515,
+        "lon": -0.3495272793314776,
+        "admin_district": "City of Peterborough (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "West Street",
+          "Crossberry Way"
+        ],
+        "la_filter": "Peterborough",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.635006,
+            "lon": -0.346911,
+            "roads": [
+              "West Street",
+              "Crossberry Way"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "West Street",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "West Street",
+            "lat": 52.635052825266115,
+            "lon": -0.3502202062450459,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "West Street",
+            "lat": 52.63507768526328,
+            "lon": -0.34848111613360483,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "West Street",
+            "lat": 52.63504776987769,
+            "lon": -0.34623979924753,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "West Street",
+            "lat": 52.63515010549259,
+            "lon": -0.3448763873592658,
+            "in_la": "Peterborough"
+          },
+          {
+            "name": "West Street",
+            "lat": 52.63506001633769,
+            "lon": -0.35403391334927387,
+            "in_la": "Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Peterborough",
+        "lat": 52.6349978612515,
+        "lon": -0.349527279331478
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6349978612515,
+        "lon": -0.349527279331478,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "The site address '27 West Street, Helpston' matches the site postcode PE6 7DU. The map shows the site at number 27 on West Street, near the junction with Crossberry Way. The postcode and intersection are in tight agreement.",
+        "confidence": "high",
+        "sigma_m": 200,
+        "top_lon": -0.349527279331478,
+        "top_lat": 52.6349978612515,
+        "picked_source": "postcode:PE6 7DU"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

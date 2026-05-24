@@ -1,0 +1,338 @@
+{
+  "case": "A4Da3",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.4943119636454,
+    "top_lon": -2.04109399950925,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Portway Hill",
+    "evidence": "The site is 'Land off Portway Hill' in Rowley Regis. Multiple road centroids for Portway Hill and the town center of Rowley Regis cluster in this area. Postcode B69 3DE is ~3km away and likely a letterhead/office address. Picked a central road segment for Portway Hill.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.46049760567501064,
+  "gt_centroids": [
+    {
+      "lat": 52.49812701784881,
+      "lon": -2.043740565824094
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "B69 3DE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Sandwell",
+        "query": "Portway Hill"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Rowley Regis",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "B69 3DE",
+        "lat": 52.50399198681494,
+        "lon": -2.0090607357811634,
+        "admin_district": "Sandwell District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Portway Hill",
+        "la_filter": "Sandwell",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Portway Hill",
+            "type": "named road",
+            "lat": 52.49639612015624,
+            "lon": -2.0452055065874784,
+            "admin_district": "Sandwell",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Rowley Regis",
+        "la_filter": "Sandwell",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Rowley Regis",
+            "type": "town",
+            "lat": 52.484205807748886,
+            "lon": -2.045075132603797,
+            "admin_district": "Sandwell",
+            "county": null
+          },
+          {
+            "name": "Rowley Regis",
+            "type": "railway station",
+            "lat": 52.47854697620248,
+            "lon": -2.029903992878913,
+            "admin_district": "Sandwell",
+            "county": null
+          },
+          {
+            "name": "Rowley Regis Hospital",
+            "type": "hospital",
+            "lat": 52.48090356994321,
+            "lon": -2.0521541750916774,
+            "admin_district": "Sandwell",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Sandwell",
+        "query": "Portway Hill"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Sandwell",
+        "query": "Turners Hill"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Portway Hill",
+        "la_filter": "Sandwell",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Portway Hill",
+            "lat": 52.49431196364536,
+            "lon": -2.0410939995092474,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "Portway Hill",
+            "lat": 52.49549345505456,
+            "lon": -2.043009913631572,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "Portway Hill",
+            "lat": 52.4949948627014,
+            "lon": -2.042044667635475,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "Portway Hill",
+            "lat": 52.49898813771186,
+            "lon": -2.0491412085784306,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "Portway Hill",
+            "lat": 52.498227905521816,
+            "lon": -2.0479392568985086,
+            "in_la": "Sandwell"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Turners Hill",
+        "la_filter": "Sandwell",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Turners Hill",
+            "type": "named road",
+            "lat": 51.75038174929487,
+            "lon": -0.4611695754765866,
+            "admin_district": "Dacorum",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Turners Hill",
+            "type": "village",
+            "lat": 51.10393113899737,
+            "lon": -0.08524993772797465,
+            "admin_district": "Mid Sussex",
+            "county": "West Sussex"
+          },
+          {
+            "name": "Turners Hill Road",
+            "type": "named road",
+            "lat": 52.44582983926954,
+            "lon": -2.8408977089999734,
+            "admin_district": null,
+            "county": "Shropshire"
+          },
+          {
+            "name": "Turners Hill Road",
+            "type": "named road",
+            "lat": 52.52383975779669,
+            "lon": -2.132295678675848,
+            "admin_district": "Dudley",
+            "county": null
+          },
+          {
+            "name": "Turners Hill Road",
+            "type": "section of named road",
+            "lat": 51.11604852830364,
+            "lon": -0.14290149682607622,
+            "admin_district": "Crawley",
+            "county": "West Sussex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.4943119636454,
+        "lon": -2.04109399950925,
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.4943119636454,
+        "lon": -2.04109399950925,
+        "la": "Sandwell",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51544066566969,
+        "la_centroid_lon": -2.008954795482069
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "The site is 'Land off Portway Hill' in Rowley Regis. Multiple road centroids for Portway Hill and the town center of Rowley Regis cluster in this area. Postcode B69 3DE is ~3km away and likely a letterhead/office address. Picked a central road segment for Portway Hill.",
+        "top_lon": -2.04109399950925,
+        "sigma_m": 500,
+        "confidence": "high",
+        "top_lat": 52.4943119636454,
+        "picked_source": "road:Portway Hill"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

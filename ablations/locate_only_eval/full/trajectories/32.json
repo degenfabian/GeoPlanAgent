@@ -1,0 +1,235 @@
+{
+  "case": "32",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4867108446329,
+    "top_lon": -0.173064758629953,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Carlyle Square",
+    "evidence": "The site is Carlyle Square, which is clearly labeled on the map and confirmed by the site address. The place search for 'Carlyle Square' in Kensington and Chelsea returned a centroid that aligns perfectly with the intersection of King's Road and Old Church Street seen on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.01620535893731828,
+  "gt_centroids": [
+    {
+      "lat": 51.48700682389442,
+      "lon": -0.1722864926118728
+    },
+    {
+      "lat": 51.48746938625088,
+      "lon": -0.17335540467753452
+    },
+    {
+      "lat": 51.48665402819306,
+      "lon": -0.1732802843039544
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Carlyle Square",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "King's Road",
+        "la": "Kensington and Chelsea",
+        "road_a": "Carlyle Square"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Chelsea School of Art",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Carlyle Square",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Carlyle Square",
+            "type": "named road",
+            "lat": 51.486710844632924,
+            "lon": -0.1730647586299531,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Carlyle Square",
+          "King's Road"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Chelsea School of Art",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "King's Road",
+        "la": "Kensington and Chelsea",
+        "road_a": "Old Church Street"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "lon": -0.173064758629953,
+        "lat": 51.4867108446329
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Old Church Street",
+          "King's Road"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.485802,
+            "lon": -0.173043,
+            "roads": [
+              "Old Church Street",
+              "King's Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.4867108446329,
+        "lon": -0.173064758629953,
+        "la": "Kensington and Chelsea",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.50120516305225,
+        "la_centroid_lon": -0.19222073817151708
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "The site is Carlyle Square, which is clearly labeled on the map and confirmed by the site address. The place search for 'Carlyle Square' in Kensington and Chelsea returned a centroid that aligns perfectly with the intersection of King's Road and Old Church Street seen on the map.",
+        "confidence": "high",
+        "sigma_m": 200,
+        "top_lon": -0.173064758629953,
+        "top_lat": 51.4867108446329,
+        "picked_source": "place:Carlyle Square"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

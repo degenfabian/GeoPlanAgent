@@ -1,0 +1,234 @@
+{
+  "case": "SSA403",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.518,
+    "top_lon": -2.265,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Halfpenny Green",
+    "evidence": "The site is Halfpenny Green Airfield (now Wolverhampton Airport). The map shows the site boundary between Bobbington and Halfpenny Green. The intersection of Six Ashes Road and Tom Lane (52.5255, -2.2595) and the settlement of Halfpenny Green (52.5244, -2.2605) provide a tight cluster at the northern edge of the airfield. Picked a central point within the airfield boundary south of these markers.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.31743588788551713,
+  "gt_centroids": [
+    {
+      "lat": 52.516725312563224,
+      "lon": -2.2608023063898424
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Halfpenny Green Airfield",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Bobbington"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Staffordshire",
+        "road_b": "Tom Lane",
+        "road_a": "Six Ashes Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Halfpenny Green"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Halfpenny Green Airfield",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bobbington",
+        "la_filter": "South Staffordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Bobbington",
+            "type": "village",
+            "lat": 52.51217627418163,
+            "lon": -2.282806812720804,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Six Ashes Road",
+          "Tom Lane"
+        ],
+        "la_filter": "South Staffordshire",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.525526,
+            "lon": -2.259464,
+            "roads": [
+              "Six Ashes Road",
+              "Tom Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Halfpenny Green",
+        "la_filter": "South Staffordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Halfpenny Green",
+            "type": "other settlement",
+            "lat": 52.524444771953895,
+            "lon": -2.2605266114041243,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Staffordshire",
+        "lat": 52.5244447719539,
+        "lon": -2.26052661140412
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5244447719539,
+        "lon": -2.26052661140412,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 500,
+        "picked_source": "place:Halfpenny Green",
+        "top_lat": 52.518,
+        "top_lon": -2.265,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is Halfpenny Green Airfield (now Wolverhampton Airport). The map shows the site boundary between Bobbington and Halfpenny Green. The intersection of Six Ashes Road and Tom Lane (52.5255, -2.2595) and the settlement of Halfpenny Green (52.5244, -2.2605) provide a tight cluster at the northern edge of the airfield. Picked a central point within the airfield boundary south of these markers.",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

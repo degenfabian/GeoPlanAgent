@@ -1,0 +1,330 @@
+{
+  "case": "A4D10",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.507348,
+    "top_lon": -2.631074,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Henbury Road x Station Road",
+    "evidence": "The map shows the Henbury Conservation Area. Multiple road intersections (Henbury Rd x Station Rd and Henbury Rd x Church Lane) and the 'Henbury' suburban area centroid all cluster tightly around this coordinate.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14053321323043022,
+  "gt_centroids": [
+    {
+      "lat": 51.506426833001946,
+      "lon": -2.629683770493267
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Mary's Church, Henbury",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Bristol",
+        "query": "Blaise Castle House"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Henbury Road",
+        "road_b": "Station Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church, Henbury",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Blaise Castle House",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Henbury Road",
+          "Station Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.507348,
+            "lon": -2.631074,
+            "roads": [
+              "Henbury Road",
+              "Station Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Henbury",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Salutation Hotel",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Bristol",
+        "road_a": "Henbury Road",
+        "road_b": "Church Lane"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Henbury",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Henbury",
+            "type": "suburban area",
+            "lat": 51.50734833358625,
+            "lon": -2.631074174636513,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Henbury",
+            "type": "railway station",
+            "lat": 51.51490690612339,
+            "lon": -2.624981910736743,
+            "admin_district": null,
+            "county": "South Gloucestershire"
+          },
+          {
+            "name": "Henbury Road",
+            "type": "named road",
+            "lat": 51.50148231772871,
+            "lon": -2.6250142871815694,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Henbury Hill",
+            "type": "hill or mountain",
+            "lat": 51.502994647118015,
+            "lon": -2.6196034365731755,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Henbury Court Primary School",
+            "type": "primary education",
+            "lat": 51.508903798957384,
+            "lon": -2.627738339614533,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Salutation Hotel",
+        "la_filter": "Bristol",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Henbury Road",
+          "Church Lane"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 51.506704,
+            "lon": -2.632461,
+            "roads": [
+              "Henbury Road",
+              "Church Lane"
+            ]
+          },
+          {
+            "lat": 51.507333,
+            "lon": -2.631163,
+            "roads": [
+              "Henbury Road",
+              "Church Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.631,
+        "lat": 51.507,
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.507,
+        "lon": -2.631,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "top_lat": 51.507348,
+        "picked_source": "intersect:Henbury Road x Station Road",
+        "evidence": "The map shows the Henbury Conservation Area. Multiple road intersections (Henbury Rd x Station Rd and Henbury Rd x Church Lane) and the 'Henbury' suburban area centroid all cluster tightly around this coordinate.",
+        "top_lon": -2.631074,
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

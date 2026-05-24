@@ -1,0 +1,371 @@
+{
+  "case": "ARTICLE:200",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.035,
+    "top_lon": 0.075,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "place:Great Chishill / Heydon B1368 corridor",
+    "evidence": "The map shows the site on the B1368, west of Heydon village and north of Great Chishill. The B1368 runs north-south between these two villages. The site is specifically located at the intersection of the B1368 and a track leading towards Heydon Grange. Coordinates are centered between Great Chishill and Heydon on the B1368.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 2.649715121292002,
+  "gt_centroids": [
+    {
+      "lat": 52.053896808827176,
+      "lon": 0.05139645012944373
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "Copley Hill Farms"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Great Chishill",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Heydon",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Copley Hill Farms",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Great Chishill",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Great Chishill",
+            "type": "village",
+            "lat": 52.02896918896715,
+            "lon": 0.07318634656097892,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "Great Chishill",
+            "type": "hill or mountain",
+            "lat": 52.02697662136519,
+            "lon": 0.07909997736209476,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Heydon",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Heydon",
+            "type": "village",
+            "lat": 52.04031592910258,
+            "lon": 0.0864993954175203,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "Heydon Road",
+            "type": "named road",
+            "lat": 52.0314007463359,
+            "lon": 0.07501910904461087,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "Heydon Lane",
+            "type": "section of named road",
+            "lat": 52.0402714738361,
+            "lon": 0.08697851543100149,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "Heydon Lane",
+            "type": "named road",
+            "lat": 52.04093602835616,
+            "lon": 0.09361500870186326,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "Heydon Valley",
+            "type": "valley",
+            "lat": 52.04990253516103,
+            "lon": 0.09151101064186376,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Heydon Grange",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Heydon Grange",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "B1368"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "B1368",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "B1368",
+            "type": "numbered road",
+            "lat": 52.026258537444896,
+            "lon": 0.038382527358081064,
+            "admin_district": "North Hertfordshire",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Heydon Grange"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Heydon Grange",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Copley Hill"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Copley Hill",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Copley Hill",
+            "type": "suburban area",
+            "lat": 53.73423803265078,
+            "lon": -1.653886689130501,
+            "admin_district": "Kirklees",
+            "county": null
+          },
+          {
+            "name": "Copley Hill",
+            "type": "named road",
+            "lat": 53.78974366515249,
+            "lon": -1.571676734525318,
+            "admin_district": "Leeds",
+            "county": null
+          },
+          {
+            "name": "Copley Hill",
+            "type": "named road",
+            "lat": 53.733257652732995,
+            "lon": -1.6536521997609026,
+            "admin_district": "Kirklees",
+            "county": null
+          },
+          {
+            "name": "Copley Hill",
+            "type": "hill or mountain",
+            "lat": 52.15558026136059,
+            "lon": 0.2053174632387769,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "Copley Hill Way",
+            "type": "named road",
+            "lat": 53.788294573773655,
+            "lon": -1.5736343217220496,
+            "admin_district": "Leeds",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 0.075,
+        "picked_source": "place:Great Chishill / Heydon B1368 corridor",
+        "confidence": "high",
+        "top_lat": 52.035,
+        "sigma_m": 1000,
+        "evidence": "The map shows the site on the B1368, west of Heydon village and north of Great Chishill. The B1368 runs north-south between these two villages. The site is specifically located at the intersection of the B1368 and a track leading towards Heydon Grange. Coordinates are centered between Great Chishill and Heydon on the B1368.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

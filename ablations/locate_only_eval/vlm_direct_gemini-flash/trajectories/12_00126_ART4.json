@@ -1,0 +1,64 @@
+{
+  "case": "12:00126:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.4685,
+    "lon": 1.511,
+    "reasoning": "The document specifies multiple addresses in Geldeston, including Geldeston Hill, Kells Acre, and Kells Way, which are clearly shown on the provided planning maps."
+  },
+  "err_km": 0.6284799610471157,
+  "gt_centroids": [
+    {
+      "lat": 52.47382141827659,
+      "lon": 1.514126917824604
+    },
+    {
+      "lat": 52.47428111326806,
+      "lon": 1.515103412976047
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": 1.511,
+        "reasoning": "The document specifies multiple addresses in Geldeston, including Geldeston Hill, Kells Acre, and Kells Way, which are clearly shown on the provided planning maps.",
+        "lat": 52.4685
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

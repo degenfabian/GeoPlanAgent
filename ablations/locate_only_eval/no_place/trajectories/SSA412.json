@@ -1,0 +1,266 @@
+{
+  "case": "SSA412",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.692144,
+    "top_lon": -2.097607,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "grid_ref:SJ9310",
+    "evidence": "The map explicitly states Map Reference SJ9310, which resolves to Gailey. This matches the site address (Gailey) and the visual features (Junction 12 of the M6 and Gailey Reservoirs). The postcode WV8 1PX is for the Council Offices in Codsall.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.49348237034687925,
+  "gt_centroids": [
+    {
+      "lat": 52.68818078502824,
+      "lon": -2.094312008670204
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "postcode": 1,
+      "intersect": 1,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SJ9310"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "WV8 1PX"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Watling Street",
+        "la": "South Staffordshire",
+        "road_b": "Vicarage Lane"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SJ9310",
+        "lat": 52.692143955522475,
+        "lon": -2.0976066474978143
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "WV8 1PX",
+        "lat": 52.62566656951965,
+        "lon": -2.191960842481458,
+        "admin_district": "South Staffordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Watling Street",
+          "Vicarage Lane"
+        ],
+        "la_filter": "South Staffordshire",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Vicarage Lane"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Watling Street",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Vicarage Lane",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Watling Street",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Watling Street",
+            "lat": 52.68010087774991,
+            "lon": -2.0512508692993796,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Watling Street",
+            "lat": 52.680281000176684,
+            "lon": -2.051936438712897,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Watling Street",
+            "lat": 52.681707283867695,
+            "lon": -2.0601963486495696,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Watling Street",
+            "lat": 52.6714362893799,
+            "lon": -2.0193032734938767,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Watling Street",
+            "lat": 52.66836146295786,
+            "lon": -2.00621762680274,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Staffordshire",
+        "lat": 52.6921439555225,
+        "lon": -2.09760664749781
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6921439555225,
+        "lon": -2.09760664749781,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.692144,
+        "top_lon": -2.097607,
+        "picked_source": "grid_ref:SJ9310",
+        "sigma_m": 400,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "evidence": "The map explicitly states Map Reference SJ9310, which resolves to Gailey. This matches the site address (Gailey) and the visual features (Junction 12 of the M6 and Gailey Reservoirs). The postcode WV8 1PX is for the Council Offices in Codsall."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "case": "5FA84190-A72E-4E26-A5B2-C17B67D4BB11",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.298,
+    "lon": 1.375,
+    "reasoning": "The document describes land at Sandwich Bay in the Parish of Worth, specifically abutting the eastern boundary of Prince's Golf Club and the foreshore, as shown on the provided OS map (TR 3559-60)."
+  },
+  "err_km": 1.0844833255001085,
+  "gt_centroids": [
+    {
+      "lat": 51.28834833481014,
+      "lon": 1.3772423523363058
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document describes land at Sandwich Bay in the Parish of Worth, specifically abutting the eastern boundary of Prince's Golf Club and the foreshore, as shown on the provided OS map (TR 3559-60).",
+        "lat": 51.298,
+        "lon": 1.375
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

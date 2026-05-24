@@ -1,0 +1,68 @@
+{
+  "case": "12:00128:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.495,
+    "lon": 1.275,
+    "reasoning": "The document refers to land in the parish of Hempnall, specifically identifying Turkey Row and Lundy Green on the provided map, which corresponds to these coordinates."
+  },
+  "err_km": 2.3645082893185907,
+  "gt_centroids": [
+    {
+      "lat": 52.486652248996606,
+      "lon": 1.3071199907177589
+    },
+    {
+      "lat": 52.48418898990687,
+      "lon": 1.309110521940893
+    },
+    {
+      "lat": 52.48489031704312,
+      "lon": 1.3079148809396939
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document refers to land in the parish of Hempnall, specifically identifying Turkey Row and Lundy Green on the provided map, which corresponds to these coordinates.",
+        "lon": 1.275,
+        "lat": 52.495
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

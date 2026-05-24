@@ -1,0 +1,273 @@
+{
+  "case": "Ar4.1_7a_merged",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.785,
+    "top_lon": -0.34,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "intersect:Ayres End Lane x Harpenden Road",
+    "evidence": "The map shows Article 4 areas across the Childwickbury estate, specifically Childwick Green, Childwickbury Stud, and Beesonend. The intersection of Ayres End Lane and Harpenden Road (A1081) provides a precise anchor point for the central-eastern portion of the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.49342087958713227,
+  "gt_centroids": [
+    {
+      "lat": 51.78365150997723,
+      "lon": -0.34683385524576277
+    },
+    {
+      "lat": 51.78667187512641,
+      "lon": -0.3513566739581799
+    },
+    {
+      "lat": 51.789886214037075,
+      "lon": -0.34830885599247824
+    },
+    {
+      "lat": 51.79024463030131,
+      "lon": -0.35562594408396503
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Ayres End Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Beesonend Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Ayres End Lane",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ayres End Lane",
+            "lat": 51.79502517066033,
+            "lon": -0.33149089199522475,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ayres End Lane",
+            "lat": 51.79651263686358,
+            "lon": -0.3261754292978076,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ayres End Lane",
+            "lat": 51.79729058895583,
+            "lon": -0.32454783350886585,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ayres End Lane",
+            "lat": 51.79110039914054,
+            "lon": -0.3428788495576086,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ayres End Lane",
+            "lat": 51.79313279118086,
+            "lon": -0.3377319084827916,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Beesonend Lane",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Beesonend Lane",
+            "lat": 51.79494713634261,
+            "lon": -0.35038629470868243,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Beesonend Lane",
+            "lat": 51.79480810764194,
+            "lon": -0.3503019673602186,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Beesonend Lane",
+            "lat": 51.78980079987271,
+            "lon": -0.3632466386277748,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Beesonend Lane",
+            "lat": 51.79339204963085,
+            "lon": -0.3545487347409917,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Beesonend Lane",
+            "lat": 51.79478844414996,
+            "lon": -0.351143760130513,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Ayres End Lane",
+        "la": "St Albans",
+        "road_b": "Harpenden Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Ayres End Lane",
+          "Harpenden Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.790049,
+            "lon": -0.345606,
+            "roads": [
+              "Ayres End Lane",
+              "Harpenden Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "St Albans",
+        "lon": -0.34,
+        "lat": 51.785
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.785,
+        "lon": -0.34,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.34,
+        "evidence": "The map shows Article 4 areas across the Childwickbury estate, specifically Childwick Green, Childwickbury Stud, and Beesonend. The intersection of Ayres End Lane and Harpenden Road (A1081) provides a precise anchor point for the central-eastern portion of the map.",
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Ayres End Lane x Harpenden Road",
+        "top_lat": 51.785,
+        "sigma_m": 1000,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,333 @@
+{
+  "case": "1D1A9561-7534-409B-9937-29C887F66069",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1701,
+    "top_lon": 1.343,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR 3346",
+    "evidence": "The site is described as between Martin, Martin Mill, and East Langdon. The grid reference TR 3346 places it exactly in this triangle. The map shows 'The Grange' and a school, which are located in East Langdon. The picked coordinate is the centroid of the triangle formed by these three villages.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.15493153081748195,
+  "gt_centroids": [
+    {
+      "lat": 51.17141271345871,
+      "lon": 1.3422550648650362
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "The Grange Langdon"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "East Langdon County Primary School"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Martin Mill"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Grange Langdon",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "East Langdon County Primary School",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Martin Mill",
+        "la_filter": "Dover",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Martin Mill",
+            "type": "village",
+            "lat": 51.16997395023369,
+            "lon": 1.3488672918255502,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Martin Mill",
+            "type": "railway station",
+            "lat": 51.170304950471134,
+            "lon": 1.347675075526475,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "East Langdon",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Martin",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "East Langdon",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "East Langdon",
+            "type": "village",
+            "lat": 51.16601634441556,
+            "lon": 1.3359615624369245,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "East Langdon Road",
+            "type": "named road",
+            "lat": 51.17089800452419,
+            "lon": 1.3442410727658083,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "East Langdon Road",
+            "type": "named road",
+            "lat": 51.157689098872694,
+            "lon": 1.3248323126572603,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "East Langdon Road",
+            "type": "section of named road",
+            "lat": 51.16824670710803,
+            "lon": 1.3391272563716006,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "East Langdon Road",
+            "type": "section of named road",
+            "lat": 51.172663937794496,
+            "lon": 1.344769595933073,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Martin",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Martin",
+            "type": "village",
+            "lat": 51.174473568255905,
+            "lon": 1.344399817513273,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Martin Way",
+            "type": "named road",
+            "lat": 51.2195483579232,
+            "lon": -1.4759792393885482,
+            "admin_district": "Test Valley",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Martin Mill",
+            "type": "village",
+            "lat": 51.16997395023369,
+            "lon": 1.3488672918255502,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Martin Dale Crescent",
+            "type": "named road",
+            "lat": 51.166718978328696,
+            "lon": 1.373840849481415,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Martin Dale Crescent",
+            "type": "section of named road",
+            "lat": 51.17095196521056,
+            "lon": 1.3492673001724877,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.34,
+        "lat": 51.17,
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.17,
+        "lon": 1.34,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "sigma_m": 500,
+        "top_lat": 51.1701,
+        "top_lon": 1.343,
+        "confidence": "high",
+        "picked_source": "grid_ref:TR 3346",
+        "evidence": "The site is described as between Martin, Martin Mill, and East Langdon. The grid reference TR 3346 places it exactly in this triangle. The map shows 'The Grange' and a school, which are located in East Langdon. The picked coordinate is the centroid of the triangle formed by these three villages."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

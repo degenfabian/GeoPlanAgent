@@ -1,0 +1,349 @@
+{
+  "case": "Ar4.24",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7354,
+    "top_lon": -0.3155,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Meadowcroft",
+    "evidence": "The site is identified as North Orbital Trading Estate, bounded by Napsbury Lane, Meadowcroft, and Herons Way. Road centroids for these three roads cluster tightly around 51.735, -0.316. Specifically, Meadowcroft and Napsbury Lane centroids are within 200m of each other.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.15913978167126974,
+  "gt_centroids": [
+    {
+      "lat": 51.73495987673922,
+      "lon": -0.31769898267259716
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "intersect": 2,
+      "road": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "North Orbital Trading Estate"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_b": "Barnes Avenue",
+        "road_a": "Napsbury Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_a": "Meadowcroft",
+        "road_b": "Herons Way"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "North Orbital Trading Estate",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Barnes Avenue']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Meadowcroft",
+          "Herons Way"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Napsbury Lane"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Meadowcroft",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Herons Way",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Napsbury Lane"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Napsbury Lane",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Napsbury Lane",
+            "lat": 51.73542037307668,
+            "lon": -0.3194480092101122,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Napsbury Lane",
+            "lat": 51.73049654602824,
+            "lon": -0.3144985098334499,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Napsbury Lane",
+            "lat": 51.7325102016425,
+            "lon": -0.3183385758684749,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Napsbury Lane",
+            "lat": 51.73216568340803,
+            "lon": -0.3181413842512947,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Napsbury Lane",
+            "lat": 51.731441685889784,
+            "lon": -0.3171485747403917,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Meadowcroft",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Meadowcroft",
+            "lat": 51.73658771683238,
+            "lon": -0.3155667873155004,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Meadowcroft",
+            "lat": 51.73511046148337,
+            "lon": -0.3157013659275087,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Meadowcroft",
+            "lat": 51.735335589614365,
+            "lon": -0.31541059104419655,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Meadowcroft",
+            "lat": 51.735418964342465,
+            "lon": -0.3155812787998411,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Meadowcroft",
+            "lat": 51.73552936552053,
+            "lon": -0.3151282204514971,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Herons Way",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Herons Way",
+            "lat": 51.736643008259215,
+            "lon": -0.3130429986153527,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Napsbury Lane",
+        "la_filter": "St Albans",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Napsbury Lane",
+            "type": "named road",
+            "lat": 51.733215687494756,
+            "lon": -0.31870433554998323,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Napsbury",
+            "type": "hamlet",
+            "lat": 51.729090547054824,
+            "lon": -0.3188573974714576,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Napsbury Park",
+            "type": "hamlet",
+            "lat": 51.72394376445753,
+            "lon": -0.3073495499230945,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Napsbury Avenue",
+            "type": "named road",
+            "lat": 51.72516191996315,
+            "lon": -0.303901471179737,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.7354,
+        "confidence": "high",
+        "top_lon": -0.3155,
+        "verified_inside_admin_region": true,
+        "sigma_m": 300,
+        "picked_source": "road:Meadowcroft",
+        "evidence": "The site is identified as North Orbital Trading Estate, bounded by Napsbury Lane, Meadowcroft, and Herons Way. Road centroids for these three roads cluster tightly around 51.735, -0.316. Specifically, Meadowcroft and Napsbury Lane centroids are within 200m of each other."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

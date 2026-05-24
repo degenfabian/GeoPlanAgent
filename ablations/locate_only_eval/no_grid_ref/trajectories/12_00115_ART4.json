@@ -1,0 +1,406 @@
+{
+  "case": "12:00115:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5054113714106,
+    "top_lon": 1.15414263016839,
+    "sigma_m": 1000,
+    "confidence": "med",
+    "picked_source": "place:Tacolneston",
+    "evidence": "Located via Tacolneston village centroid. The site is at 126-134 Norwich Road, adjacent to 'The Pelican (PH)', which is a known landmark in Tacolneston. NR15 2XE is the council's postcode in Long Stratton, not the site postcode.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.7857427134177447,
+  "gt_centroids": [
+    {
+      "lat": 52.51228460250801,
+      "lon": 1.1568383955477777
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 6,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Pelican (PH)",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Tacolneston",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Pelican (PH)",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Tacolneston",
+        "la_filter": "South Norfolk",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Tacolneston",
+            "type": "village",
+            "lat": 52.50541137141056,
+            "lon": 1.1541426301683932,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Tacolneston Lake Nursing Home",
+            "type": "medical care accommodation",
+            "lat": 52.50764047623061,
+            "lon": 1.1552014293250015,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Tacolneston Church of England Primary School",
+            "type": "primary education",
+            "lat": 52.51142739548642,
+            "lon": 1.1571975097233433,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Norwich Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "The Pelican"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Norwich Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Norwich Road",
+            "lat": 52.65254945109614,
+            "lon": 1.2304483549063856,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.65343794198743,
+            "lon": 1.2291566902804625,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.65419695000764,
+            "lon": 1.2287228627311375,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.654615861070084,
+            "lon": 1.2285729590458034,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Norwich Road",
+            "lat": 52.57851939586168,
+            "lon": 1.4666925325992577,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Pelican",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Pelican",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Pelican Tacolneston"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Pelican",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Pelican Wood",
+            "type": "woodland or forest",
+            "lat": 55.81385796461012,
+            "lon": -3.8716570516762028,
+            "admin_district": null,
+            "county": "North Lanarkshire"
+          },
+          {
+            "name": "Pelican Road",
+            "type": "named road",
+            "lat": 55.3261354038508,
+            "lon": -1.5719042509934942,
+            "admin_district": null,
+            "county": "Northumberland"
+          },
+          {
+            "name": "Pelican Close",
+            "type": "named road",
+            "lat": 53.92406157023412,
+            "lon": -2.9673036402409307,
+            "admin_district": "Wyre",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Pelican Close",
+            "type": "named road",
+            "lat": 53.100981012874165,
+            "lon": -2.4191481816440334,
+            "admin_district": null,
+            "county": "Cheshire East"
+          },
+          {
+            "name": "Pelican Street",
+            "type": "named road",
+            "lat": 51.78139369400822,
+            "lon": -3.757666267346193,
+            "admin_district": null,
+            "county": "Powys - Powys"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Pelican Tacolneston",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Norwich Road, Tacolneston"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Norwich Road, Tacolneston",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Norfolk",
+        "lat": 52.5054113714106,
+        "lon": 1.15414263016839
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5054113714106,
+        "lon": 1.15414263016839,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "med",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.15414263016839,
+        "evidence": "Located via Tacolneston village centroid. The site is at 126-134 Norwich Road, adjacent to 'The Pelican (PH)', which is a known landmark in Tacolneston. NR15 2XE is the council's postcode in Long Stratton, not the site postcode.",
+        "top_lat": 52.5054113714106,
+        "picked_source": "place:Tacolneston",
+        "sigma_m": 1000
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

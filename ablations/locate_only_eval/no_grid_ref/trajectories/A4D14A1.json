@@ -1,0 +1,202 @@
+{
+  "case": "A4D14A1",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.616028526273,
+    "top_lon": -0.210009457692641,
+    "sigma_m": 8000,
+    "confidence": "high",
+    "picked_source": "la_centroid",
+    "evidence": "The map shows the entire London Borough of Barnet as the site (Article 4 Direction). The pick is the centroid of the Barnet Local Authority polygon.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.001604564823872347,
+  "gt_centroids": [
+    {
+      "lat": 51.61603279913152,
+      "lon": -0.20998726016036837
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "London Borough of Barnet"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "London Borough of Barnet",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hendon",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hendon",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Hendon",
+            "type": "other settlement",
+            "lat": 51.58262156030618,
+            "lon": -0.22861595689391792,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Hendon",
+            "type": "railway station",
+            "lat": 51.58113940294502,
+            "lon": -0.23887797109247294,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Hendon Lane",
+            "type": "section of named road",
+            "lat": 51.59140888951369,
+            "lon": -0.21154209415853595,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Hendon Park Row",
+            "type": "named road",
+            "lat": 51.581230165668934,
+            "lon": -0.1998176680757312,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Hendon Wood Lane",
+            "type": "section of named road",
+            "lat": 51.636460491941804,
+            "lon": -0.2371259883887338,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.2,
+        "lat": 51.61,
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.61,
+        "lon": -0.2,
+        "la": "Barnet",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.616028526273034,
+        "la_centroid_lon": -0.21000945769264093
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 8000,
+        "confidence": "high",
+        "top_lon": -0.210009457692641,
+        "top_lat": 51.616028526273,
+        "verified_inside_admin_region": true,
+        "picked_source": "la_centroid",
+        "evidence": "The map shows the entire London Borough of Barnet as the site (Article 4 Direction). The pick is the centroid of the Barnet Local Authority polygon."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

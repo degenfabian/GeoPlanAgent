@@ -1,0 +1,362 @@
+{
+  "case": "12:00130:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.3718,
+    "top_lon": 1.1012,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Stanley Road (offset)",
+    "evidence": "The site is located at the junction of Lower Denmark Street and Riverside in Diss. While the specific road 'Lower Denmark Street' was not in the OML index, 'Stanley Road' and 'Park Road' (visible on the map) were found in Diss, South Norfolk. The site is approximately 250m south of the Stanley Road/Park Road junction. Coordinates are centered on the red-hatched site polygon.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.10992764643300096,
+  "gt_centroids": [
+    {
+      "lat": 52.37200914890912,
+      "lon": 1.0996174072421891
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 1,
+      "road": 6,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 19,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_b": "Riverside",
+        "road_a": "Lower Denmark Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Lower Denmark Street']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Riverside, Diss"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Riverside, Diss",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Denmark Street, Diss",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Denmark Street, Diss",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Park Road, Diss",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Park Road, Diss",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Park Road"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Park Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Park Road",
+            "lat": 52.37392965561385,
+            "lon": 1.1055906692420745,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Park Road",
+            "lat": 52.37374695658179,
+            "lon": 1.107511897801997,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Park Road",
+            "lat": 52.373526336821236,
+            "lon": 1.10925823030644,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Park Road",
+            "lat": 52.37400668889461,
+            "lon": 1.1024512014095793,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Park Road",
+            "lat": 52.3739475313376,
+            "lon": 1.104628639839034,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Denmark Hill",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Denmark Hill",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Stanley Road"
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Stanley Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Stanley Road",
+            "lat": 52.37414911225771,
+            "lon": 1.0999575673919677,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Stanley Road",
+            "lat": 52.373977201751224,
+            "lon": 1.1016958305274471,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Stanley Road",
+            "lat": 52.3746386997781,
+            "lon": 1.0976704395016703,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Stanley Road",
+            "lat": 52.37490220731609,
+            "lon": 1.0968114785954386,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Norfolk",
+        "lon": 1.101,
+        "lat": 52.372
+      }
+    },
+    {
+      "turn": 16,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.372,
+        "lon": 1.101,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 17,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 17,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "sigma_m": 300,
+        "top_lon": 1.1012,
+        "picked_source": "road:Stanley Road (offset)",
+        "top_lat": 52.3718,
+        "verified_inside_admin_region": true,
+        "evidence": "The site is located at the junction of Lower Denmark Street and Riverside in Diss. While the specific road 'Lower Denmark Street' was not in the OML index, 'Stanley Road' and 'Park Road' (visible on the map) were found in Diss, South Norfolk. The site is approximately 250m south of the Stanley Road/Park Road junction. Coordinates are centered on the red-hatched site polygon."
+      }
+    },
+    {
+      "turn": 18,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

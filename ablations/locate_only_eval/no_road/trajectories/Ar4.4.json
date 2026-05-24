@@ -1,0 +1,315 @@
+{
+  "case": "Ar4.4",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.735,
+    "top_lon": -0.313,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:New House Park",
+    "evidence": "Found multiple road matches (New House Park, The Poplars, The Willows) within the Whitecroft Estate area in St Albans. The roads form the internal structure of the estate shown on the map. Verified inside St Albans LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0707031118768646,
+  "gt_centroids": [
+    {
+      "lat": 51.73521318285795,
+      "lon": -0.31203270150973883
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Whitecroft Estate",
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "New House Park",
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Herons Way",
+        "la": "St. Albans",
+        "road_a": "London Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Birklands College",
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Whitecroft Estate",
+        "la_filter": "St. Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "New House Park",
+        "la_filter": "St. Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "New House Park",
+            "type": "named road",
+            "lat": 51.736551269699255,
+            "lon": -0.3142791823372551,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "Herons Way"
+        ],
+        "la_filter": "St. Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Birklands College",
+        "la_filter": "St. Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Poplars",
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St. Albans",
+        "query": "The Willows"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "London Road",
+        "la": "St. Albans",
+        "road_b": "New House Park"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.31428,
+        "lat": 51.73655,
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Poplars",
+        "la_filter": "St. Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "The Poplars",
+            "type": "named road",
+            "lat": 51.73391568767432,
+            "lon": -0.3123353062584664,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Willows",
+        "la_filter": "St. Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "The Willows",
+            "type": "named road",
+            "lat": 53.42016893997418,
+            "lon": -2.7199139217282156,
+            "admin_district": "St. Helens",
+            "county": null
+          },
+          {
+            "name": "The Willows",
+            "type": "named road",
+            "lat": 51.734867604029326,
+            "lon": -0.3135018652946832,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "London Road",
+          "New House Park"
+        ],
+        "la_filter": "St. Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.73655,
+        "lon": -0.31428,
+        "la": "St. Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "evidence": "Found multiple road matches (New House Park, The Poplars, The Willows) within the Whitecroft Estate area in St Albans. The roads form the internal structure of the estate shown on the map. Verified inside St Albans LA.",
+        "top_lon": -0.313,
+        "sigma_m": 400,
+        "picked_source": "place:New House Park",
+        "top_lat": 51.735,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

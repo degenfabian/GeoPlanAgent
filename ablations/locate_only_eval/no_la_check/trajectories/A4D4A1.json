@@ -1,0 +1,323 @@
+{
+  "case": "A4D4A1",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.581176,
+    "top_lon": -0.181172,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Hampstead Garden Suburb",
+    "evidence": "The map shows the Hampstead Garden Suburb Conservation Area. The 'place' search for Hampstead Garden Suburb and 'Central Square' (a key landmark on the map) both cluster around 51.581, -0.181. This is consistent with the road centroids for Kingsley Way and Lyttelton Road which bound the area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14132132103578787,
+  "gt_centroids": [
+    {
+      "lat": 51.58165989581618,
+      "lon": -0.18306322189679006
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 1,
+      "road": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hampstead Garden Suburb",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lyttelton Playing Fields",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Central Square",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Lyttelton Road",
+        "la": "Barnet",
+        "road_a": "Falloden Way"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hampstead Garden Suburb",
+        "la_filter": "Barnet",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Hampstead Garden Suburb",
+            "type": "suburban area",
+            "lat": 51.581176468974675,
+            "lon": -0.18117178597945902,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lyttelton Playing Fields",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Central Square",
+        "la_filter": "Barnet",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Central Square",
+            "type": "named road",
+            "lat": 51.58088612206232,
+            "lon": -0.1897279260801975,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Barnet for: ['Falloden Way', 'Lyttelton Road']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Lyttelton Road",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Falloden Way",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Kingsley Way",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Lyttelton Road",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Lyttelton Road",
+            "lat": 51.58497122327562,
+            "lon": -0.1747989111820414,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Lyttelton Road",
+            "lat": 51.58508083617136,
+            "lon": -0.1757760785493621,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Lyttelton Road",
+            "lat": 51.58524681487035,
+            "lon": -0.17719847151668738,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Lyttelton Road",
+            "lat": 51.58540817108889,
+            "lon": -0.1786138420388134,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Lyttelton Road",
+            "lat": 51.585491755843115,
+            "lon": -0.17935569748670227,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Falloden Way",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Kingsley Way",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Kingsley Way",
+            "lat": 51.5832145029123,
+            "lon": -0.18038313534521347,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Kingsley Way",
+            "lat": 51.578444097185546,
+            "lon": -0.18038605502665314,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Kingsley Way",
+            "lat": 51.578422545035785,
+            "lon": -0.18015599448620565,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Kingsley Way",
+            "lat": 51.579677789438776,
+            "lon": -0.17991822134636437,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Kingsley Way",
+            "lat": 51.58173049003114,
+            "lon": -0.1797856862671436,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Hampstead Garden Suburb",
+        "confidence": "high",
+        "top_lat": 51.581176,
+        "top_lon": -0.181172,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows the Hampstead Garden Suburb Conservation Area. The 'place' search for Hampstead Garden Suburb and 'Central Square' (a key landmark on the map) both cluster around 51.581, -0.181. This is consistent with the road centroids for Kingsley Way and Lyttelton Road which bound the area.",
+        "sigma_m": 1500
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

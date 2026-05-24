@@ -1,14 +1,4 @@
-"""Helpers shared across ablation harnesses.
-
-GT-centroid extraction + nearest-part scoring are used by every harness
-that compares a picked (lat, lon) against a planning-boundary GT
-geometry — currently :mod:`ablations.locate_only_eval` and
-:mod:`ablations.locate_vlm_direct`, with the future locate-vs-VLM
-aggregation script as a third caller.
-
-Keeping these in one place prevents byte-drift between harnesses; if
-the metric definition ever changes, it changes once.
-"""
+"""GT-centroid extraction + nearest-part scoring; shared by locate ablations."""
 from __future__ import annotations
 
 from typing import Optional
@@ -17,11 +7,13 @@ from tools.geo.coords import haversine_km
 from tools.metrics.geojson import geojson_to_shape
 
 
-# Canonical CSV column schema for any per-case scoring CSV produced by
-# the ablation harnesses. Holding it here lets the aggregation step
-# union all configs' CSVs without column-by-column reconciliation.
-# Fields a particular approach has no value for (e.g. VLM-direct has no
-# sigma_m / confidence / verified_inside_admin_region) stay empty.
+# Canonical per-case scoring CSV schema, shared across harnesses.
+# Note: the older ``verified_inside_admin_region`` column was dropped when
+# the field was removed from LocatePick (its production value was always
+# False since la_check is disabled by default, and the LLM was setting it
+# to True regardless — see the ablation hallucination analysis). The
+# already-saved CSVs in ablations/locate_only_eval/<config>/locate_picks.csv
+# still carry the column; readers should treat it as optional.
 CSV_FIELDNAMES = [
     "case",
     "err_km",
@@ -30,7 +22,6 @@ CSV_FIELDNAMES = [
     "picked_source",
     "confidence",
     "sigma_m",
-    "verified_inside_admin_region",
     "n_gt_parts",
     "evidence",
     "error",

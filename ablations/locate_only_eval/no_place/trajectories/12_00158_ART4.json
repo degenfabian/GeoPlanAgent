@@ -1,0 +1,259 @@
+{
+  "case": "12:00158:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.3896,
+    "top_lon": 1.1961,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Langmere Road x Hall Lane",
+    "evidence": "The site is bounded by Langmere Road, Hall Lane, and Common Road in Dickleburgh. Intersections of Langmere Rd/Hall Lane (52.392, 1.197) and Common Rd/Hall Lane (52.387, 1.195) perfectly match the map's geometry. NR15 2XE is the council letterhead.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.23358034578449752,
+  "gt_centroids": [
+    {
+      "lat": 52.39189082051901,
+      "lon": 1.1933254503458417
+    },
+    {
+      "lat": 52.38883861498935,
+      "lon": 1.1928920415656288
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "intersect": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Hall Lane",
+        "la": "South Norfolk",
+        "road_a": "Langmere Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Common Road",
+        "road_b": "Hall Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Harvey Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Langmere Road",
+          "Hall Lane"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.392193,
+            "lon": 1.196871,
+            "roads": [
+              "Langmere Road",
+              "Hall Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Common Road",
+          "Hall Lane"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.467936,
+            "lon": 1.267393,
+            "roads": [
+              "Common Road",
+              "Hall Lane"
+            ]
+          },
+          {
+            "lat": 52.387063,
+            "lon": 1.195356,
+            "roads": [
+              "Common Road",
+              "Hall Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Harvey Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_a": "Harvey Road",
+        "road_b": "Langmere Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Norfolk",
+        "lat": 52.389,
+        "lon": 1.196
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Harvey Road']"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.389,
+        "lon": 1.196,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "sigma_m": 300,
+        "evidence": "The site is bounded by Langmere Road, Hall Lane, and Common Road in Dickleburgh. Intersections of Langmere Rd/Hall Lane (52.392, 1.197) and Common Rd/Hall Lane (52.387, 1.195) perfectly match the map's geometry. NR15 2XE is the council letterhead.",
+        "top_lat": 52.3896,
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Langmere Road x Hall Lane",
+        "top_lon": 1.1961
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,246 @@
+{
+  "case": "ART4:15:00001",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.933808,
+    "top_lon": -1.805977,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Marl Lane x Puddleslosh Lane",
+    "evidence": "The intersection of Marl Lane and Puddleslosh Lane (found at 50.9338, -1.8060) perfectly matches the site location shown on the map. This is supported by the SP6 1AS postcode (Fordingbridge) and proximity to Whitsbury Road. Verified inside New Forest LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.40117503720346825,
+  "gt_centroids": [
+    {
+      "lat": 50.935590098936395,
+      "lon": -1.8009992695298243
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 2,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SP6 1AS"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SO43 7PA"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Puddleslosh Lane",
+        "road_a": "Marl Lane",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Whitsbury Road",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SP6 1AS",
+        "lat": 50.92693213792325,
+        "lon": -1.791103693214475,
+        "admin_district": "New Forest District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SO43 7PA",
+        "lat": 50.87013594749979,
+        "lon": -1.570529769750998,
+        "admin_district": "New Forest District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Marl Lane",
+          "Puddleslosh Lane"
+        ],
+        "la_filter": "New Forest",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 50.933808,
+            "lon": -1.805977,
+            "roads": [
+              "Marl Lane",
+              "Puddleslosh Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Whitsbury Road",
+        "la_filter": "New Forest",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.932906139154696,
+            "lon": -1.7923508616504273,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.9335015352493,
+            "lon": -1.792661924215556,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.93263967783219,
+            "lon": -1.7921130505288383,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.931881075209816,
+            "lon": -1.7916792834593092,
+            "in_la": "New Forest"
+          },
+          {
+            "name": "Whitsbury Road",
+            "lat": 50.931524849107134,
+            "lon": -1.7914808721077093,
+            "in_la": "New Forest"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -1.805977,
+        "lat": 50.933808,
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 50.933808,
+        "lon": -1.805977,
+        "la": "New Forest",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 50.85856472927001,
+        "la_centroid_lon": -1.625406857223459
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -1.805977,
+        "top_lat": 50.933808,
+        "confidence": "high",
+        "picked_source": "intersect:Marl Lane x Puddleslosh Lane",
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "evidence": "The intersection of Marl Lane and Puddleslosh Lane (found at 50.9338, -1.8060) perfectly matches the site location shown on the map. This is supported by the SP6 1AS postcode (Fordingbridge) and proximity to Whitsbury Road. Verified inside New Forest LA."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

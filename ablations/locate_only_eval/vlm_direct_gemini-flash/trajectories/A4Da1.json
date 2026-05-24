@@ -1,0 +1,60 @@
+{
+  "case": "A4Da1",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 50.375,
+    "lon": -4.135,
+    "reasoning": "The map shows an Article 4 Direction area covering central Plymouth, including the City Centre, Mutley, and Peverell, centered approximately at these coordinates."
+  },
+  "err_km": 0.71433406481045,
+  "gt_centroids": [
+    {
+      "lat": 50.38123361171922,
+      "lon": -4.132564697066778
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -4.135,
+        "lat": 50.375,
+        "reasoning": "The map shows an Article 4 Direction area covering central Plymouth, including the City Centre, Mutley, and Peverell, centered approximately at these coordinates."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

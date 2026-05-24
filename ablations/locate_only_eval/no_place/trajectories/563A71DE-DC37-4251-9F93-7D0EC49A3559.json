@@ -1,0 +1,231 @@
+{
+  "case": "563A71DE-DC37-4251-9F93-7D0EC49A3559",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1508618629268,
+    "top_lon": 1.38032076060751,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR3644",
+    "evidence": "The grid reference TR3644 from the map matches the site address on St Margaret's Road in St Margaret's Bay. The postcode CT16 3PJ is for the council offices (letterhead) and was correctly ignored.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1907266934732041,
+  "gt_centroids": [
+    {
+      "lat": 51.149154441310664,
+      "lon": 1.3805816483155642
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "postcode": 1,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3644"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PJ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "St Margaret's Road",
+        "road_b": "Bay Hill Close",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3644",
+        "lat": 51.15086186292679,
+        "lon": 1.3803207606075063
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CT16 3PJ",
+        "lat": 51.15436636168577,
+        "lon": 1.294785094400513,
+        "admin_district": "Dover District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Dover for: ['Bay Hill Close']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "St Margaret's Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lon": 1.38032076060751,
+        "lat": 51.1508618629268
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "St Margaret's Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "St Margaret's Road",
+            "lat": 51.14853740720017,
+            "lon": 1.3776461787219307,
+            "in_la": "Dover"
+          },
+          {
+            "name": "St Margaret's Road",
+            "lat": 51.1473365776336,
+            "lon": 1.377806350816658,
+            "in_la": "Dover"
+          },
+          {
+            "name": "St Margaret's Road",
+            "lat": 51.148209757091664,
+            "lon": 1.3794177383143853,
+            "in_la": "Dover"
+          },
+          {
+            "name": "St Margaret's Road",
+            "lat": 51.15000689826746,
+            "lon": 1.378834234756483,
+            "in_la": "Dover"
+          },
+          {
+            "name": "St Margaret's Road",
+            "lat": 51.14916109813105,
+            "lon": 1.3815648643083087,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1508618629268,
+        "lon": 1.38032076060751,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The grid reference TR3644 from the map matches the site address on St Margaret's Road in St Margaret's Bay. The postcode CT16 3PJ is for the council offices (letterhead) and was correctly ignored.",
+        "sigma_m": 400,
+        "picked_source": "grid_ref:TR3644",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.38032076060751,
+        "top_lat": 51.1508618629268,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

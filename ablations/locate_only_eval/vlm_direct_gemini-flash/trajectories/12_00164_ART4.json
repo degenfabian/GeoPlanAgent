@@ -1,0 +1,60 @@
+{
+  "case": "12:00164:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.4848,
+    "lon": 1.3945,
+    "reasoning": "The document lists Smiths Knoll in Hedenham as a site, and the accompanying map shows Smiths Knoll on Church Road near St Mary's Church, corresponding to postcode NR35 2LD."
+  },
+  "err_km": 0.6853199908240882,
+  "gt_centroids": [
+    {
+      "lat": 52.48713591022921,
+      "lon": 1.403865893792992
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 52.4848,
+        "lon": 1.3945,
+        "reasoning": "The document lists Smiths Knoll in Hedenham as a site, and the accompanying map shows Smiths Knoll on Church Road near St Mary's Church, corresponding to postcode NR35 2LD."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

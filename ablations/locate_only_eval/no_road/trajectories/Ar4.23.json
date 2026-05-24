@@ -1,0 +1,480 @@
+{
+  "case": "Ar4.23",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.826,
+    "top_lon": -0.343,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Oulton Rise",
+    "evidence": "Found Oulton Rise and Porters Hill in St Albans, which are clearly visible on the map surrounding the site. The site is an industrial area on Coldharbour Lane between these two residential roads.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0619518462119496,
+  "gt_centroids": [
+    {
+      "lat": 51.826152076748095,
+      "lon": -0.343867225751296
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 10,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 14,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Pickford Bridge, Harpenden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_a": "Coldharbour Lane",
+        "road_b": "Wroxham Way"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "B652",
+        "road_a": "Coldharbour Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Coldharbour Lane Industrial Estate",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Pickford Bridge, Harpenden",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Coldharbour Lane",
+          "Wroxham Way"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['B652']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coldharbour Lane Industrial Estate",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Coldharbour Lane, Harpenden",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Wroxham Way, Harpenden"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Oulton Rise, Harpenden"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Porters Hill, Harpenden"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coldharbour Lane, Harpenden",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wroxham Way, Harpenden",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Oulton Rise, Harpenden",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Porters Hill, Harpenden",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wroxham Way"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Oulton Rise"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Porters Hill"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Pickford Bridge"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wroxham Way",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Wroxham Way",
+            "type": "named road",
+            "lat": 53.53142771391452,
+            "lon": -1.1683069698613013,
+            "admin_district": "Doncaster",
+            "county": null
+          },
+          {
+            "name": "Wroxham Way",
+            "type": "named road",
+            "lat": 53.38391730792213,
+            "lon": -3.0947318517919298,
+            "admin_district": "Wirral",
+            "county": null
+          },
+          {
+            "name": "Wroxham Way",
+            "type": "named road",
+            "lat": 52.98348444483051,
+            "lon": -2.231824733004036,
+            "admin_district": "Newcastle-under-Lyme",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Wroxham Way",
+            "type": "named road",
+            "lat": 53.42701522373499,
+            "lon": -1.257032025213797,
+            "admin_district": "Rotherham",
+            "county": null
+          },
+          {
+            "name": "Wroxham Way",
+            "type": "named road",
+            "lat": 50.79615991889843,
+            "lon": -0.6539984509821608,
+            "admin_district": "Arun",
+            "county": "West Sussex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Oulton Rise",
+        "la_filter": null,
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Oulton Rise",
+            "type": "named road",
+            "lat": 53.50091664208479,
+            "lon": -1.265193544871202,
+            "admin_district": "Doncaster",
+            "county": null
+          },
+          {
+            "name": "Oulton Rise",
+            "type": "named road",
+            "lat": 52.26845223150637,
+            "lon": -0.8748973571309002,
+            "admin_district": null,
+            "county": "West Northamptonshire"
+          },
+          {
+            "name": "Oulton Rise",
+            "type": "named road",
+            "lat": 51.82479327910114,
+            "lon": -0.3462342983116348,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Porters Hill",
+        "la_filter": null,
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Porters Hill",
+            "type": "hill or mountain",
+            "lat": 51.1056918463822,
+            "lon": -2.6757788088458327,
+            "admin_district": null,
+            "county": "Somerset"
+          },
+          {
+            "name": "Porters Hill",
+            "type": "named road",
+            "lat": 51.82767265537204,
+            "lon": -0.3412673645812137,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Pickford Bridge",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.346234298311635,
+        "la": "St Albans",
+        "lat": 51.8247932791011
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.8247932791011,
+        "lon": -0.346234298311635,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lon": -0.343,
+        "sigma_m": 400,
+        "confidence": "high",
+        "evidence": "Found Oulton Rise and Porters Hill in St Albans, which are clearly visible on the map surrounding the site. The site is an industrial area on Coldharbour Lane between these two residential roads.",
+        "picked_source": "place:Oulton Rise",
+        "top_lat": 51.826
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

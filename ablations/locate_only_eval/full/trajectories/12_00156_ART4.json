@@ -1,0 +1,392 @@
+{
+  "case": "12:00156:ART4",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.615,
+    "top_lon": 1.198,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Braymeadow Lane",
+    "evidence": "The site is located between Colney and Little Melton. Braymeadow Lane forms the southern boundary of the site, and its centroid aligns perfectly with the map features (Manor Farm, B1108 to the north).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.5990940709664715,
+  "gt_centroids": [
+    {
+      "lat": 52.616178717481645,
+      "lon": 1.206658783269228
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 4,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TG 10NE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Colney",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Little Melton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Manor Farm Colney",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'TG 10NE'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Colney",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Colney",
+            "type": "village",
+            "lat": 52.622669932614215,
+            "lon": 1.2234726492806807,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Road",
+            "type": "named road",
+            "lat": 52.752544987152966,
+            "lon": 0.44268653222217047,
+            "admin_district": "King's Lynn and West Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "section of named road",
+            "lat": 52.611985191518805,
+            "lon": 1.2373287202853533,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "section of named road",
+            "lat": 52.62179408696582,
+            "lon": 1.2236003570884657,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Colney Lane",
+            "type": "named road",
+            "lat": 52.60312196190886,
+            "lon": 1.196806436600663,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Little Melton",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Little Melton",
+            "type": "village",
+            "lat": 52.61752949784457,
+            "lon": 1.184794633990199,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Little Melton Road",
+            "type": "section of named road",
+            "lat": 52.613374966130245,
+            "lon": 1.1901220971124917,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Little Melton Road",
+            "type": "section of named road",
+            "lat": 52.61188869248898,
+            "lon": 1.1808539196606498,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Little Melton Road",
+            "type": "section of named road",
+            "lat": 52.606171450393525,
+            "lon": 1.1794200159497479,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Little Melton Road",
+            "type": "named road",
+            "lat": 52.60871414494264,
+            "lon": 1.17917591199655,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Manor Farm Colney",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Manor Farm",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Braymeadow Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Norfolk",
+        "lat": 52.62,
+        "lon": 1.2
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Manor Farm",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Manor Farm",
+            "type": "other settlement",
+            "lat": 52.857992467546026,
+            "lon": -0.47123820554337437,
+            "admin_district": "South Kesteven",
+            "county": "Lincolnshire"
+          },
+          {
+            "name": "Manor Farm Road",
+            "type": "named road",
+            "lat": 52.86310541037755,
+            "lon": -1.3822296557820626,
+            "admin_district": "South Derbyshire",
+            "county": "Derbyshire"
+          },
+          {
+            "name": "Manor Farm Mews",
+            "type": "named road",
+            "lat": 52.86195541078596,
+            "lon": -1.3840877894808414,
+            "admin_district": "South Derbyshire",
+            "county": "Derbyshire"
+          },
+          {
+            "name": "Manor Farm Gardens",
+            "type": "named road",
+            "lat": 53.34701551574964,
+            "lon": -1.2218458315311562,
+            "admin_district": "Rotherham",
+            "county": null
+          },
+          {
+            "name": "Manor Farm Road",
+            "type": "named road",
+            "lat": 51.73955686144063,
+            "lon": -1.174836730523149,
+            "admin_district": "South Oxfordshire",
+            "county": "Oxfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Braymeadow Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Braymeadow Lane",
+            "lat": 52.61233942565262,
+            "lon": 1.2001407634871988,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Braymeadow Lane",
+            "lat": 52.61080113828573,
+            "lon": 1.2037675878113379,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Braymeadow Lane",
+            "lat": 52.61423244890837,
+            "lon": 1.1964701057393166,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Braymeadow Lane",
+            "lat": 52.615688503391276,
+            "lon": 1.1952920270884735,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.62,
+        "lon": 1.2,
+        "la": "Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.67557170584784,
+        "la_centroid_lon": 0.9454733560640171
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "The site is located between Colney and Little Melton. Braymeadow Lane forms the southern boundary of the site, and its centroid aligns perfectly with the map features (Manor Farm, B1108 to the north).",
+        "confidence": "high",
+        "sigma_m": 500,
+        "top_lat": 52.615,
+        "picked_source": "road:Braymeadow Lane",
+        "top_lon": 1.198
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

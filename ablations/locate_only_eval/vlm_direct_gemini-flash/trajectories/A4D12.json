@@ -1,0 +1,60 @@
+{
+  "case": "A4D12",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.4545,
+    "lon": -2.612,
+    "reasoning": "The Article 4 direction map covers a large area of Bristol including Clifton and Hotwells, with the centroid of the outlined area located near the intersection of Queens Road and Pembroke Road."
+  },
+  "err_km": 0.6270266969039162,
+  "gt_centroids": [
+    {
+      "lat": 51.4558343110282,
+      "lon": -2.6207925098892026
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The Article 4 direction map covers a large area of Bristol including Clifton and Hotwells, with the centroid of the outlined area located near the intersection of Queens Road and Pembroke Road.",
+        "lon": -2.612,
+        "lat": 51.4545
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

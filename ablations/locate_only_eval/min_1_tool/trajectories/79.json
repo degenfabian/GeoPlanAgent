@@ -1,0 +1,423 @@
+{
+  "case": "79",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.502387,
+    "top_lon": -0.19529,
+    "sigma_m": 2500,
+    "confidence": "high",
+    "picked_source": "postcode:W8 7NX",
+    "evidence": "The map shows the entire Royal Borough of Kensington and Chelsea. The postcode W8 7NX (Town Hall) and Kensington High Street provide a central cluster within the borough. Given it is a district-wide plan, the center of the borough is appropriate.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.25092720371699456,
+  "gt_centroids": [
+    {
+      "lat": 51.50120974197261,
+      "lon": -0.19219721646724833
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 15,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kensington and Chelsea Town Hall"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "W8 7NX"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kensington and Chelsea Town Hall",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "W8 7NX",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "W8 7NX",
+            "type": "postcode",
+            "lat": 51.50238715550191,
+            "lon": -0.19528981656192676,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kensington and Chelsea",
+        "la_filter": null,
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Kensington and Chelsea College",
+            "type": "further education",
+            "lat": 51.48151540404674,
+            "lon": -0.18537003190623502,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "Kensington and Chelsea College",
+            "type": "further education",
+            "lat": 51.522864190626784,
+            "lon": -0.2082754959876561,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Holland Park Avenue"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Holland Park Avenue",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Holland Park Avenue",
+            "type": "named road",
+            "lat": 51.506478139596865,
+            "lon": -0.2081546289087611,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "Holland Park Avenue",
+            "type": "named road",
+            "lat": 51.57663881445222,
+            "lon": 0.09874884804697277,
+            "admin_district": "Redbridge",
+            "county": "Greater London"
+          },
+          {
+            "name": "Holland Park",
+            "type": "named road",
+            "lat": 54.99887531163947,
+            "lon": -1.5571196996695043,
+            "admin_district": "North Tyneside",
+            "county": null
+          },
+          {
+            "name": "Holland Park",
+            "type": "named road",
+            "lat": 52.76380904252319,
+            "lon": -1.717005894840357,
+            "admin_district": "East Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Holland Park",
+            "type": "named road",
+            "lat": 50.8639417916645,
+            "lon": -1.2832157551102883,
+            "admin_district": "Fareham",
+            "county": "Hampshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Cromwell Road"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cromwell Road",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Cromwell Road",
+            "type": "named road",
+            "lat": 58.98760087359758,
+            "lon": -2.9538103940610285,
+            "admin_district": null,
+            "county": "Orkney Islands"
+          },
+          {
+            "name": "Cromwell Road",
+            "type": "named road",
+            "lat": 57.48789955971069,
+            "lon": -4.2295722011646015,
+            "admin_district": null,
+            "county": "Highland"
+          },
+          {
+            "name": "Cromwell Road",
+            "type": "named road",
+            "lat": 57.13743454824419,
+            "lon": -2.1349670901859055,
+            "admin_district": null,
+            "county": "Aberdeen City"
+          },
+          {
+            "name": "Cromwell Road",
+            "type": "named road",
+            "lat": 55.46338512881743,
+            "lon": -4.639466386515289,
+            "admin_district": null,
+            "county": "South Ayrshire"
+          },
+          {
+            "name": "Cromwell Road",
+            "type": "named road",
+            "lat": 55.998920083812365,
+            "lon": -3.7706038269636486,
+            "admin_district": null,
+            "county": "Falkirk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Cromwell Road",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cromwell Road",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Cromwell Road",
+            "type": "named road",
+            "lat": 58.98760087359758,
+            "lon": -2.9538103940610285,
+            "admin_district": null,
+            "county": "Orkney Islands"
+          },
+          {
+            "name": "Cromwell Road",
+            "type": "named road",
+            "lat": 57.48789955971069,
+            "lon": -4.2295722011646015,
+            "admin_district": null,
+            "county": "Highland"
+          },
+          {
+            "name": "Cromwell Road",
+            "type": "named road",
+            "lat": 56.06206186707965,
+            "lon": -3.2291167500671363,
+            "admin_district": null,
+            "county": "Fife"
+          },
+          {
+            "name": "Cromwell Road",
+            "type": "named road",
+            "lat": 54.66301003693608,
+            "lon": -2.757104765127829,
+            "admin_district": null,
+            "county": "Westmorland and Furness"
+          },
+          {
+            "name": "Cromwell Road",
+            "type": "named road",
+            "lat": 54.576534270027196,
+            "lon": -1.1758702363415658,
+            "admin_district": null,
+            "county": "Redcar and Cleveland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Kensington High Street"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kensington High Street",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Kensington High Street",
+            "type": "named road",
+            "lat": 51.49928133623863,
+            "lon": -0.1979914506826617,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 2500,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows the entire Royal Borough of Kensington and Chelsea. The postcode W8 7NX (Town Hall) and Kensington High Street provide a central cluster within the borough. Given it is a district-wide plan, the center of the borough is appropriate.",
+        "top_lon": -0.19529,
+        "top_lat": 51.502387,
+        "confidence": "high",
+        "picked_source": "postcode:W8 7NX"
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

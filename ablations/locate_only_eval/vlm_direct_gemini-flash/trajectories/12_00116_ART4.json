@@ -1,0 +1,60 @@
+{
+  "case": "12:00116:ART4",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.5315,
+    "lon": 1.485,
+    "reasoning": "The document describes land lying to the east of Market Place, Loddon, and the provided map shows the site situated between Holy Trinity Church and the River Chet."
+  },
+  "err_km": 0.32484256469392203,
+  "gt_centroids": [
+    {
+      "lat": 52.534421162669354,
+      "lon": 1.4849415062856708
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 52.5315,
+        "lon": 1.485,
+        "reasoning": "The document describes land lying to the east of Market Place, Loddon, and the provided map shows the site situated between Holy Trinity Church and the River Chet."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

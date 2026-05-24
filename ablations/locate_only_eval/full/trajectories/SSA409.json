@@ -1,0 +1,330 @@
+{
+  "case": "SSA409",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5183827348654,
+    "top_lon": -2.18002694245504,
+    "sigma_m": 800,
+    "confidence": "high",
+    "picked_source": "place:Himley",
+    "evidence": "The site is 'Land at Himley Park, Himley'. The map shows a large area adjacent to a main road (likely Stourbridge Road A449). The village of Himley and Stourbridge Road results cluster tightly. Postcode WV8 1PX is for the Council Offices in Codsall and was correctly identified as a letterhead signal.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.8644325154035863,
+  "gt_centroids": [
+    {
+      "lat": 52.52542718297215,
+      "lon": -2.174623037999248
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 4,
+      "la_check": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "WV8 1PX"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Himley Park"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Himley"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "WV8 1PX",
+        "lat": 52.62566656951965,
+        "lon": -2.191960842481458,
+        "admin_district": "South Staffordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Himley Park",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Himley",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Himley",
+            "type": "village",
+            "lat": 52.518382734865384,
+            "lon": -2.180026942455045,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Himley Way",
+            "type": "named road",
+            "lat": 52.63463440978258,
+            "lon": -1.6428658048161655,
+            "admin_district": "Tamworth",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Himley Lane",
+            "type": "named road",
+            "lat": 52.51628647997492,
+            "lon": -2.1924557533608593,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Himley Lane",
+            "type": "section of named road",
+            "lat": 52.51376345961386,
+            "lon": -2.201359634735294,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Himley Plantation",
+            "type": "woodland or forest",
+            "lat": 52.51928084277577,
+            "lon": -2.1920120006733117,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.5183827348654,
+        "la": "South Staffordshire",
+        "lon": -2.18002694245504
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Himley Hall"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5183827348654,
+        "lon": -2.18002694245504,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Himley Hall",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Himley Hall"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Himley Hall",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Stourbridge Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Stourbridge Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Stourbridge Road",
+            "lat": 52.51677066888937,
+            "lon": -2.17460095730563,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Stourbridge Road",
+            "lat": 52.517086325224916,
+            "lon": -2.174678324516707,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Stourbridge Road",
+            "lat": 52.5180362713959,
+            "lon": -2.1749334341287274,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Stourbridge Road",
+            "lat": 52.519000355399356,
+            "lon": -2.1753539619472955,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Stourbridge Road",
+            "lat": 52.51994282390931,
+            "lon": -2.17573964141101,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 800,
+        "picked_source": "place:Himley",
+        "evidence": "The site is 'Land at Himley Park, Himley'. The map shows a large area adjacent to a main road (likely Stourbridge Road A449). The village of Himley and Stourbridge Road results cluster tightly. Postcode WV8 1PX is for the Council Offices in Codsall and was correctly identified as a letterhead signal.",
+        "top_lat": 52.5183827348654,
+        "top_lon": -2.18002694245504,
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

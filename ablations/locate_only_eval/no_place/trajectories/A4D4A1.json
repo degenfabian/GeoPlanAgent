@@ -1,0 +1,347 @@
+{
+  "case": "A4D4A1",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.58089,
+    "top_lon": -0.18971,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "road:Central Square",
+    "evidence": "The map shows the Hampstead Garden Suburb Conservation Area. Central Square is a prominent landmark at the heart of the suburb, and its road centroid falls correctly within the Barnet admin region. This point aligns with the cluster of roads and features shown on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.4671827476803627,
+  "gt_centroids": [
+    {
+      "lat": 51.58165989581618,
+      "lon": -0.18306322189679006
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 5,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Barnet",
+        "query": "Central Square"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Barnet",
+        "query": "Lyttelton Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Barnet",
+        "query": "Falloden Way"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Central Square",
+        "la": "Barnet",
+        "road_b": "North Square"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Central Square",
+        "la_filter": "Barnet",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Central Square",
+            "lat": 51.580895961735685,
+            "lon": -0.18971873070990364,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Lyttelton Road",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Lyttelton Road",
+            "lat": 51.58497122327562,
+            "lon": -0.1747989111820414,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Lyttelton Road",
+            "lat": 51.58508083617136,
+            "lon": -0.1757760785493621,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Lyttelton Road",
+            "lat": 51.58524681487035,
+            "lon": -0.17719847151668738,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Lyttelton Road",
+            "lat": 51.58540817108889,
+            "lon": -0.1786138420388134,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Lyttelton Road",
+            "lat": 51.585491755843115,
+            "lon": -0.17935569748670227,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Falloden Way",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Barnet for: ['Central Square', 'North Square']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Erskine Hill",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Meadway",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.18971,
+        "la": "Barnet",
+        "lat": 51.58089
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Erskine Hill",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Erskine Hill",
+            "lat": 51.5855775920111,
+            "lon": -0.19423278389639467,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Erskine Hill",
+            "lat": 51.58614943102496,
+            "lon": -0.19409939507258175,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Erskine Hill",
+            "lat": 51.58687808612545,
+            "lon": -0.19382510335928751,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Erskine Hill",
+            "lat": 51.585057628741644,
+            "lon": -0.1940440961466051,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Erskine Hill",
+            "lat": 51.58446349164333,
+            "lon": -0.19341810232526088,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Meadway",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Meadway",
+            "lat": 51.65304108329111,
+            "lon": -0.1862762562686472,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Meadway",
+            "lat": 51.6533149231871,
+            "lon": -0.18831090026901795,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Meadway",
+            "lat": 51.653260414981744,
+            "lon": -0.18679515741474265,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Meadway",
+            "lat": 51.65109697995485,
+            "lon": -0.19638644131613506,
+            "in_la": "Barnet"
+          },
+          {
+            "name": "Meadway",
+            "lat": 51.651155623614734,
+            "lon": -0.19649274782283915,
+            "in_la": "Barnet"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.58089,
+        "lon": -0.18971,
+        "la": "Barnet",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.616028526273034,
+        "la_centroid_lon": -0.21000945769264093
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows the Hampstead Garden Suburb Conservation Area. Central Square is a prominent landmark at the heart of the suburb, and its road centroid falls correctly within the Barnet admin region. This point aligns with the cluster of roads and features shown on the map.",
+        "sigma_m": 1500,
+        "confidence": "high",
+        "top_lon": -0.18971,
+        "picked_source": "road:Central Square",
+        "top_lat": 51.58089
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "case": "23:53160:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.7035,
+    "top_lon": 1.4075,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Charles Close x The Avenue",
+    "evidence": "The map shows Charles Close and its intersection with The Avenue in Wroxham. The intersection tool provided a point (52.703, 1.410) which aligns perfectly with the road layout and labels on the map. Verified inside Broadland LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.19009079797726047,
+  "gt_centroids": [
+    {
+      "lat": 52.705099433875546,
+      "lon": 1.4065038937917476
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "road": 1,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR7 0DU"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Charles Close",
+        "la": "Broadland"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Charles Close",
+        "la": "Broadland",
+        "road_b": "The Avenue"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR7 0DU' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Charles Close",
+        "la_filter": "Broadland",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Charles Close",
+            "lat": 52.70321313315928,
+            "lon": 1.4069624252869637,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Charles Close",
+            "lat": 52.703168030272366,
+            "lon": 1.4090253151045466,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Charles Close",
+            "lat": 52.7042267754049,
+            "lon": 1.4052160423760465,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Charles Close",
+            "lat": 52.70365273998051,
+            "lon": 1.4060653862975747,
+            "in_la": "Broadland"
+          },
+          {
+            "name": "Charles Close",
+            "lat": 52.703766676985865,
+            "lon": 1.4080121819656801,
+            "in_la": "Broadland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Charles Close",
+          "The Avenue"
+        ],
+        "la_filter": "Broadland",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.703001,
+            "lon": 1.410088,
+            "roads": [
+              "Charles Close",
+              "The Avenue"
+            ]
+          },
+          {
+            "lat": 52.706138,
+            "lon": 1.406637,
+            "roads": [
+              "Charles Close",
+              "The Avenue"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.410088,
+        "la": "Broadland",
+        "lat": 52.703001
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.703001,
+        "lon": 1.410088,
+        "la": "Broadland",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.70119443642098,
+        "la_centroid_lon": 1.3101886931294198
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "intersect:Charles Close x The Avenue",
+        "evidence": "The map shows Charles Close and its intersection with The Avenue in Wroxham. The intersection tool provided a point (52.703, 1.410) which aligns perfectly with the road layout and labels on the map. Verified inside Broadland LA.",
+        "top_lat": 52.7035,
+        "top_lon": 1.4075,
+        "verified_inside_admin_region": true,
+        "sigma_m": 200,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

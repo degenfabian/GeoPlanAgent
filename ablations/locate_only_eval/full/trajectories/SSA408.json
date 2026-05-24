@@ -1,0 +1,392 @@
+{
+  "case": "SSA408",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.556498,
+    "top_lon": -2.229584,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Ebstree Road",
+    "evidence": "The site 'Greenacres' is located on Ebstree Road in Seisdon. Multiple road segments for Ebstree Road were found in South Staffordshire near the village of Seisdon. The map shows the site at a junction on Ebstree Road. The postcode WV8 1PX is for the Council Offices (letterhead).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.18714486427459245,
+  "gt_centroids": [
+    {
+      "lat": 52.557952191605786,
+      "lon": -2.228190329645824
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 3,
+      "road": 1,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "WV8 1PX"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Greenacres, Seisdon"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Ebstree Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "WV8 1PX",
+        "lat": 52.62566656951965,
+        "lon": -2.191960842481458,
+        "admin_district": "South Staffordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Greenacres, Seisdon",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Ebstree Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ebstree Road",
+            "lat": 52.554020881302456,
+            "lon": -2.23219510444193,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Ebstree Road",
+            "lat": 52.55649809933203,
+            "lon": -2.229584884150747,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Ebstree Road",
+            "lat": 52.55742761305777,
+            "lon": -2.228304054764972,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Ebstree Road",
+            "lat": 52.557453221778125,
+            "lon": -2.228217310085956,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Ebstree Road",
+            "lat": 52.55823517262802,
+            "lon": -2.2253271409121194,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Seisdon"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Greenacres"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Seisdon",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Seisdon",
+            "type": "village",
+            "lat": 52.550514747902206,
+            "lon": -2.239606626756396,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Seisdon Road",
+            "type": "named road",
+            "lat": 52.547201061066986,
+            "lon": -2.228720310307708,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Seisdon Common Road",
+            "type": "named road",
+            "lat": 52.54384612828817,
+            "lon": -2.2516910649989437,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Seisdon Road",
+            "type": "section of named road",
+            "lat": 52.54591956780874,
+            "lon": -2.221871415156175,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Seisdon Road",
+            "type": "section of named road",
+            "lat": 52.549333534821,
+            "lon": -2.236901426128175,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Greenacres",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Greenacres",
+            "type": "named road",
+            "lat": 52.65267439662052,
+            "lon": -2.009269719176234,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Greenacres",
+            "type": "named road",
+            "lat": 52.66120798144306,
+            "lon": -2.136510594310383,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Greenacres",
+            "type": "named road",
+            "lat": 52.752481291917704,
+            "lon": -1.9416870104642032,
+            "admin_district": "Cannock Chase",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Greenacres",
+            "type": "named road",
+            "lat": 51.51021144472908,
+            "lon": -3.7037290580877222,
+            "admin_district": null,
+            "county": "Pen-y-bont ar Ogwr - Bridgend"
+          },
+          {
+            "name": "Greenacres",
+            "type": "named road",
+            "lat": 52.61645632411528,
+            "lon": 1.1972466064955392,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Staffordshire",
+        "road_a": "Ebstree Road",
+        "road_b": "Fox Road"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Staffordshire",
+        "road_b": "Seisdon Road",
+        "road_a": "Ebstree Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Staffordshire for: ['Fox Road']"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Staffordshire for: ['Seisdon Road']"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.229584,
+        "lat": 52.556498,
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.556498,
+        "lon": -2.229584,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 500,
+        "top_lon": -2.229584,
+        "confidence": "high",
+        "top_lat": 52.556498,
+        "picked_source": "road:Ebstree Road",
+        "verified_inside_admin_region": true,
+        "evidence": "The site 'Greenacres' is located on Ebstree Road in Seisdon. Multiple road segments for Ebstree Road were found in South Staffordshire near the village of Seisdon. The map shows the site at a junction on Ebstree Road. The postcode WV8 1PX is for the Council Offices (letterhead)."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

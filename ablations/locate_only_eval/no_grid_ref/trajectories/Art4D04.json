@@ -1,0 +1,429 @@
+{
+  "case": "Art4D04",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.6085,
+    "top_lon": -1.961,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Swanage (railway station)",
+    "evidence": "The map shows Swanage Station and St Mary's Church. The 'Swanage' railway station hit from OS Open Names (50.6099, -1.9602) aligns perfectly with the station label at the top of the map. The site is immediately south of the station.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.10221055058320597,
+  "gt_centroids": [
+    {
+      "lat": 50.60833518703157,
+      "lon": -1.9624249624545609
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "intersect": 1,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 11,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Purbeck",
+        "query": "Swanage Station"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Purbeck",
+        "query": "St Mary's Church Swanage"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Purbeck",
+        "query": "Swanage Conservation Area"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Church Hill",
+        "road_b": "Townsend Road",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Swanage Station",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church Swanage",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Swanage Conservation Area",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Church Hill",
+          "Townsend Road"
+        ],
+        "la_filter": "Purbeck",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Swanage Station"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Mary's Church, Swanage"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Church Hill",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Purbeck",
+        "query": "Townsend Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Swanage Station",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church, Swanage",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Church Hill",
+        "la_filter": "Purbeck",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Church Hill",
+            "lat": 55.845681532442924,
+            "lon": -4.427598908806738,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 55.4665098318648,
+            "lon": -4.292496215723954,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 55.466734884943556,
+            "lon": -4.291757790374172,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 55.32439727241349,
+            "lon": -4.395464134725311,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "Church Hill",
+            "lat": 55.32484958677086,
+            "lon": -4.394746155599163,
+            "in_la": "Purbeck"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Townsend Road",
+        "la_filter": "Purbeck",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Townsend Road",
+            "lat": 54.87904799256149,
+            "lon": -1.4320114445837806,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "Townsend Road",
+            "lat": 54.880076449338915,
+            "lon": -1.4309449303542936,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "Townsend Road",
+            "lat": 54.877657973493754,
+            "lon": -1.4354952375921084,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "Townsend Road",
+            "lat": 54.877386066760685,
+            "lon": -1.434060853357705,
+            "in_la": "Purbeck"
+          },
+          {
+            "name": "Townsend Road",
+            "lat": 54.87829446811703,
+            "lon": -1.4332610710332694,
+            "in_la": "Purbeck"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Swanage"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Swanage",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Swanage",
+            "type": "town",
+            "lat": 50.60814297273917,
+            "lon": -1.9562791863587363,
+            "admin_district": null,
+            "county": "Dorset"
+          },
+          {
+            "name": "Swanage",
+            "type": "railway station",
+            "lat": 50.60996093538049,
+            "lon": -1.9602346432543534,
+            "admin_district": null,
+            "county": "Dorset"
+          },
+          {
+            "name": "Swanage Close",
+            "type": "named road",
+            "lat": 55.02117518574394,
+            "lon": -1.4747449936412211,
+            "admin_district": "North Tyneside",
+            "county": null
+          },
+          {
+            "name": "Swanage Close",
+            "type": "named road",
+            "lat": 54.492732747607704,
+            "lon": -1.3555928585000008,
+            "admin_district": null,
+            "county": "Stockton-on-Tees"
+          },
+          {
+            "name": "Swanage Close",
+            "type": "named road",
+            "lat": 54.534982979568625,
+            "lon": -1.2144781330188699,
+            "admin_district": null,
+            "county": "Middlesbrough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 50.6099609353805,
+        "la": "Purbeck",
+        "lon": -1.96023464325435
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": false,
+        "error": "No polygon for LA 'Purbeck'"
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Swanage (railway station)",
+        "evidence": "The map shows Swanage Station and St Mary's Church. The 'Swanage' railway station hit from OS Open Names (50.6099, -1.9602) aligns perfectly with the station label at the top of the map. The site is immediately south of the station.",
+        "sigma_m": 400,
+        "top_lon": -1.961,
+        "verified_inside_admin_region": false,
+        "confidence": "high",
+        "top_lat": 50.6085
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

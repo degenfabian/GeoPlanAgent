@@ -1,0 +1,244 @@
+{
+  "case": "REG_4:36880",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5283,
+    "top_lon": -0.2114,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "intersect:Ilbert Street x Droop Street",
+    "evidence": "The map shows the Queen's Park Estate conservation area. Geocoding Ilbert Street and Droop Street (both central to the hatched area) provides a tight cluster. The pick is the midpoint of these central streets, verified within Westminster.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.02852095937087148,
+  "gt_centroids": [
+    {
+      "lat": 51.529931352984015,
+      "lon": -0.2095670050172309
+    },
+    {
+      "lat": 51.53058959142631,
+      "lon": -0.2121373530730833
+    },
+    {
+      "lat": 51.53052568930428,
+      "lon": -0.21409395356591002
+    },
+    {
+      "lat": 51.52735401793875,
+      "lon": -0.20665182733592177
+    },
+    {
+      "lat": 51.52846407065304,
+      "lon": -0.2130202716336745
+    },
+    {
+      "lat": 51.52831176230989,
+      "lon": -0.21098814690784012
+    },
+    {
+      "lat": 51.527440207098294,
+      "lon": -0.2053301387439153
+    },
+    {
+      "lat": 51.52759150094849,
+      "lon": -0.20932793914151238
+    },
+    {
+      "lat": 51.52794131429626,
+      "lon": -0.20877825083214407
+    },
+    {
+      "lat": 51.531308601420655,
+      "lon": -0.20976986638023498
+    },
+    {
+      "lat": 51.52926397739682,
+      "lon": -0.21577464238047708
+    },
+    {
+      "lat": 51.53086529399142,
+      "lon": -0.20957443106223164
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Westminster",
+        "query": "Queen's Park Estate"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Ilbert Street",
+        "la": "Westminster"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Droop Street",
+        "la": "Westminster"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Queen's Park Estate",
+        "la_filter": "Westminster",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ilbert Street",
+        "la_filter": "Westminster",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Ilbert Street",
+            "type": "named road",
+            "lat": 51.5291017929019,
+            "lon": -0.21160602090139585,
+            "admin_district": "City of Westminster",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Droop Street",
+        "la_filter": "Westminster",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Droop Street",
+            "type": "named road",
+            "lat": 51.527540225563754,
+            "lon": -0.21122030052818672,
+            "admin_district": "City of Westminster",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.211,
+        "la": "Westminster",
+        "lat": 51.529
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.529,
+        "lon": -0.211,
+        "la": "Westminster",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.51344361696313,
+        "la_centroid_lon": -0.16046326615032958
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 400,
+        "confidence": "high",
+        "picked_source": "intersect:Ilbert Street x Droop Street",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.2114,
+        "evidence": "The map shows the Queen's Park Estate conservation area. Geocoding Ilbert Street and Droop Street (both central to the hatched area) provides a tight cluster. The pick is the midpoint of these central streets, verified within Westminster.",
+        "top_lat": 51.5283
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,378 @@
+{
+  "case": "Ar4.3",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.752,
+    "top_lon": -0.346,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Fishpool Street",
+    "evidence": "The map shows the Verulam/Fishpool Street Article 4 Area in St Albans. Multiple road centroids (Fishpool Street, Romeland Hill, Abbey Mill Lane) cluster around this central point in the conservation area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.14699374786477423,
+  "gt_centroids": [
+    {
+      "lat": 51.75286113030965,
+      "lon": -0.34762018722537785
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 3,
+      "road": 4,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "St. Michael's Street",
+        "road_a": "Fishpool Street",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_a": "Fishpool Street",
+        "road_b": "Branch Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_b": "Lower Dagnall Street",
+        "road_a": "Verulam Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Romeland Hill",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Fishpool Street', \"St. Michael's Street\"]"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Fishpool Street', 'Branch Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in St Albans for: ['Verulam Road', 'Lower Dagnall Street']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Romeland Hill",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Romeland Hill",
+            "lat": 51.75167573239719,
+            "lon": -0.34368355853121424,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Romeland Hill",
+            "lat": 51.751624676041864,
+            "lon": -0.3429320776281566,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Romeland Hill",
+            "lat": 51.75175854552734,
+            "lon": -0.34445561114207457,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Fishpool Street"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Verulam Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Abbey Mill Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Fishpool Street",
+        "la_filter": "St Albans",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Fishpool Street",
+            "lat": 51.75301280121,
+            "lon": -0.34924175637634514,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Fishpool Street",
+            "lat": 51.75146439524118,
+            "lon": -0.3442241369039882,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Fishpool Street",
+            "lat": 51.75159294439326,
+            "lon": -0.3466232676904944,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Fishpool Street",
+            "lat": 51.75168448682288,
+            "lon": -0.34546063606468114,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Verulam Road",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Verulam Road",
+            "lat": 51.75487314701779,
+            "lon": -0.3450154320554179,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Verulam Road",
+            "lat": 51.755341875938754,
+            "lon": -0.3463747194271123,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Verulam Road",
+            "lat": 51.75585664560306,
+            "lon": -0.34781204276974337,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Verulam Road",
+            "lat": 51.756323594558616,
+            "lon": -0.349008524439335,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Verulam Road",
+            "lat": 51.756456416874784,
+            "lon": -0.34930063265288763,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Abbey Mill Lane",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Abbey Mill Lane",
+            "lat": 51.74934672889225,
+            "lon": -0.3462314976909357,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Abbey Mill Lane",
+            "lat": 51.74946662008397,
+            "lon": -0.3464444206374484,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Abbey Mill Lane",
+            "lat": 51.749891988415385,
+            "lon": -0.3455853139259148,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Abbey Mill Lane",
+            "lat": 51.75006989500615,
+            "lon": -0.345355424553816,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Abbey Mill Lane",
+            "lat": 51.750183390461636,
+            "lon": -0.34520973904253327,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.752,
+        "la": "St Albans",
+        "lon": -0.346
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.752,
+        "lon": -0.346,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.346,
+        "confidence": "high",
+        "sigma_m": 500,
+        "verified_inside_admin_region": true,
+        "picked_source": "road:Fishpool Street",
+        "top_lat": 51.752,
+        "evidence": "The map shows the Verulam/Fishpool Street Article 4 Area in St Albans. Multiple road centroids (Fishpool Street, Romeland Hill, Abbey Mill Lane) cluster around this central point in the conservation area."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

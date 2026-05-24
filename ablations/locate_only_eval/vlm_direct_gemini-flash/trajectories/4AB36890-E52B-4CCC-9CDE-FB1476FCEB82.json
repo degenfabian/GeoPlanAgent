@@ -1,0 +1,60 @@
+{
+  "case": "4AB36890-E52B-4CCC-9CDE-FB1476FCEB82",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.1615,
+    "lon": 1.3785,
+    "reasoning": "The document describes land at Kingsdown Road in the Parish of St. Margaret's-at-Cliffe, and the provided map shows a specific red-outlined plot near the intersection of Kingsdown Road and Station Road, corresponding to OS grid sheet TR 34."
+  },
+  "err_km": 0.338938647191228,
+  "gt_centroids": [
+    {
+      "lat": 51.16352199808495,
+      "lon": 1.3821372197890454
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": 1.3785,
+        "reasoning": "The document describes land at Kingsdown Road in the Parish of St. Margaret's-at-Cliffe, and the provided map shows a specific red-outlined plot near the intersection of Kingsdown Road and Station Road, corresponding to OS grid sheet TR 34.",
+        "lat": 51.1615
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

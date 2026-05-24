@@ -1,0 +1,60 @@
+{
+  "case": "ED3ECD0D-3B13-4BE3-8C75-62A1EC8DD047",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.1215,
+    "lon": 1.2485,
+    "reasoning": "The document identifies the site as part of O.S. 316 at Poulton Farm, Hougham Without, near Limekiln Wood and Park Hill, which corresponds to these coordinates near Dover."
+  },
+  "err_km": 0.7853070617171624,
+  "gt_centroids": [
+    {
+      "lat": 51.127485195755604,
+      "lon": 1.2544733537288721
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 51.1215,
+        "reasoning": "The document identifies the site as part of O.S. 316 at Poulton Farm, Hougham Without, near Limekiln Wood and Park Hill, which corresponds to these coordinates near Dover.",
+        "lon": 1.2485
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

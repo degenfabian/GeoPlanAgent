@@ -1,0 +1,205 @@
+{
+  "case": "8609F3A9-3398-4F70-809B-B7ADF17E541F",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.190905,
+    "top_lon": 1.159888,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Walderchain Wood",
+    "evidence": "The site is 'Land at Walderchain Wood' spanning the boundary of Canterbury and Dover. The grid reference TR 2048 and the place name 'Walderchain Wood' provide a tight consensus. The wood itself straddles the border.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.3824986783545024,
+  "gt_centroids": [
+    {
+      "lat": 51.19014888146805,
+      "lon": 1.1545336216582964
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 2,
+      "postcode": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 2048"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Walderchain Wood"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PG"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Denton with Wootton"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 2048",
+        "lat": 51.19315872030823,
+        "lon": 1.1543737270736274
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Walderchain Wood",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Walderchain Wood",
+            "type": "woodland or forest",
+            "lat": 51.19090499825696,
+            "lon": 1.1598881513873656,
+            "admin_district": "Canterbury",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CT16 3PG' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Denton with Wootton",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.190905,
+        "lon": 1.159888,
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.190905,
+        "lon": 1.159888,
+        "la": "Dover",
+        "inside_la": false,
+        "distance_km_approx": 0.14,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is 'Land at Walderchain Wood' spanning the boundary of Canterbury and Dover. The grid reference TR 2048 and the place name 'Walderchain Wood' provide a tight consensus. The wood itself straddles the border.",
+        "top_lon": 1.159888,
+        "confidence": "high",
+        "sigma_m": 300,
+        "picked_source": "place:Walderchain Wood",
+        "top_lat": 51.190905,
+        "verified_inside_admin_region": false
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

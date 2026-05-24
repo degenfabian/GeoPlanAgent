@@ -1,26 +1,4 @@
-"""Pairwise LLM critic — independent reviewer of the worker's commit.
-
-The critic runs AFTER the worker submits a BoundaryOutcome. It sees:
-  - a panel stack (one row per stored match_attempt) showing planning map
-    + SAM mask overlay on the left and OS tiles + projected polygon
-    (red) on the right
-  - per-candidate metrics (n_inliers, road_name_agreement,
-    scale_consistency)
-  - which candidate the worker committed
-
-The critic emits a CriticDirective specifying:
-  - chosen_candidate_id : critic's pick (may equal worker's commit)
-  - action              : approve | switch | retry_locate
-  - reasoning           : 2-3 sentences naming concrete visual features
-
-System templates the directive into a fixed user message and re-invokes
-the worker. The worker is opaque to the critic's existence: its system
-prompt is unchanged. Up to ``max_iters`` critic rejections per case.
-
-Two-in-one ablation: the worker's first-commit polygon is the no-critic
-baseline; the post-loop polygon is the with-critic outcome. Both IoUs
-are reported.
-"""
+"""Pairwise LLM critic: reviews stored match_attempts post-worker-commit."""
 
 from __future__ import annotations
 
@@ -210,10 +188,7 @@ def _ensure_agent(model_name: str) -> Agent:
 
 
 def _label_strip(img: np.ndarray, text: str, height: int = 32) -> np.ndarray:
-    """Render a black label strip above `img`, auto-shrinking the font
-    so the text fits the image width (cv2.putText doesn't auto-wrap;
-    fixed font sizes truncate at the panel boundary when the planning
-    map ends up narrower than the label needs)."""
+    """Black label strip above img; font auto-shrinks to fit width."""
     bar = np.full((height, img.shape[1], 3), 25, dtype=np.uint8)
     available_w = max(20, img.shape[1] - 16)  # 8px margin each side
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -234,16 +209,7 @@ def _build_one_group_panel(map_img: np.ndarray,
                             left_label: str,
                             right_label: str,
                             target_h: int = 480) -> Optional[np.ndarray]:
-    """Build a single LEFT|RIGHT row for one group of one candidate.
-
-    LEFT: planning map with SAM mask overlay (translucent green).
-    RIGHT: OS tile render with projected polygon outline (red).
-
-    Labels are passed in separately (LEFT identifies the candidate,
-    RIGHT reports per-match metrics) so neither label has to fit the
-    full info — cv2.putText doesn't auto-wrap, so cramming all info
-    into a single label gets it truncated at the image boundary.
-    """
+    """One LEFT|RIGHT row: map + SAM mask | OS tiles + projected polygon."""
     if map_img is None or tile_info is None or "image" not in tile_info:
         return None
     left = map_img.copy()
@@ -306,14 +272,7 @@ def _build_candidate_panel(state: Any, attempt: Dict[str, Any],
         affine_H = g.get("affine_H")
         group_id = g.get("area_group", "?")
         zoom = (tile_info or {}).get("zoom", "?")
-        # Labels split LEFT|RIGHT so neither truncates:
-        #   LEFT  = identifier of THIS image (which candidate / area_group /
-        #           PDF page).
-        #   RIGHT = zoom of the OS-tile crop in this image (the only
-        #           per-image property of the OS render side; numeric
-        #           metrics like n_inliers / road_name_agreement /
-        #           scale_consistency live in the text-block, not on
-        #           the panel label).
+        # LEFT identifies the row; numeric metrics live in the text block.
         left_label = f"{badge}  group {group_id}  page {page}"
         right_label = f"OS tile @ zoom={zoom}"
         row = _build_one_group_panel(map_img, mask, tile_info, affine_H,
@@ -360,13 +319,7 @@ def _stack_candidate_panels(panels: List[np.ndarray]) -> Optional[np.ndarray]:
 def _format_metrics_text(state: Any,
                           attempts: List[Dict[str, Any]],
                           committed_ids: set) -> str:
-    """Per-candidate compact metrics block.
-
-    ``committed_ids`` is the SET of candidate_ids the worker has
-    committed — one per area_group. On single-area docs this is a
-    single-entry set; on multi-area docs multiple candidates are
-    tagged [COMMITTED].
-    """
+    """Per-candidate metrics block; tags [COMMITTED] for each id in committed_ids."""
     lines = ["=== CANDIDATES ==="]
     if not committed_ids:
         lines.append("  worker's committed_ids: (none — nothing committed yet)")
@@ -381,15 +334,10 @@ def _format_metrics_text(state: Any,
         cid = a.get("candidate_id")
         tag = "  [COMMITTED]" if cid in committed_ids else ""
         per_group = a.get("per_group") or []
-        # Each attempt has per_group = 1-element list (one area_group).
-        # The loop is kept for legacy-state compatibility.
         for g in per_group:
             mi = g.get("match_info") or {}
             rwd = g.get("reward") or {}
             n_inl = int(mi.get("n_inliers") or 0)
-            # reward.to_dict() returns {"axes": {...}}; the per-axis dicts
-            # live one level down. Reading them at the top level (old bug)
-            # silently returned empty {} → "?" in the metrics block.
             axes = rwd.get("axes") or {}
             rna = axes.get("road_name_agreement") or {}
             sc = axes.get("scale_consistency") or {}

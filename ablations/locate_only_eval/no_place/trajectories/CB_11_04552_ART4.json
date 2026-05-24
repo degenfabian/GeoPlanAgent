@@ -1,0 +1,179 @@
+{
+  "case": "CB:11:04552:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.00906,
+    "top_lon": -0.40892,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "postcode:MK45 4HS",
+    "evidence": "The map shows Wrest Park Estate in Central Bedfordshire. Postcode MK45 4HS corresponds to Wrest Park, Silsoe, and falls within the Central Bedfordshire admin region. The map features (BW13/BW14) are consistent with the public rights of way in this specific area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09231878892175771,
+  "gt_centroids": [
+    {
+      "lat": 52.00984816635894,
+      "lon": -0.40849605111092946
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 2,
+      "postcode": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Central Bedfordshire",
+        "query": "Wrest Park Estate"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Wrest Park",
+        "la": "Central Bedfordshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "MK45 4HS"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Wrest Park Estate",
+        "la_filter": "Central Bedfordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Wrest Park",
+        "la_filter": "Central Bedfordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "MK45 4HS",
+        "lat": 52.009060676378304,
+        "lon": -0.4089216978326874,
+        "admin_district": "Central Bedfordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.00906,
+        "lon": -0.40892,
+        "la": "Central Bedfordshire"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.00906,
+        "lon": -0.40892,
+        "la": "Central Bedfordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.00669777305078,
+        "la_centroid_lon": -0.43600101320008694
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The map shows Wrest Park Estate in Central Bedfordshire. Postcode MK45 4HS corresponds to Wrest Park, Silsoe, and falls within the Central Bedfordshire admin region. The map features (BW13/BW14) are consistent with the public rights of way in this specific area.",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.40892,
+        "top_lat": 52.00906,
+        "picked_source": "postcode:MK45 4HS",
+        "confidence": "high",
+        "sigma_m": 400
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

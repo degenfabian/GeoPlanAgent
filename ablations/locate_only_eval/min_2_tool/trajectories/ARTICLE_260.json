@@ -1,0 +1,216 @@
+{
+  "case": "ARTICLE:260",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.083257,
+    "top_lon": -0.093707,
+    "sigma_m": 1500,
+    "confidence": "high",
+    "picked_source": "place:Abington Pigotts",
+    "evidence": "The map shows a large area around Abington Pigotts village. The village center geocodes to 52.083, -0.093, and North Brook End (on the western edge of the map) geocodes to 52.083, -0.118. The site boundary encompasses both. Picked the village center as the primary anchor. Verified inside South Cambridgeshire.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.6622869241936707,
+  "gt_centroids": [
+    {
+      "lat": 52.08298639043287,
+      "lon": -0.10338929152971706
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 5,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Abington Pigotts",
+        "la": "South Cambridgeshire"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "Down Hall Farm"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Cambridgeshire",
+        "query": "North Brook End"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Abington Pigotts",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Abington Pigotts",
+            "type": "village",
+            "lat": 52.08325731610575,
+            "lon": -0.09370650096245028,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Down Hall Farm",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "North Brook End",
+        "la_filter": "South Cambridgeshire",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "North Brook End",
+            "type": "hamlet",
+            "lat": 52.083353026324545,
+            "lon": -0.11868933985244569,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "North Brook End",
+            "type": "named road",
+            "lat": 52.08031673189761,
+            "lon": -0.11999914609295047,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          },
+          {
+            "name": "North Brook End",
+            "type": "section of named road",
+            "lat": 52.07354877568801,
+            "lon": -0.12299758705391568,
+            "admin_district": "South Cambridgeshire",
+            "county": "Cambridgeshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.0937065009624503,
+        "la": "South Cambridgeshire",
+        "lat": 52.0832573161058
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.0832573161058,
+        "lon": -0.0937065009624503,
+        "la": "South Cambridgeshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.17283510081104,
+        "la_centroid_lon": 0.08123824327654822
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.093707,
+        "evidence": "The map shows a large area around Abington Pigotts village. The village center geocodes to 52.083, -0.093, and North Brook End (on the western edge of the map) geocodes to 52.083, -0.118. The site boundary encompasses both. Picked the village center as the primary anchor. Verified inside South Cambridgeshire.",
+        "confidence": "high",
+        "sigma_m": 1500,
+        "verified_inside_admin_region": true,
+        "picked_source": "place:Abington Pigotts",
+        "top_lat": 52.083257
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

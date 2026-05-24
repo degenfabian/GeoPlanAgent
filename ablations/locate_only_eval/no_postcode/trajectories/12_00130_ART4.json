@@ -1,0 +1,427 @@
+{
+  "case": "12:00130:ART4",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.3718545078527,
+    "top_lon": 1.09940291823694,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Riverside",
+    "evidence": "The site is located at the junction of Riverside and Lower Denmark Street in Diss. The 'road' tool for Riverside in South Norfolk returned a centroid at 52.3718, 1.0994, which aligns perfectly with the map's layout near Denmark Bridge and Fair Green.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.022532399085088955,
+  "gt_centroids": [
+    {
+      "lat": 52.37200914890912,
+      "lon": 1.0996174072421891
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "intersect": 1,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 12,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Fair Green, Diss"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Riverside",
+        "road_a": "Lower Denmark Street",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Denmark Bridge, Diss"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Holy Trinity Church, Diss",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fair Green, Diss",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Lower Denmark Street']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Denmark Bridge, Diss",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Holy Trinity Church, Diss",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Fair Green, Diss"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lower Denmark Street, Diss"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Holy Trinity Church, Diss"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Denmark Street",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fair Green, Diss",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lower Denmark Street, Diss",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Holy Trinity Church, Diss",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Denmark Street",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Denmark Street",
+            "lat": 52.37614547554945,
+            "lon": 1.1053578490916431,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Denmark Street",
+            "lat": 52.377182035015764,
+            "lon": 1.1061830986804813,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Denmark Street",
+            "lat": 52.373028654689406,
+            "lon": 1.1010950513616047,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Denmark Street",
+            "lat": 52.37328681612931,
+            "lon": 1.1013089468972843,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Denmark Street",
+            "lat": 52.3735733544635,
+            "lon": 1.1014080160014021,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Diss"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Riverside"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Diss",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Diss",
+            "type": "railway station",
+            "lat": 52.37313826626925,
+            "lon": 1.1235580339797708,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Diss",
+            "type": "town",
+            "lat": 52.37682203282246,
+            "lon": 1.1086967171224753,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Dissington View",
+            "type": "named road",
+            "lat": 55.030280273251606,
+            "lon": -1.7971295218466945,
+            "admin_district": null,
+            "county": "Northumberland"
+          },
+          {
+            "name": "Dissington Park",
+            "type": "other landcover",
+            "lat": 55.03829023458755,
+            "lon": -1.8162255762670785,
+            "admin_district": null,
+            "county": "Northumberland"
+          },
+          {
+            "name": "Dissington Place",
+            "type": "named road",
+            "lat": 54.9371957915075,
+            "lon": -1.684799410413033,
+            "admin_district": "Gateshead",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Riverside",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Riverside",
+            "lat": 52.37185450785272,
+            "lon": 1.0994029182369378,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.09940291823694,
+        "lat": 52.3718545078527,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.3718545078527,
+        "lon": 1.09940291823694,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 52.3718545078527,
+        "evidence": "The site is located at the junction of Riverside and Lower Denmark Street in Diss. The 'road' tool for Riverside in South Norfolk returned a centroid at 52.3718, 1.0994, which aligns perfectly with the map's layout near Denmark Bridge and Fair Green.",
+        "picked_source": "road:Riverside",
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "top_lon": 1.09940291823694,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "case": "A4DA04",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 53.7085,
+    "lon": -2.245,
+    "reasoning": "The document refers to Fox Hill Farm, Shawclough, Waterfoot, Rossendale, and the map shows the farm buildings and surrounding land near Higher Slack and Hewin Hill."
+  },
+  "err_km": 0.6999178284308595,
+  "gt_centroids": [
+    {
+      "lat": 53.714005635037275,
+      "lon": -2.2398449463854417
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -2.245,
+        "reasoning": "The document refers to Fox Hill Farm, Shawclough, Waterfoot, Rossendale, and the map shows the farm buildings and surrounding land near Higher Slack and Hewin Hill.",
+        "lat": 53.7085
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

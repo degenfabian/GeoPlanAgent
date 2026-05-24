@@ -1,0 +1,436 @@
+{
+  "case": "85",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.507,
+    "top_lon": -0.211,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Norland Square",
+    "evidence": "The map shows the Norland Conservation Area. Multiple road and place signals (Norland Square, Queensdale Road, St James's Gardens) cluster tightly around this coordinate in Kensington and Chelsea. The postcode W8 7NX is likely a letterhead/office address as it is ~1km east.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.029967694834884397,
+  "gt_centroids": [
+    {
+      "lat": 51.50575449947776,
+      "lon": -0.21530978377585966
+    },
+    {
+      "lat": 51.5058760782681,
+      "lon": -0.2159728642797668
+    },
+    {
+      "lat": 51.50605071497307,
+      "lon": -0.2113331057544249
+    },
+    {
+      "lat": 51.5061410563334,
+      "lon": -0.21335169641096297
+    },
+    {
+      "lat": 51.50632114588127,
+      "lon": -0.21544874060438798
+    },
+    {
+      "lat": 51.50641124610592,
+      "lon": -0.21145595015576354
+    },
+    {
+      "lat": 51.506581093485,
+      "lon": -0.21289293159067388
+    },
+    {
+      "lat": 51.50671291745116,
+      "lon": -0.21195183004895188
+    },
+    {
+      "lat": 51.50701938798601,
+      "lon": -0.2152972056504149
+    },
+    {
+      "lat": 51.50735569671795,
+      "lon": -0.2139013776133469
+    },
+    {
+      "lat": 51.50739884884045,
+      "lon": -0.21390135512713038
+    },
+    {
+      "lat": 51.50786366417534,
+      "lon": -0.21216680200151952
+    },
+    {
+      "lat": 51.507956889978225,
+      "lon": -0.2148370812908476
+    },
+    {
+      "lat": 51.5085773128892,
+      "lon": -0.21175624368464346
+    },
+    {
+      "lat": 51.508630154284354,
+      "lon": -0.21401540965809576
+    },
+    {
+      "lat": 51.505585048287976,
+      "lon": -0.2104929762949965
+    },
+    {
+      "lat": 51.506596038940316,
+      "lon": -0.20904434833493293
+    },
+    {
+      "lat": 51.506772260063734,
+      "lon": -0.21123153315957097
+    },
+    {
+      "lat": 51.507160679234154,
+      "lon": -0.2094802417280316
+    },
+    {
+      "lat": 51.50766901460409,
+      "lon": -0.21073206670572633
+    },
+    {
+      "lat": 51.50782080629772,
+      "lon": -0.2090966230461621
+    },
+    {
+      "lat": 51.50831415917144,
+      "lon": -0.21009928863450447
+    },
+    {
+      "lat": 51.50849999192898,
+      "lon": -0.21024744955609387
+    },
+    {
+      "lat": 51.50887876810823,
+      "lon": -0.20962994838939314
+    },
+    {
+      "lat": 51.50900516345816,
+      "lon": -0.2091846015865799
+    },
+    {
+      "lat": 51.50927181169757,
+      "lon": -0.21110240608654393
+    },
+    {
+      "lat": 51.50957003012502,
+      "lon": -0.21095809911131047
+    },
+    {
+      "lat": 51.509858118514714,
+      "lon": -0.21056690163793848
+    },
+    {
+      "lat": 51.510781044690184,
+      "lon": -0.21065149619903425
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "postcode": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Norland Square",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Royal Crescent"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "W8 7NX"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Queensdale Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Norland Square",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Norland Square",
+            "type": "named road",
+            "lat": 51.506856562729965,
+            "lon": -0.20996983999561813,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Royal Crescent",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Royal Crescent",
+            "type": "named road",
+            "lat": 55.94911584494578,
+            "lon": -4.92751724196212,
+            "admin_district": null,
+            "county": "Argyll and Bute"
+          },
+          {
+            "name": "Royal Crescent",
+            "type": "named road",
+            "lat": 54.90489305094713,
+            "lon": -5.0199060717796655,
+            "admin_district": null,
+            "county": "Dumfries and Galloway"
+          },
+          {
+            "name": "Royal Crescent",
+            "type": "named road",
+            "lat": 51.38725329187235,
+            "lon": -2.36811501066717,
+            "admin_district": null,
+            "county": "Bath and North East Somerset"
+          },
+          {
+            "name": "Royal Crescent",
+            "type": "named road",
+            "lat": 50.65341869505226,
+            "lon": -1.1589687468609773,
+            "admin_district": null,
+            "county": "Isle of Wight"
+          },
+          {
+            "name": "Royal Crescent",
+            "type": "named road",
+            "lat": 50.81834245822454,
+            "lon": -0.12533456402569088,
+            "admin_district": null,
+            "county": "The City of Brighton and Hove"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "W8 7NX",
+        "lat": 51.50238715550191,
+        "lon": -0.19528981656192676,
+        "admin_district": "Kensington and Chelsea London Boro"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Queensdale Road",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Queensdale Road",
+            "lat": 51.50671977340895,
+            "lon": -0.21426933511030408,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Queensdale Road",
+            "lat": 51.50693753604639,
+            "lon": -0.21321610272848723,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Queensdale Road",
+            "lat": 51.50712975477832,
+            "lon": -0.21225752484060068,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Queensdale Road",
+            "lat": 51.50728021472315,
+            "lon": -0.21150951946389984,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Queensdale Road",
+            "lat": 51.50743012059411,
+            "lon": -0.21072550559731762,
+            "in_la": "Kensington and Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St James's Gardens",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "lon": -0.211,
+        "lat": 51.507
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St James's Gardens",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "St James's Gardens",
+            "type": "named road",
+            "lat": 53.68985474942037,
+            "lon": -2.735698976660874,
+            "admin_district": "South Ribble",
+            "county": "Lancashire"
+          },
+          {
+            "name": "St James's Gardens",
+            "type": "named road",
+            "lat": 51.50804009843778,
+            "lon": -0.21328104663731628,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.507,
+        "lon": -0.211,
+        "la": "Kensington and Chelsea",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.50120516305225,
+        "la_centroid_lon": -0.19222073817151708
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.507,
+        "evidence": "The map shows the Norland Conservation Area. Multiple road and place signals (Norland Square, Queensdale Road, St James's Gardens) cluster tightly around this coordinate in Kensington and Chelsea. The postcode W8 7NX is likely a letterhead/office address as it is ~1km east.",
+        "sigma_m": 500,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "picked_source": "place:Norland Square",
+        "top_lon": -0.211
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

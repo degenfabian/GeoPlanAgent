@@ -1,0 +1,284 @@
+{
+  "case": "SSA403",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.518,
+    "top_lon": -2.26,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Halfpenny Green",
+    "evidence": "The site is Halfpenny Green Airfield (now Wolverhampton Airport). The map shows the airfield boundary between Bobbington and Halfpenny Green. Coordinates are centered on the disused airfield area shown in the red boundary.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1517795311418917,
+  "gt_centroids": [
+    {
+      "lat": 52.516725312563224,
+      "lon": -2.2608023063898424
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Halfpenny Green Airfield"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Bobbington"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Halfpenny Green"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Six Ashes Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Halfpenny Green Airfield",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bobbington",
+        "la_filter": "South Staffordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Bobbington",
+            "type": "village",
+            "lat": 52.51217627418163,
+            "lon": -2.282806812720804,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Halfpenny Green",
+        "la_filter": "South Staffordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Halfpenny Green",
+            "type": "other settlement",
+            "lat": 52.524444771953895,
+            "lon": -2.2605266114041243,
+            "admin_district": "South Staffordshire",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Six Ashes Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Six Ashes Road",
+            "lat": 52.52394432798201,
+            "lon": -2.261065741728127,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Six Ashes Road",
+            "lat": 52.524364580435424,
+            "lon": -2.2605884823200686,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Six Ashes Road",
+            "lat": 52.524984569144685,
+            "lon": -2.2599966186373512,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Six Ashes Road",
+            "lat": 52.514905849089075,
+            "lon": -2.278543600269994,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Six Ashes Road",
+            "lat": 52.520619173782116,
+            "lon": -2.267882247417624,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Blacklands Farm",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Staffordshire",
+        "lon": -2.26,
+        "lat": 52.518
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Blacklands Farm",
+        "la_filter": "South Staffordshire",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Blacklands Farm Way",
+            "type": "named road",
+            "lat": 51.2990392140699,
+            "lon": -1.039307324655632,
+            "admin_district": "Basingstoke and Deane",
+            "county": "Hampshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.518,
+        "lon": -2.26,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lat": 52.518,
+        "verified_inside_admin_region": true,
+        "top_lon": -2.26,
+        "evidence": "The site is Halfpenny Green Airfield (now Wolverhampton Airport). The map shows the airfield boundary between Bobbington and Halfpenny Green. Coordinates are centered on the disused airfield area shown in the red boundary.",
+        "sigma_m": 500,
+        "picked_source": "place:Halfpenny Green"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,385 @@
+{
+  "case": "A4D9",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4055,
+    "top_lon": -2.631,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Sherrin Way",
+    "evidence": "The site is 'Land at Sherrin Way' in Bristol. Road searches for Sherrin Way, Peart Drive, and The Ridings (all visible on the map) cluster tightly around these coordinates. The postcodes in the PDF were likely council offices (BS1).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1065876902774217,
+  "gt_centroids": [
+    {
+      "lat": 51.40610223670786,
+      "lon": -2.63219551263015
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 2,
+      "road": 4,
+      "place": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "BS1 2QN"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "BS1 5TR"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Sherrin Way"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Highridge Road",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Prospect Place",
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'BS1 2QN' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "BS1 5TR",
+        "lat": 51.452607108240244,
+        "lon": -2.6020684520374964,
+        "admin_district": "City of Bristol (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Sherrin Way",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Sherrin Way",
+            "lat": 51.404873732652,
+            "lon": -2.6304671665226262,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sherrin Way",
+            "lat": 51.40424996190376,
+            "lon": -2.6294163080667174,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sherrin Way",
+            "lat": 51.405303205593675,
+            "lon": -2.6300274009694227,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sherrin Way",
+            "lat": 51.40552785174248,
+            "lon": -2.629218208945213,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Sherrin Way",
+            "lat": 51.4042308955746,
+            "lon": -2.627942482059319,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Highridge Road",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Highridge Road",
+            "lat": 51.4121184606312,
+            "lon": -2.6251721031278383,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Highridge Road",
+            "lat": 51.412118745411355,
+            "lon": -2.6241827081710034,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Highridge Road",
+            "lat": 51.41213424086006,
+            "lon": -2.622960728799689,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Highridge Road",
+            "lat": 51.4122255372214,
+            "lon": -2.621854807187029,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "Highridge Road",
+            "lat": 51.41210008194332,
+            "lon": -2.6217740216116847,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Prospect Place",
+        "la_filter": "Bristol",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Prospect Place",
+            "type": "named road",
+            "lat": 51.468144459630814,
+            "lon": -2.5932897241727373,
+            "admin_district": null,
+            "county": "City of Bristol"
+          },
+          {
+            "name": "Prospect Place",
+            "type": "named road",
+            "lat": 51.46335333214239,
+            "lon": -2.556333759719148,
+            "admin_district": null,
+            "county": "City of Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Peart Drive"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "The Ridings"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.40487,
+        "lon": -2.63046,
+        "la": "Bristol"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Peart Drive",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Peart Drive",
+            "lat": 51.406212236404215,
+            "lon": -2.6321034804247727,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Ridings",
+        "la_filter": "Bristol",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Ridings",
+            "lat": 51.405814617799194,
+            "lon": -2.6327372576137402,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "The Ridings",
+            "lat": 51.405807664998335,
+            "lon": -2.631742938694551,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "The Ridings",
+            "lat": 51.405640654708364,
+            "lon": -2.631115250912683,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "The Ridings",
+            "lat": 51.40587537106641,
+            "lon": -2.630975722110525,
+            "in_la": "Bristol"
+          },
+          {
+            "name": "The Ridings",
+            "lat": 51.405446993980455,
+            "lon": -2.6308775981535546,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.40487,
+        "lon": -2.63046,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lon": -2.631,
+        "top_lat": 51.4055,
+        "sigma_m": 300,
+        "confidence": "high",
+        "picked_source": "road:Sherrin Way",
+        "evidence": "The site is 'Land at Sherrin Way' in Bristol. Road searches for Sherrin Way, Peart Drive, and The Ridings (all visible on the map) cluster tightly around these coordinates. The postcodes in the PDF were likely council offices (BS1)."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

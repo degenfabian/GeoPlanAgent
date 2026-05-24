@@ -1,0 +1,323 @@
+{
+  "case": "12:00126:ART4",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.47396,
+    "top_lon": 1.51412,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Kell's Walk",
+    "evidence": "The map shows a site bounded by Kell's Walk and Geldeston Hill. Geocoding both 'Kell's Walk' and 'Geldeston Hill' in South Norfolk yielded coordinates within 100m of each other, providing a very high-confidence cluster.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.015416706496761152,
+  "gt_centroids": [
+    {
+      "lat": 52.47382141827659,
+      "lon": 1.514126917824604
+    },
+    {
+      "lat": 52.47428111326806,
+      "lon": 1.515103412976047
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Geldeston Hill"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Kell's Walk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Wherry Inn",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Kell's Way",
+        "la": "South Norfolk",
+        "road_a": "Geldeston Hill"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Geldeston Hill",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Geldeston Hill",
+            "type": "section of named road",
+            "lat": 52.473646287364076,
+            "lon": 1.5152925043807601,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Kell's Walk",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Kell's Walk",
+            "type": "named road",
+            "lat": 52.4739598528637,
+            "lon": 1.5141244520017523,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Wherry Inn",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: [\"Kell's Way\"]"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "The Knowle"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Geldeston"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Knowle",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Knowle",
+            "type": "named road",
+            "lat": 53.84106935662287,
+            "lon": -3.042868859889268,
+            "admin_district": null,
+            "county": "Blackpool"
+          },
+          {
+            "name": "The Knowle",
+            "type": "named road",
+            "lat": 53.58561789841155,
+            "lon": -1.7005540192306818,
+            "admin_district": "Kirklees",
+            "county": null
+          },
+          {
+            "name": "The Knowle",
+            "type": "suburban area",
+            "lat": 52.48807407106078,
+            "lon": -2.059496643533716,
+            "admin_district": "Sandwell",
+            "county": null
+          },
+          {
+            "name": "The Knowle",
+            "type": "named road",
+            "lat": 51.426948888798286,
+            "lon": -2.192642493910889,
+            "admin_district": null,
+            "county": "Wiltshire"
+          },
+          {
+            "name": "The Knowle",
+            "type": "named road",
+            "lat": 51.12165791799576,
+            "lon": -0.8067123818743624,
+            "admin_district": "East Hampshire",
+            "county": "Hampshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Geldeston",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Geldeston",
+            "type": "village",
+            "lat": 52.47260397793106,
+            "lon": 1.5209977699610395,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Geldeston Hill",
+            "type": "section of named road",
+            "lat": 52.473646287364076,
+            "lon": 1.5152925043807601,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Geldeston Road",
+            "type": "section of named road",
+            "lat": 52.46963447809639,
+            "lon": 1.506828041875233,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Geldeston Road",
+            "type": "named road",
+            "lat": 52.47229143284089,
+            "lon": 1.4960813857734596,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Geldeston Marshes",
+            "type": "wetland",
+            "lat": 52.466071603836504,
+            "lon": 1.5174569617247615,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.51412,
+        "sigma_m": 200,
+        "confidence": "high",
+        "evidence": "The map shows a site bounded by Kell's Walk and Geldeston Hill. Geocoding both 'Kell's Walk' and 'Geldeston Hill' in South Norfolk yielded coordinates within 100m of each other, providing a very high-confidence cluster.",
+        "verified_inside_admin_region": true,
+        "top_lat": 52.47396,
+        "picked_source": "place:Kell's Walk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

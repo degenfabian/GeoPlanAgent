@@ -1,0 +1,249 @@
+{
+  "case": "A4D16",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.48427874496,
+    "top_lon": -2.61446037533631,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "road:Henleaze Avenue",
+    "evidence": "The site is a large block bounded by Henleaze Avenue, Henleaze Gardens, Westbury Road, and Henleaze Road. Intersections of these roads in Bristol consistently place the site at these coordinates. Picked the centroid of Henleaze Avenue which runs through the middle of the red-hatched area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.045009789834709456,
+  "gt_centroids": [
+    {
+      "lat": 51.48387396219555,
+      "lon": -2.614460349745082
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Bristol",
+        "road_a": "Henleaze Avenue",
+        "road_b": "Westbury Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Bristol",
+        "road_a": "Henleaze Gardens",
+        "road_b": "Westbury Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Bristol",
+        "road_a": "Henleaze Avenue",
+        "road_b": "Henleaze Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Bristol",
+        "query": "Henleaze Avenue"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Henleaze Avenue",
+          "Westbury Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.484436,
+            "lon": -2.61627,
+            "roads": [
+              "Henleaze Avenue",
+              "Westbury Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Henleaze Gardens",
+          "Westbury Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.483598,
+            "lon": -2.616547,
+            "roads": [
+              "Henleaze Gardens",
+              "Westbury Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Henleaze Avenue",
+          "Henleaze Road"
+        ],
+        "la_filter": "Bristol",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.484122,
+            "lon": -2.612651,
+            "roads": [
+              "Henleaze Avenue",
+              "Henleaze Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Henleaze Avenue",
+        "la_filter": "Bristol",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Henleaze Avenue",
+            "lat": 51.484278744960015,
+            "lon": -2.6144603753363054,
+            "in_la": "Bristol"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.48427874496,
+        "la": "Bristol",
+        "lon": -2.61446037533631
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.48427874496,
+        "lon": -2.61446037533631,
+        "la": "Bristol",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.452561432043865,
+        "la_centroid_lon": -2.7711276870856563
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "road:Henleaze Avenue",
+        "evidence": "The site is a large block bounded by Henleaze Avenue, Henleaze Gardens, Westbury Road, and Henleaze Road. Intersections of these roads in Bristol consistently place the site at these coordinates. Picked the centroid of Henleaze Avenue which runs through the middle of the red-hatched area.",
+        "top_lon": -2.61446037533631,
+        "top_lat": 51.48427874496,
+        "sigma_m": 200,
+        "verified_inside_admin_region": true,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

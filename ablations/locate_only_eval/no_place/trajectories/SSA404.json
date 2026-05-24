@@ -1,0 +1,365 @@
+{
+  "case": "SSA404",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.650534,
+    "top_lon": -2.081594,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "postcode:WV10 7JP",
+    "evidence": "The map shows a site adjacent to a Filling Station on the A460 near Shareshill. Postcode WV10 7JP (Shareshill) is a strong match for this location and falls within South Staffordshire. The road layout on the map matches the A460/New Road junction area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 12.180322121896582,
+  "gt_centroids": [
+    {
+      "lat": 52.758470568397684,
+      "lon": -2.050772840424936
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "road": 4,
+      "postcode": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 19,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Staffordshire",
+        "road_a": "A460",
+        "road_b": "New Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Staffordshire for: ['A460']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "New Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "New Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "New Road",
+            "lat": 52.72453315540601,
+            "lon": -2.1126445659534667,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "New Road",
+            "lat": 52.72393337365557,
+            "lon": -2.1152082525472715,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "New Road",
+            "lat": 52.724058542548875,
+            "lon": -2.1141531253242967,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "New Road",
+            "lat": 52.72421649380835,
+            "lon": -2.113494661769647,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "New Road",
+            "lat": 52.7244070050403,
+            "lon": -2.11295517218853,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "A460",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "A460",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "A460"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "A460",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Staffordshire",
+        "query": "Cannock Road"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Cannock Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Cannock Road",
+            "lat": 52.77734251168607,
+            "lon": -2.072803970496476,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Cannock Road",
+            "lat": 52.77867142075494,
+            "lon": -2.0752596824098655,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Cannock Road",
+            "lat": 52.723804242462165,
+            "lon": -2.106571523011599,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Cannock Road",
+            "lat": 52.723910553227846,
+            "lon": -2.1077032664165753,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Cannock Road",
+            "lat": 52.72348383538967,
+            "lon": -2.1037092634328585,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "New Road",
+        "la": "South Staffordshire",
+        "road_a": "Cannock Road"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Staffordshire for: ['Cannock Road']"
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "WV10 7JP"
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "WV10 7JP",
+        "lat": 52.65053393071183,
+        "lon": -2.081594236150305,
+        "admin_district": "South Staffordshire District"
+      }
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.6505339307118,
+        "la": "South Staffordshire",
+        "lon": -2.08159423615031
+      }
+    },
+    {
+      "turn": 16,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6505339307118,
+        "lon": -2.08159423615031,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 17,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 17,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": -2.081594,
+        "evidence": "The map shows a site adjacent to a Filling Station on the A460 near Shareshill. Postcode WV10 7JP (Shareshill) is a strong match for this location and falls within South Staffordshire. The road layout on the map matches the A460/New Road junction area.",
+        "picked_source": "postcode:WV10 7JP",
+        "top_lat": 52.650534,
+        "sigma_m": 400
+      }
+    },
+    {
+      "turn": 18,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,316 @@
+{
+  "case": "CPA4(1a)",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.553969,
+    "top_lon": 0.602267,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Florence Gardens x Florence Close",
+    "evidence": "The intersection of Florence Gardens and Florence Close matches the map labels and the site address. This point is also within 300m of the center of Hadleigh village and Chapel Lane. The provided postcode SS7 1TF is ~1.5km away and likely refers to a council office or different part of the borough.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.08015280078644352,
+  "gt_centroids": [
+    {
+      "lat": 51.55376851197057,
+      "lon": 0.6033805620421716
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 3,
+      "intersect": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SS7 1TF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Florence Gardens"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Castle Point",
+        "road_a": "Florence Gardens",
+        "road_b": "Florence Close"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Vaggon and Horses",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SS7 1TF",
+        "lat": 51.56184488380458,
+        "lon": 0.5848681639491619,
+        "admin_district": "Castle Point District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Florence Gardens",
+        "la_filter": "Castle Point",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Florence Gardens",
+            "type": "named road",
+            "lat": 51.553968591490815,
+            "lon": 0.6022670938907759,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Florence Gardens",
+          "Florence Close"
+        ],
+        "la_filter": "Castle Point",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.553969,
+            "lon": 0.602267,
+            "roads": [
+              "Florence Gardens",
+              "Florence Close"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Vaggon and Horses",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Hadleigh"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Chapel Lane",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hadleigh",
+        "la_filter": "Castle Point",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Hadleigh",
+            "type": "village",
+            "lat": 51.55399415774112,
+            "lon": 0.6059761831403214,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          },
+          {
+            "name": "Hadleigh Close",
+            "type": "named road",
+            "lat": 52.98212690788205,
+            "lon": -2.227259811753567,
+            "admin_district": "Newcastle-under-Lyme",
+            "county": "Staffordshire"
+          },
+          {
+            "name": "Hadleigh Ray",
+            "type": "beach",
+            "lat": 51.537249193388874,
+            "lon": 0.5925448669882478,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          },
+          {
+            "name": "Hadleigh Park Avenue",
+            "type": "named road",
+            "lat": 51.55702938619068,
+            "lon": 0.5972623791076701,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          },
+          {
+            "name": "Hadleigh Ray",
+            "type": "channel",
+            "lat": 51.529783328917226,
+            "lon": 0.6225300531457595,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Chapel Lane",
+        "la_filter": "Castle Point",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Chapel Lane",
+            "lat": 51.553702329719215,
+            "lon": 0.6002826784640338,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Chapel Lane",
+            "lat": 51.55424516324115,
+            "lon": 0.6009484195653139,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Chapel Lane",
+            "lat": 51.554764453314945,
+            "lon": 0.6023509087203122,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Chapel Lane",
+            "lat": 51.55106695989374,
+            "lon": 0.5967253703945574,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Chapel Lane",
+            "lat": 51.55210805393862,
+            "lon": 0.5975128290874642,
+            "in_la": "Castle Point"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 0.602267,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "sigma_m": 200,
+        "picked_source": "intersect:Florence Gardens x Florence Close",
+        "top_lat": 51.553969,
+        "evidence": "The intersection of Florence Gardens and Florence Close matches the map labels and the site address. This point is also within 300m of the center of Hadleigh village and Chapel Lane. The provided postcode SS7 1TF is ~1.5km away and likely refers to a council office or different part of the borough."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

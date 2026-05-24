@@ -1,0 +1,315 @@
+{
+  "case": "A4aSHP1",
+  "config": {
+    "disabled_tools": [
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.557387,
+    "top_lon": -0.164146,
+    "sigma_m": 250,
+    "confidence": "high",
+    "picked_source": "place:South Hill Park",
+    "evidence": "The site is clearly identified as 32-90 South Hill Park, bordering Hampstead No. 1 Pond. Geocoding 'South Hill Park' and 'Hampstead Ponds' in Camden yielded coordinates within 150m of each other. The intersection of South Hill Park and Parliament Hill further confirms the southern extent.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.03790399872806763,
+  "gt_centroids": [
+    {
+      "lat": 51.55823490456909,
+      "lon": -0.16447646242657094
+    },
+    {
+      "lat": 51.55726326920307,
+      "lon": -0.1646568805145372
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Hill Park",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hampstead Ponds (No 1 pond)",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "South Hill Park",
+        "la": "Camden",
+        "road_b": "Parliament Hill"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Hill Park",
+        "la_filter": "Camden",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "South Hill Park",
+            "type": "named road",
+            "lat": 51.55738724109944,
+            "lon": -0.16414627563124964,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hampstead Ponds (No 1 pond)",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "South Hill Park",
+          "Parliament Hill"
+        ],
+        "la_filter": "Camden",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.555685,
+            "lon": -0.1653,
+            "roads": [
+              "South Hill Park",
+              "Parliament Hill"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Hill Mansions",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Lake House",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Hill Mansions",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Lake House",
+        "la_filter": "Camden",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Lake House Close",
+            "type": "named road",
+            "lat": 53.26270826654367,
+            "lon": -2.578546481908501,
+            "admin_district": null,
+            "county": "Cheshire West and Chester"
+          },
+          {
+            "name": "Lake House Road",
+            "type": "named road",
+            "lat": 51.56150858652984,
+            "lon": 0.021152493193847606,
+            "admin_district": "Redbridge",
+            "county": "Greater London"
+          },
+          {
+            "name": "Lake House Close",
+            "type": "named road",
+            "lat": 50.841521860059764,
+            "lon": 0.4388162640060336,
+            "admin_district": "Rother",
+            "county": "East Sussex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hampstead Ponds",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.164146,
+        "la": "Camden",
+        "lat": 51.557387
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hampstead Ponds",
+        "la_filter": "Camden",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Hampstead Ponds",
+            "type": "inland water",
+            "lat": 51.558373401973085,
+            "lon": -0.1656790265988243,
+            "admin_district": "Camden",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.557387,
+        "lon": -0.164146,
+        "la": "Camden",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.546390811083704,
+        "la_centroid_lon": -0.15742226323007869
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is clearly identified as 32-90 South Hill Park, bordering Hampstead No. 1 Pond. Geocoding 'South Hill Park' and 'Hampstead Ponds' in Camden yielded coordinates within 150m of each other. The intersection of South Hill Park and Parliament Hill further confirms the southern extent.",
+        "top_lon": -0.164146,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 51.557387,
+        "sigma_m": 250,
+        "picked_source": "place:South Hill Park"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,294 @@
+{
+  "case": "Ar4.1_7a_merged",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.789,
+    "top_lon": -0.345,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "place:Childwick Green / road:Ayres End Lane",
+    "evidence": "The map shows three Article 4 areas (Beesonend, Childwickbury Stud/Ayres End Lane, and Childwick Green) connected by roads. Geocoding Childwick Green (51.7836, -0.3469) and Ayres End Lane (51.7911, -0.3429) places the site exactly in the rural area north of St Albans. The picked coordinate is the approximate centroid of the three areas.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.24800133625340515,
+  "gt_centroids": [
+    {
+      "lat": 51.78365150997723,
+      "lon": -0.34683385524576277
+    },
+    {
+      "lat": 51.78667187512641,
+      "lon": -0.3513566739581799
+    },
+    {
+      "lat": 51.789886214037075,
+      "lon": -0.34830885599247824
+    },
+    {
+      "lat": 51.79024463030131,
+      "lon": -0.35562594408396503
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Childwickbury Stud"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Childwick Green",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Beesonend",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Childwickbury Stud",
+        "la_filter": "St Albans",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Childwick Green",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Childwick Green",
+            "type": "hamlet",
+            "lat": 51.783610666069876,
+            "lon": -0.34688530272620977,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Childwick Green",
+            "type": "named road",
+            "lat": 51.78437727265395,
+            "lon": -0.34576993308643533,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Childwick Green",
+            "type": "section of named road",
+            "lat": 51.78379776889693,
+            "lon": -0.34676248131342174,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beesonend",
+        "la_filter": "St Albans",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Beesonend Lane",
+            "type": "section of named road",
+            "lat": 51.793812427245605,
+            "lon": -0.3536467721254711,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Beesonend Lane",
+            "type": "named road",
+            "lat": 51.78979564649765,
+            "lon": -0.3634933196166948,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Ayres End Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Ayres End Lane",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ayres End Lane",
+            "lat": 51.79502517066033,
+            "lon": -0.33149089199522475,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ayres End Lane",
+            "lat": 51.79651263686358,
+            "lon": -0.3261754292978076,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ayres End Lane",
+            "lat": 51.79729058895583,
+            "lon": -0.32454783350886585,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ayres End Lane",
+            "lat": 51.79110039914054,
+            "lon": -0.3428788495576086,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Ayres End Lane",
+            "lat": 51.79313279118086,
+            "lon": -0.3377319084827916,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.789,
+        "la": "St Albans",
+        "lon": -0.345
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.789,
+        "lon": -0.345,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "sigma_m": 1000,
+        "confidence": "high",
+        "top_lon": -0.345,
+        "picked_source": "place:Childwick Green / road:Ayres End Lane",
+        "top_lat": 51.789,
+        "evidence": "The map shows three Article 4 areas (Beesonend, Childwickbury Stud/Ayres End Lane, and Childwick Green) connected by roads. Geocoding Childwick Green (51.7836, -0.3469) and Ayres End Lane (51.7911, -0.3429) places the site exactly in the rural area north of St Albans. The picked coordinate is the approximate centroid of the three areas."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

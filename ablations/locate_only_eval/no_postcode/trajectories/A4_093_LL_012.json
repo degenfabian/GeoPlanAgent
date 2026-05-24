@@ -1,0 +1,271 @@
+{
+  "case": "A4_093:LL:012",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.658556,
+    "top_lon": -1.132732,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Beaumanor Road x Wade Street",
+    "evidence": "The site is identified as 133 Beaumanor Road (Former Hoskins Brewery). The intersection of Beaumanor Road and Wade Street (52.658556, -1.132732) is immediately adjacent to the site as shown on the map. The road centroid for Beaumanor Road also aligns with this area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.05261580643993407,
+  "gt_centroids": [
+    {
+      "lat": 52.658850139655264,
+      "lon": -1.132120921988633
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Hoskins Brewery"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Beaumanor Brewery",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Wade Street",
+        "la": "Leicester",
+        "road_a": "Beaumanor Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Leicester",
+        "query": "Beaumanor Court"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hoskins Brewery",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beaumanor Brewery",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Beaumanor Road",
+          "Wade Street"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.658556,
+            "lon": -1.132732,
+            "roads": [
+              "Beaumanor Road",
+              "Wade Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Beaumanor Court",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "Beaumanor Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.658556,
+        "lon": -1.132732,
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Beaumanor Road",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Beaumanor Road",
+            "lat": 52.6567108135847,
+            "lon": -1.134254760216484,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumanor Road",
+            "lat": 52.65750881798441,
+            "lon": -1.133351952397314,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumanor Road",
+            "lat": 52.658282715439114,
+            "lon": -1.1328413745215682,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumanor Road",
+            "lat": 52.6586143224028,
+            "lon": -1.1327017537145265,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumanor Road",
+            "lat": 52.65978025362636,
+            "lon": -1.131710273003718,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.658556,
+        "lon": -1.132732,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "intersect:Beaumanor Road x Wade Street",
+        "top_lon": -1.132732,
+        "evidence": "The site is identified as 133 Beaumanor Road (Former Hoskins Brewery). The intersection of Beaumanor Road and Wade Street (52.658556, -1.132732) is immediately adjacent to the site as shown on the map. The road centroid for Beaumanor Road also aligns with this area.",
+        "top_lat": 52.658556,
+        "verified_inside_admin_region": true,
+        "sigma_m": 200,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

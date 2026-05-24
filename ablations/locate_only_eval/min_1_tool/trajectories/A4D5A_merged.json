@@ -1,0 +1,340 @@
+{
+  "case": "A4D5A_merged",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5874,
+    "top_lon": -0.2298,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:The Burroughs x Burroughs Gardens",
+    "evidence": "The map shows a conservation area centered on The Burroughs and Burroughs Gardens in Hendon. Geocoding both roads in Barnet yields coordinates within 150m of each other. The pick is placed at the intersection of these two roads, which is the heart of the mapped area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.03545989896441221,
+  "gt_centroids": [
+    {
+      "lat": 51.587244496142766,
+      "lon": -0.23070257148186343
+    },
+    {
+      "lat": 51.58769572001404,
+      "lon": -0.22960789809379725
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 17,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Burroughs, Hendon",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Burroughs, Hendon",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hendon Methodist Church",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hendon Methodist Church",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "The Burroughs"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Burroughs",
+        "la_filter": "Barnet",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "The Burroughs",
+            "type": "named road",
+            "lat": 51.58776425941601,
+            "lon": -0.22915214763313843,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Burroughs Gardens"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Burroughs Gardens",
+        "la_filter": "Barnet",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Burroughs Gardens",
+            "type": "named road",
+            "lat": 51.58706488039113,
+            "lon": -0.2304785124234194,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Hendon Library"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hendon Library",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Hendon Town Hall",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hendon Town Hall",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Brampton Court"
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Brampton Court",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Brampton Court",
+            "type": "named road",
+            "lat": 55.093765911362645,
+            "lon": -1.5712395897711031,
+            "admin_district": null,
+            "county": "Northumberland"
+          },
+          {
+            "name": "Brampton Court",
+            "type": "named road",
+            "lat": 54.783916666190926,
+            "lon": -1.3522175106294547,
+            "admin_district": null,
+            "county": "County Durham"
+          },
+          {
+            "name": "Brampton Court",
+            "type": "named road",
+            "lat": 53.60409680122557,
+            "lon": -1.2861034470072883,
+            "admin_district": "Wakefield",
+            "county": null
+          },
+          {
+            "name": "Brampton Court",
+            "type": "named road",
+            "lat": 53.451861033235154,
+            "lon": -2.6851229582537086,
+            "admin_district": "St. Helens",
+            "county": null
+          },
+          {
+            "name": "Brampton Court",
+            "type": "named road",
+            "lat": 53.02758436392887,
+            "lon": -1.4539415797976196,
+            "admin_district": "Amber Valley",
+            "county": "Derbyshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.2298,
+        "picked_source": "intersect:The Burroughs x Burroughs Gardens",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.5874,
+        "evidence": "The map shows a conservation area centered on The Burroughs and Burroughs Gardens in Hendon. Geocoding both roads in Barnet yields coordinates within 150m of each other. The pick is placed at the intersection of these two roads, which is the heart of the mapped area.",
+        "sigma_m": 200,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 16,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

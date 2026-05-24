@@ -1,0 +1,277 @@
+{
+  "case": "43",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4852,
+    "top_lon": -0.177,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Chelsea Park Gardens x Beaufort Street",
+    "evidence": "The site is centered on Chelsea Park Gardens. Multiple road intersections (Beaufort St x Chelsea Park Gardens) and road centroids for Chelsea Park Gardens cluster tightly around this coordinate, which is also verified inside the Kensington and Chelsea admin region.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.009062049457755265,
+  "gt_centroids": [
+    {
+      "lat": 51.48550045352857,
+      "lon": -0.1777000711816154
+    },
+    {
+      "lat": 51.485521342732085,
+      "lon": -0.17628486045343517
+    },
+    {
+      "lat": 51.485122481972795,
+      "lon": -0.17704039353741613
+    },
+    {
+      "lat": 51.48464922350568,
+      "lon": -0.17716765034836776
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Chelsea Park Gardens"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "road_b": "Beaufort Street",
+        "road_a": "Chelsea Park Gardens"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Andrew's Church Chelsea",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Chelsea Park Gardens",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Chelsea Park Gardens",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Chelsea Park Gardens",
+            "type": "named road",
+            "lat": 51.485210699376374,
+            "lon": -0.17779133002904296,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Chelsea Park Gardens",
+          "Beaufort Street"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 3,
+        "intersections": [
+          {
+            "lat": 51.485017,
+            "lon": -0.17633,
+            "roads": [
+              "Chelsea Park Gardens",
+              "Beaufort Street"
+            ]
+          },
+          {
+            "lat": 51.485675,
+            "lon": -0.177009,
+            "roads": [
+              "Chelsea Park Gardens",
+              "Beaufort Street"
+            ]
+          },
+          {
+            "lat": 51.485611,
+            "lon": -0.176926,
+            "roads": [
+              "Chelsea Park Gardens",
+              "Beaufort Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Andrew's Church Chelsea",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Chelsea Park Gardens",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Chelsea Park Gardens",
+            "lat": 51.484938668471784,
+            "lon": -0.17706761945698046,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Chelsea Park Gardens",
+            "lat": 51.48502363067331,
+            "lon": -0.17819487162401462,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Chelsea Park Gardens",
+            "lat": 51.48539411014405,
+            "lon": -0.17657415120244052,
+            "in_la": "Kensington and Chelsea"
+          },
+          {
+            "name": "Chelsea Park Gardens",
+            "lat": 51.48541079959348,
+            "lon": -0.17735845910311962,
+            "in_la": "Kensington and Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "lon": -0.177,
+        "lat": 51.4852
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.4852,
+        "lon": -0.177,
+        "la": "Kensington and Chelsea",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.50120516305225,
+        "la_centroid_lon": -0.19222073817151708
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "evidence": "The site is centered on Chelsea Park Gardens. Multiple road intersections (Beaufort St x Chelsea Park Gardens) and road centroids for Chelsea Park Gardens cluster tightly around this coordinate, which is also verified inside the Kensington and Chelsea admin region.",
+        "top_lon": -0.177,
+        "sigma_m": 300,
+        "confidence": "high",
+        "top_lat": 51.4852,
+        "picked_source": "intersect:Chelsea Park Gardens x Beaufort Street"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

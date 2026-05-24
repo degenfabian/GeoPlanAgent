@@ -1,0 +1,336 @@
+{
+  "case": "ART4:82:00001",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.905,
+    "top_lon": -1.785,
+    "sigma_m": 2500,
+    "confidence": "high",
+    "picked_source": "place:Bickton",
+    "evidence": "The site is a large area in the Avon Valley between Fordingbridge (North) and Ellingham (South). The provided grid reference SU 150 150 (50.9347, -1.7872) sits at the northern end near Fordingbridge. The centroid of the polygon shown on the map is approximately near Bickton (50.913, -1.790). I have picked a central point between these landmarks.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.88652729988918,
+  "gt_centroids": [
+    {
+      "lat": 50.899383790509155,
+      "lon": -1.7939731067815639
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "SU 150 150"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "New Forest",
+        "query": "Fordingbridge"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Ellingham",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "New Forest",
+        "query": "North Gorley"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "SU 150 150",
+        "lat": 50.93470348367484,
+        "lon": -1.7871981408014537
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fordingbridge",
+        "la_filter": "New Forest",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Fordingbridge",
+            "type": "town",
+            "lat": 50.92753232647761,
+            "lon": -1.7898204313745072,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Fordingbridge Hospital",
+            "type": "hospital",
+            "lat": 50.92860791827979,
+            "lon": -1.792903275583114,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Fordingbridge Infant School",
+            "type": "primary education",
+            "lat": 50.93735184639951,
+            "lon": -1.7897477626892868,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ellingham",
+        "la_filter": "New Forest",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ellingham",
+            "type": "hamlet",
+            "lat": 50.87323833237699,
+            "lon": -1.796104545313576,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Ellingham Drive",
+            "type": "section of named road",
+            "lat": 50.87276024578135,
+            "lon": -1.795253911348343,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Ellingham Drive",
+            "type": "named road",
+            "lat": 50.87364334140555,
+            "lon": -1.8015318485385068,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Ellingham Drove",
+            "type": "named road",
+            "lat": 50.87422729800972,
+            "lon": -1.7810777298447698,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Ellingham Lake",
+            "type": "inland water",
+            "lat": 50.86914366854501,
+            "lon": -1.7892869648345033,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "North Gorley",
+        "la_filter": "New Forest",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "North Gorley",
+            "type": "village",
+            "lat": 50.90346491401427,
+            "lon": -1.7733466367568556,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bickton",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Ibsley",
+        "la": "New Forest"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bickton",
+        "la_filter": "New Forest",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Bickton",
+            "type": "village",
+            "lat": 50.91336148307753,
+            "lon": -1.790453154341045,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ibsley",
+        "la_filter": "New Forest",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Ibsley",
+            "type": "village",
+            "lat": 50.88351413836975,
+            "lon": -1.7895918303740284,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Ibsley Drove",
+            "type": "section of named road",
+            "lat": 50.89074896318906,
+            "lon": -1.7776735096305973,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Ibsley Water",
+            "type": "inland water",
+            "lat": 50.87851697999786,
+            "lon": -1.7860893073998712,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          },
+          {
+            "name": "Ibsley Common",
+            "type": "other landcover",
+            "lat": 50.889809731745764,
+            "lon": -1.7575607155397281,
+            "admin_district": "New Forest",
+            "county": "Hampshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lon": -1.785,
+        "evidence": "The site is a large area in the Avon Valley between Fordingbridge (North) and Ellingham (South). The provided grid reference SU 150 150 (50.9347, -1.7872) sits at the northern end near Fordingbridge. The centroid of the polygon shown on the map is approximately near Bickton (50.913, -1.790). I have picked a central point between these landmarks.",
+        "top_lat": 50.905,
+        "picked_source": "place:Bickton",
+        "sigma_m": 2500
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "case": "A4_002:CA",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.631,
+    "lon": -1.116,
+    "reasoning": "The document describes the South Highfields Conservation Area in Leicester, and the provided map shows the residential area bounded by London Road, Evington Road, and Melbourne Road."
+  },
+  "err_km": 0.28416406917945797,
+  "gt_centroids": [
+    {
+      "lat": 52.62918847406824,
+      "lon": -1.1189698155996506
+    },
+    {
+      "lat": 52.63015653769887,
+      "lon": -1.1223950485763752
+    },
+    {
+      "lat": 52.62720787894073,
+      "lon": -1.1184427852038663
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document describes the South Highfields Conservation Area in Leicester, and the provided map shows the residential area bounded by London Road, Evington Road, and Melbourne Road.",
+        "lat": 52.631,
+        "lon": -1.116
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

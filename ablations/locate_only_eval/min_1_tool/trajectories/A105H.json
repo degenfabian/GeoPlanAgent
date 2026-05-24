@@ -1,0 +1,189 @@
+{
+  "case": "A105H",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5852223525089,
+    "top_lon": -0.228010231923759,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:College Park",
+    "evidence": "The map shows the site at 270 Eastfield Road, at the junction with College Park. Geocoding 'College Park' in Peterborough returns a location that aligns perfectly with the road layout on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.06603885497056633,
+  "gt_centroids": [
+    {
+      "lat": 52.5846312029081,
+      "lon": -0.2281042243805459
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "270 Eastfield Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Peterborough",
+        "query": "College Park"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "270 Eastfield Road",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "College Park",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "College Park",
+            "type": "named road",
+            "lat": 52.58522235250887,
+            "lon": -0.22801023192375905,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Eastfield Road",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Eastfield Road",
+        "la_filter": "Peterborough",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Eastfield Road",
+            "type": "named road",
+            "lat": 52.58395142382251,
+            "lon": -0.22779580021986487,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Eastfield",
+            "type": "suburban area",
+            "lat": 52.58376537761105,
+            "lon": -0.2279804332631421,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Eastfield Grove",
+            "type": "named road",
+            "lat": 52.58106604549971,
+            "lon": -0.23084937790133062,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lat": 52.5852223525089,
+        "picked_source": "place:College Park",
+        "evidence": "The map shows the site at 270 Eastfield Road, at the junction with College Park. Geocoding 'College Park' in Peterborough returns a location that aligns perfectly with the road layout on the map.",
+        "sigma_m": 200,
+        "confidence": "high",
+        "top_lon": -0.228010231923759
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

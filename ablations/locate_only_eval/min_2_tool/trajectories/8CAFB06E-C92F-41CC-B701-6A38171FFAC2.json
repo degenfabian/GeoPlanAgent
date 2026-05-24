@@ -1,0 +1,352 @@
+{
+  "case": "8CAFB06E-C92F-41CC-B701-6A38171FFAC2",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1256208244257,
+    "top_lon": 1.26809408828747,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Long Wood",
+    "evidence": "The site is located at Elms Vale, Dover, specifically between Long Wood and Elms Vale Road. Multiple tool hits for Long Wood (51.1256, 1.2681) and Elms Vale Road (51.1238, 1.2771) cluster around the hatched area on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.25581532797499734,
+  "gt_centroids": [
+    {
+      "lat": 51.12420041163268,
+      "lon": 1.2709775812117592
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Elms Vale Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Elms Vale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Coombe Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Long Wood"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Elms Vale Road",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Elms Vale Road",
+            "type": "named road",
+            "lat": 51.12381159836632,
+            "lon": 1.2771286029415743,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Elms Vale Road",
+            "type": "section of named road",
+            "lat": 51.124765260407095,
+            "lon": 1.2876880167983908,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Elms Vale",
+            "type": "suburban area",
+            "lat": 51.124139600678305,
+            "lon": 1.2901021130047237,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Elms Vale",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Elms Vale",
+            "type": "suburban area",
+            "lat": 51.124139600678305,
+            "lon": 1.2901021130047237,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Elms Vale Road",
+            "type": "named road",
+            "lat": 51.12381159836632,
+            "lon": 1.2771286029415743,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Elms Vale Road",
+            "type": "section of named road",
+            "lat": 51.124765260407095,
+            "lon": 1.2876880167983908,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coombe Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Coombe Road",
+            "type": "named road",
+            "lat": 51.12709047554427,
+            "lon": 1.2599212392287553,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe Road",
+            "type": "named road",
+            "lat": 51.132383566036495,
+            "lon": 1.281310001078637,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe Road",
+            "type": "section of named road",
+            "lat": 51.13132709544699,
+            "lon": 1.2766460036764113,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe",
+            "type": "hamlet",
+            "lat": 51.27057496120895,
+            "lon": 1.2921992526431263,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Coombe Avenue",
+            "type": "named road",
+            "lat": 51.763592750478374,
+            "lon": -0.7476402678415394,
+            "admin_district": null,
+            "county": "Buckinghamshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Long Wood",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Long Wood",
+            "type": "woodland or forest",
+            "lat": 51.128590882980255,
+            "lon": 1.2635292961740097,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Long Wood",
+            "type": "woodland or forest",
+            "lat": 51.11875075820323,
+            "lon": 1.251573093144446,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Long Wood",
+            "type": "woodland or forest",
+            "lat": 51.24397871577138,
+            "lon": 1.237674648319177,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Long Wood",
+            "type": "woodland or forest",
+            "lat": 51.12562082442569,
+            "lon": 1.2680940882874743,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Stone Cottages",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lat": 51.126,
+        "lon": 1.27
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Stone Cottages",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.126,
+        "lon": 1.27,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "evidence": "The site is located at Elms Vale, Dover, specifically between Long Wood and Elms Vale Road. Multiple tool hits for Long Wood (51.1256, 1.2681) and Elms Vale Road (51.1238, 1.2771) cluster around the hatched area on the map.",
+        "top_lat": 51.1256208244257,
+        "picked_source": "place:Long Wood",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.26809408828747,
+        "sigma_m": 400
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

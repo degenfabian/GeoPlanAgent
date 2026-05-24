@@ -1,0 +1,298 @@
+{
+  "case": "POLA4_AREA",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.440569,
+    "top_lon": -3.567068,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "intersect:Torquay Road x Lower Polsham Road",
+    "evidence": "The postcode TQ1 3DR is for the Council offices in Torquay, not the site. The site is Polsham Conservation Area in Paignton. The intersection of Torquay Road and Lower Polsham Road, and the location of Polsham Park road, both place the site at these coordinates.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.24722197069078877,
+  "gt_centroids": [
+    {
+      "lat": 50.439963345396436,
+      "lon": -3.563709078948666
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "postcode": 1,
+      "intersect": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Polsham Conservation Area",
+        "la": "Torbay"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Victoria Park Paignton",
+        "la": "Torbay"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Torbay",
+        "query": "Parkfield Sports Centre"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "TQ1 3DR"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Torquay Road",
+        "road_b": "Lower Polsham Road",
+        "la": "Torbay"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Polsham Conservation Area",
+        "la_filter": "Torbay",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Park Paignton",
+        "la_filter": "Torbay",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Parkfield Sports Centre",
+        "la_filter": "Torbay",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "TQ1 3DR",
+        "lat": 50.46878034366406,
+        "lon": -3.5321242264664225,
+        "admin_district": "Torbay (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Torquay Road",
+          "Lower Polsham Road"
+        ],
+        "la_filter": "Torbay",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 50.440569,
+            "lon": -3.567068,
+            "roads": [
+              "Torquay Road",
+              "Lower Polsham Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Victoria Park",
+        "la": "Torbay"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Redcliffe Hotel",
+        "la": "Torbay"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Polsham Park",
+        "la": "Torbay"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Park",
+        "la_filter": "Torbay",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Victoria Park Road",
+            "type": "named road",
+            "lat": 50.476145847150605,
+            "lon": -3.527359149492745,
+            "admin_district": null,
+            "county": "Torbay"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Redcliffe Hotel",
+        "la_filter": "Torbay",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Polsham Park",
+        "la_filter": "Torbay",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Polsham Park",
+            "type": "named road",
+            "lat": 50.43936036892348,
+            "lon": -3.5646767185969646,
+            "admin_district": null,
+            "county": "Torbay"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -3.567068,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "picked_source": "intersect:Torquay Road x Lower Polsham Road",
+        "top_lat": 50.440569,
+        "sigma_m": 400,
+        "evidence": "The postcode TQ1 3DR is for the Council offices in Torquay, not the site. The site is Polsham Conservation Area in Paignton. The intersection of Torquay Road and Lower Polsham Road, and the location of Polsham Park road, both place the site at these coordinates."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

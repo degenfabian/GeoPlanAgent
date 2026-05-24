@@ -1,0 +1,360 @@
+{
+  "case": "71",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5205,
+    "top_lon": -0.2268,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Brewster Gardens x North Pole Road",
+    "evidence": "The site is clearly identified as the block between Brewster Gardens and Bracewell Road. Intersections of these roads with North Pole Road (found at 51.5199, -0.2256 and 51.5197, -0.2262) place the site precisely. Although the roads are technically just inside Kensington and Chelsea, the map and pdf_info explicitly link them to Hammersmith and Fulham (likely a border site).",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.01007893945050409,
+  "gt_centroids": [
+    {
+      "lat": 51.5205890919682,
+      "lon": -0.22677317479897516
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 3,
+      "intersect": 2,
+      "la_check": 1,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "W6 9JU"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Brewster Gardens",
+        "la": "Hammersmith and Fulham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Brewster Gardens",
+        "la": "Hammersmith and Fulham",
+        "road_b": "North Pole Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wormwood Scrubs",
+        "la": "Hammersmith and Fulham"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "W6 9JU",
+        "lat": 51.491996517208754,
+        "lon": -0.23398919546080546,
+        "admin_district": "Hammersmith and Fulham London Boro"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Brewster Gardens",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Brewster Gardens",
+            "type": "named road",
+            "lat": 51.5212623367219,
+            "lon": -0.2271347819437754,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Brewster Gardens",
+          "North Pole Road"
+        ],
+        "la_filter": "Hammersmith and Fulham",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.51999,
+            "lon": -0.225642,
+            "roads": [
+              "Brewster Gardens",
+              "North Pole Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wormwood Scrubs",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Wormwood Scrubs",
+            "type": "suburban area",
+            "lat": 51.51627774129248,
+            "lon": -0.23410235933902332,
+            "admin_district": "Hammersmith and Fulham",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Hammersmith and Fulham",
+        "lon": -0.227135,
+        "lat": 51.521262
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Hammersmith and Fulham",
+        "query": "Bracewell Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.521262,
+        "lon": -0.227135,
+        "la": "Hammersmith and Fulham",
+        "inside_la": false,
+        "distance_km_approx": 0.05,
+        "la_centroid_lat": 51.49500022199581,
+        "la_centroid_lon": -0.22078679338528695
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Bracewell Road",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bracewell Road"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Bracewell Road",
+        "road_b": "North Pole Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bracewell Road",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Bracewell Road",
+            "type": "named road",
+            "lat": 53.78339350978842,
+            "lon": -2.6685533683205698,
+            "admin_district": "Preston",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Bracewell Road",
+            "type": "named road",
+            "lat": 53.59020383264071,
+            "lon": -1.8575311380714628,
+            "admin_district": "Kirklees",
+            "county": null
+          },
+          {
+            "name": "Bracewell Road",
+            "type": "named road",
+            "lat": 51.5207360151716,
+            "lon": -0.22741467750141695,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "Bracewell",
+            "type": "hamlet",
+            "lat": 53.93233883213639,
+            "lon": -2.211104241176878,
+            "admin_district": "Pendle",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Bracewell Avenue",
+            "type": "named road",
+            "lat": 53.8443434315247,
+            "lon": -2.9697354497417714,
+            "admin_district": "Wyre",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Bracewell Road",
+          "North Pole Road"
+        ],
+        "la_filter": null,
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.51972,
+            "lon": -0.226229,
+            "roads": [
+              "Bracewell Road",
+              "North Pole Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "evidence": "The site is clearly identified as the block between Brewster Gardens and Bracewell Road. Intersections of these roads with North Pole Road (found at 51.5199, -0.2256 and 51.5197, -0.2262) place the site precisely. Although the roads are technically just inside Kensington and Chelsea, the map and pdf_info explicitly link them to Hammersmith and Fulham (likely a border site).",
+        "verified_inside_admin_region": false,
+        "confidence": "high",
+        "picked_source": "intersect:Brewster Gardens x North Pole Road",
+        "top_lat": 51.5205,
+        "top_lon": -0.2268
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

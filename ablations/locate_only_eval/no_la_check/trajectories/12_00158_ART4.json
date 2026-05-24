@@ -1,0 +1,344 @@
+{
+  "case": "12:00158:ART4",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.3905,
+    "top_lon": 1.194,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Langmere Road x Hall Lane",
+    "evidence": "The site is bounded by Langmere Road, Hall Lane, and Common Road in Dickleburgh. Intersections of Langmere Rd x Hall Lane (52.392193, 1.196871) and Common Rd x Hall Lane (52.387063, 1.195356) perfectly frame the eastern boundary shown on the map. Harvey Lane (found in tools) corresponds to the 'Harvey Road' label on the map. Picked the centroid of the large northern parcel.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1612840852324622,
+  "gt_centroids": [
+    {
+      "lat": 52.39189082051901,
+      "lon": 1.1933254503458417
+    },
+    {
+      "lat": 52.38883861498935,
+      "lon": 1.1928920415656288
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 1,
+      "intersect": 3,
+      "postcode": 1,
+      "road": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Dickleburgh",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Hall Lane",
+        "la": "South Norfolk",
+        "road_a": "Langmere Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Common Road",
+        "road_b": "Hall Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Dickleburgh",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Dickleburgh",
+            "type": "village",
+            "lat": 52.397165317543816,
+            "lon": 1.185652399881159,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Dickleburgh Moor",
+            "type": "hamlet",
+            "lat": 52.40667320332661,
+            "lon": 1.1925877378154983,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Dickleburgh (Voluntary Controlled) Primary School",
+            "type": "primary education",
+            "lat": 52.39521090453466,
+            "lon": 1.1874227534937847,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Dickleburgh Road",
+            "type": "named road",
+            "lat": 52.40259501093398,
+            "lon": 1.171707332658384,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Dickleburgh Road",
+            "type": "section of named road",
+            "lat": 52.402260637074455,
+            "lon": 1.169757114881649,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Langmere Road",
+          "Hall Lane"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.392193,
+            "lon": 1.196871,
+            "roads": [
+              "Langmere Road",
+              "Hall Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Common Road",
+          "Hall Lane"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.467936,
+            "lon": 1.267393,
+            "roads": [
+              "Common Road",
+              "Hall Lane"
+            ]
+          },
+          {
+            "lat": 52.387063,
+            "lon": 1.195356,
+            "roads": [
+              "Common Road",
+              "Hall Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Langmere Road",
+        "road_a": "Harvey Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Harvey Road']"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Harvey Road"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Harvey Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Harvey Lane",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Harvey Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Harvey Lane",
+            "lat": 52.39383582788319,
+            "lon": 1.1916154691339726,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Harvey Lane",
+            "lat": 52.39485133622436,
+            "lon": 1.187957688151435,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "evidence": "The site is bounded by Langmere Road, Hall Lane, and Common Road in Dickleburgh. Intersections of Langmere Rd x Hall Lane (52.392193, 1.196871) and Common Rd x Hall Lane (52.387063, 1.195356) perfectly frame the eastern boundary shown on the map. Harvey Lane (found in tools) corresponds to the 'Harvey Road' label on the map. Picked the centroid of the large northern parcel.",
+        "top_lat": 52.3905,
+        "verified_inside_admin_region": true,
+        "top_lon": 1.194,
+        "picked_source": "intersect:Langmere Road x Hall Lane",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

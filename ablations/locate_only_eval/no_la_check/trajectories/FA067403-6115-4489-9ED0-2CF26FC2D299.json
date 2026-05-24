@@ -1,0 +1,256 @@
+{
+  "case": "FA067403-6115-4489-9ED0-2CF26FC2D299",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.3115458834903,
+    "top_lon": 1.26367336530183,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "road:Westmarsh Drove",
+    "evidence": "The map shows a site north of Westmarsh Drove Farm, bounded by Westmarsh Drove and Richborough Stream. Road centroids for Westmarsh Drove and the village of Westmarsh cluster tightly around TR 27 61. The grid refs TR2761 and TR2762 on the map confirm this location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09296951885440956,
+  "gt_centroids": [
+    {
+      "lat": 51.31221627130935,
+      "lon": 1.2628740529093625
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "place": 3,
+      "road": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 27 61"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 27 62"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Westmarsh Drove Farm"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Dover",
+        "query": "Westmarsh Drove"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Richborough Stream"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 27 61",
+        "lat": 51.30712215966077,
+        "lon": 1.26264172433534
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR 27 62",
+        "lat": 51.31609932366517,
+        "lon": 1.2632790840649746
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Westmarsh Drove Farm",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Westmarsh Drove",
+        "la_filter": "Dover",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Westmarsh Drove",
+            "lat": 51.309800290630484,
+            "lon": 1.2628151118330335,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Westmarsh Drove",
+            "lat": 51.313677216887115,
+            "lon": 1.2633047252515763,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Richborough Stream",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Westmarsh"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Westmarsh",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Westmarsh",
+            "type": "village",
+            "lat": 51.30613155743706,
+            "lon": 1.265585008858779,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Westmarsh Drove",
+            "type": "section of named road",
+            "lat": 51.30806019505709,
+            "lon": 1.2619046486411476,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Westmarsh Drove",
+            "type": "named road",
+            "lat": 51.31154588349034,
+            "lon": 1.2636733653018304,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "sigma_m": 300,
+        "evidence": "The map shows a site north of Westmarsh Drove Farm, bounded by Westmarsh Drove and Richborough Stream. Road centroids for Westmarsh Drove and the village of Westmarsh cluster tightly around TR 27 61. The grid refs TR2761 and TR2762 on the map confirm this location.",
+        "top_lat": 51.3115458834903,
+        "top_lon": 1.26367336530183,
+        "verified_inside_admin_region": true,
+        "picked_source": "road:Westmarsh Drove"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

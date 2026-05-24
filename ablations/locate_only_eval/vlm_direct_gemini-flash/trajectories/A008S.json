@@ -1,0 +1,60 @@
+{
+  "case": "A008S",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.57685,
+    "lon": -0.3514,
+    "reasoning": "The document identifies the site as 37a Main Street, Ailsworth, PE5 7AF, which is clearly marked on the provided location plan at the intersection of Main Street and Maffit Road."
+  },
+  "err_km": 0.13920059549663827,
+  "gt_centroids": [
+    {
+      "lat": 52.57802002996029,
+      "lon": -0.35213258037569056
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lat": 52.57685,
+        "lon": -0.3514,
+        "reasoning": "The document identifies the site as 37a Main Street, Ailsworth, PE5 7AF, which is clearly marked on the provided location plan at the intersection of Main Street and Maffit Road."
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

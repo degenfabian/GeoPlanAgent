@@ -1,0 +1,269 @@
+{
+  "case": "71",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.521,
+    "top_lon": -0.2272,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Brewster Gardens x Bracewell Road",
+    "evidence": "The site is a block of houses between Brewster Gardens and Bracewell Road. Both roads were geocoded to the same block. Although the roads are on the boundary with Kensington and Chelsea, the map and PDF info specify Hammersmith and Fulham. Picked the midpoint of the two roads.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.05440377030209373,
+  "gt_centroids": [
+    {
+      "lat": 51.5205890919682,
+      "lon": -0.22677317479897516
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Hammersmith and Fulham",
+        "query": "Brewster Gardens"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Bracewell Road",
+        "la": "Hammersmith and Fulham"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Brewster Gardens",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Brewster Gardens",
+            "type": "named road",
+            "lat": 51.5212623367219,
+            "lon": -0.2271347819437754,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Bracewell Road",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Bracewell Road",
+            "type": "named road",
+            "lat": 51.5207360151716,
+            "lon": -0.22741467750141695,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "Bracewell Close",
+            "type": "named road",
+            "lat": 50.871389115296424,
+            "lon": -2.1543850636963473,
+            "admin_district": null,
+            "county": "Dorset"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Hammersmith and Fulham",
+        "lat": 51.521,
+        "lon": -0.227
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.521,
+        "lon": -0.227,
+        "la": "Hammersmith and Fulham",
+        "inside_la": false,
+        "distance_km_approx": 0.08,
+        "la_centroid_lat": 51.49500022199581,
+        "la_centroid_lon": -0.22078679338528695
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Scrubs Lane",
+        "la": "Hammersmith and Fulham"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Scrubs Lane",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Scrubs Lane",
+            "type": "named road",
+            "lat": 51.525063183000306,
+            "lon": -0.23409405632419136,
+            "admin_district": "Hammersmith and Fulham",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "North Pole Road",
+        "la": "Hammersmith and Fulham"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "North Pole Road",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "North Pole Road",
+            "type": "section of named road",
+            "lat": 51.51957216310581,
+            "lon": -0.2265662051041081,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "North Pole Road",
+            "type": "section of named road",
+            "lat": 51.51903607872049,
+            "lon": -0.22798515856134124,
+            "admin_district": "Hammersmith and Fulham",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is a block of houses between Brewster Gardens and Bracewell Road. Both roads were geocoded to the same block. Although the roads are on the boundary with Kensington and Chelsea, the map and PDF info specify Hammersmith and Fulham. Picked the midpoint of the two roads.",
+        "top_lat": 51.521,
+        "top_lon": -0.2272,
+        "picked_source": "intersect:Brewster Gardens x Bracewell Road",
+        "sigma_m": 200,
+        "verified_inside_admin_region": false,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,240 @@
+{
+  "case": "498E1484-1D2E-418C-9547-A93AE9A57BB0",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.266146317085,
+    "top_lon": 1.38495175607392,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:Sandwich Bay Estate",
+    "evidence": "The map shows the Sandwich Bay Estate with roads like Waldershare Avenue and Francis Avenue. Geocoding 'Sandwich Bay Estate' and 'Waldershare Avenue' in Dover yields a tight cluster around 51.266, 1.385.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.9943078156712333,
+  "gt_centroids": [
+    {
+      "lat": 51.27504573411656,
+      "lon": 1.3835581699221844
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 5,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Sandwich Bay Estate",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Waldershare Avenue",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Francis Avenue",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Sandwich Bay Estate",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Sandwich Bay Estate",
+            "type": "village",
+            "lat": 51.266146317085045,
+            "lon": 1.384951756073922,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Waldershare Avenue",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Waldershare Avenue",
+            "type": "named road",
+            "lat": 51.26609949996789,
+            "lon": 1.3847045615792881,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Waldershare Lane",
+            "type": "named road",
+            "lat": 51.169144932464924,
+            "lon": 1.3271877737044968,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Waldershare Lane",
+            "type": "section of named road",
+            "lat": 51.17443622585157,
+            "lon": 1.3204713923495304,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Waldershare Lane",
+            "type": "section of named road",
+            "lat": 51.16473990581544,
+            "lon": 1.3334086496374191,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Waldershare Road",
+            "type": "named road",
+            "lat": 51.18864846618517,
+            "lon": 1.2956855293473908,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Francis Avenue",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Francis Avenue",
+            "type": "named road",
+            "lat": 53.520181133960094,
+            "lon": -2.3815138750650453,
+            "admin_district": "Salford",
+            "county": null
+          },
+          {
+            "name": "Francis Avenue",
+            "type": "named road",
+            "lat": 53.85859244863242,
+            "lon": -2.20667302469569,
+            "admin_district": "Pendle",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Francis Avenue",
+            "type": "named road",
+            "lat": 53.63785857835833,
+            "lon": -1.8293003291236345,
+            "admin_district": "Kirklees",
+            "county": null
+          },
+          {
+            "name": "Francis Avenue",
+            "type": "named road",
+            "lat": 52.69777480125431,
+            "lon": -4.055148075892896,
+            "admin_district": null,
+            "county": "Gwynedd - Gwynedd"
+          },
+          {
+            "name": "Francis Avenue",
+            "type": "named road",
+            "lat": 53.3024639593755,
+            "lon": -3.741315460834154,
+            "admin_district": null,
+            "county": "Conwy - Conwy"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "picked_source": "place:Sandwich Bay Estate",
+        "top_lat": 51.266146317085,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows the Sandwich Bay Estate with roads like Waldershare Avenue and Francis Avenue. Geocoding 'Sandwich Bay Estate' and 'Waldershare Avenue' in Dover yields a tight cluster around 51.266, 1.385.",
+        "sigma_m": 300,
+        "top_lon": 1.38495175607392
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

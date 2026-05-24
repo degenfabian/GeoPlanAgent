@@ -1,0 +1,309 @@
+{
+  "case": "A4FNa1",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5504999273261,
+    "top_lon": -0.177758320497827,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Maresfield Gardens",
+    "evidence": "The map shows the Fitzjohns/Netherhall Conservation Area in Camden. Multiple road signals (Maresfield Gardens, Netherhall Gardens, Nutley Terrace) cluster tightly around 51.55, -0.177. This location is verified to be within the London Borough of Camden.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.19494388376984936,
+  "gt_centroids": [
+    {
+      "lat": 51.551098292140345,
+      "lon": -0.17510819946272924
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 1,
+      "intersect": 1,
+      "road": 4,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Camden",
+        "query": "Fitzjohns/Netherhall Conservation Area"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Fitzjohns Avenue",
+        "road_b": "Netherhall Gardens",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Camden",
+        "query": "Maresfield Gardens"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Fitzjohns/Netherhall Conservation Area",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Camden for: ['Fitzjohns Avenue', 'Netherhall Gardens']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Maresfield Gardens",
+        "la_filter": "Camden",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Maresfield Gardens",
+            "lat": 51.55049992732605,
+            "lon": -0.1777583204978273,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Maresfield Gardens",
+            "lat": 51.54778115273834,
+            "lon": -0.17677960996178968,
+            "in_la": "Camden"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Camden",
+        "query": "Fitzjohns Avenue"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Netherhall Gardens",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Nutley Terrace",
+        "la": "Camden"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Fitzjohns Avenue",
+        "la_filter": "Camden",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Netherhall Gardens",
+        "la_filter": "Camden",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Netherhall Gardens",
+            "lat": 51.55092113932318,
+            "lon": -0.1785348024082234,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Netherhall Gardens",
+            "lat": 51.552046154152,
+            "lon": -0.17685992643337456,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Netherhall Gardens",
+            "lat": 51.54839706583179,
+            "lon": -0.17953467546019666,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Netherhall Gardens",
+            "lat": 51.549520161798796,
+            "lon": -0.179232601507921,
+            "in_la": "Camden"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Nutley Terrace",
+        "la_filter": "Camden",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Nutley Terrace",
+            "lat": 51.549099290181246,
+            "lon": -0.1784777581105636,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Nutley Terrace",
+            "lat": 51.549356739929756,
+            "lon": -0.17681599770856538,
+            "in_la": "Camden"
+          },
+          {
+            "name": "Nutley Terrace",
+            "lat": 51.54962562831217,
+            "lon": -0.1750239491694283,
+            "in_la": "Camden"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Camden",
+        "lat": 51.55,
+        "lon": -0.177
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.55,
+        "lon": -0.177,
+        "la": "Camden",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.546390811083704,
+        "la_centroid_lon": -0.15742226323007869
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 51.5504999273261,
+        "sigma_m": 500,
+        "picked_source": "road:Maresfield Gardens",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.177758320497827,
+        "evidence": "The map shows the Fitzjohns/Netherhall Conservation Area in Camden. Multiple road signals (Maresfield Gardens, Netherhall Gardens, Nutley Terrace) cluster tightly around 51.55, -0.177. This location is verified to be within the London Borough of Camden.",
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

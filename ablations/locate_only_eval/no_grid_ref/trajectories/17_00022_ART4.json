@@ -1,0 +1,393 @@
+{
+  "case": "17:00022:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.613241,
+    "top_lon": 1.315744,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "intersect:The Street x Whitlingham Lane",
+    "evidence": "The map shows the Trowse with Newton Conservation Area. The intersection of 'The Street' and 'Whitlingham Lane' (found at 52.6132, 1.3157) aligns perfectly with the village center of Trowse Newton and the labels on the map (River Yare, The Street, Whitlingham Lane). The NR15 postcode was a letterhead for the council offices in Long Stratton.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.044127671485799755,
+  "gt_centroids": [
+    {
+      "lat": 52.61105312903899,
+      "lon": 1.322298662877032
+    },
+    {
+      "lat": 52.61141522910877,
+      "lon": 1.3171242076872
+    },
+    {
+      "lat": 52.611939208460214,
+      "lon": 1.319267122353719
+    },
+    {
+      "lat": 52.612849673449894,
+      "lon": 1.3171700928468109
+    },
+    {
+      "lat": 52.61313061541371,
+      "lon": 1.3163717885571247
+    },
+    {
+      "lat": 52.61244236325709,
+      "lon": 1.3179609503668532
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "place": 4,
+      "intersect": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2XE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Trowse with Newton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Trowse Common"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_b": "Kirby Road",
+        "road_a": "The Street"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'NR15 2XE' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trowse with Newton",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trowse Common",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Street",
+          "Kirby Road"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 2,
+        "intersections": [
+          {
+            "lat": 52.59473,
+            "lon": 1.38537,
+            "roads": [
+              "The Street",
+              "Kirby Road"
+            ]
+          },
+          {
+            "lat": 52.594823,
+            "lon": 1.385702,
+            "roads": [
+              "The Street",
+              "Kirby Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Trowse Newton",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.38537,
+        "lat": 52.59473,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trowse Newton",
+        "la_filter": "South Norfolk",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Trowse Newton",
+            "type": "village",
+            "lat": 52.613708680239775,
+            "lon": 1.3179811111263393,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Trowse Newton Solar Farm",
+            "type": "electricity production",
+            "lat": 52.607261365650764,
+            "lon": 1.3121601953553796,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.59473,
+        "lon": 1.38537,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Trowse",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trowse",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Trowse",
+            "type": "railway station",
+            "lat": 52.6153844225739,
+            "lon": 1.3124191741774953,
+            "admin_district": "Norwich",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Trowse Millgate",
+            "type": "suburban area",
+            "lat": 52.61550717954644,
+            "lon": 1.3112463685256561,
+            "admin_district": "Norwich",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Trowse Newton",
+            "type": "village",
+            "lat": 52.613708680239775,
+            "lon": 1.3179811111263393,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Trowse Eye",
+            "type": "tidal water",
+            "lat": 52.621241180214774,
+            "lon": 1.3229402854335666,
+            "admin_district": "Norwich",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Trowse Primary School and Nursery",
+            "type": "primary education",
+            "lat": 52.609156687475135,
+            "lon": 1.3170605230387182,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "South Norfolk",
+        "road_a": "The Street",
+        "road_b": "Whitlingham Lane"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "The Street",
+          "Whitlingham Lane"
+        ],
+        "la_filter": "South Norfolk",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.613241,
+            "lon": 1.315744,
+            "roads": [
+              "The Street",
+              "Whitlingham Lane"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "sigma_m": 500,
+        "top_lon": 1.315744,
+        "picked_source": "intersect:The Street x Whitlingham Lane",
+        "evidence": "The map shows the Trowse with Newton Conservation Area. The intersection of 'The Street' and 'Whitlingham Lane' (found at 52.6132, 1.3157) aligns perfectly with the village center of Trowse Newton and the labels on the map (River Yare, The Street, Whitlingham Lane). The NR15 postcode was a letterhead for the council offices in Long Stratton.",
+        "confidence": "high",
+        "top_lat": 52.613241
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

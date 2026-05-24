@@ -1,0 +1,290 @@
+{
+  "case": "A084S",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6349978612515,
+    "top_lon": -0.349527279331478,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "postcode:PE6 7DU",
+    "evidence": "The site is explicitly identified as 27 West Street, Helpston, PE6 7DU. The postcode PE6 7DU geocodes to Helpston village, and the map shows the site on West Street (B1443) near Quarry Farm, consistent with the postcode location. Verified inside Peterborough LA.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1197084670491447,
+  "gt_centroids": [
+    {
+      "lat": 52.63495411444385,
+      "lon": -0.3477548435993574
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "27 West Street, Helpston",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "PE6 7DU",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Quarry Farm, Helpston",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "27 West Street, Helpston",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "PE6 7DU",
+        "la_filter": "Peterborough",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "PE6 7DU",
+            "type": "postcode",
+            "lat": 52.6349978612515,
+            "lon": -0.3495272793314776,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Quarry Farm, Helpston",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "West Street, Helpston",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "West Street, Helpston",
+        "la_filter": "Peterborough",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Helpston",
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Helpston",
+        "la_filter": "Peterborough",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Helpston",
+            "type": "village",
+            "lat": 52.63524448135052,
+            "lon": -0.34400588689895034,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "type": "named road",
+            "lat": 52.63768958163383,
+            "lon": -0.30834135807023,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "type": "section of named road",
+            "lat": 52.63829909639045,
+            "lon": -0.302554076611096,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "type": "section of named road",
+            "lat": 52.577521471262735,
+            "lon": -0.35091932635714346,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          },
+          {
+            "name": "Helpston Road",
+            "type": "named road",
+            "lat": 52.581609959413065,
+            "lon": -0.3488176033137188,
+            "admin_district": null,
+            "county": "City of Peterborough"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.6349978612515,
+        "lon": -0.349527279331478,
+        "la": "Peterborough"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6349978612515,
+        "lon": -0.349527279331478,
+        "la": "Peterborough",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.60852485114961,
+        "la_centroid_lon": -0.2530952147542861
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "sigma_m": 200,
+        "top_lon": -0.349527279331478,
+        "picked_source": "postcode:PE6 7DU",
+        "verified_inside_admin_region": true,
+        "top_lat": 52.6349978612515,
+        "evidence": "The site is explicitly identified as 27 West Street, Helpston, PE6 7DU. The postcode PE6 7DU geocodes to Helpston village, and the map shows the site on West Street (B1443) near Quarry Farm, consistent with the postcode location. Verified inside Peterborough LA."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

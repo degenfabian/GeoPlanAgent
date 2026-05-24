@@ -1,0 +1,375 @@
+{
+  "case": "12:00122:ART4",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.470946,
+    "top_lon": 1.444855,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Longrigg Road",
+    "evidence": "The map shows a residential area in Ditchingham with labels for Windmill Green, Scudamore Place, and Longrigg Road. Tool results for Longrigg Road (52.4709, 1.4448) and the village of Ditchingham (52.4672, 1.4438) place the site accurately within South Norfolk. The picked coordinate is the centroid of Longrigg Road, which is visible at the top of the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.1713673505743963,
+  "gt_centroids": [
+    {
+      "lat": 52.46943544748213,
+      "lon": 1.4443534356098207
+    },
+    {
+      "lat": 52.469080318165844,
+      "lon": 1.4419316863984695
+    },
+    {
+      "lat": 52.46864455671181,
+      "lon": 1.4411417829215383
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "intersect": 2,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 10,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Windmill Green, Ditchingham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Scudamore Place, Ditchingham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Hollow Hill Road",
+        "la": "South Norfolk",
+        "road_b": "Thwaite Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Longrigg Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Windmill Green, Ditchingham",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Scudamore Place, Ditchingham",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Hollow Hill Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Longrigg Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Longrigg Road",
+            "lat": 52.47094602095301,
+            "lon": 1.444855536442837,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Longrigg Road",
+            "lat": 52.47072364015024,
+            "lon": 1.4455573892850397,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Longrigg Road",
+            "lat": 52.470610171725696,
+            "lon": 1.4460943315948658,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Windmill Green"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Scudamore Place"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Longrigg Road",
+        "la": "South Norfolk",
+        "road_a": "Thwaite Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 1.444855,
+        "lat": 52.470946,
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Windmill Green",
+        "la_filter": "South Norfolk",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Windmill Green",
+            "type": "named road",
+            "lat": 52.872946306407826,
+            "lon": 1.4343643246236826,
+            "admin_district": "North Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Scudamore Place",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Longrigg Road']"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.470946,
+        "lon": 1.444855,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Ditchingham"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ditchingham",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ditchingham",
+            "type": "village",
+            "lat": 52.46725956948341,
+            "lon": 1.443843890640819,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Ditchingham Dam",
+            "type": "suburban area",
+            "lat": 52.45787614753289,
+            "lon": 1.4399159343297712,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Ditchingham Dam",
+            "type": "named road",
+            "lat": 52.46078746265294,
+            "lon": 1.441247423432731,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Ditchingham Dam",
+            "type": "section of named road",
+            "lat": 52.458734200546594,
+            "lon": 1.4404098694349157,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Ditchingham Dam",
+            "type": "section of named road",
+            "lat": 52.46310011310462,
+            "lon": 1.4418255326325409,
+            "admin_district": "South Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 400,
+        "confidence": "high",
+        "picked_source": "road:Longrigg Road",
+        "top_lat": 52.470946,
+        "evidence": "The map shows a residential area in Ditchingham with labels for Windmill Green, Scudamore Place, and Longrigg Road. Tool results for Longrigg Road (52.4709, 1.4448) and the village of Ditchingham (52.4672, 1.4438) place the site accurately within South Norfolk. The picked coordinate is the centroid of Longrigg Road, which is visible at the top of the map.",
+        "top_lon": 1.444855,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

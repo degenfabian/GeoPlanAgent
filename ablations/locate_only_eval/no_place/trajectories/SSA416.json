@@ -1,0 +1,243 @@
+{
+  "case": "SSA416",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.5486596847003,
+    "top_lon": -2.25115514301971,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "road:Tinker's Castle Road",
+    "evidence": "The site is 'Wilderhope' on Tinker's Castle Road in Seisdon. The postcode WV8 1PX is for the Council Offices (letterhead). Tinker's Castle Road in Seisdon (South Staffordshire) was located via road centroid, which matches the map labels perfectly.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.38425741292666404,
+  "gt_centroids": [
+    {
+      "lat": 52.54758739776492,
+      "lon": -2.2565574876535734
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "road": 2,
+      "la_check": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "WV8 1PX"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Tinkers Castle Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "WV8 1PX",
+        "lat": 52.62566656951965,
+        "lon": -2.191960842481458,
+        "admin_district": "South Staffordshire District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Tinkers Castle Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Tinker's Castle Road",
+        "la": "South Staffordshire"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.19196084248146,
+        "la": "South Staffordshire",
+        "lat": 52.6256665695197
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Tinker's Castle Road",
+        "la_filter": "South Staffordshire",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Tinker's Castle Road",
+            "lat": 52.54723094608695,
+            "lon": -2.259145474435126,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Tinker's Castle Road",
+            "lat": 52.54865968470026,
+            "lon": -2.2511551430197057,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Tinker's Castle Road",
+            "lat": 52.54992104748615,
+            "lon": -2.243811890276597,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Tinker's Castle Road",
+            "lat": 52.5501506237314,
+            "lon": -2.242578126173761,
+            "in_la": "South Staffordshire"
+          },
+          {
+            "name": "Tinker's Castle Road",
+            "lat": 52.550168552956364,
+            "lon": -2.242164112369001,
+            "in_la": "South Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6256665695197,
+        "lon": -2.19196084248146,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "South Staffordshire",
+        "lon": -2.25115514301971,
+        "lat": 52.5486596847003
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.5486596847003,
+        "lon": -2.25115514301971,
+        "la": "South Staffordshire",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.6255743669412,
+        "la_centroid_lon": -2.1766636234531243
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -2.25115514301971,
+        "sigma_m": 500,
+        "confidence": "high",
+        "evidence": "The site is 'Wilderhope' on Tinker's Castle Road in Seisdon. The postcode WV8 1PX is for the Council Offices (letterhead). Tinker's Castle Road in Seisdon (South Staffordshire) was located via road centroid, which matches the map labels perfectly.",
+        "top_lat": 52.5486596847003,
+        "verified_inside_admin_region": true,
+        "picked_source": "road:Tinker's Castle Road"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

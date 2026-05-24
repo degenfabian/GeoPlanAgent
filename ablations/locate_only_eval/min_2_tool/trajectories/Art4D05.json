@@ -1,0 +1,315 @@
+{
+  "case": "Art4D05",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 50.6860035191737,
+    "top_lon": -2.10989295829466,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "place:Wareham",
+    "evidence": "The map shows the entire historic core of Wareham, bounded by the River Piddle and River Frome. The town center coordinate for Wareham from OS Open Names aligns perfectly with the center of the red-lined conservation area.",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.08224423415843087,
+  "gt_centroids": [
+    {
+      "lat": 50.68673641754148,
+      "lon": -2.1100502225839315
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wareham Conservation Area",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Wareham",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Purbeck",
+        "query": "Westport House"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wareham Conservation Area",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wareham",
+        "la_filter": "Purbeck",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Wareham",
+            "type": "town",
+            "lat": 50.68600351917367,
+            "lon": -2.1098929582946635,
+            "admin_district": null,
+            "county": "Dorset"
+          },
+          {
+            "name": "Wareham",
+            "type": "railway station",
+            "lat": 50.69275205433661,
+            "lon": -2.115062084964544,
+            "admin_district": null,
+            "county": "Dorset"
+          },
+          {
+            "name": "Wareham Way",
+            "type": "named road",
+            "lat": 54.702602704822574,
+            "lon": -1.6984128682417754,
+            "admin_district": null,
+            "county": "County Durham"
+          },
+          {
+            "name": "Wareham Road",
+            "type": "named road",
+            "lat": 53.83706633841845,
+            "lon": -3.0223602606410522,
+            "admin_district": null,
+            "county": "Blackpool"
+          },
+          {
+            "name": "Wareham Close",
+            "type": "named road",
+            "lat": 53.790609393163884,
+            "lon": -2.7536731515242887,
+            "admin_district": "Preston",
+            "county": "Lancashire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Westport House",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "The Quay, Wareham",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St Mary's Church, Wareham",
+        "la": "Purbeck"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.10989295829466,
+        "la": "Purbeck",
+        "lat": 50.6860035191737
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "The Quay, Wareham",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church, Wareham",
+        "la_filter": "Purbeck",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": false,
+        "error": "No polygon for LA 'Purbeck'"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "North Street, Wareham",
+        "la": "Dorset"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Street, Wareham",
+        "la": "Dorset"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "North Street, Wareham",
+        "la_filter": "Dorset",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Street, Wareham",
+        "la_filter": "Dorset",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Wareham",
+        "top_lat": 50.6860035191737,
+        "sigma_m": 500,
+        "top_lon": -2.10989295829466,
+        "verified_inside_admin_region": false,
+        "confidence": "high",
+        "evidence": "The map shows the entire historic core of Wareham, bounded by the River Piddle and River Frome. The town center coordinate for Wareham from OS Open Names aligns perfectly with the center of the red-lined conservation area."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

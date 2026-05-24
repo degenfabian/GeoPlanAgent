@@ -1,21 +1,4 @@
-"""
-Advanced boundary augmentations for SAM3 fine-tuning.
-=====================================================
-
-Two main augmentation strategies:
-
-1. **Style Transfer**: Convert filled boundary regions into outline/dashed/dotted
-   variants with random colors. Teaches the model to recognize boundary OUTLINES
-   (not just fills), which are common in real planning maps but absent from
-   the 27-sample training set.
-
-2. **Copy-Paste**: Take a boundary shape from one training sample and paste it
-   onto a different sample's map background. Multiplies effective training
-   diversity by decoupling boundary shapes from map backgrounds.
-
-In both cases, the ground-truth mask remains the FILLED interior of the boundary
-contour — the model must learn "segment the area enclosed by this outline."
-"""
+"""Boundary augmentations for SAM3 fine-tuning: style transfer (filled→outline) + copy-paste."""
 
 import cv2
 import numpy as np

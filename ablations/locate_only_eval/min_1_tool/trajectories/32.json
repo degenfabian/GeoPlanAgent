@@ -1,0 +1,228 @@
+{
+  "case": "32",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4867108446329,
+    "top_lon": -0.173064758629953,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Carlyle Square",
+    "evidence": "The map shows Carlyle Square bounded by King's Road, Old Church Street, and Manresa Road. Geocoding Carlyle Square in Kensington and Chelsea provides a precise match for the site location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.01620535893731828,
+  "gt_centroids": [
+    {
+      "lat": 51.48700682389442,
+      "lon": -0.1722864926118728
+    },
+    {
+      "lat": 51.48746938625088,
+      "lon": -0.17335540467753452
+    },
+    {
+      "lat": 51.48665402819306,
+      "lon": -0.1732802843039544
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 3,
+      "final_result": 1
+    },
+    "total_tool_calls": 4,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Carlyle Square",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Carlyle Square",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Carlyle Square",
+            "type": "named road",
+            "lat": 51.486710844632924,
+            "lon": -0.1730647586299531,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Manresa Road",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Manresa Road",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Manresa Road",
+            "type": "named road",
+            "lat": 51.48731322797901,
+            "lon": -0.17132662921866829,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "Old Church Street"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Old Church Street",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Old Church Street",
+            "type": "named road",
+            "lat": 51.48601098685808,
+            "lon": -0.17316474843824373,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          },
+          {
+            "name": "Old Church Road",
+            "type": "named road",
+            "lat": 56.484943346293775,
+            "lon": -3.3772815731284735,
+            "admin_district": null,
+            "county": "Perth and Kinross"
+          },
+          {
+            "name": "Old Church Lane",
+            "type": "section of named road",
+            "lat": 54.944840782016,
+            "lon": -2.7471725305977857,
+            "admin_district": null,
+            "county": "Cumberland"
+          },
+          {
+            "name": "Old Church Lane",
+            "type": "named road",
+            "lat": 54.94570734955247,
+            "lon": -2.753823539582077,
+            "admin_district": null,
+            "county": "Cumberland"
+          },
+          {
+            "name": "Old Church Close",
+            "type": "named road",
+            "lat": 53.286846855180634,
+            "lon": -2.896265006959238,
+            "admin_district": null,
+            "county": "Cheshire West and Chester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lat": 51.4867108446329,
+        "picked_source": "place:Carlyle Square",
+        "evidence": "The map shows Carlyle Square bounded by King's Road, Old Church Street, and Manresa Road. Geocoding Carlyle Square in Kensington and Chelsea provides a precise match for the site location.",
+        "sigma_m": 200,
+        "top_lon": -0.173064758629953,
+        "confidence": "high"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

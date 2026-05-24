@@ -1,0 +1,315 @@
+{
+  "case": "E6369A1B-AA37-4B67-AF76-3BC17E3A5885",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.196,
+    "top_lon": 1.375,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR3549/TR3649 midpoint",
+    "evidence": "The site is identified as the Former Royal Marines Sports Ground on Ripple Road. Grid references TR3549 and TR3649 from the map title block bracket the site. The intersection of the grid squares and the location of Ripple Road confirms the position.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.13561002163894725,
+  "gt_centroids": [
+    {
+      "lat": 51.19534534223907,
+      "lon": 1.376641980377299
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "postcode": 1,
+      "place": 3,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3549"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR3649"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PG"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Former Royal Marines Sports Ground"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Ripple Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3549",
+        "lat": 51.19615600478458,
+        "lon": 1.3693211296377945
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR3649",
+        "lat": 51.19574333235783,
+        "lon": 1.383607395917079
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CT16 3PG' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Former Royal Marines Sports Ground",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ripple Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Ripple Road",
+            "type": "named road",
+            "lat": 51.19260107725335,
+            "lon": 1.374372610051352,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Ripple Road",
+            "type": "section of named road",
+            "lat": 51.19467557270514,
+            "lon": 1.3835147899754467,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Ripple",
+            "type": "village",
+            "lat": 51.20022418402567,
+            "lon": 1.3570472181179947,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Ripple Way",
+            "type": "named road",
+            "lat": 51.19985970375528,
+            "lon": 1.3840381192369744,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Ripplevale School",
+            "type": "special needs education",
+            "lat": 51.19947480186545,
+            "lon": 1.3646525616677505,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Coldblow Farm",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Station Road",
+        "road_a": "Ripple Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coldblow Farm",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Ripple Road",
+          "Station Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lat": 51.196,
+        "lon": 1.375
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.196,
+        "lon": 1.375,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "evidence": "The site is identified as the Former Royal Marines Sports Ground on Ripple Road. Grid references TR3549 and TR3649 from the map title block bracket the site. The intersection of the grid squares and the location of Ripple Road confirms the position.",
+        "picked_source": "grid_ref:TR3549/TR3649 midpoint",
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lat": 51.196,
+        "sigma_m": 400,
+        "top_lon": 1.375
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

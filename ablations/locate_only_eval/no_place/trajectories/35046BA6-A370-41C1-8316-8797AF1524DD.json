@@ -1,0 +1,227 @@
+{
+  "case": "35046BA6-A370-41C1-8316-8797AF1524DD",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.1738,
+    "top_lon": 1.2031,
+    "sigma_m": 500,
+    "confidence": "high",
+    "picked_source": "grid_ref:TR2346-47/TR2446-47",
+    "evidence": "The map explicitly cites OS sheets TR2346 and TR2446. The site is Lydden Circuit, which lies across these grid squares. The midpoint of these two grid references (approx 51.174, 1.203) aligns perfectly with the motor racing circuit visible on the map. Verified inside Dover admin region.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.40747075679277706,
+  "gt_centroids": [
+    {
+      "lat": 51.176945513658914,
+      "lon": 1.2060985720900135
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 2,
+      "postcode": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2346"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2446"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PG"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2346",
+        "lat": 51.174038360139846,
+        "lon": 1.1959948910545526
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2446",
+        "lat": 51.17364697105831,
+        "lon": 1.2102768107209936
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": false,
+        "error": "Postcode 'CT16 3PG' not found in Code-Point Open"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Dover Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lat": 51.174,
+        "lon": 1.203
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Dover Road",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Dover Road",
+            "lat": 51.21042744229317,
+            "lon": 1.4004031479945958,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Dover Road",
+            "lat": 51.21137885873753,
+            "lon": 1.4013963056130634,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Dover Road",
+            "lat": 51.20668151730619,
+            "lon": 1.396173428098172,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Dover Road",
+            "lat": 51.20800884913876,
+            "lon": 1.397703185114033,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Dover Road",
+            "lat": 51.20865293378432,
+            "lon": 1.398445174093747,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.174,
+        "lon": 1.203,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 500,
+        "picked_source": "grid_ref:TR2346-47/TR2446-47",
+        "evidence": "The map explicitly cites OS sheets TR2346 and TR2446. The site is Lydden Circuit, which lies across these grid squares. The midpoint of these two grid references (approx 51.174, 1.203) aligns perfectly with the motor racing circuit visible on the map. Verified inside Dover admin region.",
+        "confidence": "high",
+        "top_lat": 51.1738,
+        "top_lon": 1.2031,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,321 @@
+{
+  "case": "A4D8A_merged",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.6617457040964,
+    "top_lon": -0.196209067520005,
+    "sigma_m": 1000,
+    "confidence": "high",
+    "picked_source": "place:Monken Hadley",
+    "evidence": "The map shows the Monken Hadley Conservation Area. Geocoding 'Monken Hadley' and 'Hadley Common' (road) in Barnet yields a tight cluster around 51.661, -0.196. This matches the map's layout of the conservation area spanning from the village towards the common.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.15452905802256103,
+  "gt_centroids": [
+    {
+      "lat": 51.66066617921087,
+      "lon": -0.1947982032086669
+    },
+    {
+      "lat": 51.66528182483707,
+      "lon": -0.19904722511536274
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Monken Hadley Conservation Area",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Monken Hadley"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Barnet",
+        "query": "Hadley Common Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Tudor Park Golf Course",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Monken Hadley Conservation Area",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Monken Hadley",
+        "la_filter": "Barnet",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Monken Hadley",
+            "type": "suburban area",
+            "lat": 51.66174570409642,
+            "lon": -0.19620906752000503,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Monken Hadley Common",
+            "type": "woodland or forest",
+            "lat": 51.65914201772996,
+            "lon": -0.17841318348004853,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Monken Hadley Church of England Primary School",
+            "type": "primary education",
+            "lat": 51.66289263810698,
+            "lon": -0.19068340458058686,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Hadley Common Road",
+        "la_filter": "Barnet",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Hadley Common",
+            "type": "section of named road",
+            "lat": 51.65836568206169,
+            "lon": -0.18635283030901623,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          },
+          {
+            "name": "Hadley Common",
+            "type": "section of named road",
+            "lat": 51.65933100802528,
+            "lon": -0.18888786230229226,
+            "admin_district": "Barnet",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Tudor Park Golf Course",
+        "la_filter": "Barnet",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.6617457040964,
+        "la": "Barnet",
+        "lon": -0.196209067520005
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.6617457040964,
+        "lon": -0.196209067520005,
+        "la": "Barnet",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.616028526273034,
+        "la_centroid_lon": -0.21000945769264093
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Camlet Way",
+        "la": "Barnet"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Camlet Way",
+        "la_filter": "Barnet",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Camlet Way",
+            "type": "named road",
+            "lat": 51.75657249192219,
+            "lon": -0.3520456964482964,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Camlet Way",
+            "type": "named road",
+            "lat": 51.884125106587646,
+            "lon": 0.9014731823506044,
+            "admin_district": "Colchester",
+            "county": "Essex"
+          },
+          {
+            "name": "Camlet Way",
+            "type": "named road",
+            "lat": 51.66449450860798,
+            "lon": -0.1820303933594555,
+            "admin_district": "Enfield",
+            "county": "Greater London"
+          },
+          {
+            "name": "Camlet",
+            "type": "other coastal landform",
+            "lat": 57.683271994211786,
+            "lon": -2.152287262689986,
+            "admin_district": null,
+            "county": "Aberdeenshire"
+          },
+          {
+            "name": "Camlet Close",
+            "type": "named road",
+            "lat": 53.73700859295047,
+            "lon": -1.9038192400277827,
+            "admin_district": "Calderdale",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "top_lon": -0.196209067520005,
+        "picked_source": "place:Monken Hadley",
+        "top_lat": 51.6617457040964,
+        "sigma_m": 1000,
+        "verified_inside_admin_region": true,
+        "evidence": "The map shows the Monken Hadley Conservation Area. Geocoding 'Monken Hadley' and 'Hadley Common' (road) in Barnet yields a tight cluster around 51.661, -0.196. This matches the map's layout of the conservation area spanning from the village towards the common."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

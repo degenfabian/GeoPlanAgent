@@ -1,0 +1,294 @@
+{
+  "case": "43",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.4852106993764,
+    "top_lon": -0.177791330029043,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Chelsea Park Gardens",
+    "evidence": "The site is centered on Chelsea Park Gardens. Tool results for the road centroid and the intersection with Beaufort Street (visible on map) cluster tightly around this coordinate. Postcode SW3 6AF (Chelsea Park Gardens) also confirms the location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.032833004720617856,
+  "gt_centroids": [
+    {
+      "lat": 51.48550045352857,
+      "lon": -0.1777000711816154
+    },
+    {
+      "lat": 51.485521342732085,
+      "lon": -0.17628486045343517
+    },
+    {
+      "lat": 51.485122481972795,
+      "lon": -0.17704039353741613
+    },
+    {
+      "lat": 51.48464922350568,
+      "lon": -0.17716765034836776
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "intersect": 1,
+      "postcode": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Chelsea Park Gardens",
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "road_a": "Chelsea Park Gardens",
+        "road_b": "Beaufort Street"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Kensington and Chelsea",
+        "query": "St Andrew's Church"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SW3 6AF"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Chelsea Park Gardens",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Chelsea Park Gardens",
+            "type": "named road",
+            "lat": 51.485210699376374,
+            "lon": -0.17779133002904296,
+            "admin_district": "Kensington and Chelsea",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Chelsea Park Gardens",
+          "Beaufort Street"
+        ],
+        "la_filter": "Kensington and Chelsea",
+        "n_intersections": 3,
+        "intersections": [
+          {
+            "lat": 51.485017,
+            "lon": -0.17633,
+            "roads": [
+              "Chelsea Park Gardens",
+              "Beaufort Street"
+            ]
+          },
+          {
+            "lat": 51.485675,
+            "lon": -0.177009,
+            "roads": [
+              "Chelsea Park Gardens",
+              "Beaufort Street"
+            ]
+          },
+          {
+            "lat": 51.485611,
+            "lon": -0.176926,
+            "roads": [
+              "Chelsea Park Gardens",
+              "Beaufort Street"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Andrew's Church",
+        "la_filter": "Kensington and Chelsea",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "St Andrew's Churchyard",
+            "type": "named road",
+            "lat": 54.6643035860053,
+            "lon": -2.751423541421254,
+            "admin_district": null,
+            "county": "Westmorland and Furness"
+          },
+          {
+            "name": "St Andrew's Church of England (Voluntary Aided) Primary School",
+            "type": "primary education",
+            "lat": 51.38846139424896,
+            "lon": -2.3670899871790483,
+            "admin_district": null,
+            "county": "Bath and North East Somerset"
+          },
+          {
+            "name": "St Andrew's Church of England Primary School",
+            "type": "primary education",
+            "lat": 50.495532078872834,
+            "lon": -4.132161724895177,
+            "admin_district": "West Devon",
+            "county": "Devon"
+          },
+          {
+            "name": "St Andrew's Church of England Primary School",
+            "type": "primary education",
+            "lat": 52.62474254965722,
+            "lon": 0.7483971001966409,
+            "admin_district": "Breckland",
+            "county": "Norfolk"
+          },
+          {
+            "name": "St Andrew's Church Close",
+            "type": "named road",
+            "lat": 52.06910258319679,
+            "lon": 1.202074496521875,
+            "admin_district": "East Suffolk",
+            "county": "Suffolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SW3 6AF",
+        "lat": 51.485004709554644,
+        "lon": -0.17726662854663364,
+        "admin_district": "Kensington and Chelsea London Boro"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.177791330029043,
+        "la": "Kensington and Chelsea",
+        "lat": 51.4852106993764
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.4852106993764,
+        "lon": -0.177791330029043,
+        "la": "Kensington and Chelsea",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.50120516305225,
+        "la_centroid_lon": -0.19222073817151708
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.177791330029043,
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "sigma_m": 200,
+        "picked_source": "place:Chelsea Park Gardens",
+        "evidence": "The site is centered on Chelsea Park Gardens. Tool results for the road centroid and the intersection with Beaufort Street (visible on map) cluster tightly around this coordinate. Postcode SW3 6AF (Chelsea Park Gardens) also confirms the location.",
+        "top_lat": 51.4852106993764
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

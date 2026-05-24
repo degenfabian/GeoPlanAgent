@@ -1,0 +1,396 @@
+{
+  "case": "8CAFB06E-C92F-41CC-B701-6A38171FFAC2",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.125,
+    "top_lon": 1.27,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "place:Elms Vale",
+    "evidence": "The site is located at Elms Vale, Dover. Multiple signals (Elms Vale suburban area, Elms Vale Road, and Long Wood) cluster around the coordinates 51.125, 1.27. The map shows the site bounded by Long Wood to the north and Elms Vale Road to the south.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.11206965887773336,
+  "gt_centroids": [
+    {
+      "lat": 51.12420041163268,
+      "lon": 1.2709775812117592
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "grid_ref": 1,
+      "place": 4,
+      "intersect": 1,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR 24 SE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Elms Vale",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Elms Farm",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Elms Vale Road",
+        "road_b": "Coombe Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": false,
+        "error": "Could not parse grid_ref 'TR 24 SE'"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Elms Vale",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Elms Vale",
+            "type": "suburban area",
+            "lat": 51.124139600678305,
+            "lon": 1.2901021130047237,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Elms Vale Road",
+            "type": "named road",
+            "lat": 51.12381159836632,
+            "lon": 1.2771286029415743,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Elms Vale Road",
+            "type": "section of named road",
+            "lat": 51.124765260407095,
+            "lon": 1.2876880167983908,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Elms Farm",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Elms Farm",
+            "type": "suburban area",
+            "lat": 52.15162548445827,
+            "lon": -0.4120296345671457,
+            "admin_district": null,
+            "county": "Bedford"
+          },
+          {
+            "name": "Elms Farm Community Primary School",
+            "type": "primary education",
+            "lat": 52.46376109141692,
+            "lon": -1.7731557945787761,
+            "admin_district": "Birmingham",
+            "county": null
+          },
+          {
+            "name": "Elms Farm Solar Plant",
+            "type": "electricity production",
+            "lat": 52.210264435429714,
+            "lon": -1.5795264165323846,
+            "admin_district": "Stratford-on-Avon",
+            "county": "Warwickshire"
+          },
+          {
+            "name": "Elms Farm Close",
+            "type": "named road",
+            "lat": 52.3481297200945,
+            "lon": -1.1370717312980778,
+            "admin_district": null,
+            "county": "West Northamptonshire"
+          },
+          {
+            "name": "Elms Farm Solar Park",
+            "type": "electricity production",
+            "lat": 51.60501621769967,
+            "lon": -1.3996761806255482,
+            "admin_district": "Vale of White Horse",
+            "county": "Oxfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Elms Vale Road",
+          "Coombe Road"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Coombe Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Long Wood",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Little Farthingloe",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Coombe Road",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Coombe Road",
+            "lat": 51.1250263024243,
+            "lon": 1.2456913352736394,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Coombe Road",
+            "lat": 51.128470897526626,
+            "lon": 1.262677058554149,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Coombe Road",
+            "lat": 51.13245297574782,
+            "lon": 1.2811269979481739,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Long Wood",
+        "la_filter": "Dover",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Long Wood",
+            "type": "woodland or forest",
+            "lat": 51.128590882980255,
+            "lon": 1.2635292961740097,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Long Wood",
+            "type": "woodland or forest",
+            "lat": 51.11875075820323,
+            "lon": 1.251573093144446,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Long Wood",
+            "type": "woodland or forest",
+            "lat": 51.24397871577138,
+            "lon": 1.237674648319177,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Long Wood",
+            "type": "woodland or forest",
+            "lat": 51.12562082442569,
+            "lon": 1.2680940882874743,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Little Farthingloe",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.125,
+        "la": "Dover",
+        "lon": 1.27
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.125,
+        "lon": 1.27,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "sigma_m": 400,
+        "top_lon": 1.27,
+        "picked_source": "place:Elms Vale",
+        "evidence": "The site is located at Elms Vale, Dover. Multiple signals (Elms Vale suburban area, Elms Vale Road, and Long Wood) cluster around the coordinates 51.125, 1.27. The map shows the site bounded by Long Wood to the north and Elms Vale Road to the south.",
+        "confidence": "high",
+        "top_lat": 51.125
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

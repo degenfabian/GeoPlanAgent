@@ -1,0 +1,379 @@
+{
+  "case": "F9A7310C-0DDD-469E-B34D-C270A186070F",
+  "config": {
+    "disabled_tools": [
+      "grid_ref"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.226,
+    "top_lon": 1.401,
+    "sigma_m": 500,
+    "confidence": "med",
+    "picked_source": "place:Deal",
+    "evidence": "The map shows the Nelson Street Conservation Area in Deal, bounded by High Street and West Street. The town centroid for Deal and the road segments for High Street and West Street cluster around this coordinate.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.18013554614342508,
+  "gt_centroids": [
+    {
+      "lat": 51.22761103272631,
+      "lon": 1.400728225091645
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "intersect": 2,
+      "road": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Nelson Street, Deal"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Nelson Street",
+        "road_b": "West Street",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Alfred Square, Deal"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Nelson Street, Deal",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Dover for: ['Nelson Street']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Alfred Square, Deal",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Deal"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "High Street",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "West Street",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Deal",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Deal",
+            "type": "town",
+            "lat": 51.222722255775075,
+            "lon": 1.399969271127063,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Deal",
+            "type": "railway station",
+            "lat": 51.223106569182704,
+            "lon": 1.3985078168815668,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Deal Road",
+            "type": "section of named road",
+            "lat": 51.22044638917592,
+            "lon": 1.3391104063786883,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Deal Road",
+            "type": "section of named road",
+            "lat": 51.26673869944976,
+            "lon": 1.3389975467792488,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Deal Road",
+            "type": "named road",
+            "lat": 51.25742758483381,
+            "lon": 1.3371467969329893,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "High Street",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "High Street",
+            "lat": 51.227208854446225,
+            "lon": 1.4025136110188454,
+            "in_la": "Dover"
+          },
+          {
+            "name": "High Street",
+            "lat": 51.22683917349842,
+            "lon": 1.4025436268813394,
+            "in_la": "Dover"
+          },
+          {
+            "name": "High Street",
+            "lat": 51.22621242784238,
+            "lon": 1.40259764463122,
+            "in_la": "Dover"
+          },
+          {
+            "name": "High Street",
+            "lat": 51.22574808258839,
+            "lon": 1.4026349975815837,
+            "in_la": "Dover"
+          },
+          {
+            "name": "High Street",
+            "lat": 51.22532882543235,
+            "lon": 1.4026685153968461,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "West Street",
+        "la_filter": "Dover",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "West Street",
+            "lat": 51.2275957177755,
+            "lon": 1.399419017274926,
+            "in_la": "Dover"
+          },
+          {
+            "name": "West Street",
+            "lat": 51.22720795437019,
+            "lon": 1.4000709167110117,
+            "in_la": "Dover"
+          },
+          {
+            "name": "West Street",
+            "lat": 51.226574141461256,
+            "lon": 1.4003679900522892,
+            "in_la": "Dover"
+          },
+          {
+            "name": "West Street",
+            "lat": 51.22569241058716,
+            "lon": 1.40037457583024,
+            "in_la": "Dover"
+          },
+          {
+            "name": "West Street",
+            "lat": 51.22325156700484,
+            "lon": 1.4001415315030579,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St George's Church, Deal",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "West Street",
+        "la": "Dover",
+        "road_a": "High Street"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St George's Church, Deal",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "High Street",
+          "West Street"
+        ],
+        "la_filter": "Dover",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:Deal",
+        "top_lat": 51.226,
+        "sigma_m": 500,
+        "confidence": "med",
+        "evidence": "The map shows the Nelson Street Conservation Area in Deal, bounded by High Street and West Street. The town centroid for Deal and the road segments for High Street and West Street cluster around this coordinate.",
+        "top_lon": 1.401,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

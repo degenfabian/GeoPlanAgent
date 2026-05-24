@@ -1,0 +1,184 @@
+{
+  "case": "Ar4.20",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.744095268905,
+    "top_lon": -0.323688934302901,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "place:Cunningham Avenue",
+    "evidence": "The map shows Cunningham Avenue and Cunningham Hill Road in St Albans. Geocoding Cunningham Avenue returns a precise location that matches the road layout on the map.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.09148518101838246,
+  "gt_centroids": [
+    {
+      "lat": 51.74462455605985,
+      "lon": -0.3226716168656488
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 3,
+    "n_turns": 5,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Cunningham Avenue",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Cunningham Hill Road"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cunningham Avenue",
+        "la_filter": "St Albans",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Cunningham Avenue",
+            "type": "named road",
+            "lat": 51.74409526890503,
+            "lon": -0.3236889343029011,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Cunningham Hill Road",
+            "type": "named road",
+            "lat": 51.74438560335475,
+            "lon": -0.31946299652502425,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Cunningham Hill Junior School",
+            "type": "primary education",
+            "lat": 51.744417024397755,
+            "lon": -0.31537700107190786,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Cunningham Hill Infants School",
+            "type": "primary education",
+            "lat": 51.74447509773355,
+            "lon": -0.3156645455369936,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Cunningham Hill Road",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Cunningham Hill Road",
+            "type": "named road",
+            "lat": 51.74438560335475,
+            "lon": -0.31946299652502425,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Cunningham Hill Junior School",
+            "type": "primary education",
+            "lat": 51.744417024397755,
+            "lon": -0.31537700107190786,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          },
+          {
+            "name": "Cunningham Hill Infants School",
+            "type": "primary education",
+            "lat": 51.74447509773355,
+            "lon": -0.3156645455369936,
+            "admin_district": "St. Albans",
+            "county": "Hertfordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 200,
+        "confidence": "high",
+        "evidence": "The map shows Cunningham Avenue and Cunningham Hill Road in St Albans. Geocoding Cunningham Avenue returns a precise location that matches the road layout on the map.",
+        "verified_inside_admin_region": true,
+        "top_lon": -0.323688934302901,
+        "picked_source": "place:Cunningham Avenue",
+        "top_lat": 51.744095268905
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,398 @@
+{
+  "case": "12:00128:ART4",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.4839325482347,
+    "top_lon": 1.3040293180004,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "postcode:NR15 2NU",
+    "evidence": "The site is located in Hempnall, South Norfolk. Postcode NR15 2NU corresponds to Lundy Green, which is explicitly labeled on the map and mentioned in the site address context (Turkey Row/Lundy Green). The map shows the site boundary surrounding Turkey Row and Lundy Green.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2838481235863118,
+  "gt_centroids": [
+    {
+      "lat": 52.486652248996606,
+      "lon": 1.3071199907177589
+    },
+    {
+      "lat": 52.48418898990687,
+      "lon": 1.309110521940893
+    },
+    {
+      "lat": 52.48489031704312,
+      "lon": 1.3079148809396939
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 7,
+      "intersect": 1,
+      "postcode": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 11,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Turkey Row"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Lower Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Khouse Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Lower Lane",
+        "la": "South Norfolk",
+        "road_a": "Turkey Row"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Turkey Row",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Lower Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Khouse Lane",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in South Norfolk for: ['Turkey Row', 'Lower Lane']"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "The Street"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "B1527",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Mill Road",
+        "la": "South Norfolk"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "South Norfolk",
+        "query": "Lundy Green"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "The Street",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "The Street",
+            "lat": 52.66409319712527,
+            "lon": 1.2167152888955535,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "The Street",
+            "lat": 52.6654974419005,
+            "lon": 1.218675767509771,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "The Street",
+            "lat": 52.667293687828014,
+            "lon": 1.219261722481858,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "The Street",
+            "lat": 52.6598025289297,
+            "lon": 1.210948196354533,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "The Street",
+            "lat": 52.66176370188535,
+            "lon": 1.213438607511571,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "B1527",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Mill Road",
+        "la_filter": "South Norfolk",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Mill Road",
+            "lat": 52.598269352532704,
+            "lon": 1.4208413226104848,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Mill Road",
+            "lat": 52.60022976645632,
+            "lon": 1.4194506038000119,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Mill Road",
+            "lat": 52.60046349533481,
+            "lon": 1.4192989531429485,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Mill Road",
+            "lat": 52.60547789890769,
+            "lon": 1.4178530764682373,
+            "in_la": "South Norfolk"
+          },
+          {
+            "name": "Mill Road",
+            "lat": 52.60232640468766,
+            "lon": 1.4188060249148553,
+            "in_la": "South Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Lundy Green",
+        "la_filter": "South Norfolk",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "NR15 2NU"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "NR15 2NU",
+        "lat": 52.48393254823472,
+        "lon": 1.3040293180003955,
+        "admin_district": "South Norfolk District"
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.4839325482347,
+        "la": "South Norfolk",
+        "lon": 1.3040293180004
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.4839325482347,
+        "lon": 1.3040293180004,
+        "la": "South Norfolk",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51456820108335,
+        "la_centroid_lon": 1.2759378849924117
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 1.3040293180004,
+        "top_lat": 52.4839325482347,
+        "confidence": "high",
+        "picked_source": "postcode:NR15 2NU",
+        "sigma_m": 400,
+        "evidence": "The site is located in Hempnall, South Norfolk. Postcode NR15 2NU corresponds to Lundy Green, which is explicitly labeled on the map and mentioned in the site address context (Turkey Row/Lundy Green). The map shows the site boundary surrounding Turkey Row and Lundy Green.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

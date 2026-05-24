@@ -1,0 +1,239 @@
+{
+  "case": "115",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.501,
+    "top_lon": -0.09,
+    "sigma_m": 2500,
+    "confidence": "med",
+    "picked_source": "place:Guy's Hospital",
+    "evidence": "The map shows the Southwark Central Activities Zone, a large area of northern Southwark. I used Guy's Hospital and Elephant & Castle as anchors to find the center of this zone.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.2425915154944054,
+  "gt_centroids": [
+    {
+      "lat": 51.50042737620308,
+      "lon": -0.09338180307829284
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 5,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Southwark Central Activities Zone",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Borough Market",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Elephant and Castle",
+        "la": "Southwark"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Southwark Central Activities Zone",
+        "la_filter": "Southwark",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Borough Market",
+        "la_filter": "Southwark",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Elephant and Castle",
+        "la_filter": "Southwark",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Elephant and Castle",
+            "type": "named road",
+            "lat": 51.49463604045729,
+            "lon": -0.10078909975299209,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          },
+          {
+            "name": "Elephant and Castle",
+            "type": "section of named road",
+            "lat": 51.49540432515027,
+            "lon": -0.10103088860984756,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          },
+          {
+            "name": "Elephant and Castle",
+            "type": "railway station",
+            "lat": 51.49396487139504,
+            "lon": -0.09877134050600286,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          },
+          {
+            "name": "Elephant and Castle",
+            "type": "railway station",
+            "lat": 51.49590337402893,
+            "lon": -0.10075082814038837,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Southwark",
+        "query": "Southwark Cathedral"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Southwark",
+        "query": "Guy's Hospital"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Southwark Cathedral",
+        "la_filter": "Southwark",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Guy's Hospital",
+        "la_filter": "Southwark",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Guy's Hospital",
+            "type": "hospital",
+            "lat": 51.50324008157766,
+            "lon": -0.0868437334665744,
+            "admin_district": "Southwark",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -0.09,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.501,
+        "confidence": "med",
+        "sigma_m": 2500,
+        "picked_source": "place:Guy's Hospital",
+        "evidence": "The map shows the Southwark Central Activities Zone, a large area of northern Southwark. I used Guy's Hospital and Elephant & Castle as anchors to find the center of this zone."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

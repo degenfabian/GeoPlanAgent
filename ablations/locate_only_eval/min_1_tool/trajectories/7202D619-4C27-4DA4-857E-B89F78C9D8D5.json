@@ -1,0 +1,277 @@
+{
+  "case": "7202D619-4C27-4DA4-857E-B89F78C9D8D5",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.3190041512157,
+    "top_lon": 1.23479088194742,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "place:West Stourmouth village",
+    "evidence": "The map shows land at West Stourmouth, specifically OS parcels 4615 and 5107. The geocoder returned a precise location for the village of West Stourmouth. The map features (All Saints Church, North Court Farm) are consistent with this village location.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.40504628315586655,
+  "gt_centroids": [
+    {
+      "lat": 51.32264137926648,
+      "lon": 1.2344724343404783
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 6,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "West Stourmouth",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "North Court Farm",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "All Saints Church Stourmouth"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "West Stourmouth",
+        "la_filter": "Dover",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "West Stourmouth",
+            "type": "village",
+            "lat": 51.31900415121569,
+            "lon": 1.2347908819474214,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "North Court Farm",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "All Saints Church Stourmouth",
+        "la_filter": "Dover",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Dover",
+        "query": "Stourmouth"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Stourmouth",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Stourmouth Road",
+            "type": "named road",
+            "lat": 51.30925022331634,
+            "lon": 1.2303586797397656,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Stourmouth Road",
+            "type": "section of named road",
+            "lat": 51.30745824170375,
+            "lon": 1.2291277354756673,
+            "admin_district": "Dover",
+            "county": "Kent"
+          },
+          {
+            "name": "Stourmouth Valley",
+            "type": "valley",
+            "lat": 51.327762964655726,
+            "lon": 1.2390974621723758,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "All Saints Church, Stourmouth"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "All Saints Church, Stourmouth",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "West Stourmouth"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "West Stourmouth",
+        "la_filter": null,
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "West Stourmouth",
+            "type": "village",
+            "lat": 51.31900415121569,
+            "lon": 1.2347908819474214,
+            "admin_district": "Dover",
+            "county": "Kent"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "place:West Stourmouth village",
+        "verified_inside_admin_region": true,
+        "top_lon": 1.23479088194742,
+        "confidence": "high",
+        "sigma_m": 300,
+        "evidence": "The map shows land at West Stourmouth, specifically OS parcels 4615 and 5107. The geocoder returned a precise location for the village of West Stourmouth. The map features (All Saints Church, North Court Farm) are consistent with this village location.",
+        "top_lat": 51.3190041512157
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,366 @@
+{
+  "case": "A4_094:LL:013",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6585,
+    "top_lon": -1.1425,
+    "sigma_m": 250,
+    "confidence": "high",
+    "picked_source": "intersect:Dersingham Road x Norwich Road",
+    "evidence": "The site is St Patrick's RC Church on Beaumont Leys Lane. The map shows it bounded by Beaumont Leys Lane to the north and Norwich Road to the south, with Dersingham Road and Billington Close nearby. The intersection of Dersingham Road and Norwich Road (52.657777, -1.143082) is just south of the site. Billington Close (52.658879, -1.140908) is just east. The church is located between these points.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.0159883943962014,
+  "gt_centroids": [
+    {
+      "lat": 52.65835621291477,
+      "lon": -1.1425000035348176
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 4,
+      "road": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 13,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Norwich Road",
+        "la": "Leicester",
+        "road_a": "Beaumont Leys Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Beaumont Leys Lane",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Beaumont Leys Lane",
+          "Norwich Road"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Beaumont Leys Lane",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.671783950857325,
+            "lon": -1.1528049662425381,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.671740523479755,
+            "lon": -1.1525714020004618,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.67196087534609,
+            "lon": -1.1525223291925784,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.671962706569026,
+            "lon": -1.1522126126944379,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Beaumont Leys Lane",
+            "lat": 52.67216017044183,
+            "lon": -1.1521749246424275,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Dersingham Road",
+        "road_a": "Beaumont Leys Lane",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Beaumont Leys Lane",
+        "road_b": "Billington Close",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Beaumont Leys Lane",
+          "Dersingham Road"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Beaumont Leys Lane",
+          "Billington Close"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "Dersingham Road"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Leicester",
+        "query": "Billington Close"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Dersingham Road",
+        "la_filter": "Leicester",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Dersingham Road",
+            "lat": 52.6555767910225,
+            "lon": -1.144603399467661,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Dersingham Road",
+            "lat": 52.656878348352755,
+            "lon": -1.1437057515286377,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Billington Close",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Billington Close",
+            "lat": 52.658878999136085,
+            "lon": -1.1409075716783614,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Dersingham Road",
+        "road_b": "Norwich Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Dersingham Road",
+          "Norwich Road"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.657777,
+            "lon": -1.143082,
+            "roads": [
+              "Dersingham Road",
+              "Norwich Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -1.1425,
+        "lat": 52.6585,
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.6585,
+        "lon": -1.1425,
+        "la": "Leicester",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.637924699786105,
+        "la_centroid_lon": -1.1284839173160834
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 250,
+        "confidence": "high",
+        "top_lon": -1.1425,
+        "top_lat": 52.6585,
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Dersingham Road x Norwich Road",
+        "evidence": "The site is St Patrick's RC Church on Beaumont Leys Lane. The map shows it bounded by Beaumont Leys Lane to the north and Norwich Road to the south, with Dersingham Road and Billington Close nearby. The intersection of Dersingham Road and Norwich Road (52.657777, -1.143082) is just south of the site. Billington Close (52.658879, -1.140908) is just east. The church is located between these points."
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,323 @@
+{
+  "case": "CPA4(2a)",
+  "config": {
+    "disabled_tools": [
+      "intersect"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.54579,
+    "top_lon": 0.56429,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "grid_ref:TQ 7790 8610",
+    "evidence": "Multiple grid references from PDF_INFO cluster around the South Benfleet Conservation Area. TQ 7790 8610 and TQ 7777 8610 are within 150m of each other and align with the map features (Essex Way, High Street, St Mary's Church). Postcode SS7 1TF is ~1.8km away and likely a letterhead.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.13050067191414103,
+  "gt_centroids": [
+    {
+      "lat": 51.545284972552636,
+      "lon": 0.5625864865263827
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "grid_ref": 2,
+      "place": 3,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "SS7 1TF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ 7790 8610"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Benfleet Conservation Area",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "St. Mary's Church South Benfleet",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "SS7 1TF",
+        "lat": 51.56184488380458,
+        "lon": 0.5848681639491619,
+        "admin_district": "Castle Point District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TQ 7790 8610",
+        "lat": 51.545793472213695,
+        "lon": 0.5642982612306057
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Benfleet Conservation Area",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St. Mary's Church South Benfleet",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Benfleet",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Castle Point",
+        "query": "Essex Way"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": 0.56429,
+        "lat": 51.54579,
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Benfleet",
+        "la_filter": "Castle Point",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "South Benfleet",
+            "type": "other settlement",
+            "lat": 51.55365354395544,
+            "lon": 0.5597777655981124,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          },
+          {
+            "name": "South Benfleet Foundation Primary School",
+            "type": "primary education",
+            "lat": 51.55276980935431,
+            "lon": 0.5598868238330015,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Essex Way",
+        "la_filter": "Castle Point",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Essex Way",
+            "lat": 51.54563724454105,
+            "lon": 0.5697921663985678,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Essex Way",
+            "lat": 51.54754909697338,
+            "lon": 0.5751784137369501,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Essex Way",
+            "lat": 51.54892681614006,
+            "lon": 0.5788532303902827,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Essex Way",
+            "lat": 51.550048145399835,
+            "lon": 0.5799356649775841,
+            "in_la": "Castle Point"
+          },
+          {
+            "name": "Essex Way",
+            "lat": 51.54542570158025,
+            "lon": 0.5669368137656268,
+            "in_la": "Castle Point"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.54579,
+        "lon": 0.56429,
+        "la": "Castle Point",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.53635767313482,
+        "la_centroid_lon": 0.5950026590804885
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TQ 7777 8610"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TQ 7777 8610",
+        "lat": 51.54583440632418,
+        "lon": 0.5624254584620807
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "grid_ref:TQ 7790 8610",
+        "sigma_m": 300,
+        "top_lon": 0.56429,
+        "verified_inside_admin_region": true,
+        "confidence": "high",
+        "top_lat": 51.54579,
+        "evidence": "Multiple grid references from PDF_INFO cluster around the South Benfleet Conservation Area. TQ 7790 8610 and TQ 7777 8610 are within 150m of each other and align with the map features (Essex Way, High Street, St Mary's Church). Postcode SS7 1TF is ~1.8km away and likely a letterhead."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

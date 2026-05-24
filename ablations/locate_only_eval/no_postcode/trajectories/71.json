@@ -1,0 +1,280 @@
+{
+  "case": "71",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.521,
+    "top_lon": -0.226,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Brewster Gardens x North Pole Road",
+    "evidence": "The site is a block of properties between Brewster Gardens and Bracewell Road. Intersections of these roads with North Pole Road place the site at approximately 51.521, -0.226. Although the PDF mentions Hammersmith and Fulham, the coordinates fall just inside Kensington and Chelsea (the boundary runs along the railway/Scrubs Lane nearby).",
+    "verified_inside_admin_region": false
+  },
+  "err_km": 0.07035185122596137,
+  "gt_centroids": [
+    {
+      "lat": 51.5205890919682,
+      "lon": -0.22677317479897516
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "place": 2,
+      "la_check": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 7,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "North Pole Road",
+        "road_a": "Brewster Gardens",
+        "la": "Hammersmith and Fulham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "Hammersmith and Fulham",
+        "road_b": "North Pole Road",
+        "road_a": "Bracewell Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Coronation Court",
+        "la": "Hammersmith and Fulham"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Hammersmith and Fulham",
+        "query": "Wormwood Scrubs"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Brewster Gardens",
+          "North Pole Road"
+        ],
+        "la_filter": "Hammersmith and Fulham",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.51999,
+            "lon": -0.225642,
+            "roads": [
+              "Brewster Gardens",
+              "North Pole Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Bracewell Road",
+          "North Pole Road"
+        ],
+        "la_filter": "Hammersmith and Fulham",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.51972,
+            "lon": -0.226229,
+            "roads": [
+              "Bracewell Road",
+              "North Pole Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Coronation Court",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Coronation Court",
+            "type": "named road",
+            "lat": 54.558111714891915,
+            "lon": -1.1564486325322698,
+            "admin_district": null,
+            "county": "Redcar and Cleveland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Wormwood Scrubs",
+        "la_filter": "Hammersmith and Fulham",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Wormwood Scrubs",
+            "type": "suburban area",
+            "lat": 51.51627774129248,
+            "lon": -0.23410235933902332,
+            "admin_district": "Hammersmith and Fulham",
+            "county": "Greater London"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 51.521,
+        "la": "Hammersmith and Fulham",
+        "lon": -0.226
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.521,
+        "lon": -0.226,
+        "la": "Hammersmith and Fulham",
+        "inside_la": false,
+        "distance_km_approx": 0.12,
+        "la_centroid_lat": 51.49500022199581,
+        "la_centroid_lon": -0.22078679338528695
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.226,
+        "lat": 51.521,
+        "la": "Kensington and Chelsea"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.521,
+        "lon": -0.226,
+        "la": "Kensington and Chelsea",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.50120516305225,
+        "la_centroid_lon": -0.19222073817151708
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 200,
+        "top_lon": -0.226,
+        "confidence": "high",
+        "evidence": "The site is a block of properties between Brewster Gardens and Bracewell Road. Intersections of these roads with North Pole Road place the site at approximately 51.521, -0.226. Although the PDF mentions Hammersmith and Fulham, the coordinates fall just inside Kensington and Chelsea (the boundary runs along the railway/Scrubs Lane nearby).",
+        "picked_source": "intersect:Brewster Gardens x North Pole Road",
+        "top_lat": 51.521,
+        "verified_inside_admin_region": false
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

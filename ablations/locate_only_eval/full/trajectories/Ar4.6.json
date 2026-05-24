@@ -1,0 +1,382 @@
+{
+  "case": "Ar4.6",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.7485,
+    "top_lon": -0.3385,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Sopwell Lane x Holywell Hill",
+    "evidence": "The site is the Sopwell Lane / Albert Street Article 4 area. Intersections of Sopwell Lane with Holywell Hill and Old London Road, plus the centroid of Albert Street, all cluster tightly around this point. Verified inside St Albans.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.015014972681149432,
+  "gt_centroids": [
+    {
+      "lat": 51.74862092594286,
+      "lon": -0.3385970579771725
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 2,
+      "place": 2,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "la": "St Albans",
+        "road_b": "Holywell Hill",
+        "road_a": "Sopwell Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Sopwell Lane",
+        "road_b": "Old London Road",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "St Albans",
+        "query": "Malthouse Court"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Abbey Court",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Sopwell Lane",
+          "Holywell Hill"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.749095,
+            "lon": -0.34083,
+            "roads": [
+              "Sopwell Lane",
+              "Holywell Hill"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Sopwell Lane",
+          "Old London Road"
+        ],
+        "la_filter": "St Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.747988,
+            "lon": -0.336293,
+            "roads": [
+              "Sopwell Lane",
+              "Old London Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Malthouse Court",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Malthouse Court",
+            "type": "named road",
+            "lat": 53.76450603999646,
+            "lon": -2.715811218985117,
+            "admin_district": "Preston",
+            "county": "Lancashire"
+          },
+          {
+            "name": "Malthouse Court",
+            "type": "named road",
+            "lat": 53.71021383050334,
+            "lon": -1.69042915606294,
+            "admin_district": "Kirklees",
+            "county": null
+          },
+          {
+            "name": "Malthouse Court",
+            "type": "named road",
+            "lat": 51.22517873147885,
+            "lon": -2.3279259177704414,
+            "admin_district": null,
+            "county": "Somerset"
+          },
+          {
+            "name": "Malthouse Court",
+            "type": "named road",
+            "lat": 52.87833375501244,
+            "lon": 0.5024689645185533,
+            "admin_district": "King's Lynn and West Norfolk",
+            "county": "Norfolk"
+          },
+          {
+            "name": "Malthouse Court",
+            "type": "named road",
+            "lat": 52.95986591922476,
+            "lon": 0.5878534962165881,
+            "admin_district": "King's Lynn and West Norfolk",
+            "county": "Norfolk"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Abbey Court",
+        "la_filter": "St Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Abbey Court",
+            "type": "named road",
+            "lat": 55.59897433779899,
+            "lon": -2.7207727862027196,
+            "admin_district": null,
+            "county": "Scottish Borders"
+          },
+          {
+            "name": "Abbey Court",
+            "type": "named road",
+            "lat": 56.05754084028258,
+            "lon": -2.7302372646134256,
+            "admin_district": null,
+            "county": "East Lothian"
+          },
+          {
+            "name": "Abbey Court",
+            "type": "named road",
+            "lat": 55.59676911127098,
+            "lon": -2.433362291504571,
+            "admin_district": null,
+            "county": "Scottish Borders"
+          },
+          {
+            "name": "Abbey Court",
+            "type": "named road",
+            "lat": 55.88563188463712,
+            "lon": -2.1562885861410535,
+            "admin_district": null,
+            "county": "Scottish Borders"
+          },
+          {
+            "name": "Abbey Court",
+            "type": "named road",
+            "lat": 55.036744264872056,
+            "lon": -1.5104350516144291,
+            "admin_district": "North Tyneside",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Sopwell Lane",
+        "la": "St Albans"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St Albans",
+        "query": "Albert Street"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "St Albans",
+        "lat": 51.7485,
+        "lon": -0.3385
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Sopwell Lane",
+        "la_filter": "St Albans",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Sopwell Lane",
+            "lat": 51.7487950820037,
+            "lon": -0.33963128300462087,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Sopwell Lane",
+            "lat": 51.74823894184028,
+            "lon": -0.3378191456160581,
+            "in_la": "St Albans"
+          },
+          {
+            "name": "Sopwell Lane",
+            "lat": 51.74796754366137,
+            "lon": -0.33674987735059947,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Albert Street",
+        "la_filter": "St Albans",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Albert Street",
+            "lat": 51.74880077118828,
+            "lon": -0.33844317508956634,
+            "in_la": "St Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.7485,
+        "lon": -0.3385,
+        "la": "St Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "verified_inside_admin_region": true,
+        "top_lon": -0.3385,
+        "top_lat": 51.7485,
+        "picked_source": "intersect:Sopwell Lane x Holywell Hill",
+        "sigma_m": 300,
+        "confidence": "high",
+        "evidence": "The site is the Sopwell Lane / Albert Street Article 4 area. Intersections of Sopwell Lane with Holywell Hill and Old London Road, plus the centroid of Albert Street, all cluster tightly around this point. Verified inside St Albans."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

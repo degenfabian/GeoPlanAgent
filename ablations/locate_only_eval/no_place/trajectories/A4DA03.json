@@ -1,0 +1,402 @@
+{
+  "case": "A4DA03",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.6935,
+    "top_lon": -2.2315,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "intersect:Newchurch Road x Rook Hill Road",
+    "evidence": "The site is at Higher Tunstead Farm, Stacksteads. The map shows the site north of Newchurch Road and Rook Hill Road. The intersection of Newchurch Road and Rook Hill Road was found at 53.6917, -2.2305. The site is slightly north of this junction.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.11381529505051234,
+  "gt_centroids": [
+    {
+      "lat": 53.694456908805066,
+      "lon": -2.2321136392404126
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "road": 4,
+      "intersect": 3,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Rossendale",
+        "query": "Newchurch Road"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Brandwood Road",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Brandwood Road",
+        "road_a": "Newchurch Road",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Newchurch Road",
+        "road_b": "Booth Road",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Newchurch Road",
+        "la_filter": "Rossendale",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Newchurch Road",
+            "lat": 53.69457408251801,
+            "lon": -2.206695064512566,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Newchurch Road",
+            "lat": 53.69490880292592,
+            "lon": -2.206276971052911,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Newchurch Road",
+            "lat": 53.698844282728054,
+            "lon": -2.257597488662199,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Newchurch Road",
+            "lat": 53.700924055002915,
+            "lon": -2.2654702152414425,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Newchurch Road",
+            "lat": 53.7002377128617,
+            "lon": -2.2636646552916,
+            "in_la": "Rossendale"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Brandwood Road",
+        "la_filter": "Rossendale",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Brandwood Road",
+            "lat": 53.69105678072624,
+            "lon": -2.235433078236305,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Brandwood Road",
+            "lat": 53.691585521432906,
+            "lon": -2.233936823894828,
+            "in_la": "Rossendale"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Rossendale for: ['Brandwood Road']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Newchurch Road",
+          "Booth Road"
+        ],
+        "la_filter": "Rossendale",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 53.692826,
+            "lon": -2.220563,
+            "roads": [
+              "Newchurch Road",
+              "Booth Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Booth Road",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Rook Hill Road",
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Newchurch Road",
+        "la": "Rossendale",
+        "road_b": "Rook Hill Road"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Booth Road",
+        "la_filter": "Rossendale",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Booth Road",
+            "lat": 53.693301139675654,
+            "lon": -2.2242382810082915,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Booth Road",
+            "lat": 53.693341445386714,
+            "lon": -2.2246966812904536,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Booth Road",
+            "lat": 53.69338324268523,
+            "lon": -2.225245122402103,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Booth Road",
+            "lat": 53.69348440439476,
+            "lon": -2.226411765507245,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Booth Road",
+            "lat": 53.69368200373426,
+            "lon": -2.2281179191466762,
+            "in_la": "Rossendale"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Rook Hill Road",
+        "la_filter": "Rossendale",
+        "n_hits": 4,
+        "hits": [
+          {
+            "name": "Rook Hill Road",
+            "lat": 53.69330579811594,
+            "lon": -2.229789308866874,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Rook Hill Road",
+            "lat": 53.692211330759754,
+            "lon": -2.2310402720874265,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Rook Hill Road",
+            "lat": 53.69193365074833,
+            "lon": -2.230546582003052,
+            "in_la": "Rossendale"
+          },
+          {
+            "name": "Rook Hill Road",
+            "lat": 53.69247750021359,
+            "lon": -2.2305116970360994,
+            "in_la": "Rossendale"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Newchurch Road",
+          "Rook Hill Road"
+        ],
+        "la_filter": "Rossendale",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 53.691713,
+            "lon": -2.230553,
+            "roads": [
+              "Newchurch Road",
+              "Rook Hill Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -2.232,
+        "lat": 53.694,
+        "la": "Rossendale"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 53.694,
+        "lon": -2.232,
+        "la": "Rossendale",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 53.69381770640495,
+        "la_centroid_lon": -2.2673137098881666
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "confidence": "high",
+        "verified_inside_admin_region": true,
+        "top_lon": -2.2315,
+        "sigma_m": 400,
+        "picked_source": "intersect:Newchurch Road x Rook Hill Road",
+        "top_lat": 53.6935,
+        "evidence": "The site is at Higher Tunstead Farm, Stacksteads. The map shows the site north of Newchurch Road and Rook Hill Road. The intersection of Newchurch Road and Rook Hill Road was found at 53.6917, -2.2305. The site is slightly north of this junction."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

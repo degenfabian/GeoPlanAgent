@@ -1,0 +1,503 @@
+{
+  "case": "A4Da2",
+  "config": {
+    "disabled_tools": [],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.4911844726129,
+    "top_lon": -1.96136930097839,
+    "sigma_m": 500,
+    "confidence": "med",
+    "picked_source": "place:Victoria Park Primary School",
+    "evidence": "The map shows Victoria Park and the intersection of High Street and Crocketts Lane in Smethwick. Victoria Park Primary School (found via tool) is adjacent to the park shown. The site is the conservation area boundary centered near the school and park.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.43753159261982294,
+  "gt_centroids": [
+    {
+      "lat": 52.48972826799353,
+      "lon": -1.967372715739662
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "intersect": 1,
+      "place": 9,
+      "road": 2,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 14,
+    "n_turns": 19,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "High Street",
+        "la": "Sandwell",
+        "road_b": "Crocketts Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Sandwell",
+        "query": "Victoria Park Smethwick"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Sandwell",
+        "query": "High Street & Crocketts Lane Conservation Area"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": false,
+        "error": "No road geometry in Sandwell for: ['Crocketts Lane']"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Park Smethwick",
+        "la_filter": "Sandwell",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "High Street & Crocketts Lane Conservation Area",
+        "la_filter": "Sandwell",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Victoria Park",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "Sandwell",
+        "query": "Crocketts Lane"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "High Street",
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Park",
+        "la_filter": "Sandwell",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "Victoria Park Road",
+            "type": "named road",
+            "lat": 52.4930906505062,
+            "lon": -1.9623397211978013,
+            "admin_district": "Sandwell",
+            "county": null
+          },
+          {
+            "name": "Victoria Park Primary School",
+            "type": "primary education",
+            "lat": 52.491184472612915,
+            "lon": -1.9613693009783872,
+            "admin_district": "Sandwell",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Crocketts Lane",
+        "la_filter": "Sandwell",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "High Street",
+        "la_filter": "Sandwell",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "High Street",
+            "lat": 52.522763270169705,
+            "lon": -2.0012238852351993,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.52341052235424,
+            "lon": -2.002373518596827,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.5237206587939,
+            "lon": -2.0029704550357814,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.475567317604224,
+            "lon": -2.0396963251643907,
+            "in_la": "Sandwell"
+          },
+          {
+            "name": "High Street",
+            "lat": 52.47554579966261,
+            "lon": -2.040579588828016,
+            "in_la": "Sandwell"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Crocketts Lane Smethwick"
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Victoria Park Smethwick"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Crocketts Lane Smethwick",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Park Smethwick",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Smethwick Council House"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Smethwick Council House",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Smethwick Library"
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Smethwick Library",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 11,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Victoria Park, Sandwell"
+      }
+    },
+    {
+      "turn": 12,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Victoria Park, Sandwell",
+        "la_filter": null,
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 13,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Smethwick"
+      }
+    },
+    {
+      "turn": 14,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Smethwick",
+        "la_filter": null,
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Smethwick",
+            "type": "town",
+            "lat": 52.49073687547536,
+            "lon": -1.9677615056589783,
+            "admin_district": "Sandwell",
+            "county": null
+          },
+          {
+            "name": "Smethwick Walk",
+            "type": "named road",
+            "lat": 53.49278190867906,
+            "lon": -2.9588453200693206,
+            "admin_district": "Sefton",
+            "county": null
+          },
+          {
+            "name": "Smethwick Green",
+            "type": "hamlet",
+            "lat": 53.169334911424166,
+            "lon": -2.296013183013279,
+            "admin_district": null,
+            "county": "Cheshire East"
+          },
+          {
+            "name": "Smethwick Lane",
+            "type": "named road",
+            "lat": 53.16758795219938,
+            "lon": -2.293637719479506,
+            "admin_district": null,
+            "county": "Cheshire East"
+          },
+          {
+            "name": "Smethwick Lane",
+            "type": "section of named road",
+            "lat": 53.16802629628473,
+            "lon": -2.2944933533425114,
+            "admin_district": null,
+            "county": "Cheshire East"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 15,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lat": 52.4911844726129,
+        "lon": -1.96136930097839,
+        "la": "Sandwell"
+      }
+    },
+    {
+      "turn": 16,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 52.4911844726129,
+        "lon": -1.96136930097839,
+        "la": "Sandwell",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 52.51544066566969,
+        "la_centroid_lon": -2.008954795482069
+      }
+    },
+    {
+      "turn": 17,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 17,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": -1.96136930097839,
+        "picked_source": "place:Victoria Park Primary School",
+        "top_lat": 52.4911844726129,
+        "sigma_m": 500,
+        "confidence": "med",
+        "evidence": "The map shows Victoria Park and the intersection of High Street and Crocketts Lane in Smethwick. Victoria Park Primary School (found via tool) is adjacent to the park shown. The site is the conservation area boundary centered near the school and park.",
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 18,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,343 @@
+{
+  "case": "12_merged",
+  "config": {
+    "disabled_tools": [
+      "postcode"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 53.358,
+    "top_lon": -3.148,
+    "sigma_m": 800,
+    "confidence": "high",
+    "picked_source": "place:Stapledon Wood",
+    "evidence": "The map shows two large land parcels (East Farm and Dawpool Farm) between Caldy and Thurstaston. Stapledon Wood (53.3621, -3.1573) is located within the northern red-outlined parcel (East Farm). Thurstaston Common (53.3549, -3.1361) is immediately east of the southern parcels. The picked center is between these two landmarks, covering the core of the Article 4 area.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.5720566623062543,
+  "gt_centroids": [
+    {
+      "lat": 53.35118317046466,
+      "lon": -3.145478801079716
+    },
+    {
+      "lat": 53.36217045807339,
+      "lon": -3.153047704294689
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "East Farm",
+        "la": "Wirral"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Dawpool Farm",
+        "la": "Wirral"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Stapledon Wood",
+        "la": "Wirral"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Dawpool Cottages",
+        "la": "Wirral"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "East Farm",
+        "la_filter": "Wirral",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "East Farm",
+            "type": "named road",
+            "lat": 55.03750324702209,
+            "lon": -2.123235560686462,
+            "admin_district": null,
+            "county": "Northumberland"
+          },
+          {
+            "name": "East Farm of Gilmerton",
+            "type": "named road",
+            "lat": 55.905857975705125,
+            "lon": -3.1297310607058604,
+            "admin_district": null,
+            "county": "City of Edinburgh"
+          },
+          {
+            "name": "East Farm Court",
+            "type": "named road",
+            "lat": 54.92635809301641,
+            "lon": -1.671137178772991,
+            "admin_district": "Gateshead",
+            "county": null
+          },
+          {
+            "name": "East Farm Mews",
+            "type": "named road",
+            "lat": 55.04439246880098,
+            "lon": -1.531234165269916,
+            "admin_district": "North Tyneside",
+            "county": null
+          },
+          {
+            "name": "East Farm Close",
+            "type": "named road",
+            "lat": 54.551474449484274,
+            "lon": -1.1557661304389575,
+            "admin_district": null,
+            "county": "Redcar and Cleveland"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Dawpool Farm",
+        "la_filter": "Wirral",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Stapledon Wood",
+        "la_filter": "Wirral",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Stapledon Wood",
+            "type": "woodland or forest",
+            "lat": 53.36213091612561,
+            "lon": -3.1572725930632886,
+            "admin_district": "Wirral",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Dawpool Cottages",
+        "la_filter": "Wirral",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Wirral",
+        "query": "Caldy Golf Club"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Wirral",
+        "query": "Thurstaston Common"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Wirral",
+        "query": "Thurstaston Hill"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -3.15727,
+        "la": "Wirral",
+        "lat": 53.36213
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Caldy Golf Club",
+        "la_filter": "Wirral",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thurstaston Common",
+        "la_filter": "Wirral",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Thurstaston Common",
+            "type": "other landcover",
+            "lat": 53.35488238050534,
+            "lon": -3.1361016510406596,
+            "admin_district": "Wirral",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Thurstaston Hill",
+        "la_filter": "Wirral",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "Thurstaston Hill",
+            "type": "hill or mountain",
+            "lat": 53.35341539873253,
+            "lon": -3.1353414679060116,
+            "admin_district": "Wirral",
+            "county": null
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 53.36213,
+        "lon": -3.15727,
+        "la": "Wirral",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 53.36836475621285,
+        "la_centroid_lon": -3.092689487184164
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lat": 53.358,
+        "confidence": "high",
+        "evidence": "The map shows two large land parcels (East Farm and Dawpool Farm) between Caldy and Thurstaston. Stapledon Wood (53.3621, -3.1573) is located within the northern red-outlined parcel (East Farm). Thurstaston Common (53.3549, -3.1361) is immediately east of the southern parcels. The picked center is between these two landmarks, covering the core of the Article 4 area.",
+        "sigma_m": 800,
+        "top_lon": -3.148,
+        "verified_inside_admin_region": true,
+        "picked_source": "place:Stapledon Wood"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

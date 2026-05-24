@@ -1,0 +1,356 @@
+{
+  "case": "A4_101:LL:069",
+  "config": {
+    "disabled_tools": [
+      "la_check"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 52.6175,
+    "top_lon": -1.162,
+    "sigma_m": 200,
+    "confidence": "high",
+    "picked_source": "intersect:Narborough Road x Somerville Road",
+    "evidence": "The intersection of Narborough Road and Somerville Road (52.616998, -1.161338) is clearly visible on the map. The site (317-355 Narborough Road) is immediately northwest of this junction. New Fields Square also aligns perfectly with the map layout.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.024452070709182365,
+  "gt_centroids": [
+    {
+      "lat": 52.61728979722075,
+      "lon": -1.1621063868218067
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 4,
+      "road": 2,
+      "intersect": 2,
+      "final_result": 1
+    },
+    "total_tool_calls": 9,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Trinity Methodist Church Narborough Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Narborough Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_a": "Narborough Road",
+        "la": "Leicester",
+        "road_b": "Hallam Crescent East"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "317 Narborough Road",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trinity Methodist Church Narborough Road",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Narborough Road",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Narborough Road",
+            "lat": 52.62896682177396,
+            "lon": -1.14902269823462,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.62924842875515,
+            "lon": -1.1488030055673852,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.62965074643643,
+            "lon": -1.148492319545947,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.630079870184495,
+            "lon": -1.1481589451001863,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Narborough Road",
+            "lat": 52.63032123857918,
+            "lon": -1.1479695724830177,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Narborough Road",
+          "Hallam Crescent East"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 0,
+        "intersections": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "317 Narborough Road",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "Trinity Methodist Church",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Hallam Crescent East",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Somerville Road",
+        "la": "Leicester",
+        "road_a": "Narborough Road"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "New Fields Square",
+        "la": "Leicester"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Trinity Methodist Church",
+        "la_filter": "Leicester",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Hallam Crescent East",
+        "la_filter": "Leicester",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Hallam Crescent East",
+            "lat": 52.61855563226717,
+            "lon": -1.1606560158293895,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Hallam Crescent East",
+            "lat": 52.619036173202474,
+            "lon": -1.1597589352567288,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Hallam Crescent East",
+            "lat": 52.617769908883176,
+            "lon": -1.1657487594127731,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Hallam Crescent East",
+            "lat": 52.61781381532829,
+            "lon": -1.1643056397199174,
+            "in_la": "Leicester"
+          },
+          {
+            "name": "Hallam Crescent East",
+            "lat": 52.61799213818062,
+            "lon": -1.162549176725302,
+            "in_la": "Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Narborough Road",
+          "Somerville Road"
+        ],
+        "la_filter": "Leicester",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 52.616998,
+            "lon": -1.161338,
+            "roads": [
+              "Narborough Road",
+              "Somerville Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "New Fields Square",
+        "la_filter": "Leicester",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "New Fields Square",
+            "type": "named road",
+            "lat": 52.6158517807653,
+            "lon": -1.163736827058322,
+            "admin_district": null,
+            "county": "City of Leicester"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 200,
+        "confidence": "high",
+        "top_lon": -1.162,
+        "top_lat": 52.6175,
+        "verified_inside_admin_region": true,
+        "picked_source": "intersect:Narborough Road x Somerville Road",
+        "evidence": "The intersection of Narborough Road and Somerville Road (52.616998, -1.161338) is clearly visible on the map. The site (317-355 Narborough Road) is immediately northwest of this junction. New Fields Square also aligns perfectly with the map layout."
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

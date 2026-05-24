@@ -1,0 +1,260 @@
+{
+  "case": "B4BE31D4-36A8-452E-97FF-04A53362B26C",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.13245,
+    "top_lon": 1.28113,
+    "sigma_m": 400,
+    "confidence": "high",
+    "picked_source": "road:Coombe Road",
+    "evidence": "The site is 'Land at Coombe Road'. The grid references (TR2841, TR2842, TR2941, TR2942) form a 2km x 2km square covering the western part of Dover. Coombe Road has a segment at (51.1324, 1.2811) which falls perfectly within this grid square and matches the map's urban context. The postcode CT16 3PJ is for the Council Offices (letterhead).",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.5217656158596868,
+  "gt_centroids": [
+    {
+      "lat": 51.12887589738372,
+      "lon": 1.2762851220266649
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "grid_ref": 4,
+      "road": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 7,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "CT16 3PJ"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2842"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2942"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2841"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "grid_ref",
+      "args": {
+        "gr": "TR2941"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Coombe Road",
+        "la": "Dover"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "CT16 3PJ",
+        "lat": 51.15436636168577,
+        "lon": 1.294785094400513,
+        "admin_district": "Dover District"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2842",
+        "lat": 51.13615448857655,
+        "lon": 1.2648636561190143
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2942",
+        "lat": 51.13575490383888,
+        "lon": 1.2791329131768567
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2841",
+        "lat": 51.12717706111898,
+        "lon": 1.2642300690667696
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "grid_ref",
+      "return": {
+        "success": true,
+        "grid_ref": "TR2941",
+        "lat": 51.12677760368672,
+        "lon": 1.2784965688477414
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Coombe Road",
+        "la_filter": "Dover",
+        "n_hits": 3,
+        "hits": [
+          {
+            "name": "Coombe Road",
+            "lat": 51.1250263024243,
+            "lon": 1.2456913352736394,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Coombe Road",
+            "lat": 51.128470897526626,
+            "lon": 1.262677058554149,
+            "in_la": "Dover"
+          },
+          {
+            "name": "Coombe Road",
+            "lat": 51.13245297574782,
+            "lon": 1.2811269979481739,
+            "in_la": "Dover"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "la": "Dover",
+        "lat": 51.1324529757478,
+        "lon": 1.28112699794817
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.1324529757478,
+        "lon": 1.28112699794817,
+        "la": "Dover",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.211897922259524,
+        "la_centroid_lon": 1.2887390013267443
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "picked_source": "road:Coombe Road",
+        "top_lon": 1.28113,
+        "confidence": "high",
+        "sigma_m": 400,
+        "evidence": "The site is 'Land at Coombe Road'. The grid references (TR2841, TR2842, TR2941, TR2942) form a 2km x 2km square covering the western part of Dover. Coombe Road has a segment at (51.1324, 1.2811) which falls perfectly within this grid square and matches the map's urban context. The postcode CT16 3PJ is for the Council Offices (letterhead).",
+        "top_lat": 51.13245,
+        "verified_inside_admin_region": true
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,326 @@
+{
+  "case": "CPA4(2a)",
+  "config": {
+    "disabled_tools": [
+      "grid_ref",
+      "intersect",
+      "la_check",
+      "postcode",
+      "road"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.5618448838046,
+    "top_lon": 0.584868163949162,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "postcode:SS7 1TF",
+    "evidence": "The postcode SS7 1TF from pdf_info maps directly to the South Benfleet Conservation Area, specifically near the intersection of High Street and High Road as shown on the map. This is consistent with the settlement name South Benfleet.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 2.400816651458868,
+  "gt_centroids": [
+    {
+      "lat": 51.545284972552636,
+      "lon": 0.5625864865263827
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "place": 7,
+      "final_result": 1
+    },
+    "total_tool_calls": 8,
+    "n_turns": 11,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "South Benfleet Conservation Area"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "SS7 1TF"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "High Street South Benfleet"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Benfleet Conservation Area",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "SS7 1TF",
+        "la_filter": "Castle Point",
+        "n_hits": 1,
+        "hits": [
+          {
+            "name": "SS7 1TF",
+            "type": "postcode",
+            "lat": 51.56184488380458,
+            "lon": 0.5848681639491619,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "High Street South Benfleet",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "St Mary's Church South Benfleet"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "Ferry Road South Benfleet"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "St Mary's Church South Benfleet",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "Ferry Road South Benfleet",
+        "la_filter": "Castle Point",
+        "n_hits": 0,
+        "hits": []
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "query": "South Benfleet",
+        "la": "Castle Point"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "South Benfleet",
+        "la_filter": "Castle Point",
+        "n_hits": 2,
+        "hits": [
+          {
+            "name": "South Benfleet",
+            "type": "other settlement",
+            "lat": 51.55365354395544,
+            "lon": 0.5597777655981124,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          },
+          {
+            "name": "South Benfleet Foundation Primary School",
+            "type": "primary education",
+            "lat": 51.55276980935431,
+            "lon": 0.5598868238330015,
+            "admin_district": "Castle Point",
+            "county": "Essex"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "place",
+      "args": {
+        "la": "Castle Point",
+        "query": "High Street"
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "place",
+      "return": {
+        "success": true,
+        "query": "High Street",
+        "la_filter": "Castle Point",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "High Street",
+            "type": "named road",
+            "lat": 54.981786880733395,
+            "lon": -1.7384512034722823,
+            "admin_district": "Newcastle upon Tyne",
+            "county": null
+          },
+          {
+            "name": "High Street",
+            "type": "named road",
+            "lat": 55.00452505782834,
+            "lon": -1.6201880691059363,
+            "admin_district": "Newcastle upon Tyne",
+            "county": null
+          },
+          {
+            "name": "High Street",
+            "type": "named road",
+            "lat": 54.46268197273979,
+            "lon": -0.9443252617656325,
+            "admin_district": null,
+            "county": "North Yorkshire"
+          },
+          {
+            "name": "High Street",
+            "type": "named road",
+            "lat": 53.72268219717586,
+            "lon": -1.3630091157901505,
+            "admin_district": "Wakefield",
+            "county": null
+          },
+          {
+            "name": "High Street",
+            "type": "section of named road",
+            "lat": 53.0382078237476,
+            "lon": -2.3011684488858024,
+            "admin_district": "Newcastle-under-Lyme",
+            "county": "Staffordshire"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 9,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "top_lon": 0.584868163949162,
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "picked_source": "postcode:SS7 1TF",
+        "top_lat": 51.5618448838046,
+        "confidence": "high",
+        "evidence": "The postcode SS7 1TF from pdf_info maps directly to the South Benfleet Conservation Area, specifically near the intersection of High Street and High Road as shown on the map. This is consistent with the settlement name South Benfleet."
+      }
+    },
+    {
+      "turn": 10,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

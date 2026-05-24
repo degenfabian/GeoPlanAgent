@@ -1,0 +1,284 @@
+{
+  "case": "Ar4.8",
+  "config": {
+    "disabled_tools": [
+      "place"
+    ],
+    "locate_model": "gemini-flash"
+  },
+  "pick": {
+    "top_lat": 51.794707,
+    "top_lon": -0.35009,
+    "sigma_m": 300,
+    "confidence": "high",
+    "picked_source": "intersect:Beesonend Lane x Harpenden Road",
+    "evidence": "The map shows Beesonend Lane intersecting Harpenden Road. The site 'Beesonend Cottages' is located along Beesonend Lane. The intersection tool confirms the junction at 51.7947, -0.3501, which is within St. Albans.",
+    "verified_inside_admin_region": true
+  },
+  "err_km": 0.35729200144774,
+  "gt_centroids": [
+    {
+      "lat": 51.7930711577738,
+      "lon": -0.35456156569625635
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "postcode": 1,
+      "road": 2,
+      "intersect": 1,
+      "la_check": 1,
+      "final_result": 1
+    },
+    "total_tool_calls": 6,
+    "n_turns": 9,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "postcode",
+      "args": {
+        "pc": "AL1 3JE"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "la": "St. Albans",
+        "query": "Beesonend Lane"
+      }
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "road",
+      "args": {
+        "query": "Harpenden Road",
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "postcode",
+      "return": {
+        "success": true,
+        "postcode": "AL1 3JE",
+        "lat": 51.75336285595908,
+        "lon": -0.33612427907835657,
+        "admin_district": "St. Albans District (B)"
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Beesonend Lane",
+        "la_filter": "St. Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Beesonend Lane",
+            "lat": 51.79494713634261,
+            "lon": -0.35038629470868243,
+            "in_la": "St. Albans"
+          },
+          {
+            "name": "Beesonend Lane",
+            "lat": 51.79480810764194,
+            "lon": -0.3503019673602186,
+            "in_la": "St. Albans"
+          },
+          {
+            "name": "Beesonend Lane",
+            "lat": 51.78980079987271,
+            "lon": -0.3632466386277748,
+            "in_la": "St. Albans"
+          },
+          {
+            "name": "Beesonend Lane",
+            "lat": 51.79339204963085,
+            "lon": -0.3545487347409917,
+            "in_la": "St. Albans"
+          },
+          {
+            "name": "Beesonend Lane",
+            "lat": 51.79478844414996,
+            "lon": -0.351143760130513,
+            "in_la": "St. Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "road",
+      "return": {
+        "success": true,
+        "query": "Harpenden Road",
+        "la_filter": "St. Albans",
+        "n_hits": 5,
+        "hits": [
+          {
+            "name": "Harpenden Road",
+            "lat": 51.808007735830316,
+            "lon": -0.30134736959917274,
+            "in_la": "St. Albans"
+          },
+          {
+            "name": "Harpenden Road",
+            "lat": 51.810305527197606,
+            "lon": -0.31170236627586595,
+            "in_la": "St. Albans"
+          },
+          {
+            "name": "Harpenden Road",
+            "lat": 51.8089427998898,
+            "lon": -0.3055756521303249,
+            "in_la": "St. Albans"
+          },
+          {
+            "name": "Harpenden Road",
+            "lat": 51.79482457431399,
+            "lon": -0.35015860106859165,
+            "in_la": "St. Albans"
+          },
+          {
+            "name": "Harpenden Road",
+            "lat": 51.77270316928166,
+            "lon": -0.3356063119152638,
+            "in_la": "St. Albans"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 3,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "intersect",
+      "args": {
+        "road_b": "Harpenden Road",
+        "la": "St. Albans",
+        "road_a": "Beesonend Lane"
+      }
+    },
+    {
+      "turn": 4,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "intersect",
+      "return": {
+        "success": true,
+        "roads": [
+          "Beesonend Lane",
+          "Harpenden Road"
+        ],
+        "la_filter": "St. Albans",
+        "n_intersections": 1,
+        "intersections": [
+          {
+            "lat": 51.794707,
+            "lon": -0.35009,
+            "roads": [
+              "Beesonend Lane",
+              "Harpenden Road"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 5,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "la_check",
+      "args": {
+        "lon": -0.35009,
+        "lat": 51.794707,
+        "la": "St. Albans"
+      }
+    },
+    {
+      "turn": 6,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "la_check",
+      "return": {
+        "success": true,
+        "lat": 51.794707,
+        "lon": -0.35009,
+        "la": "St. Albans",
+        "inside_la": true,
+        "distance_km_approx": 0.0,
+        "la_centroid_lat": 51.77208571221669,
+        "la_centroid_lon": -0.3424935450554889
+      }
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 7,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "sigma_m": 300,
+        "verified_inside_admin_region": true,
+        "top_lat": 51.794707,
+        "top_lon": -0.35009,
+        "confidence": "high",
+        "picked_source": "intersect:Beesonend Lane x Harpenden Road",
+        "evidence": "The map shows Beesonend Lane intersecting Harpenden Road. The site 'Beesonend Cottages' is located along Beesonend Lane. The intersection tool confirms the junction at 51.7947, -0.3501, which is within St. Albans."
+      }
+    },
+    {
+      "turn": 8,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "case": "A4_112:LL:048",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 52.6548,
+    "lon": -1.1785,
+    "reasoning": "The document identifies the site as Former Leicester Frith Farm on Sangha Close, which is located at these coordinates in Leicester (postcode LE3 9AF)."
+  },
+  "err_km": 0.653864343766172,
+  "gt_centroids": [
+    {
+      "lat": 52.660494935911096,
+      "lon": -1.1760848512624487
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "reasoning": "The document identifies the site as Former Leicester Frith Farm on Sangha Close, which is located at these coordinates in Leicester (postcode LE3 9AF).",
+        "lon": -1.1785,
+        "lat": 52.6548
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}

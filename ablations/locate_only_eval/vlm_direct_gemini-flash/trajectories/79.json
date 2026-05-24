@@ -1,0 +1,60 @@
+{
+  "case": "79",
+  "config": {
+    "approach": "vlm_direct",
+    "vlm_model": "gemini-flash",
+    "temperature": 0.0
+  },
+  "pick": {
+    "lat": 51.502,
+    "lon": -0.192,
+    "reasoning": "The document is a borough-wide Article 4 direction covering the entire Royal Borough of Kensington and Chelsea, so the coordinates represent the approximate geographic center of the borough."
+  },
+  "err_km": 0.08892669189341296,
+  "gt_centroids": [
+    {
+      "lat": 51.50120974197261,
+      "lon": -0.19219721646724833
+    }
+  ],
+  "trajectory_stats": {
+    "tool_calls": {
+      "final_result": 1
+    },
+    "total_tool_calls": 1,
+    "n_turns": 3,
+    "validator_retries": 0
+  },
+  "trajectory": [
+    {
+      "turn": 0,
+      "role": "request",
+      "kind": "UserPromptPart",
+      "user_summary": "1 text + 1 images"
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ThinkingPart",
+      "text": ""
+    },
+    {
+      "turn": 1,
+      "role": "response",
+      "kind": "ToolCallPart",
+      "tool": "final_result",
+      "args": {
+        "lon": -0.192,
+        "reasoning": "The document is a borough-wide Article 4 direction covering the entire Royal Borough of Kensington and Chelsea, so the coordinates represent the approximate geographic center of the borough.",
+        "lat": 51.502
+      }
+    },
+    {
+      "turn": 2,
+      "role": "request",
+      "kind": "ToolReturnPart",
+      "tool": "final_result",
+      "return": "Final result processed."
+    }
+  ]
+}
