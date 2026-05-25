@@ -76,6 +76,16 @@ def propose_centers(
     """
     state = ctx.deps
     if not state.pdf_info:
+        if getattr(state, "folded_mode", False):
+            return {
+                "success": False,
+                "error": (
+                    "PDFInfo missing — you must call submit_pdf_info first. "
+                    "Read the PDF binary attached to your first user "
+                    "message, populate the PDFInfo schema, and submit it "
+                    "before any positioning tool."
+                ),
+            }
         return {"success": False, "error": "PDFInfo missing — reader hasn't run"}
 
     from tools.agent.locate_agent import run_locate

@@ -158,9 +158,10 @@ def prepare_worker_state(
                 for g, pages in sorted(by_group.items())
             )
             roles_line += (
-                "\nMatch pages by area_group (each match_at call internally "
-                "runs every group at the locate centre; to retry a specific "
-                "group, pass `page=<next alternate in that group>`): "
+                "\nMatch pages by area_group (each match_at call covers "
+                "ONE group — iterate propose_centers → match_at → "
+                "commit_match per group; to retry a specific group, "
+                "pass `page=<next alternate in that group>`): "
                 f"{grouped}\n"
             )
     user_parts: list = [
@@ -168,15 +169,67 @@ def prepare_worker_state(
         f"Use this information to geolocate and extract the planning boundary. "
         f"Page {map_pages[0] if map_pages else '?'} (the top-ranked match "
         f"page) is pre-rendered as your default working map. For multi-area "
-        f"docs you don't iterate groups — a single match_at call internally "
-        f"runs MINIMA per area_group at the same locate centre and unions "
-        f"the resulting polygons."
+        f"docs, iterate the propose_centers → match_at → commit_match loop "
+        f"once per area_group; each commit_match unions its group's polygon "
+        f"into the running final result."
     ]
     primary_img = (state.rendered_pages.get(int(map_pages[0]))
                    if map_pages else None)
     if primary_img is not None:
         user_parts.append(f"Map page {map_pages[0]}:")
         user_parts.append(_img_to_binary(primary_img))
+    return state, user_parts
+
+
+# ── Folded ablation: no reader phase, worker fills PDFInfo itself ─────────
+
+def prepare_folded_state(
+    pdf_path: str,
+    sam3: Dict[str, Any],
+    minima_matcher: Any,
+    dpi: int,
+    case_name: Optional[str],
+    verbose: bool,
+    locate_model: str = "google/gemini-3-flash-preview",
+    locate_disabled_tools: frozenset = frozenset(),
+) -> Tuple[AgentState, list]:
+    """Build AgentState + worker user_parts for the folded ablation.
+
+    Skips the dedicated reader phase. The user prompt attaches the raw
+    PDF binary; the system prompt requires submit_pdf_info as the first
+    tool call. After that tool runs, state.pdf_info is populated and
+    state.rendered_pages is filled with the identified map pages — the
+    same end-state prepare_worker_state arrives at, just by a different
+    route.
+    """
+    state = AgentState(
+        pdf_path=str(pdf_path),
+        sam3_processor=sam3["processor"],
+        sam3_model=sam3["model"],
+        device=sam3["device"],
+        minima_matcher=minima_matcher,
+        dpi=dpi,
+        sam3_state=sam3,
+        case_name=case_name,
+        locate_model=locate_model,
+        locate_disabled_tools=locate_disabled_tools,
+        folded_mode=True,
+    )
+
+    pdf_bytes = Path(pdf_path).read_bytes()
+    if verbose:
+        print(f"  Folded mode: attaching PDF ({len(pdf_bytes) // 1024} KB), "
+              f"no reader phase.")
+
+    user_parts: list = [
+        BinaryContent(data=pdf_bytes, media_type="application/pdf"),
+        "The UK planning permission PDF is attached above. Your first "
+        "tool call must be submit_pdf_info(info=<PDFInfo>) — read every "
+        "page, populate the PDFInfo schema, and submit. Only after that "
+        "may you call propose_centers, match_at, commit_match, or "
+        "lookup_district. The pipeline always produces a polygon — never "
+        "refuse a case.",
+    ]
     return state, user_parts
 
 

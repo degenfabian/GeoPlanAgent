@@ -19,7 +19,8 @@ class AgentState:
                  locate_model: str = "google/gemini-3-flash-preview",
                  locate_disabled_tools: frozenset = frozenset(
                      {"postcode", "grid_ref", "road", "intersect", "la_check"}
-                 )):
+                 ),
+                 folded_mode: bool = False):
         self.pdf_path = pdf_path
         self.sam3_processor = sam3_processor
         self.sam3_model = sam3_model
@@ -38,6 +39,11 @@ class AgentState:
         # the LOO/min_N kits. Override via benchmark_runner's
         # --locate-disabled-tools to run those kits in production too.
         self.locate_disabled_tools: frozenset = locate_disabled_tools
+        # Ablation flag: when True the worker is also responsible for
+        # PDFInfo extraction (no separate reader phase). Drives the
+        # system_prompt branch, the submit_pdf_info tool gate, and the
+        # validator's pdf_info-empty check.
+        self.folded_mode: bool = folded_mode
         self.sam3_state: Optional[Dict[str, Any]] = sam3_state
         # Case folder name; needed for k-fold adapter routing.
         self.case_name: Optional[str] = case_name

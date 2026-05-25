@@ -9,8 +9,11 @@ Fine-tuning code for the two learned components in the pipeline:
    `tools.io.map_page.render_map_page`).
 
 Both are 5-fold cross-validated so each benchmark case is evaluated by
-the fold whose val set it belonged to (no leakage). Not required for
-inference if you have the shipped weights in `models/`.
+the fold whose val set it belonged to (no leakage). Routing is via
+[`tools.core.fold_routing.resolve_fold`](../tools/core/fold_routing.py)
+(`fold_assignment.json[case_name]` → `min(available_folds)` fallback
+for cases outside the training pool). Not required for inference if
+you have the shipped weights in `models/`.
 
 ## Layout
 
@@ -287,16 +290,19 @@ augmentation could close the gap.
 
 ## Inference-time fold routing
 
-The shared routing helper is `tools.core.fold_routing.resolve_fold`,
-used both by `tools.extraction.sam3.set_fold_for_case` and by the
-rotation classifier:
+The shared routing helper is
+[`tools.core.fold_routing.resolve_fold`](../tools/core/fold_routing.py),
+used both by `tools.extraction.sam3.set_fold_for_case` and by
+`tools.io.rotation_classifier`:
 
-1. Canonicalise the case_name (`replace(":", "_").replace("/", "_")`).
-2. Look up `fold_assignment.json[case_name]` (then the canonical
-   form).
-3. **If the case isn't in `fold_assignment.json`** (only possible for
-   an external deployment on a fresh case not in the training pool),
-   fall back to `min(available_folds)`. The hash-based fallback that
-   lived here previously was redundant: an unseen case has no
+1. Look up `fold_assignment.json[case_name]` (raw eval-data folder name).
+2. If missing, retry the canonical underscore form
+   (`replace(":", "_").replace("/", "_")`).
+3. **If the case still isn't in `fold_assignment.json`** (only possible
+   for an external deployment on a fresh case not in the training
+   pool), fall back to `min(available_folds)`. The hash-based fallback
+   that lived here previously was redundant: an unseen case has no
    preferred fold, so any deterministic constant is equivalent.
-4. Load `models/<model>/fold_<k>/best.pt`.
+4. The returned fold index is clamped to `available_folds`, so a
+   half-populated `models/<model>/` (only some folds on disk) routes
+   safely to one of the loaded adapters rather than crashing.

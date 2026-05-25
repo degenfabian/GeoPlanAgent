@@ -90,12 +90,11 @@ additional rules):
 - grid_refs: OS grid references on map edges (e.g. "TG 210 080", "TR 34 SE").
 
 - is_district_wide: true if the planning boundary covers an entire
-  administrative area (borough, district, ward, parish, named
-  conservation area). Common trigger phrases include "Borough Wide
-  Direction", "District Wide", "entire area of [admin name]", "all
-  the land within [admin name]", "Various sites across [admin name]",
-  "throughout the District of [name]". False for specific-site
-  applications.
+  administrative area (borough, district, ward, parish). Common
+  trigger phrases include "Borough Wide Direction", "District Wide",
+  "entire area of [admin name]", "all the land within [admin name]",
+  "Various sites across [admin name]", "throughout the District of
+  [name]". False for specific-site applications.
 - district_name: if is_district_wide, the standard UK administrative
   name with a "UK" suffix. Examples: "Camden, UK", "Royal Borough of
   Kensington and Chelsea, UK", "Broadland District, Norfolk, UK",
@@ -310,7 +309,123 @@ OTHER:
   refusing a case — always emit a polygon."""
 
 
+def _build_folded_system_prompt() -> str:
+    """Compose FOLDED_SYSTEM_PROMPT from the reader + worker source prompts.
+
+    The folded ablation prompt is the verbatim union of READER_SYSTEM_PROMPT's
+    FIELD GUIDANCE section and WORKER_SYSTEM_PROMPT's body (everything from
+    its WORKFLOW description onwards), wrapped in a thin connector that frames
+    the work as two phases and explains the new submit_pdf_info tool gate.
+
+    Three surgical edits remove sentences in the worker prompt that explicitly
+    assume a separate reader phase. These are the ONLY paraphrases in the
+    folded prompt; everything else is verbatim from the source prompts so
+    that any future edit to READER_SYSTEM_PROMPT or WORKER_SYSTEM_PROMPT
+    propagates automatically. The edit list at the bottom of this function
+    documents exactly what was changed.
+    """
+    # ── Slice the reader's FIELD GUIDANCE block (verbatim) ─────────────
+    _reader_split = READER_SYSTEM_PROMPT.split("FIELD GUIDANCE", 1)
+    assert len(_reader_split) == 2, (
+        "READER_SYSTEM_PROMPT no longer contains the 'FIELD GUIDANCE' "
+        "marker; update _build_folded_system_prompt accordingly."
+    )
+    reader_field_guidance = "FIELD GUIDANCE" + _reader_split[1].rstrip()
+
+    # ── Slice the worker's body (verbatim from "Your job:" onwards) ────
+    _worker_split = WORKER_SYSTEM_PROMPT.split("Your job:", 1)
+    assert len(_worker_split) == 2, (
+        "WORKER_SYSTEM_PROMPT no longer starts its body with 'Your job:'; "
+        "update _build_folded_system_prompt accordingly."
+    )
+    worker_body = "Your job:" + _worker_split[1].rstrip()
+
+    # ── Surgical edits: remove two-agent-pipeline assumptions ──────────
+    # (old, new) pairs. Each `old` MUST appear exactly once in worker_body.
+    edits = [
+        (
+            "(the reader already filtered out forms / legends / decorative pages)",
+            "(category='match' pages from the PDFInfo you submitted in Phase 1)",
+        ),
+        (
+            "DOCUMENT STRUCTURE (you'll see this in the user prompt):",
+            "DOCUMENT STRUCTURE (from the PDFInfo you submitted in Phase 1):",
+        ),
+        (
+            "INPUT: PDFInfo summary + the top-ranked match page rendered upright. Other\n"
+            "match pages are not visible to you — match_at returns numbers only,\n"
+            "which is all you need to compare candidates and commit.",
+            "INPUT: the PDFInfo you submitted in Phase 1. The system has pre-rendered\n"
+            "the map_pages you identified; the locate sub-agent reads the primary\n"
+            "match page directly. match_at returns numbers only, which is all you\n"
+            "need to compare candidates and commit.",
+        ),
+        # The "reader's" references inside the THREE SIGNALS block refer to
+        # PDFInfo fields (scale, road_names). In folded mode the agent
+        # populated those itself; rename for clarity.
+        (
+            "recovered scale matches the reader's\n"
+            "                            stated map scale.",
+            "recovered scale matches PDFInfo.scale\n"
+            "                            (the map scale you extracted in Phase 1).",
+        ),
+        (
+            "≥ 0.6   STRONG     — reader's road names found at this location.",
+            "≥ 0.6   STRONG     — PDFInfo.road_names found at this location.",
+        ),
+        (
+            "0.0     CONFLICT   — OS has roads here but NONE of reader's\n"
+            "                            road names appear; possible wrong-area\n"
+            "                            signal. Trust only if n_inliers ≥ 100.",
+            "0.0     CONFLICT   — OS has roads here but NONE of your\n"
+            "                            PDFInfo.road_names appear; possible\n"
+            "                            wrong-area signal. Trust only if\n"
+            "                            n_inliers ≥ 100.",
+        ),
+    ]
+    for old, new in edits:
+        assert worker_body.count(old) == 1, (
+            f"Surgical-edit target not found exactly once in "
+            f"WORKER_SYSTEM_PROMPT: {old[:80]!r} (count={worker_body.count(old)})"
+        )
+        worker_body = worker_body.replace(old, new, 1)
+
+    # ── Connector intro (the only fresh wording in the folded prompt) ──
+    intro = (
+        "You extract the application site boundary from UK planning\n"
+        "permission PDFs and project it to a WGS84 GeoJSON polygon. The\n"
+        "boundary is the area the applicant is requesting permission for,\n"
+        "marked on a site map within the PDF. Its visual style varies —\n"
+        "solid line, dashed, hatched, coloured fill.\n\n"
+        "The PDF binary is attached to your first user message. Your\n"
+        "workflow has two phases.\n\n"
+        "PHASE 1 — READ THE PDF. Read every page of the PDF carefully and\n"
+        "populate the PDFInfo schema (extraction guidance below). Your\n"
+        "first tool call MUST be submit_pdf_info(info=<PDFInfo>). No other\n"
+        "tool call is valid before this — they will raise a retry error.\n"
+        "submit_pdf_info is one-shot per case.\n\n"
+        "PHASE 2 — POSITION THE BOUNDARY. After submit_pdf_info returns,\n"
+        "the system pre-renders the map_pages you identified. From there:\n"
+        "propose_centers → match_at(page=N, …) → commit_match → return\n"
+        "BoundaryOutcome (plus lookup_district for documents covering an\n"
+        "entire administrative area).\n"
+    )
+
+    return (
+        intro
+        + "\n=== PHASE 1: PDFInfo EXTRACTION GUIDANCE ===\n\n"
+        + reader_field_guidance
+        + "\n\n=== PHASE 2: POSITIONING WORKFLOW ===\n\n"
+        + worker_body
+        + "\n"
+    )
+
+
+FOLDED_SYSTEM_PROMPT = _build_folded_system_prompt()
+
+
 __all__ = [
     "READER_SYSTEM_PROMPT",
     "WORKER_SYSTEM_PROMPT",
+    "FOLDED_SYSTEM_PROMPT",
 ]

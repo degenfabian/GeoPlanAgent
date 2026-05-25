@@ -15,9 +15,15 @@ connection or an API key. The geocoder data files live under
 | `coords` | (helpers) | Web-Mercator / tile-pixel math, BNG ↔ WGS84, `haversine_km`. |
 
 These are the building blocks the locate sub-agent's six geocoders are
-built from (see `tools.agent.locate_agent`). The same modules are
-imported directly by the worker tool `lookup_district` and by
-verification checks.
+built from (see [`tools/agent/locate_agent.py`](../agent/locate_agent.py)).
+**Only `place` (OS Open Names) ships in the production locate kit;**
+the other five geocoders are implemented but disabled by default —
+they exist for the locate-LOO ablation in
+`ablations/locate_only_eval/` and are re-enabled via
+`benchmark_runner.py --locate-disabled-tools "..."`. The same modules
+are also imported directly by the worker tool `lookup_district`, by
+the locate sub-agent's emergency LA-centroid fallback, and by
+`tools.verification_checks._resolve_la`.
 
 ## Data assets (offline)
 

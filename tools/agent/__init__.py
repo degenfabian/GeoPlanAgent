@@ -17,6 +17,7 @@ from tools.agent.state import AgentState
 from tools.agent.tools import (  # noqa: F401
     locate as _locate_tool,
     match as _match_tool,
+    submit as _submit_tool,
     verify as _verify_tool,
 )
 
@@ -27,7 +28,7 @@ def run_agent(
     pdf_path: str,
     models_state: dict,
     model_name: str = "google/gemini-3.1-pro-preview",
-    max_iterations: int = 8,
+    max_iterations: int = 12,
     dpi: int = 200,
     verbose: bool = True,
     case_name: Optional[str] = None,
@@ -38,8 +39,16 @@ def run_agent(
     locate_disabled_tools: frozenset = frozenset(
         {"postcode", "grid_ref", "road", "intersect", "la_check"}
     ),
+    folded: bool = False,
 ) -> Dict[str, Any]:
-    """Run reader → worker on one planning PDF. Returns geojson, mask, stats."""
+    """Run reader → worker on one planning PDF. Returns geojson, mask, stats.
+
+    folded=True runs the folded-reader ablation: a single agent does both
+    PDFInfo extraction and positioning. Phase 1 (the dedicated reader
+    call) is skipped; the PDF binary is attached to the worker's first
+    user message and the worker is forced to call submit_pdf_info before
+    any other tool. Everything downstream of pdf_info is identical.
+    """
     from tools.agent._model import resolve_model_name
     model_name = resolve_model_name(model_name)
 
@@ -50,29 +59,41 @@ def run_agent(
     else:
         return {"success": False, "error": "No SAM3 model loaded"}
 
-    # ── Phase 1: read the PDF ──────────────────────────────────────────────
-    pdf_info = _rt.read_pdf_phase(pdf_path, model_name, verbose=verbose)
+    # ── Phase 1: read the PDF (skipped in folded ablation) ───────────────
+    if folded:
+        # In folded mode pdf_info is populated by the worker's first tool
+        # call (submit_pdf_info); start empty.
+        pdf_info: Dict[str, Any] = {}
+        state, user_parts = _rt.prepare_folded_state(
+            pdf_path=pdf_path, sam3=sam3,
+            minima_matcher=models_state["minima"],
+            dpi=dpi, case_name=case_name, verbose=verbose,
+            locate_model=locate_model,
+            locate_disabled_tools=locate_disabled_tools,
+        )
+    else:
+        pdf_info = _rt.read_pdf_phase(pdf_path, model_name, verbose=verbose)
 
-    # Flush pdf_info.json so it survives a Phase 2 crash.
-    if case_dir is not None:
-        try:
-            case_dir.mkdir(parents=True, exist_ok=True)
-            (case_dir / "pdf_info.json").write_text(
-                json.dumps({k: v for k, v in pdf_info.items()
-                            if not k.startswith("_")},
-                           indent=2, default=str)
-            )
-        except Exception as _e:
-            if verbose:
-                print(f"  Warning: failed to flush pdf_info.json: {_e}")
+        # Flush pdf_info.json so it survives a Phase 2 crash.
+        if case_dir is not None:
+            try:
+                case_dir.mkdir(parents=True, exist_ok=True)
+                (case_dir / "pdf_info.json").write_text(
+                    json.dumps({k: v for k, v in pdf_info.items()
+                                if not k.startswith("_")},
+                               indent=2, default=str)
+                )
+            except Exception as _e:
+                if verbose:
+                    print(f"  Warning: failed to flush pdf_info.json: {_e}")
 
-    # ── Phase 2 setup: state + worker user_parts ──────────────────────────
-    state, user_parts = _rt.prepare_worker_state(
-        pdf_path=pdf_path, sam3=sam3, minima_matcher=models_state["minima"],
-        pdf_info=pdf_info, dpi=dpi, case_name=case_name, verbose=verbose,
-        locate_model=locate_model,
-        locate_disabled_tools=locate_disabled_tools,
-    )
+        # ── Phase 2 setup: state + worker user_parts ──────────────────────
+        state, user_parts = _rt.prepare_worker_state(
+            pdf_path=pdf_path, sam3=sam3, minima_matcher=models_state["minima"],
+            pdf_info=pdf_info, dpi=dpi, case_name=case_name, verbose=verbose,
+            locate_model=locate_model,
+            locate_disabled_tools=locate_disabled_tools,
+        )
 
     if verbose:
         print(f"  Running agent ({model_name}, max {max_iterations} turns)")
@@ -182,6 +203,22 @@ def run_agent(
 
     # ── Cleanup, stats, soft quality gate, return ─────────────────────────
     _rt.cleanup_temp_pages(state)
+
+    # In folded mode pdf_info was populated by the worker's submit_pdf_info
+    # tool call rather than Phase 1. Pull it back from state so downstream
+    # stats + the on-disk pdf_info.json reflect what the worker submitted.
+    if folded:
+        pdf_info = dict(state.pdf_info or {})
+        if case_dir is not None and pdf_info:
+            try:
+                case_dir.mkdir(parents=True, exist_ok=True)
+                (case_dir / "pdf_info.json").write_text(
+                    json.dumps(pdf_info, indent=2, default=str)
+                )
+            except Exception as _e:
+                if verbose:
+                    print(f"  Warning: failed to flush pdf_info.json "
+                          f"(folded): {_e}")
 
     if verbose:
         mi = state.current_result.get("match_info", {})

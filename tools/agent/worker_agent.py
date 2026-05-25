@@ -5,7 +5,7 @@ from __future__ import annotations
 from dotenv import load_dotenv
 from pydantic_ai import Agent, ModelRetry, RunContext
 
-from tools.agent.prompts import WORKER_SYSTEM_PROMPT
+from tools.agent.prompts import FOLDED_SYSTEM_PROMPT, WORKER_SYSTEM_PROMPT
 from tools.agent.schemas import BoundaryOutcome
 from tools.agent.state import AgentState
 
@@ -34,20 +34,25 @@ def _strip_old_images(messages):
             content = getattr(part, 'content', None)
             if not isinstance(content, list):
                 continue
-            has_image = any(
-                hasattr(it, 'media_type') and hasattr(it, 'data')
-                and getattr(it, 'media_type', '').startswith('image/')
-                for it in content
-            )
-            if not has_image:
+            def _is_strippable(it) -> bool:
+                if not (hasattr(it, 'media_type') and hasattr(it, 'data')):
+                    return False
+                mt = getattr(it, 'media_type', '') or ''
+                # PDFs also get stripped — in folded_mode the PDF lives in
+                # the first user turn and is no longer needed once
+                # submit_pdf_info has populated state.pdf_info.
+                return mt.startswith('image/') or mt == 'application/pdf'
+
+            has_binary = any(_is_strippable(it) for it in content)
+            if not has_binary:
                 continue
             new_content = list(content)
             for j, item in enumerate(new_content):
-                if (hasattr(item, 'media_type')
-                        and hasattr(item, 'data')
-                        and getattr(item, 'media_type', '').startswith('image/')):
+                if _is_strippable(item):
+                    kind = ("PDF" if getattr(item, 'media_type', '') ==
+                            'application/pdf' else "image")
                     new_content[j] = (
-                        f"[image omitted from older history; "
+                        f"[{kind} omitted from older history; "
                         f"was {item.media_type}, {len(item.data)} bytes]"
                     )
             try:
@@ -92,6 +97,16 @@ async def validate_boundary_outcome(
     if out.final_n_inliers != final_inl:
         out.final_n_inliers = final_inl
 
+    # Folded mode: refuse to finalise until submit_pdf_info has populated
+    # state.pdf_info. Standard pipeline already has pdf_info from Phase 1.
+    if getattr(state, 'folded_mode', False) and not state.pdf_info:
+        raise ModelRetry(
+            "Cannot submit BoundaryOutcome yet — you have not called "
+            "submit_pdf_info. The PDF binary is attached to your first "
+            "user message; read it, populate the PDFInfo schema, and "
+            "call submit_pdf_info(info=<PDFInfo>) before any other tool."
+        )
+
     # district_lookup: polygon must come from a successful lookup_district call.
     if out.status == "district_lookup":
         if state.current_result.get("geojson") is None:
@@ -118,4 +133,6 @@ async def validate_boundary_outcome(
 
 @_agent.system_prompt
 def build_system_prompt(ctx: RunContext[AgentState]) -> str:
+    if getattr(ctx.deps, 'folded_mode', False):
+        return FOLDED_SYSTEM_PROMPT
     return WORKER_SYSTEM_PROMPT

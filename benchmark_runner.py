@@ -91,7 +91,7 @@ def save_visualizations(result_dir, map_img, boundary_mask, predicted_geojson,
 # ── Main Runner ──────────────────────────────────────────────────────────────
 
 def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
-                  dpi=200, max_iterations=8,
+                  dpi=200, max_iterations=12,
                   dataset_path="evaluation_data/0_planning_dataset_list.xlsx",
                   eval_dir="evaluation_data",
                   only_cases=None, force=False,
@@ -99,7 +99,8 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                   locate_model="google/gemini-3-flash-preview",
                   locate_disabled_tools=frozenset(
                       {"postcode", "grid_ref", "road", "intersect", "la_check"}
-                  )):
+                  ),
+                  folded=False):
     """Run benchmark using the unified tool-calling agent.
 
     Args:
@@ -236,6 +237,7 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                 critic_max_iters=critic_max_iters,
                 locate_model=locate_model,
                 locate_disabled_tools=locate_disabled_tools,
+                folded=folded,
             )
             dt = time.time() - t0
 
@@ -539,7 +541,7 @@ if __name__ == "__main__":
     parser.add_argument("--max-cases", type=int, default=None)
     parser.add_argument("--start-from", type=int, default=0)
     parser.add_argument("--dpi", type=int, default=200)
-    parser.add_argument("--max-iterations", type=int, default=8,
+    parser.add_argument("--max-iterations", type=int, default=12,
                         help="Max agent turns per case")
     parser.add_argument("--output-dir", default="results/benchmark")
     parser.add_argument("--cases", nargs="+", default=None,
@@ -558,6 +560,13 @@ if __name__ == "__main__":
                         help="Max critic-rejection iterations per case "
                              "before forcing accept. Ignored without "
                              "--enable-critic.")
+    parser.add_argument("--no-reader", action="store_true",
+                        help="Folded ablation: skip the dedicated reader "
+                             "phase. The worker receives the PDF binary "
+                             "and must call submit_pdf_info as its first "
+                             "tool call to populate PDFInfo before "
+                             "positioning. Suggested --output-dir: "
+                             "ablations/no_reader/.")
     args = parser.parse_args()
 
     # Flag not passed → fall through to run_benchmark's production default
@@ -575,6 +584,7 @@ if __name__ == "__main__":
         enable_critic=args.enable_critic,
         critic_max_iters=args.critic_max_iters,
         locate_model=args.locate_model,
+        folded=args.no_reader,
     )
     if args.locate_disabled_tools is not None:
         _KNOWN_LOCATE_TOOLS = frozenset(

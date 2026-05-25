@@ -99,7 +99,17 @@ set_fold_for_case(state, case_name)   # swap in fold k's adapter
 
 If `models/sam3_lora/` is missing, `load_sam3_ft` falls through to
 base SAM3 (no LoRA). Accuracy drops materially — the fine-tune is
-where the boundary-specific knowledge lives.
+where the boundary-specific knowledge lives. A half-populated
+directory (adapter dirs present but `fold_assignment.json` missing)
+also triggers the fallback, with a loud warning so it doesn't look
+like a clean run.
+
+The loader also supports a legacy raw-state-dict checkpoint format
+(`fold_<k>/best.pt` instead of PEFT files), used during training to
+support `--resume`. When loading from `best.pt` it renames the
+`default` adapter slot to `fold_<k>` and verifies that at least one
+fold-specific weight changed value — silent name-mismatch was a real
+bug pre-2026-04.
 
 ## Rotation classifier (`rotation_classifier_kfold/`)
 

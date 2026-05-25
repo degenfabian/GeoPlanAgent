@@ -40,15 +40,26 @@ from tools.extraction.sam3 import (
 ## SAM3 + LoRA (`sam3.py`)
 
 - **Base model**: `facebook/sam3` (HuggingFace, ~3 GB, requires `HF_TOKEN`).
-- **Fine-tune**: LoRA r=16 on `q_proj` / `k_proj` / `v_proj` / `o_proj`
-  / `fc1` / `fc2` across every transformer subsystem, plus
+- **Fine-tune**: LoRA r=16 (`lora_alpha=32`, dropout 0.05, bias none)
+  on `q_proj` / `k_proj` / `v_proj` / `o_proj` / `fc1` / `fc2`
+  across every transformer subsystem (vision_encoder, text_encoder,
+  geometry_encoder, detr_encoder, detr_decoder, mask_decoder), plus
   fully-trained head modules (`mask_embedder`, `presence_head`,
-  `semantic_projection`). Shipped per-fold in
-  `models/sam3_lora/fold_<k>/` as PEFT-format
-  `adapter_model.safetensors` (~76 MB / fold). If the directory is
-  missing, the loader falls through to base SAM3 with no LoRA —
-  accuracy drops materially (and the loader prints a warning when it
-  detects a half-populated k-fold dir).
+  `semantic_projection`) carried via PEFT's `modules_to_save`.
+- **Checkpoint formats** — the loader (`_load_kfold`) supports both
+  PEFT-format dirs (`fold_<k>/adapter_config.json` +
+  `adapter_model.safetensors`) and raw `fold_<k>/best.pt` files; the
+  shipped checkpoints are PEFT format (~76 MB / fold). When loading
+  raw state dicts the loader renames `default` adapter slots to
+  per-fold names (`.lora_A.default. → .lora_A.fold_K.`) and verifies
+  that at least one fold-specific weight actually changed value — a
+  silent name-mismatch was the bug that nullified every v6/v7
+  inference path until 2026-04.
+- **Loader fallbacks** — if `fold_assignment.json` is missing the
+  loader prints a warning and falls through to base SAM3 (no LoRA);
+  if the entire `models/sam3_lora/` dir is missing, it also falls
+  through. Both paths cost materially on accuracy, so the warning is
+  loud.
 - **Text query** is locked to the literal phrase `"planning boundary"`
   (`_SAM3_QUERY` in `tools.agent.tools.match`). The LoRA was trained
   against this exact string; using a paraphrase silently regresses.
