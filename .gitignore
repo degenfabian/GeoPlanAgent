@@ -72,3 +72,28 @@ training/dataset/boundary_masks/
 # tools/build_oml_road_index.py from OS OpenMap Local source data.
 tools/oml_road_index.json
 tools/oml_road_geom_subset.json
+
+# Per-case ablation outputs (analogous to results/ — large, regenerable
+# from the ablation harnesses). The driver scripts themselves stay tracked.
+ablations/no_reader/
+ablations/reader_rerun_post_fix/
+ablations/vlm_e2e_pdf_to_geojson/*/
+# Carve back the subset definitions + summaries (small, paper-grade)
+!ablations/vlm_e2e_pdf_to_geojson/subset_*.json
+!ablations/vlm_e2e_pdf_to_geojson/subset_*_summary.md
+
+# Locate-only ablation per-case outputs (the locate_picks.csv summary
+# files are tracked explicitly via `git add -f` when paper-relevant).
+ablations/locate_only_eval/*/trajectories/
+ablations/locate_only_eval/*/run.log
+ablations/locate_only_eval/*/rerun*.log
+ablations/locate_only_eval/*/rerun_cases.txt
+
+# Paper-figure binaries (regenerable via figures/make_section5_figures.py).
+# The Python regenerator itself stays tracked.
+figures/*.png
+figures/*.pdf
+
+# Top-level planning / writing scratch (HTML mind-maps, not source).
+geomap_ablation_flow.html
+geomap_writing_plan.html
