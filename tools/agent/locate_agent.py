@@ -476,10 +476,10 @@ _LOCATE_BUDGET = (
     "commit your best current guess with confidence='low'."
 )
 
-# EDGE CASES section was removed from the prompt 2026-05-23 — the
-# agent reliably figures out empty-pdf_info / district-wide /
-# multi-parish handling from the schema's σ guidance + pdf_info's
-# is_district_wide and parish_names fields, without explicit prose.
+# No explicit edge-case prose in the prompt: the agent handles
+# empty-pdf_info / district-wide / multi-parish cases fine from the
+# schema's sigma guidance plus pdf_info's is_district_wide and
+# parish_names fields.
 
 
 def _cluster_step_body(enabled: frozenset[str]) -> str:

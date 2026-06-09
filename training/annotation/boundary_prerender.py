@@ -12,7 +12,8 @@ produces correct ``map_pages`` for every case that used to need an
 override.
 
 The GT polygon is projected onto the rendered map via the cached
-affine_H (benchmark_v20 → v17). Because auto_rotate is off here but ON
+affine_H from an earlier benchmark run (AFFINE_SOURCES, newest first).
+Because auto_rotate is off here but ON
 in the cached benchmarks, the projection lands in the wrong place for
 any case the classifier rotated. We detect that by checking whether
 the projected polygon is sane (most coordinates inside the image
@@ -89,10 +90,10 @@ def _pdf_path(case_id: str) -> Optional[Path]:
 
 
 def _pdf_info(case_id: str) -> Optional[Dict[str, Any]]:
-    """Pick up pdf_info from a previous benchmark. Prefer a source whose
-    map_pages is NON-EMPTY (an in-flight v20 will have empty pdf_info for
-    cases that haven't been processed yet — falling back to v17 there is
-    correct)."""
+    """Pick up pdf_info from a previous benchmark run. Prefer a source
+    whose map_pages is non-empty: an in-flight run has empty pdf_info for
+    cases it hasn't reached yet, and falling back to the older run is the
+    right call there."""
     best = None
     for src in AFFINE_SOURCES:
         p = REPO / "results" / src / "gemini-flash" / case_id / "pdf_info.json"

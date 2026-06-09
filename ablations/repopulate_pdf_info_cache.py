@@ -3,11 +3,10 @@ on every case folder in evaluation_data/.
 
 The locate-stage ablations need pdf_info that matches what the current
 production pipeline produces. Reusing a pdf_info cache from an older
-benchmark run risks schema drift — e.g. the MAXIMALLYFINALVERSION run
-emitted fields like ``directional_modifier`` and ``n_pages`` that no
-longer exist in the current PDFInfo schema. Running the reader fresh
-guarantees the cache matches what ``run_locate`` and the worker would
-see today.
+benchmark run risks schema drift (older runs emitted fields like
+``directional_modifier`` and ``n_pages`` that no longer exist in
+PDFInfo). Running the reader fresh guarantees the cache matches what
+``run_locate`` and the worker would see today.
 
 This script invokes ONLY the reader phase
 (:func:`tools.agent.runtime.read_pdf_phase`) per case — the exact same

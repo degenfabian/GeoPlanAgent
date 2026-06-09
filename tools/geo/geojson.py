@@ -14,10 +14,6 @@ None if it can't be parsed":
 * Calls ``buffer(0)`` to repair invalid geometries silently.
 * Returns ``None`` on any error (no exceptions).
 * Path-based — load + parse + shapely in one call.
-
-Consolidated 2026-05-22 from inline duplicates in
-``scripts/monitor_lucky_shot.py`` and ``scripts/sigma_signal_analysis.py``
-plus ad-hoc copies in other scripts.
 """
 
 from __future__ import annotations

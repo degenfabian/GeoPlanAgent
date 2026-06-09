@@ -1,8 +1,7 @@
 """Model-name resolution + OpenRouterModel construction.
 
-Single source of truth for the alias table and the model object so
-reader / worker / locate sub-agent / critic all go through the same
-path.
+The alias table and model construction live only here, so reader,
+worker, locate sub-agent and critic all go through the same path.
 """
 
 from __future__ import annotations

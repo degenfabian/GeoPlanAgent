@@ -2,13 +2,11 @@
 exact FoldDataset and val-loop logic, with autocast enabled to match
 training conditions.
 
-This is the source of truth for ``models/sam3_lora/cv_summary.{json,csv}``
-(written at end of run). The trainer used to write that summary itself,
-but its `best_row` lookup was keying on `"val_iou"` while the history
-stored `"val_sem_iou"` — the silent fallback to `history[-1]` meant
-cv_summary reported final-epoch (post-overfit) metrics, not best-epoch
-ones. Computing the summary from the saved PEFT adapter directly
-side-steps that.
+Writes ``models/sam3_lora/cv_summary.{json,csv}`` at the end of the
+run. The summary is computed from the saved PEFT adapters directly
+rather than from training history, so it always reflects the
+checkpoint that actually ships rather than whatever epoch the trainer
+logged last.
 
 F1 and dice are mathematically identical for binary masks (both equal
 2·TP / (2·TP + FP + FN)), so we report F1 only.

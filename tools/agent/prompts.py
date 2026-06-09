@@ -1,9 +1,5 @@
 """System prompts for the planning-boundary agent pipeline.
 
-These large prompt strings are extracted from `tools/agent.py` (Stage 1B of
-the agent.py split, 2026-05-11) so prompt edits don't require touching the
-3 000+-line tool module.
-
 - READER_SYSTEM_PROMPT  : instructions for the PDF reader agent
                           (output_type=PDFInfo). Read every page, populate
                           schema fields, no tool calls.
@@ -11,9 +7,9 @@ the agent.py split, 2026-05-11) so prompt edits don't require touching the
                           (output_type=BoundaryOutcome). Drives the
                           tool-calling positioning + extraction loop.
 
-The strings are exact copies of what previously lived inline. Field
-descriptions in `tools/agent_schemas.py` remain authoritative — these
-prompts add behaviour, decision rules, and tool-flow guidance.
+Field descriptions in `tools/agent/schemas.py` are authoritative; these
+prompts add behaviour, decision rules, and tool-flow guidance. The
+strings appear verbatim in the paper appendix, so edit with care.
 """
 
 from __future__ import annotations

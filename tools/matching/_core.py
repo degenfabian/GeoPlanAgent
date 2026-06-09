@@ -86,16 +86,10 @@ def estimate_affine(mkpts0, mkpts1, mconf=None, reproj_thresh=10.0):
     """Estimate a 4-DOF similarity transform (rotation + uniform scale +
     translation) via RANSAC.
 
-    (2026-05-21) The 6-DOF fallback was removed after a 25-case
-    ablation showed it nets to -0.01 mean IoU. The 4-DOF similarity is
-    the geometrically correct prior for map-to-map matching; shear
-    only shows up as an artifact of photography/photocopying and the
-    rescue cases (~2 cases on the 208-case eval) don't justify the
-    code complexity.
-
-    (2026-05-21) The Delaunay-consistency refit used to live here too,
-    deleted in the same pass — it provided zero mean benefit and was
-    actively hurting the highest-inlier stress case.
+    Similarity is the right prior for map-to-map matching: shear only
+    appears as a photography/photocopy artifact. A 6-DOF affine
+    fallback was tried and netted out slightly negative on mean IoU,
+    so we keep this deliberately simple.
 
     Returns (H, n_inliers, score, inlier_mask). H is shape (2, 3).
     """

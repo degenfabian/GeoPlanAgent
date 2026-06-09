@@ -29,13 +29,11 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-DEFAULT_SRC = (
-    REPO_ROOT / "results" / "benchmark_v_this_is_the_MAXIMALLYFINALVERSION"
-)
+DEFAULT_SRC = REPO_ROOT / "results" / "benchmark_std_post_fix"
 DEFAULT_MODEL_SUBDIR = "gemini-flash"
-# Source of truth for the canonical case list: the on-disk
-# evaluation_data folders. The xlsx has many rows that never had case
-# folders created and would inflate the "missing" count with non-issues.
+# Canonical case list comes from the on-disk evaluation_data folders.
+# The xlsx has rows that never had case folders created and would
+# inflate the "missing" count with non-issues.
 DEFAULT_EVAL_DIR = REPO_ROOT / "evaluation_data"
 
 OUT_CACHE = REPO_ROOT / "ablations" / "cached_pdf_info_for_locate_ablations.json"

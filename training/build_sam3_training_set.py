@@ -13,8 +13,8 @@ Fold assignment uses LPT (longest-processing-time-first) bin-packing for
 balanced fold sizes while keeping these "stay-together" groups intact:
 - Multi-page renders from one source (A108P_p4/p5/p6, A4D6A_merged_p9/p10
   etc.) — auto-detected via the _p<N> suffix.
-- User-identified twin sets that share a planning site (the 6-case G3 set
-  and the 12:00141 / 12:00117 pair, post the 2026-05-13 duplicate removal).
+- Hand-identified twin sets that share a planning site (the 6-case G3 set
+  and the 12:00141 / 12:00117 pair).
 
 Re-running the script is idempotent (same input → bit-identical output).
 """
@@ -33,14 +33,9 @@ ANNOT_ROOT = REPO / "boundary_annotations"
 OUT_ROOT = REPO / "training" / "dataset"
 N_FOLDS = 5
 
-# Explicit stay-together groups (the user identified these as twin cases that
-# share a planning site or map; splitting across folds would leak). Each member
-# is mapped to the canonical group key.
+# Hand-identified twin cases that share a planning site or map; splitting
+# them across folds would leak. Each member maps to a canonical group key.
 _EXPLICIT_GROUPS: list[list[str]] = [
-    # Remaining twin-set groups after the 5 duplicate twins were removed
-    # 2026-05-13. The 5 deleted twins were: 05D21091, 74D9394B, 5797F9C9,
-    # B76BCA2D, F3632728 — so their pairs collapse to single-member groups
-    # and no longer need an explicit entry.
     ["12:00141:ART4", "12:00117:ART4"],
     ["095AB379-F04E-473A-BC0D-8948B58E4090",
      "3DA282A7-E829-47CF-B842-E03E0C704072",

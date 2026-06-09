@@ -25,12 +25,6 @@ from datetime import datetime
 from tools.io.eval_case import resolve_case_pdf
 from tools.metrics.geojson import load_geojson, calculate_spatial_metrics
 
-# Pre-k-fold single-adapter training set. Retained as a manifest; k-fold
-# already holds each case out of its own inference fold, so this no longer
-# needs to be applied at eval time.
-EXCLUDE_SL_NOS = {1, 3, 5, 6, 11, 13, 15, 21, 22, 23, 33, 34, 49, 54, 59,
-                  79, 84, 86, 88, 89, 125, 139, 230, 236, 246, 255, 256}
-
 # Duplicates removed from disk; filtered out of the dataset at load time.
 DUPLICATE_SL_NOS = {9, 68, 83, 232, 253}
 
@@ -74,8 +68,8 @@ def save_visualizations(result_dir, map_img, boundary_mask, predicted_geojson,
                 output_path=str(viz_path),
             )
         except Exception as e:
-            # Write a stub image so silent absence becomes a visible failure
-            # at review time. v10 case DE5A30DA had viz silently missing.
+            # write a stub image so a failed viz is visible at review
+            # time instead of silently absent
             print(f"  Viz failed: {e}")
             try:
                 stub = np.full((400, 800, 3), 240, dtype=np.uint8)
@@ -145,11 +139,10 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
         print(f"Injected {len(merged_extras)} *_merged cases not in Excel: "
               f"{[e['Unique ID (Folder_Name)'] for e in merged_extras]}")
 
-    # Drop physically-removed duplicates. The legacy training-case
-    # exclusion (EXCLUDE_SL_NOS) was retired 2026-05-14 — k-fold SAM3 routes
-    # each case to its held-out fold's adapter at inference, so no leakage
-    # even when the former training-only set is included. The constant
-    # itself is kept for paper-reproducibility.
+    # Drop physically-removed duplicates. There is no training-case
+    # exclusion: k-fold SAM3 routes each case to its held-out fold's
+    # adapter at inference, so cases that appear in the training pool
+    # are still scored leak-free.
     dataset = dataset[~dataset["Sl no"].isin(DUPLICATE_SL_NOS)]
     print(f"Dataset: {len(dataset)} cases "
           f"({n_total} in Excel, {n_total - n_exists} missing from disk, "
@@ -336,9 +329,9 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
             (case_dir / "metrics.json").write_text(
                 json.dumps(metrics_payload, indent=2, default=str))
 
-            # Record the result NOW — before any optional side-effect
-            # writes that could raise and otherwise tag this case as a
-            # crash. The on-disk metrics.json is the source of truth.
+            # Record the result before any optional side-effect writes
+            # that could raise and wrongly tag this case as a crash;
+            # metrics.json is already on disk at this point.
             # Mirror metrics.json's full payload (minus sl_no) so the
             # fresh-run per_case entry has the SAME schema as the
             # cache-hit path's entry — otherwise summary.json["per_case"]

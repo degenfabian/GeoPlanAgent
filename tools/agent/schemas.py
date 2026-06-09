@@ -155,10 +155,9 @@ class PDFInfo(BaseModel):
                     "'Dover District, Kent, UK | Dover, Kent, UK'). Downstream "
                     "lookup uses OS BoundaryLine and normalises common variants."
     )
-    # Fields for the dedicated locate stage (added 2026-04-24)
-    # These mirror things that downstream regex parsers currently extract
-    # from site_address / notes. Having the LLM populate them directly is
-    # more reliable than regex (handles paraphrasing, typos, mixed formats).
+    # Locate-stage fields. These mirror what downstream regex parsers
+    # used to pull out of site_address / notes; having the LLM populate
+    # them directly handles paraphrasing, typos and mixed formats.
 
     house_number_road_pairs: List[str] = Field(
         default_factory=list,
@@ -262,10 +261,9 @@ class PDFInfo(BaseModel):
 class BoundaryOutcome(BaseModel):
     """Structured output for the worker agent.
 
-    NOTE: rejection was removed from the schema 2026-05-14. The agent always
-    submits status="accepted" or status="district_lookup" for the OS
-    BoundaryLine district fallback. Refusing a case is no longer a
-    supported action — the pipeline always produces a polygon,
+    The agent always submits status="accepted", or status="district_lookup"
+    for the OS BoundaryLine district fallback. Refusing a case is not a
+    supported action: the pipeline always produces a polygon and
     downstream measures IoU on whatever was committed.
 
     Post-commit visual review is no longer the worker's responsibility.
