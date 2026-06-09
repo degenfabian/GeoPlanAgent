@@ -7,10 +7,15 @@ locate LOO ablation; production callers omit the kwarg for the cached default.
 from __future__ import annotations
 import json
 import math
+import os
 import time
 from functools import lru_cache
 from pathlib import Path
 from typing import List, Optional
+
+# Sub-agent temperature: defaults to 0 (production); GEOMAP_TEMPERATURE env
+# var overrides for the appendix temperature ablation.
+_TEMPERATURE = float(os.environ.get("GEOMAP_TEMPERATURE", "0"))
 
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, BinaryContent, ModelRetry, RunContext
@@ -639,7 +644,7 @@ def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
         output_type=LocatePick,
         retries=5,
         output_retries=5,
-        model_settings={"temperature": 0},
+        model_settings={"temperature": _TEMPERATURE},
         instructions=_build_locate_prompt(disabled_tools),
     )
 
@@ -868,6 +873,7 @@ def run_locate(
     prior_messages: Optional[list] = None,
     extra_terms: Optional[List[str]] = None,
     disabled_tools: frozenset[str] = frozenset(),
+    usage_sink: Optional[list] = None,
 ) -> tuple:
     """Run the locate sub-agent for one case; returns (LocatePick, all_messages).
 
@@ -875,6 +881,13 @@ def run_locate(
     feedback in `match_context`; the agent refines instead of starting over.
     `disabled_tools` drops tools from both the agent and its prompt (used by
     the locate LOO ablation).
+
+    `usage_sink`: optional list. If supplied, one dict per invocation is
+    appended:
+       {request_tokens, response_tokens, n_messages, generation_id}
+    The locate ablation harness doesn't pass it; the worker tool
+    (``tools.agent.tools.locate.propose_centers``) does, so per-case cost
+    telemetry survives in ``state.locate_calls``.
     """
     model = resolve_model(model_name)
     agent = make_locate_agent(disabled_tools)
@@ -1010,6 +1023,14 @@ def run_locate(
         print(f"  [locate] FAILED: {e!s:.200}")
         pick = _emergency_la_centroid_pick(
             pdf_info, reason=f"agent failed: {e!s:.60}")
+        # Record a zero-token entry so the audit script can still count
+        # the invocation attempt (and so n_calls is accurate).
+        if usage_sink is not None:
+            usage_sink.append({
+                "request_tokens": 0, "response_tokens": 0,
+                "n_messages": 0, "generation_id": None,
+                "error": f"{type(e).__name__}: {e!s:.120}",
+            })
         return pick, (prior_messages or [])
 
     _print_locate_trajectory(result)
@@ -1023,7 +1044,51 @@ def run_locate(
         all_msgs = list(result.all_messages())
     except Exception:
         all_msgs = prior_messages or []
+
+    # Telemetry capture (no-op unless caller passed a sink).
+    if usage_sink is not None:
+        try:
+            usage = result.usage()
+            req_tok = getattr(usage, "request_tokens", None) or 0
+            resp_tok = getattr(usage, "response_tokens", None) or 0
+        except Exception:
+            req_tok, resp_tok = 0, 0
+        usage_sink.append({
+            "request_tokens": int(req_tok),
+            "response_tokens": int(resp_tok),
+            "n_messages": len(all_msgs),
+            "generation_id": _extract_generation_id(result),
+        })
+
     return pick, all_msgs
+
+
+def _extract_generation_id(result) -> Optional[str]:
+    """Best-effort dig the OpenRouter generation id out of a pydantic-ai result.
+
+    pydantic-ai's surfaced attribute name has shifted across versions
+    (``vendor_id`` → ``provider_response_id`` → stored inside
+    ``vendor_details``). Try the known shapes and return whichever lands
+    first; return None if none do — the audit script tolerates missing ids
+    and falls back to token-rate cost estimation for those calls.
+    """
+    try:
+        msgs = list(result.all_messages())
+    except Exception:
+        return None
+    for msg in reversed(msgs):
+        for attr in ("vendor_id", "provider_response_id",
+                     "model_response_id", "response_id"):
+            v = getattr(msg, attr, None)
+            if isinstance(v, str) and v:
+                return v
+        vd = getattr(msg, "vendor_details", None)
+        if isinstance(vd, dict):
+            for k in ("id", "generation_id", "openrouter_id"):
+                v = vd.get(k)
+                if isinstance(v, str) and v:
+                    return v
+    return None
 
 
 def _print_locate_trajectory(result) -> None:

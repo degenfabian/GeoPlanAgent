@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plan2Map — Document-grounded geospatial boundary reconstruction</title>
+  <meta name="description" content="Plan2Map and GeoPlanAgent: a multimodal benchmark and tool-augmented agent for reconstructing geospatial boundaries from UK planning permission PDFs." />
+  <!-- Pre-publication: keep us out of search engines while colleagues are reviewing.
+       Remove this <meta> after the paper is public. -->
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ───────────────────────── TOP BAR ───────────────────────── -->
+<nav class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark">P2M</span>
+      <span class="brand-name">Plan2Map</span>
+    </a>
+    <ul class="navlinks">
+      <li><a href="#problem">Problem</a></li>
+      <li><a href="#pipeline">Pipeline</a></li>
+      <li><a href="#slide">Sliding window</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#cite">Cite</a></li>
+    </ul>
+    <a class="ghbtn" href="https://github.com/" target="_blank" rel="noopener">Code &rarr;</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- ───────────────────────── HERO ───────────────────────── -->
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">A benchmark &amp; reference system</div>
+    <h1 class="hero-title">
+      From a planning PDF<br/>
+      to a <span class="ink-warm">machine-readable</span> boundary.
+    </h1>
+    <p class="hero-sub">
+      <strong>Plan2Map</strong> is a multimodal benchmark for document-grounded geospatial
+      boundary reconstruction. <strong>GeoPlanAgent</strong> is our tool-augmented agent
+      that reads a UK Article&nbsp;4 planning document, grounds it in real geography with an
+      offline gazetteer, registers the planning map against Ordnance&nbsp;Survey basemap
+      tiles with MINIMA-LoFTR, segments the drawn boundary with a fine-tuned SAM&nbsp;3, and
+      projects the result to a WGS84 GeoJSON polygon.
+    </p>
+
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-val">0.736</div><div class="stat-key">mean IoU</div></div>
+      <div class="stat"><div class="stat-val">0.904</div><div class="stat-key">median IoU</div></div>
+      <div class="stat"><div class="stat-val">67.8<span class="pct">%</span></div><div class="stat-key">cases &ge; 0.8 IoU</div></div>
+      <div class="stat"><div class="stat-val">4.6<span class="pct">&thinsp;m</span></div><div class="stat-key">median centroid error</div></div>
+      <div class="stat"><div class="stat-val">$0.019</div><div class="stat-key">per document</div></div>
+      <div class="stat"><div class="stat-val">153<span class="pct">&thinsp;s</span></div><div class="stat-key">per case (M3 Max)</div></div>
+    </div>
+
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#pipeline">Read the walkthrough</a>
+      <a class="btn btn-ghost" href="#slide">Watch the matcher search &rarr;</a>
+    </div>
+
+    <figure class="hero-fig hero-strip">
+      <div class="strip-row">
+
+        <!-- 1. Input -->
+        <div class="step">
+          <div class="step-chip chip-slate">1 · Input</div>
+          <div class="step-thumb"><img src="assets/pipeline_input_map.png" alt="Planning PDF map plate" /></div>
+          <div class="step-h">Planning PDF</div>
+          <div class="step-d">Scanned site plan. The boundary is drawn by hand &mdash; no machine-readable coordinates anywhere.</div>
+        </div>
+
+        <div class="step-arrow" aria-hidden="true">&rarr;</div>
+
+        <!-- 2. Reader -->
+        <div class="step">
+          <div class="step-chip chip-blue">2 · Reader</div>
+          <div class="step-thumb step-thumb-code"><pre>{
+  site_address: "Market Pl, Loddon",
+  postcodes:    ["NR14 6EZ"],
+  scale:        2500,
+  map_pages:    [4],
+  area_group:   0,
+  ...
+}</pre></div>
+          <div class="step-h">VLM &rarr; <code>PDFInfo</code></div>
+          <div class="step-d">One Gemini&nbsp;3&nbsp;Flash call on the raw PDF binary. Returns a typed evidence record.</div>
+        </div>
+
+        <div class="step-arrow" aria-hidden="true">&rarr;</div>
+
+        <!-- 3. Locate -->
+        <div class="step">
+          <div class="step-chip chip-green">3 · Locate</div>
+          <div class="step-thumb step-thumb-svg">
+            <svg viewBox="0 0 160 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <!-- Stylised UK silhouette -->
+              <path d="M 38 12 L 50 8 L 60 14 L 70 10 L 80 18 L 95 16 L 105 24 L 118 22 L 128 32 L 130 48 L 122 58 L 118 70 L 124 82 L 112 96 L 96 100 L 78 94 L 64 100 L 50 92 L 42 78 L 36 64 L 32 50 L 30 38 L 32 26 Z"
+                    fill="#e3eee5" stroke="#236a4a" stroke-width="1.5" />
+              <!-- σ circle -->
+              <circle cx="98" cy="42" r="18" fill="none" stroke="#236a4a" stroke-width="1.2"
+                      stroke-dasharray="3 3" opacity="0.55" />
+              <!-- Pin -->
+              <circle cx="98" cy="42" r="5" fill="#236a4a" />
+              <circle cx="98" cy="42" r="2" fill="#fff" />
+              <text x="120" y="46" fill="#236a4a" font-size="10" font-weight="700"
+                    font-family="JetBrains Mono, monospace">&sigma;200m</text>
+            </svg>
+          </div>
+          <div class="step-h"><code>LocatePick</code> (lat, lon, &sigma;)</div>
+          <div class="step-d">A sub-agent queries the free OS Open Names gazetteer and clusters the hits to one point + radius.</div>
+        </div>
+
+        <div class="step-arrow" aria-hidden="true">&rarr;</div>
+
+        <!-- 4. Match -->
+        <div class="step">
+          <div class="step-chip chip-amber">4 · Match</div>
+          <div class="step-thumb">
+            <img src="assets/slider_data/tile_canvas.png" alt="OS tile canvas with match window" />
+            <svg class="thumb-overlay" viewBox="0 0 1792 2304" preserveAspectRatio="none">
+              <rect x="702" y="819" width="723" height="1022" fill="none" stroke="#236a4a" stroke-width="40" rx="8" />
+            </svg>
+          </div>
+          <div class="step-h">MINIMA-LoFTR sliding window</div>
+          <div class="step-d">~100 windows swept across OS Open Zoomstack tiles; RANSAC fits a 4-DOF similarity. <strong>810</strong> inliers on this case.</div>
+        </div>
+
+        <div class="step-arrow" aria-hidden="true">&rarr;</div>
+
+        <!-- 5. Segment -->
+        <div class="step">
+          <div class="step-chip chip-violet">5 · Segment</div>
+          <div class="step-thumb"><img src="assets/pipeline_sam_mask.png" alt="SAM 3 + LoRA mask" /></div>
+          <div class="step-h">SAM&nbsp;3 + LoRA mask</div>
+          <div class="step-d">Fine-tuned per fold on the phrase &ldquo;planning boundary&rdquo;. 0.912 mean pixel IoU vs hand-traced ground truth.</div>
+        </div>
+
+        <div class="step-arrow" aria-hidden="true">&rarr;</div>
+
+        <!-- 6. Project -->
+        <div class="step">
+          <div class="step-chip chip-slate">6 · Project</div>
+          <div class="step-thumb"><img src="assets/pipeline_final_overlay.png" alt="Final polygon on OSM" /></div>
+          <div class="step-h">WGS84 GeoJSON</div>
+          <div class="step-d">Mask contour pushed through the RANSAC affine + web-mercator inverse. Multi-area docs shapely-union per area_group.</div>
+        </div>
+
+      </div>
+      <figcaption>
+        End-to-end on case <code>12:00116:ART4</code> (Loddon Market Place):
+        ~95&nbsp;s on an Apple M3 Max laptop, <strong>0.94 IoU</strong> against the held-out
+        reference. Scroll for the interactive walk-through &mdash; the Worker stitches stages
+        3&ndash;6 together and may loop them per <code>area_group</code> on multi-area docs.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+
+<!-- ───────────────────────── PROBLEM ───────────────────────── -->
+<section id="problem" class="band band-paper">
+  <div class="wrap">
+    <div class="eyebrow eyebrow-rose">The problem</div>
+    <h2 class="h2">Planning records describe areas. They don&rsquo;t hand you a polygon.</h2>
+    <div class="two-col">
+      <div>
+        <p>
+          UK Article&nbsp;4 Directions, conservation areas, and tree-preservation orders all
+          define spatial restrictions. But the source document is rarely machine-readable: the
+          boundary lives across legal notice text, schedules, scanned map plates, map labels,
+          and hand-drawn annotations. To compare these records with other planning data, an
+          authority must reconstruct the boundary by hand &mdash; a slow, error-prone process
+          that doesn&rsquo;t scale across local-authority archives.
+        </p>
+        <p>
+          We frame this as <strong>document-grounded geospatial boundary reconstruction</strong>:
+          given only the source PDF, recover a valid WGS84 polygon. The reference geometry
+          is held out for scoring; systems may use declared public resources such as
+          gazetteers and basemaps. Unlike standard document-understanding tasks, the output
+          is an externally verifiable spatial object.
+        </p>
+      </div>
+      <div>
+        <div class="callout">
+          <div class="callout-title">Why current VLMs can&rsquo;t do this end-to-end</div>
+          <p>
+            Asked to read the PDF and emit GeoJSON in one pass, four frontier vision-language
+            models <em>(Gemini&nbsp;3.1&nbsp;Pro, GPT-5.5&nbsp;Pro, Claude&nbsp;Opus&nbsp;4.7,
+            Gemini&nbsp;3&nbsp;Flash)</em> all land in the same bottom band &mdash;
+            0.04&ndash;0.11 mean IoU, no case above 0.8, median centroid errors of
+            490&nbsp;m&ndash;1.1&nbsp;km.
+          </p>
+          <p class="callout-stat">
+            <strong>6&times;</strong> &mdash; the boost GeoPlanAgent gets over the best VLM
+            baseline on the same 40-case stratified subset.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ───────────────────── INTERACTIVE PIPELINE ───────────────────── -->
+<section id="pipeline" class="band band-cream">
+  <div class="wrap">
+    <div class="eyebrow eyebrow-blue">System overview</div>
+    <h2 class="h2">A six-stage decomposition you can step through.</h2>
+    <p class="lede">
+      Click any stage to light up its inputs, tools, and outputs. The arrows pulse to show
+      what flows where. We picked this decomposition because it lines up with the three places
+      where current multimodal systems break: reading dense PDFs, grounding text to real
+      geography, and pixel-accurate registration.
+    </p>
+
+    <div class="pipeline-wrap">
+      <!-- Diagram (SVG drawn by app.js) -->
+      <div id="pipelineDiagram" class="pipeline-diagram"></div>
+
+      <!-- Stage controls -->
+      <div class="stage-controls">
+        <button class="stage-btn is-active" data-stage="0">1 &middot; Reader</button>
+        <button class="stage-btn" data-stage="1">2 &middot; Locate</button>
+        <button class="stage-btn" data-stage="2">3 &middot; Sliding window</button>
+        <button class="stage-btn" data-stage="3">4 &middot; SAM 3 segmentation</button>
+        <button class="stage-btn" data-stage="4">5 &middot; Affine + commit_match</button>
+        <button class="stage-btn" data-stage="5">6 &middot; Submit BoundaryOutcome</button>
+        <button class="stage-btn stage-btn-ghost" id="autoplayBtn">&#9655; Autoplay</button>
+      </div>
+
+      <!-- Stage detail panel -->
+      <div id="stageDetail" class="stage-detail"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ───────────────────── STAGE WALKTHROUGH ───────────────────── -->
+
+<!-- Reader -->
+<section id="reader" class="band band-paper">
+  <div class="wrap">
+    <div class="eyebrow eyebrow-blue">Stage 1 &middot; Reader</div>
+    <h2 class="h2">One VLM call. One typed record of spatial evidence.</h2>
+    <div class="two-col">
+      <div>
+        <p>
+          The Reader is a single <a href="https://ai.pydantic.dev/" target="_blank" rel="noopener">pydantic-ai</a>
+          call on the raw PDF binary &mdash; no OCR pipeline; the VLM reads the PDF directly &mdash;
+          and returns a typed <code>PDFInfo</code> instance. It collects every spatial signal a
+          downstream geocoder might need:
+        </p>
+        <ul class="bullets">
+          <li>postcodes &amp; OS grid references</li>
+          <li>site address, house-number / road pairs</li>
+          <li>named places, parishes, administrative region</li>
+          <li>printed map scale</li>
+          <li>per-page classification (<code>match</code> vs <code>discard</code>) with <code>area_group</code> and boundary-clarity tier</li>
+          <li>an <code>is_district_wide</code> flag that short-circuits the whole pipeline through <code>lookup_district</code></li>
+        </ul>
+        <p>
+          The output schema is the contract for the rest of the pipeline. If the Reader sets
+          <code>area_group&nbsp;=&nbsp;1</code> on two map pages of the same site under different
+          Schedule&nbsp;2 classes, the worker knows to commit them as one boundary. If it lifts
+          a postcode from the council letterhead by mistake, the Locate sub-agent will be told
+          to pick from a different signal type on retry.
+        </p>
+      </div>
+      <div>
+        <pre class="codeblock"><span class="cm">// Reader output (abridged PDFInfo)</span>
+{
+  "site_address": "Land east of the Market Place,
+                   Loddon, Norfolk",
+  "postcodes": ["NR14 6EZ"],
+  "grid_refs": ["TM 363 988"],
+  "scale": 1250,
+  "is_district_wide": false,
+  "district_name": null,
+
+  "map_pages": [3],
+  "map_page_details": [
+    {"page": 1, "category": "discard",
+     "caption": "Notice text + applicant signature"},
+    {"page": 2, "category": "discard",
+     "caption": "Location pin / town overview"},
+    {"page": 3, "category": "match", "area_group": 0,
+     "boundary_clarity": "clear",
+     "detail_level": "close",
+     "caption": "OS-style site map with red boundary"}
+  ],
+
+  "likely_town_or_city": "Loddon",
+  "parish_names": ["Loddon"],
+  "admin_region": "South Norfolk",
+  "house_number_road_pairs": [],
+  "visible_map_labels": ["Market Place", "High Street",
+                         "St Mary's Church"],
+  "adjacency_hints": ["Market Place"]
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Locate sub-agent -->
+<section id="locate" class="band band-cream">
+  <div class="wrap">
+    <div class="eyebrow eyebrow-green">Stage 2 &middot; Locate sub-agent</div>
+    <h2 class="h2">A separate LLM picks one point in the UK, with a confidence radius.</h2>
+    <div class="two-col">
+      <div>
+        <p>
+          The Locate sub-agent is invoked through the Worker&rsquo;s <code>propose_centers</code>
+          tool. It sees the <code>PDFInfo</code> <em>and</em> the rendered map image. In
+          production it ships with one geocoder &mdash; <strong>OS Open Names</strong>, a free
+          UK gazetteer of villages, schools, churches, and named buildings. Five more
+          geocoders (postcode, grid&nbsp;ref, road, road-intersection, LA-name) are wired up
+          for paper-ablation leave-one-outs.
+        </p>
+        <p>
+          The agent runs 2&ndash;4 queries combining signals from the Reader with labels it
+          can <em>read directly off the map image</em>. It clusters the candidates and emits
+          one <code>LocatePick(lat, lon, sigma, confidence, source, evidence)</code>. Two or
+          more candidates agreeing within 500&nbsp;m collapse to a tight &sigma; &asymp;
+          200&nbsp;m; a single ambiguous pick gets 800&ndash;1500&nbsp;m.
+        </p>
+        <p>
+          When the Worker isn&rsquo;t happy with the resulting MINIMA match, it can re-invoke
+          <code>propose_centers(match_context="...")</code> with feedback. The sub-agent reads
+          that feedback alongside its prior reasoning and is told to pick from a
+          <em>different signal type</em> next time &mdash; a road-based pick instead of a
+          postcode that probably points to the council office, for example.
+        </p>
+      </div>
+      <div>
+        <div class="locate-cluster">
+          <div class="cluster-title">A real <code>LocatePick</code></div>
+          <div class="pick">
+            <div class="pick-row"><span>lat</span><b>52.5292</b></div>
+            <div class="pick-row"><span>lon</span><b>1.4839</b></div>
+            <div class="pick-row"><span>&sigma;</span><b>200&thinsp;m</b></div>
+            <div class="pick-row"><span>confidence</span><b>high</b></div>
+            <div class="pick-row"><span>source</span><b>place</b></div>
+            <div class="pick-row pick-row-evidence">
+              <span>evidence</span>
+              <span>
+                OS Open Names returns &ldquo;St Mary&rsquo;s Church, Loddon&rdquo; and
+                &ldquo;Market Place, Loddon&rdquo; within 240&nbsp;m of each other; cluster
+                centroid is the consensus pick.
+              </span>
+            </div>
+          </div>
+          <div class="cluster-note">
+            &sigma; is what the next stage uses to size its tile-canvas search radius. A tight
+            &sigma; means the MINIMA sweep is over a few hundred metres of tiles; a loose
+            &sigma; means a kilometre or more. The reward for picking the right gazetteer
+            shows up here as raw compute saved.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ───────────────────── SLIDING WINDOW ANIMATION ───────────────────── -->
+<section id="slide" class="band band-paper">
+  <div class="wrap">
+    <div class="eyebrow eyebrow-amber">Stage 3 &middot; Sliding-window matcher</div>
+    <h2 class="h2">MINIMA-LoFTR slides the planning map across OS tiles &mdash; up to 100 windows per zoom, per rotation.</h2>
+    <p class="lede">
+      The Locate sub-agent gives us a rough anchor, often with &sigma; &asymp; 200&nbsp;m. Planning
+      boundaries are parcel-sized, so we still need pixel-accurate registration. Press
+      <kbd>Play</kbd> to watch <strong>real MINIMA</strong> hunt for the right alignment &mdash;
+      every n_inliers below is the actual count from running MINIMA-LoFTR on case
+      <code>12:00116:ART4</code> (Loddon, Norfolk) at z17, captured by re-running the matcher
+      offline. The hardcoded right answer is window <strong>(702,&nbsp;819)</strong> with
+      <strong>810 inliers</strong>.
+    </p>
+
+    <div class="slider-wrap">
+      <div class="slider-stage">
+        <div class="slider-grid">
+
+          <div class="slider-panel">
+            <div class="slider-cap">Planning map (resized · case <code>12:00116:ART4</code>)</div>
+            <div id="slideMapWrap" class="slider-img">
+              <img id="slideMapImg" src="assets/slider_data/resized_map.png" alt="Planning map of Loddon, Norfolk, resized to match OS tile pixel scale" />
+              <svg id="slideMapOverlay" class="slider-overlay" preserveAspectRatio="none"></svg>
+            </div>
+          </div>
+
+          <div class="slider-panel">
+            <div class="slider-cap">OS Open Zoomstack tile canvas (z17, 7&times;9 tiles &asymp; 1&times;1.3 km)</div>
+            <div id="slideTilesWrap" class="slider-img">
+              <img id="slideTilesImg" src="assets/slider_data/tile_canvas.png" alt="OS Open Zoomstack tile canvas around Loddon" />
+              <svg id="slideTilesOverlay" class="slider-overlay" preserveAspectRatio="none"></svg>
+            </div>
+          </div>
+
+        </div>
+        <!-- Correspondence lines span both panels — drawn on a top-level overlay -->
+        <svg id="slideCorrOverlay" class="slider-corr-overlay"></svg>
+      </div>
+
+      <div class="slider-controls">
+        <button class="ctrl ctrl-primary" id="slidePlay">&#9655; Play</button>
+        <button class="ctrl" id="slideStep">Step &rarr;</button>
+        <button class="ctrl" id="slideReset">Reset</button>
+        <button class="ctrl" id="slideCorrToggle">Show correspondences</button>
+        <div class="ctrl-spacer"></div>
+        <div class="ctrl-readout">
+          <div><span>window</span><b id="rdWindow">0&thinsp;/&thinsp;0</b></div>
+          <div><span>zoom</span><b id="rdZoom">&mdash;</b></div>
+          <div><span>n_inliers</span><b id="rdInliers" class="rd-inl">0</b></div>
+          <div><span>recovered scale</span><b id="rdScale">&mdash;</b></div>
+          <div><span>best so far</span><b id="rdBest">0</b></div>
+        </div>
+      </div>
+
+      <div class="slider-tiers">
+        <span class="tier tier-toow">&lt;25 too weak</span>
+        <span class="tier tier-weak">25&ndash;49 weak</span>
+        <span class="tier tier-ok">50&ndash;99 ok</span>
+        <span class="tier tier-strong">&ge;100 strong</span>
+        <span class="tier-spacer"></span>
+        <span class="tier-note">The Worker prompt formalises these tiers exactly &mdash; no fuzzy thresholds.</span>
+      </div>
+
+      <div class="slider-explainer">
+        <div class="ex">
+          <div class="ex-h">Real numbers, not synthetic</div>
+          <p>
+            The 110 windows you can step through were captured by re-running
+            <code>sliding_window_position</code> offline on case <code>12:00116:ART4</code>
+            at the cached scale (0.437&times;) and zoom (z17). Each window's <code>n_inliers</code>
+            is the real RANSAC inlier count from MINIMA-LoFTR; the keypoint dots and matching
+            lines on &ldquo;Show correspondences&rdquo; are 80 actual MINIMA matches at the
+            best window, with inliers in green and outliers faded.
+          </p>
+        </div>
+        <div class="ex">
+          <div class="ex-h">Why a similarity, not a homography</div>
+          <p>
+            RANSAC fits a <strong>4-DOF similarity</strong> (rotation, uniform scale,
+            translation). We removed the 6-DOF fallback after a 25-case ablation showed it
+            nets to &minus;0.01 mean IoU. Map-to-map matching has no genuine perspective: the
+            only non-rigidities are scan shear and photocopy distortion, and the rescue cases
+            don&rsquo;t justify the cost in over-fits on the other 206.
+          </p>
+        </div>
+        <div class="ex">
+          <div class="ex-h">Diversity-bucketed top-K + composite rerank</div>
+          <p>
+            In production the matcher keeps the top candidate per <em>(center, zoom)</em>
+            bucket up to 5 globally, then re-ranks with a composite score: inlier&nbsp;count
+            &times; quadrant&nbsp;coverage / 4 (punishes one-corner matches), with an
+            optional road-name verifier on top. The visualisation here is the raw
+            inlier-count step before reranking.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ───────────────────── SAM3 SEGMENTATION ───────────────────── -->
+<section id="sam" class="band band-cream">
+  <div class="wrap">
+    <div class="eyebrow eyebrow-violet">Stage 4 &middot; SAM 3 boundary segmentation</div>
+    <h2 class="h2">SAM 3 + LoRA. One adapter per fold. No case ever judged by a model that saw it.</h2>
+
+    <div class="three-col">
+      <figure class="ill">
+        <img src="assets/pipeline_input_map.png" alt="Planning map with red drawn boundary" />
+        <figcaption>Planning map with drawn boundary &mdash; the input to SAM&nbsp;3</figcaption>
+      </figure>
+      <figure class="ill">
+        <img src="assets/pipeline_sam_mask.png" alt="SAM 3 LoRA semantic mask overlaid in green" />
+        <figcaption>SAM&nbsp;3 + LoRA semantic mask (green) on the map page</figcaption>
+      </figure>
+      <figure class="ill">
+        <img src="assets/pipeline_tile_match.png" alt="Predicted polygon projected onto OS tiles" />
+        <figcaption>Mask projected through the affine into OS tile pixels</figcaption>
+      </figure>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <p>
+          Boundaries in planning PDFs are visually wild &mdash; solid red lines, dashed black,
+          coloured hatch, sometimes a blob of yellow highlighter. Base SAM&nbsp;3 with a search
+          over five prompts hits 0.611 pixel IoU. With a 5-fold LoRA fine-tune on
+          <strong>&ldquo;planning boundary&rdquo;</strong>, we reach <strong>0.912</strong> mean
+          pixel IoU &mdash; +0.30.
+          </p>
+        <p>
+          Because the LoRA training pool overlaps with the benchmark, every evaluation case
+          is segmented by the adapter from the fold that <em>didn&rsquo;t</em> see it.
+          <code>tools/core/fold_routing.py</code> resolves case &rarr; fold by hashed lookup,
+          falling back to the lowest available fold for cases the training pool didn&rsquo;t
+          contain.
+        </p>
+      </div>
+      <div>
+        <table class="ablation-table">
+          <thead>
+            <tr>
+              <th>Boundary segmentation</th>
+              <th>N</th>
+              <th>Mean pixel IoU</th>
+              <th>&ge;0.8</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>VLM-direct (Gemini 3 Flash)</td><td>211</td><td>0.515</td><td>27.5%</td></tr>
+            <tr><td>VLM-direct (Gemini 3.1 Pro)</td><td>211</td><td>0.630</td><td>40.8%</td></tr>
+            <tr><td>Vanilla SAM 3 (best prompt)</td><td>211</td><td>0.611</td><td>51.2%</td></tr>
+            <tr class="rowbest"><td>SAM 3 + LoRA <em>(ours)</em></td><td>211</td><td><b>0.912</b></td><td><b>91.0%</b></td></tr>
+          </tbody>
+        </table>
+        <div class="tcap">5-fold out-of-fold pixel IoU on 211 hand-traced map masks.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ───────────────────── AFFINE PROJECTION ───────────────────── -->
+<section id="project" class="band band-paper">
+  <div class="wrap">
+    <div class="eyebrow eyebrow-slate">Stage 5 &middot; Affine projection</div>
+    <h2 class="h2">Mask pixels &rarr; tile pixels &rarr; lat/lon. Cookie-cutter geometry, fully traceable.</h2>
+    <div class="two-col">
+      <div>
+        <p>
+          RANSAC produced an affine <code>H</code> that maps planning-map pixels to OS tile
+          pixels. SAM&nbsp;3 produced a binary mask in planning-map pixels. We trace the mask&rsquo;s
+          external contour, transform each contour vertex through <code>H</code>, then use the
+          web-mercator inverse at the tile zoom level to convert each tile pixel to
+          (latitude, longitude). The output is a single GeoJSON <code>Feature</code> &mdash; a
+          <code>Polygon</code> for one contour, a <code>MultiPolygon</code> when SAM&nbsp;3 emits
+          disjoint masks.
+        </p>
+        <p>
+          For multi-area planning documents, the Worker runs the whole loop once per
+          <code>area_group</code> and the per-group polygons are <strong>shapely-unioned</strong>
+          into the final result.
+        </p>
+        <p>
+          Documents that cover an entire administrative area &mdash; borough-wide Article&nbsp;4
+          directions, conservation-area-wide planning &mdash; bypass visual positioning
+          entirely: <code>lookup_district</code> returns the OS BoundaryLine polygon directly,
+          the Worker submits <code>status="district_lookup"</code>, no MINIMA, no SAM&nbsp;3.
+        </p>
+      </div>
+      <div>
+        <figure class="ill ill-large">
+          <img src="assets/pipeline_final_overlay.png" alt="Predicted boundary vs ground truth on OpenStreetMap" />
+          <figcaption>Predicted polygon (dark fill) vs ground-truth boundary (outline) on
+            OpenStreetMap. The case-level metric is intersection-over-union of the two polygons
+            in WGS84.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ───────────────────── RESULTS ───────────────────── -->
+<section id="results" class="band band-cream">
+  <div class="wrap">
+    <div class="eyebrow eyebrow-amber">Results</div>
+    <h2 class="h2">Bimodal by design. The hard cases are pinpointable.</h2>
+    <p class="lede">
+      The IoU distribution is sharply bimodal: 50.5% of cases at IoU&nbsp;&ge;&nbsp;0.9 and
+      12.0% below 0.05, with only 12.5% sitting in the [0.3, 0.7] middle band. Most cases
+      either succeed cleanly or fail in a way that&rsquo;s diagnosable &mdash; usually a
+      localisation miss or a SAM&nbsp;3 boundary that landed on the wrong drawn line.
+    </p>
+
+    <div class="results-grid">
+      <figure class="result-fig">
+        <img src="assets/iou_histogram.png" alt="Distribution of per-case IoU" />
+        <figcaption>Per-case IoU distribution across all 208 cases.</figcaption>
+      </figure>
+      <figure class="result-fig">
+        <img src="assets/abl_cdfs.png" alt="CDF of IoU across ablation conditions" />
+        <figcaption>CDFs across ablation conditions (per-pixel vs end-to-end).</figcaption>
+      </figure>
+    </div>
+
+    <div class="bigtable">
+      <table class="bigtable-tbl">
+        <caption>Main results on Plan2Map (208 cases unless noted).</caption>
+        <thead>
+          <tr>
+            <th rowspan="2">Method</th>
+            <th rowspan="2">N</th>
+            <th rowspan="2">Valid<br/>(IoU&gt;0)</th>
+            <th colspan="4">GeoJSON quality</th>
+            <th colspan="2">Localisation</th>
+            <th colspan="2">Cost</th>
+          </tr>
+          <tr>
+            <th>Mean IoU</th><th>Median IoU</th><th>F1</th><th>IoU &ge; 0.8</th>
+            <th>Err (m)</th><th>Tight</th>
+            <th>$ / doc</th><th>Time (s)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="grp"><td colspan="11"><em>VLM end-to-end</em></td></tr>
+          <tr>
+            <td>Gemini 3.1 Pro</td>
+            <td>40 / 208</td><td>42.5%</td>
+            <td>0.112</td><td>0.000</td><td>0.160</td><td>0.0%</td>
+            <td>490</td><td>7.5%</td>
+            <td>0.106</td><td><b>75</b></td>
+          </tr>
+          <tr class="grp"><td colspan="11"><em>Ours</em></td></tr>
+          <tr class="rowbest">
+            <td>GeoPlanAgent</td>
+            <td>208</td><td>89.4%</td>
+            <td>0.736</td><td>0.904</td><td>0.788</td><td><b>67.8%</b></td>
+            <td><b>4.6</b></td><td><b>78.8%</b></td>
+            <td><b>0.019</b></td><td>153</td>
+          </tr>
+          <tr class="rowbest">
+            <td>&nbsp;&nbsp; + Critic</td>
+            <td>208</td><td><b>89.9%</b></td>
+            <td><b>0.740</b></td><td><b>0.906</b></td><td><b>0.792</b></td><td><b>67.8%</b></td>
+            <td><b>4.6</b></td><td><b>78.8%</b></td>
+            <td>0.021</td><td>155</td>
+          </tr>
+          <tr class="grp"><td colspan="11"><em>Variants</em></td></tr>
+          <tr>
+            <td>Collapsed Reader</td>
+            <td>208</td><td>88.9%</td>
+            <td>0.733</td><td>0.904</td><td>0.784</td><td>67.3%</td>
+            <td>4.7</td><td>78.4%</td>
+            <td>0.030</td><td>156</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="bigtable-foot">
+        Per-VLM breakdown of the 40-case stratified subset in the paper: all four models
+        (Gemini 3.1 Pro, GPT-5.5 Pro, Claude Opus 4.7, Gemini 3 Flash) land in
+        0.04&ndash;0.11 mean IoU with no case &ge; 0.8.
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ───────────────────── GALLERY ───────────────────── -->
+<section id="gallery" class="band band-paper">
+  <div class="wrap">
+    <div class="eyebrow eyebrow-violet">Gallery</div>
+    <h2 class="h2">Stage-by-stage on one real case.</h2>
+    <p class="lede">
+      Worked example: a UK Article&nbsp;4 Direction over Land east of the Market Place,
+      Loddon, Norfolk. Same case threaded through every stage of GeoPlanAgent.
+    </p>
+
+    <div class="gallery-grid">
+      <figure class="card">
+        <div class="card-eyebrow">1. Input</div>
+        <img src="assets/pipeline_input_map.png" alt="Planning map with red drawn boundary" />
+        <figcaption>
+          The original site map plate, extracted by the Reader as
+          <code>map_pages=[3]</code>, <code>area_group=0</code>, <code>boundary_clarity=clear</code>.
+        </figcaption>
+      </figure>
+
+      <figure class="card">
+        <div class="card-eyebrow">2. Match</div>
+        <img src="assets/pipeline_sliding_window.png" alt="Sliding-window match against OS tiles" />
+        <figcaption>
+          MINIMA sliding window finds the alignment between the resized planning map (left)
+          and the OS Open Zoomstack tile canvas (right). Red box = best match.
+        </figcaption>
+      </figure>
+
+      <figure class="card">
+        <div class="card-eyebrow">3. Segment</div>
+        <img src="assets/pipeline_sam_mask.png" alt="SAM 3 LoRA mask on the planning map" />
+        <figcaption>
+          SAM&nbsp;3 + LoRA at &ldquo;planning boundary&rdquo; emits a binary mask of the drawn
+          boundary in map-pixel coordinates.
+        </figcaption>
+      </figure>
+
+      <figure class="card">
+        <div class="card-eyebrow">4. Project</div>
+        <img src="assets/pipeline_worker_output.png" alt="Worker output: mask + projected polygon" />
+        <figcaption>
+          The mask&rsquo;s contour is passed through the RANSAC affine and the tile inverse,
+          giving a WGS84 polygon.
+        </figcaption>
+      </figure>
+
+      <figure class="card card-wide">
+        <div class="card-eyebrow">5. Score</div>
+        <img src="assets/pipeline_final_overlay.png" alt="Predicted polygon vs ground truth" />
+        <figcaption>
+          Final GeoJSON polygon (filled) vs ground truth (outline) on OpenStreetMap. The
+          benchmark scores per-case IoU on these two polygons in WGS84.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+
+<!-- ───────────────────── CITE ───────────────────── -->
+<section id="cite" class="band band-ink">
+  <div class="wrap">
+    <h2 class="h2-light">Cite, fork, and run it yourself.</h2>
+    <div class="cite-grid">
+      <div>
+        <div class="lk-grp">
+          <a class="lk" href="https://github.com/" target="_blank" rel="noopener">
+            <span class="lk-k">Code</span><span class="lk-v">Full pipeline, ablations, paper figures</span>
+          </a>
+          <a class="lk" href="#" target="_blank" rel="noopener">
+            <span class="lk-k">Paper</span><span class="lk-v">Plan2Map &mdash; ACL-style preprint (PDF)</span>
+          </a>
+          <a class="lk" href="#" target="_blank" rel="noopener">
+            <span class="lk-k">Dataset</span><span class="lk-v">208 cases &mdash; OGL v3 source documents + reference geometries</span>
+          </a>
+        </div>
+        <p class="cite-note">
+          GeoPlanAgent runs offline on a single Apple M3 Max laptop. The OS OpenData stack
+          (Zoomstack, BoundaryLine, Open Names, OpenMap Local, Code-Point Open) is all
+          OGL&nbsp;v3 with no API key. MINIMA-LoFTR weights and SAM&nbsp;3 base weights are
+          one-shot downloads.
+        </p>
+      </div>
+      <div>
+        <div class="bibwrap">
+          <div class="bib-h">BibTeX</div>
+<pre class="bib">@inproceedings{plan2map2026,
+  title  = {Plan2Map: A Multimodal Benchmark for
+            Document-Grounded Geospatial
+            Boundary Reconstruction},
+  author = {Anonymous},
+  year   = {2026},
+  booktitle = {Proceedings of ACL},
+}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <div>Plan2Map &middot; GeoPlanAgent</div>
+    <div class="foot-r">
+      Built with OS OpenData (Crown copyright, OGL v3) and MINIMA-LoFTR.
+    </div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -425,6 +425,23 @@ def collect_agent_stats(
         agent_stats["reader_request_tokens"] = reader_tokens.get("request", 0)
         agent_stats["reader_response_tokens"] = reader_tokens.get("response", 0)
 
+    # ── Locate sub-agent telemetry ────────────────────────────────────────
+    # Populated by ``tools.agent.tools.locate.propose_centers`` via the
+    # ``usage_sink=state.locate_calls`` kwarg threaded into ``run_locate``.
+    # On runs that pre-date the telemetry patch, ``state.locate_calls`` is
+    # absent / empty and these fields stay 0 — safe to compare with
+    # legacy ``metrics.json`` files.
+    locate_calls = getattr(state, "locate_calls", None) or []
+    locate_req = sum(int(c.get("request_tokens", 0) or 0) for c in locate_calls)
+    locate_resp = sum(int(c.get("response_tokens", 0) or 0) for c in locate_calls)
+    agent_stats["locate_n_calls"] = len(locate_calls)
+    agent_stats["locate_request_tokens"] = locate_req
+    agent_stats["locate_response_tokens"] = locate_resp
+    if locate_calls:
+        # Keep per-call records (small) so the audit script can query
+        # OpenRouter's /v1/generation?id=<gen_id> for exact billed cost.
+        agent_stats["locate_calls"] = locate_calls
+
     if state.last_output is not None:
         out = state.last_output
         agent_stats["outcome_status"] = out.status
@@ -441,13 +458,20 @@ def collect_agent_stats(
             agent_stats["worker_response_tokens"] = usage.response_tokens
             reader_total = sum(reader_tokens.values()) if reader_tokens else 0
             worker_total = (usage.request_tokens or 0) + (usage.response_tokens or 0)
+            # NB: totals now INCLUDE locate_* if telemetry is present.
+            # Old cached metrics.json files that pre-date this patch will
+            # have locate_* = 0, so their totals are reader + worker only
+            # (matching the paper's $/doc computation).
             agent_stats["request_tokens"] = (
                 (reader_tokens.get("request", 0) or 0)
-                + (usage.request_tokens or 0))
+                + (usage.request_tokens or 0)
+                + locate_req)
             agent_stats["response_tokens"] = (
                 (reader_tokens.get("response", 0) or 0)
-                + (usage.response_tokens or 0))
-            agent_stats["total_tokens"] = reader_total + worker_total
+                + (usage.response_tokens or 0)
+                + locate_resp)
+            agent_stats["total_tokens"] = (reader_total + worker_total
+                                            + locate_req + locate_resp)
         except Exception:
             pass
     return agent_stats

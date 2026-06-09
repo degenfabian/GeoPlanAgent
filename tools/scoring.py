@@ -22,7 +22,9 @@ def composite_window_score(
 
     Combines two factors:
 
-    * ``vanilla_metric``     — RANSAC inlier-confidence sum (the v13 metric).
+    * ``vanilla_metric``     — RANSAC inlier count from the MINIMA window
+      match (the per-window primary metric; earlier v13 builds used a
+      confidence-weighted sum here, switched to raw count later).
     * ``quadrant_coverage``  — 0..4 count of map quadrants with ≥1 inlier
       (spatial spread; punishes one-corner matches).
     """

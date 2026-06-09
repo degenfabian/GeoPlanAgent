@@ -138,6 +138,11 @@ def propose_centers(
         prior_messages=state.locate_message_history or None,
         extra_terms=extra_terms,
         disabled_tools=getattr(state, "locate_disabled_tools", frozenset()),
+        # Telemetry sink: one dict per invocation appended to state.locate_calls.
+        # Aggregated in runtime.collect_agent_stats so each metrics.json carries
+        # locate_request_tokens / locate_response_tokens / locate_n_calls /
+        # locate_generation_ids alongside the reader + worker stats.
+        usage_sink=state.locate_calls,
     )
     state.locate_message_history = new_history
 

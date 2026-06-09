@@ -78,6 +78,15 @@ class AgentState:
         # to run_locate as `prior_messages` so the locate sub-agent sees
         # its previous reasoning + tool calls + pick.
         self.locate_message_history: List[Any] = []
+        # Per-invocation token telemetry from the locate sub-agent. Each
+        # propose_centers call appends one dict:
+        #   {request_tokens: int, response_tokens: int,
+        #    n_messages: int, generation_id: Optional[str]}
+        # Collected here (rather than aggregated inline) so the audit
+        # script can attribute per-call costs to the right area_group
+        # if needed and so the cost telemetry stays additive across
+        # re-invocations within the same case.
+        self.locate_calls: List[Dict[str, Any]] = []
         # Each match attempt covers one area_group; commit_match references by id.
         self.match_attempts: Dict[int, Dict[str, Any]] = {}
         self._match_attempt_counter: int = 0

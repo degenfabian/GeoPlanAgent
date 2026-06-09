@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 from dotenv import load_dotenv
 from pydantic_ai import Agent, ModelRetry, RunContext
 
@@ -10,6 +12,11 @@ from tools.agent.schemas import BoundaryOutcome
 from tools.agent.state import AgentState
 
 load_dotenv()
+
+# Production runs at temperature 0 for reproducible tool selection,
+# schema-constrained outputs, and commit decisions. Overridable via the
+# GEOMAP_TEMPERATURE env var for the appendix temperature ablation.
+_TEMPERATURE = float(os.environ.get("GEOMAP_TEMPERATURE", "0"))
 
 
 def _strip_old_images(messages):
@@ -70,7 +77,7 @@ _agent = Agent(
     retries=5,
     output_retries=3,
     history_processors=[_strip_old_images],
-    model_settings={"temperature": 0},
+    model_settings={"temperature": _TEMPERATURE},
 )
 
 
