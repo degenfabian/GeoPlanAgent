@@ -12,12 +12,12 @@ do not mutate shared state in `results/` or `models/`.
 
 | File | Stage isolated | Purpose |
 |---|---|---|
-| [`vlm_segmentation.py`](vlm_segmentation.py) | segmentation | VLM-direct boundary segmentation (Gemini/Claude/etc. via OpenRouter). Pixel IoU vs `training/dataset/boundary_masks/`, same shape as `training/eval/eval_sam_kfold.py`. Goes into Table 6 (`tab:abl-finetune`). |
-| [`sam_base_prompt_search.py`](sam_base_prompt_search.py) | segmentation | Base SAM3 (no LoRA) with five candidate text prompts, scored against the 211 hand-annotated masks. Goes into Table 8 (`tab:abl-sam-prompt-search`). |
+| [`vlm_segmentation.py`](vlm_segmentation.py) | segmentation | VLM-direct boundary segmentation (Gemini/Claude/etc. via OpenRouter). Pixel IoU vs `training/dataset/boundary_masks/`, same shape as `training/eval/eval_sam_kfold.py`. Goes into the segmentation comparison (`tab:abl-finetune` / Figure 3). |
+| [`sam_base_prompt_search.py`](sam_base_prompt_search.py) | segmentation | Base SAM3 (no LoRA) with five candidate text prompts, scored against the 211 hand-annotated masks. Goes into the prompt-sweep appendix table. |
 | [`vlm_e2e_pdf_to_geojson.py`](vlm_e2e_pdf_to_geojson.py) | end-to-end | Single-shot VLM PDF → GeoJSON (strict pydantic schema). Goes into the VLM end-to-end rows of Table 1 (`tab:main-result`) + the four-model breakdown (`tab:vlm-models`). Subset built by `build_vlm_e2e_subset.py`. |
 | [`build_vlm_e2e_subset.py`](build_vlm_e2e_subset.py) | — | Builds the stratified 40-case subset for the VLM-direct ablation from `evaluation_data/new_updated.xlsx`. Deterministic (seed 42). |
-| [`locate_only_eval.py`](locate_only_eval.py) | locate | Calls the locate sub-agent once per case (no worker / MINIMA / SAM3 / commit / critic) and scores its pick against the nearest GT polygon-part centroid (haversine km). Use `--disabled-tools <tools>` for the LOO variants; `--dump-prompts` writes the seven prompt variants to disk without LLM calls. Goes into Table 7 (`tab:abl-locate`) along with `locate_vlm_direct.py`. |
-| [`locate_vlm_direct.py`](locate_vlm_direct.py) | locate | Single-shot VLM-direct geocoder (no tools) — sends the PDF and asks for one (lat, lon). Comparator row in Table 7. |
+| [`locate_only_eval.py`](locate_only_eval.py) | locate | Calls the locate sub-agent once per case (no worker / MINIMA / SAM3 / commit / critic) and scores its pick against the nearest GT polygon-part centroid (haversine km). Use `--disabled-tools <tools>` for the LOO variants; `--dump-prompts` writes the seven prompt variants to disk without LLM calls. Goes into the locate table (`tab:abl-locate`) along with `locate_vlm_direct.py`. |
+| [`locate_vlm_direct.py`](locate_vlm_direct.py) | locate | Single-shot VLM-direct geocoder (no tools) — sends the PDF and asks for one (lat, lon). Comparator row in the locate table. |
 | [`audit_locate_results.py`](audit_locate_results.py) | locate | Post-hoc audit of the LOO outputs: flags cases that fell back to the LA-centroid emergency or whose pick is > 5 km from every tool return. Drives [`locate_only_eval/AUDIT.md`](locate_only_eval/AUDIT.md). |
 | [`extract_pdf_info_cache.py`](extract_pdf_info_cache.py) | reader | Runs the reader phase once per case and caches the PDFInfo JSON to `cached_pdf_info_for_locate_ablations.json`. Lets every LOO variant reuse the same reader output, isolating locate-side variation from reader-side noise. |
 | [`repopulate_pdf_info_cache.py`](repopulate_pdf_info_cache.py) | reader | One-shot helper to re-extract the cache after a schema change. |
@@ -36,9 +36,8 @@ do not mutate shared state in `results/` or `models/`.
 | `reader_rerun_post_fix/` | `rerun_reader_only.py` | Per-case re-runs of just the reader phase after a fix. |
 | `prompts/` | `locate_only_eval.py --dump-prompts` and `vlm_*.py --dump-prompt` | Verbatim prompt snapshots committed to git so each ablation row in the paper has a reviewable source-of-truth prompt. |
 
-Driver scripts (`run_*.sh`, `rerun_*.sh`) and rolled-up logs
-(`*_master.log`) live alongside; they are run by hand and recorded
-in commit messages rather than tracked here.
+The `run_*.sh` driver scripts alongside are run by hand; they just
+loop the Python harnesses over configs.
 
 ## Conventions for adding a new ablation
 
