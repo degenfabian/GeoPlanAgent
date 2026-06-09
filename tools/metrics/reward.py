@@ -33,7 +33,7 @@ from typing import Any, Dict, List, Optional
 _SCALE_PATTERN_RE = re.compile(r"\b1\s*[:/]\s*\d")
 
 
-# ── Axis primitives ─────────────────────────────────────────────────────────
+# Axis primitives
 
 @dataclass
 class AxisResult:
@@ -56,7 +56,7 @@ class RewardResult:
         }
 
 
-# ── Axis implementations ────────────────────────────────────────────────────
+# Axis implementations
 
 def axis_scale_consistency(
     avg_scale: float, reader_scale_text: Optional[str] = None,
@@ -162,7 +162,7 @@ def axis_road_name_agreement(
                   "matched_roads": matched, "radius_m": radius_m})
 
 
-# ── Top-level entry point ───────────────────────────────────────────────────
+# Top-level entry point
 
 def compute_match_reward(
     *,

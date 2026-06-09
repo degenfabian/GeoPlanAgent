@@ -96,7 +96,7 @@ class AgentState:
         self.match_at_budget: int = 5
 
 
-# ── Page-of-interest helpers ─────────────────────────────────────────────
+# Page-of-interest helpers
 
 def primary_match_page(state: "AgentState") -> Optional[int]:
     """Highest-ranked map_page from the reader, or None."""

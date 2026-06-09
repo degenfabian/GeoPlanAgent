@@ -20,7 +20,7 @@ FIG_DIR = REPO / "figures"
 FIG_DIR.mkdir(exist_ok=True)
 
 
-# ── Load per-case data ────────────────────────────────────────────────────
+# Load per-case data
 
 
 def _read_iou_csv(path: Path) -> list[float]:
@@ -60,7 +60,7 @@ pipeline_errs = [c["positioning_error_m"] for c in benchmark["per_case"]
 pipeline_ious = [c.get("iou", 0.0) for c in benchmark["per_case"]]
 
 
-# ── Plot helpers ──────────────────────────────────────────────────────────
+# Plot helpers
 
 
 def _cdf(values: list[float]) -> tuple[np.ndarray, np.ndarray]:
@@ -92,7 +92,7 @@ C_LOCATE_VLM = "#c0142a"
 C_PIPELINE = "#1a7a3e"
 
 
-# ── Figure A: two-panel CDF ────────────────────────────────────────────────
+# Figure A: two-panel CDF
 
 plt.rcParams.update({"font.size": 9, "axes.labelsize": 9,
                      "xtick.labelsize": 8, "ytick.labelsize": 8,
@@ -147,7 +147,7 @@ plt.close(fig)
 print(f"Wrote {FIG_DIR / 'abl_cdfs.pdf'} (and .png)")
 
 
-# ── Figure D: IoU histogram (bimodal distribution) ─────────────────────────
+# Figure D: IoU histogram (bimodal distribution)
 
 fig, ax = plt.subplots(figsize=(3.4, 2.2))
 bins = np.linspace(0, 1, 21)  # 20 equal bins of width 0.05
@@ -191,7 +191,7 @@ plt.close(fig)
 print(f"Wrote {FIG_DIR / 'iou_histogram.pdf'} (and .png)")
 
 
-# ── Sanity checks ─────────────────────────────────────────────────────────
+# Sanity checks
 
 
 def _summary(name: str, values: list[float], unit: str = "") -> None:

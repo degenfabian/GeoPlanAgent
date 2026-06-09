@@ -18,7 +18,7 @@ from pydantic_ai import RunContext
 from tools.agent.state import _agent, AgentState, _dedup_check
 
 
-# ── Tool: lookup_district ────────────────────────────────────────────────
+# Tool: lookup_district
 
 @_agent.tool
 def lookup_district(

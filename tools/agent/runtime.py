@@ -22,7 +22,7 @@ from tools.agent.schemas import BoundaryOutcome, PDFInfo
 from tools.agent.state import AgentState
 
 
-# ── Phase 1: read the PDF ─────────────────────────────────────────────────
+# Phase 1: read the PDF
 
 def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict:
     """Reader → PDFInfo dict (+ _reader_tokens). Empty dict + 'error' on failure."""
@@ -72,7 +72,7 @@ def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict
         return empty
 
 
-# ── Phase 2 setup: pre-render map pages, build worker user prompt ──────────
+# Phase 2 setup: pre-render map pages, build worker user prompt
 
 def prepare_worker_state(
     pdf_path: str,
@@ -181,7 +181,7 @@ def prepare_worker_state(
     return state, user_parts
 
 
-# ── Folded ablation: no reader phase, worker fills PDFInfo itself ─────────
+# Folded ablation: no reader phase, worker fills PDFInfo itself
 
 def prepare_folded_state(
     pdf_path: str,
@@ -233,7 +233,7 @@ def prepare_folded_state(
     return state, user_parts
 
 
-# ── Phase 2: invoke the worker ────────────────────────────────────────────
+# Phase 2: invoke the worker
 
 def invoke_worker(
     state: AgentState, user_parts: list, model_name: str,
@@ -251,7 +251,7 @@ def invoke_worker(
     )
 
 
-# ── Phase 2 error path: dump partial state ────────────────────────────────
+# Phase 2 error path: dump partial state
 
 def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
                         case_dir: Optional[Path], verbose: bool) -> dict:
@@ -292,7 +292,7 @@ def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
     return partial_stats
 
 
-# ── Cleanup ───────────────────────────────────────────────────────────────
+# Cleanup
 
 def cleanup_temp_pages(state: AgentState) -> None:
     """Unlink every pre-rendered page tempfile."""
@@ -315,7 +315,7 @@ def cleanup_temp_pages(state: AgentState) -> None:
             pass
 
 
-# ── Message log + stats extraction ────────────────────────────────────────
+# Message log + stats extraction
 
 def extract_message_log(result: Any) -> Tuple[list, dict]:
     return extract_message_log_from_msgs(result.all_messages())
@@ -425,7 +425,7 @@ def collect_agent_stats(
         agent_stats["reader_request_tokens"] = reader_tokens.get("request", 0)
         agent_stats["reader_response_tokens"] = reader_tokens.get("response", 0)
 
-    # ── Locate sub-agent telemetry ────────────────────────────────────────
+    # Locate sub-agent telemetry
     # Populated by ``tools.agent.tools.locate.propose_centers`` via the
     # ``usage_sink=state.locate_calls`` kwarg threaded into ``run_locate``.
     # On runs that pre-date the telemetry patch, ``state.locate_calls`` is
@@ -477,7 +477,7 @@ def collect_agent_stats(
     return agent_stats
 
 
-# ── Return-dict assembly ──────────────────────────────────────────────────
+# Return-dict assembly
 
 def build_run_agent_return(
     state: AgentState,

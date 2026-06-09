@@ -50,7 +50,7 @@ def _axis_field(reward_dict: Optional[Dict[str, Any]], axis_name: str,
     return axis.get(field)
 
 
-# ── Per-page render + segmentation helpers ──────────────────────────────
+# Per-page render + segmentation helpers
 
 def _get_or_render_page(state: AgentState, page: int) -> Tuple[Optional[np.ndarray], Optional[str]]:
     """Return (map_img, map_crop_path) for `page`. Cache on first need."""
@@ -114,7 +114,7 @@ def _resolve_area_group(state: AgentState, page: int) -> int:
     return int(meta.get("area_group", 0))
 
 
-# ── match_at ─────────────────────────────────────────────────────────────
+# match_at
 
 @_agent.tool
 def match_at(
@@ -271,7 +271,7 @@ def match_at(
     }
 
 
-# ── Per-page MINIMA driver (called once per group inside match_at) ──────
+# Per-page MINIMA driver (called once per group inside match_at)
 
 def _match_single_page(state: AgentState, page: int, name: str,
                         lat: float, lon: float, sigma_m: float,
@@ -336,7 +336,7 @@ def _match_single_page(state: AgentState, page: int, name: str,
     }
 
 
-# ── Polygon union helper ────────────────────────────────────────────────
+# Polygon union helper
 
 def _union_geojsons(geojsons: List[dict]) -> Optional[dict]:
     """shapely-union per-group GeoJSON Features → one combined Feature.
@@ -382,7 +382,7 @@ def _union_geojsons(geojsons: List[dict]) -> Optional[dict]:
     return out
 
 
-# ── commit_match ─────────────────────────────────────────────────────────
+# commit_match
 
 def _recompute_current_result(state: AgentState) -> None:
     """Rebuild ``state.current_result`` from every entry in

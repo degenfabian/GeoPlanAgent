@@ -27,7 +27,7 @@ from tools.geo.coords import haversine_km
 REPO = Path(__file__).resolve().parent.parent.parent
 
 
-# ── Output schema ──────────────────────────────────────────────────────────
+# Output schema
 
 class LocatePick(BaseModel):
     """Final locate output: one center coord + uncertainty + provenance."""
@@ -62,7 +62,7 @@ class LocatePick(BaseModel):
     )
 
 
-# ── State (deps) ───────────────────────────────────────────────────────────
+# State (deps)
 
 class LocateState:
     """Per-case state passed to the locate agent's tools as deps."""
@@ -387,7 +387,7 @@ _TOOL_IMPLS: dict[str, callable] = {
 _LOCATE_TOOL_NAMES: frozenset[str] = frozenset(_TOOL_IMPLS.keys())
 
 
-# ── System-prompt builder ──────────────────────────────────────────────────
+# System-prompt builder
 #
 # The locate sub-agent system prompt is composed of named sections. The
 # tool list, the priority-signals list inside step 2, the CLUSTER step's
@@ -618,7 +618,7 @@ def _build_locate_prompt(disabled: frozenset[str] = frozenset()) -> str:
     return "\n".join(parts)
 
 
-# ── Factory ───────────────────────────────────────────────────────────────
+# Factory
 
 
 def make_locate_agent(disabled_tools=None) -> Agent:
@@ -746,7 +746,7 @@ def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
 _locate_agent = make_locate_agent()
 
 
-# ── Helpers for transient-error handling ──────────────────────────────────
+# Helpers for transient-error handling
 
 
 # When the rendered PNG exceeds this threshold, re-encode the same
@@ -830,7 +830,7 @@ def _is_transient_error(e: Exception) -> bool:
     return any(m in s for m in (x.lower() for x in _TRANSIENT_HTTP_MARKERS))
 
 
-# ── Entry point ───────────────────────────────────────────────────────────
+# Entry point
 
 def _emergency_la_centroid_pick(pdf_info: dict, reason: str) -> LocatePick:
     """Fallback LocatePick at the LA centroid when the agent loop fails."""

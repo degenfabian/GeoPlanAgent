@@ -150,7 +150,7 @@ def main() -> int:
     print(f"  on rotated:  {correct_rot}/{n_rot} ({100*correct_rot/max(1,n_rot):.1f}%)")
     print(f"  GT split:    upright={gt_upright}/{total}  rotated={gt_rotated}/{total}")
 
-    # ── cv_summary{_tta}.{json,csv} — paper-table source ─────────────────
+    # cv_summary{_tta}.{json,csv} — paper-table source
     # Reuses the same per-fold n_match counter that produced the printout
     # above, so the CSV and the printout can't disagree. Mean/std are over
     # the 5 folds (mean-of-fold-means, population std) — same convention

@@ -18,7 +18,7 @@ from typing import List, Literal, Optional
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 
-# ── Structured Outputs (Pydantic models enforced via pydantic-ai) ─────────
+# Structured Outputs (Pydantic models enforced via pydantic-ai)
 
 class MapPageMeta(BaseModel):
     """Per-page categorisation. One entry per page that contains any
@@ -155,7 +155,7 @@ class PDFInfo(BaseModel):
                     "'Dover District, Kent, UK | Dover, Kent, UK'). Downstream "
                     "lookup uses OS BoundaryLine and normalises common variants."
     )
-    # ── Fields for the dedicated locate stage (added 2026-04-24) ─────────
+    # Fields for the dedicated locate stage (added 2026-04-24)
     # These mirror things that downstream regex parsers currently extract
     # from site_address / notes. Having the LLM populate them directly is
     # more reliable than regex (handles paraphrasing, typos, mixed formats).

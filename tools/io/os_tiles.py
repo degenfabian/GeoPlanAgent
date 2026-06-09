@@ -28,7 +28,7 @@ BASE = Path(__file__).resolve().parent.parent.parent
 GPKG_PATH = BASE / "os_opendata" / "OS_Open_Zoomstack.gpkg"
 TILE_CACHE_DIR = BASE / "cache" / "os_opendata_tiles"
 
-# ── Coordinate transforms ────────────────────────────────────────────────────
+# Coordinate transforms
 
 def _lat_lon_to_tile(lat, lon, zoom):
     """WGS84 → (tx, ty) integer tile indices."""
@@ -51,7 +51,7 @@ def _tile_to_bounds_3857(zoom, tx, ty, tile_size=256):
     return x_min, y_min, x_max, y_max
 
 
-# ── GeoPackage reader (lazy, cached) ─────────────────────────────────────────
+# GeoPackage reader (lazy, cached)
 
 _gpkg_cache = {}
 
@@ -119,7 +119,7 @@ def _transform_27700_to_pixels(geom, bounds_3857, tile_size=256):
     return shapely_transform(_to_pixel, geom)
 
 
-# ── Tile renderer ─────────────────────────────────────────────────────────────
+# Tile renderer
 
 # UK planning map style colors (BGR for cv2)
 STYLE = {
@@ -173,28 +173,28 @@ def render_tile(zoom, tx, ty, gpkg_path=None, tile_size=256):
         pixel_geom = _transform_27700_to_pixels(geom, bounds_3857, tile_size)
         return pixel_geom
 
-    # ── Layer 1: Greenspaces ──────────────────────────────────────────────
+    # Layer 1: Greenspaces
     gdf = _read_layer("greenspace", bounds_27700, gpkg_path)
     if gdf is not None:
         for _, row in gdf.iterrows():
             pixel_geom = _geom_to_pixel_coords(row.geometry)
             _draw_polygon(canvas, pixel_geom, STYLE["greenspace"])
 
-    # ── Layer 2: Woodland ─────────────────────────────────────────────────
+    # Layer 2: Woodland
     gdf = _read_layer("woodland", bounds_27700, gpkg_path)
     if gdf is not None:
         for _, row in gdf.iterrows():
             pixel_geom = _geom_to_pixel_coords(row.geometry)
             _draw_polygon(canvas, pixel_geom, STYLE["woodland"])
 
-    # ── Layer 3: Water (surfacewater) ─────────────────────────────────────
+    # Layer 3: Water (surfacewater)
     gdf = _read_layer("surfacewater", bounds_27700, gpkg_path)
     if gdf is not None:
         for _, row in gdf.iterrows():
             pixel_geom = _geom_to_pixel_coords(row.geometry)
             _draw_polygon(canvas, pixel_geom, STYLE["water"])
 
-    # ── Layer 4: Water lines ──────────────────────────────────────────────
+    # Layer 4: Water lines
     gdf = _read_layer("waterlines", bounds_27700, gpkg_path)
     if gdf is not None:
         width = max(1, int(2 * scale))
@@ -202,7 +202,7 @@ def render_tile(zoom, tx, ty, gpkg_path=None, tile_size=256):
             pixel_geom = _geom_to_pixel_coords(row.geometry)
             _draw_line(canvas, pixel_geom, STYLE["water"], width)
 
-    # ── Layer 5: Buildings (local_buildings for detail) ───────────────────
+    # Layer 5: Buildings (local_buildings for detail)
     gdf = _read_layer("local_buildings", bounds_27700, gpkg_path)
     if gdf is not None:
         for _, row in gdf.iterrows():
@@ -210,7 +210,7 @@ def render_tile(zoom, tx, ty, gpkg_path=None, tile_size=256):
             _draw_polygon(canvas, pixel_geom, STYLE["building"],
                          outline=STYLE["building_outline"], outline_width=1)
 
-    # ── Layer 6: Roads (all three layers: local, regional, national) ─────
+    # Layer 6: Roads (all three layers: local, regional, national)
     # Combine all road layers with appropriate type labels
     import pandas as pd
     road_gdfs = []
@@ -259,7 +259,7 @@ def render_tile(zoom, tx, ty, gpkg_path=None, tile_size=256):
                 color = STYLE["road_fill"]
             _draw_line(canvas, pixel_geom, color, fill_w)
 
-    # ── Layer 7: Railways ─────────────────────────────────────────────────
+    # Layer 7: Railways
     gdf = _read_layer("rail", bounds_27700, gpkg_path)
     if gdf is not None:
         width = max(1, int(1.5 * scale))
@@ -270,7 +270,7 @@ def render_tile(zoom, tx, ty, gpkg_path=None, tile_size=256):
     return canvas
 
 
-# ── Schematic / planning-map-style renderer ─────────────────────────────────
+# Schematic / planning-map-style renderer
 #
 # Hypothesis: feature matching across modalities (planning-map ↔ colored OS
 # tile) is intrinsically hard. If we render the OS data as B&W line art that
@@ -525,7 +525,7 @@ def _draw_line(canvas, pixel_geom, color, width):
         cv2.polylines(canvas, [pts], False, color, width, lineType=cv2.LINE_AA)
 
 
-# ── Cached tile fetching ──────────────────────────────────────────────────────
+# Cached tile fetching
 
 def _tile_cache_path(zoom, tx, ty):
     return TILE_CACHE_DIR / f"{zoom}" / f"{tx}" / f"{ty}.png"

@@ -97,7 +97,7 @@ def main():
                                  num_workers=0, collate_fn=collate)
         cases = [e["case"] for e in val_ds.entries]
 
-        # ── Load fold's PEFT checkpoint ───────────────────────────────
+        # Load fold's PEFT checkpoint
         # We rebuild the base + PEFT wrapper per fold rather than re-using
         # a single PeftModel: PEFT's blessed loader does NOT touch the
         # frozen base model state, so the only correct way to ensure a
@@ -216,7 +216,7 @@ def main():
     summarise("Semantic-head IoU", sem_all)
     summarise("Instance-head IoU", inst_all)
 
-    # ── cv_summary.{json,csv} — paper-table source ────────────────────────
+    # cv_summary.{json,csv} — paper-table source
     metric_keys = ("sem_iou", "sem_precision", "sem_recall", "sem_f1",
                    "inst_iou", "inst_precision", "inst_recall", "inst_f1")
 
@@ -263,7 +263,7 @@ def main():
     print(f"\nWrote {MODELS_DIR/'cv_summary.json'}")
     print(f"Wrote {MODELS_DIR/'cv_summary.csv'}")
 
-    # ── per-case predictions ──────────────────────────────────────────────
+    # per-case predictions
     predictions = {
         r["case"]: {k: (float(r[k]) if k != "fold" else int(r[k]))
                     for k in ("fold", *metric_keys) if r.get(k) is not None}

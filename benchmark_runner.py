@@ -35,7 +35,7 @@ EXCLUDE_SL_NOS = {1, 3, 5, 6, 11, 13, 15, 21, 22, 23, 33, 34, 49, 54, 59,
 DUPLICATE_SL_NOS = {9, 68, 83, 232, 253}
 
 
-# ── Model Loading ────────────────────────────────────────────────────────────
+# Model Loading
 
 def load_models():
     """Load SAM3 fine-tuned model and MINIMA matcher."""
@@ -48,7 +48,7 @@ def load_models():
     return state
 
 
-# ── Visualization ────────────────────────────────────────────────────────────
+# Visualization
 
 def save_visualizations(result_dir, map_img, boundary_mask, predicted_geojson,
                          gt_geojson):
@@ -88,7 +88,7 @@ def save_visualizations(result_dir, map_img, boundary_mask, predicted_geojson,
                 pass
 
 
-# ── Main Runner ──────────────────────────────────────────────────────────────
+# Main Runner
 
 def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                   dpi=200, max_iterations=12,
@@ -430,7 +430,7 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                 "folder": folder_name, "sl_no": sl_no, "error": str(e)
             })
 
-    # ── Summary ─────────────────────────────────────────────────────────────
+    # Summary
     print(f"\n{'=' * 70}")
     print(f"RESULTS — {model_name}")
     print(f"{'=' * 70}")
@@ -509,7 +509,7 @@ def _compute_summary(results):
     return summary
 
 
-# ── CLI ──────────────────────────────────────────────────────────────────────
+# CLI
 
 if __name__ == "__main__":
     import argparse

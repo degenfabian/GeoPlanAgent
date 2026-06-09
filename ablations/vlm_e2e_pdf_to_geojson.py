@@ -69,7 +69,7 @@ DEFAULT_PROMPT_DUMP = (
 )
 
 
-# ── Output schema ──────────────────────────────────────────────────────────
+# Output schema
 # A strict GeoJSON Feature with a Polygon | MultiPolygon geometry. The
 # discriminator on ``geometry.type`` forces the VLM to commit to one
 # shape — invalid shapes fail pydantic validation, which becomes our
@@ -149,7 +149,7 @@ class GeoJSONFeature(BaseModel):
         return data
 
 
-# ── Prompt ─────────────────────────────────────────────────────────────────
+# Prompt
 
 VLM_E2E_PROMPT = """You are a UK planning permission boundary geocoder.
 Given a UK planning permission PDF, output a single GeoJSON Feature
@@ -224,7 +224,7 @@ even when the document is ambiguous; default to your most confident
 interpretation."""
 
 
-# ── Pydantic-ai agent ──────────────────────────────────────────────────────
+# Pydantic-ai agent
 
 def build_agent(temperature: Optional[float], resolved_model: str) -> Agent:
     # NativeOutput uses the provider's native JSON-schema response mode.
@@ -266,7 +266,7 @@ def build_agent(temperature: Optional[float], resolved_model: str) -> Agent:
     )
 
 
-# ── Helpers ────────────────────────────────────────────────────────────────
+# Helpers
 
 UK_LAT_RANGE = (49.8, 60.9)
 UK_LON_RANGE = (-8.2, 1.9)
@@ -319,7 +319,7 @@ def _model_label(model_name: str) -> str:
     return model_name.replace("/", "_").replace(":", "_")
 
 
-# ── Prompt dump (no LLM calls) ─────────────────────────────────────────────
+# Prompt dump (no LLM calls)
 
 def dump_prompt(out_path: Path) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -329,7 +329,7 @@ def dump_prompt(out_path: Path) -> None:
           f"{VLM_E2E_PROMPT.count(chr(10)) + 1} lines)")
 
 
-# ── CSV / per-case schema ──────────────────────────────────────────────────
+# CSV / per-case schema
 
 CSV_FIELDNAMES = [
     "case", "stratum",
@@ -342,7 +342,7 @@ CSV_FIELDNAMES = [
 ]
 
 
-# ── Main eval ──────────────────────────────────────────────────────────────
+# Main eval
 
 def load_subset(subset_path: Path) -> list[dict]:
     """Load subset_N.json → list of {folder, stratum, …}."""
@@ -690,7 +690,7 @@ def write_summary(rows: list[dict], out_dir: Path,
           flush=True)
 
 
-# ── CLI ────────────────────────────────────────────────────────────────────
+# CLI
 
 def main() -> int:
     parser = argparse.ArgumentParser(

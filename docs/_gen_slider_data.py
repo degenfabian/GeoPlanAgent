@@ -30,7 +30,7 @@ from tools.matching._core import (  # noqa: E402
     run_minima,
 )
 
-# ─── Case selection ─────────────────────────────────────────────────────────
+# Case selection
 # 12:00116:ART4 — the README's example case. Strong match (834 inliers,
 # IoU 0.94 in the v_post_fix benchmark), 7×9 tile canvas at z17.
 CASE = "12:00116:ART4"
@@ -43,7 +43,7 @@ if not _pdfs:
 PDF_PATH = _pdfs[0]
 OUT_DIR = ROOT / "docs" / "assets" / "slider_data"
 
-# ─── Load cached metadata ───────────────────────────────────────────────────
+# Load cached metadata
 metrics = json.loads((RESULTS_DIR / "metrics.json").read_text())
 pdf_info = json.loads((RESULTS_DIR / "pdf_info.json").read_text())
 tile_info_cached = json.loads((RESULTS_DIR / "tile_info.json").read_text())
@@ -59,7 +59,7 @@ print(f"  Cached scale       = {scale_factor_cached}")
 print(f"  Cached best window = ({mi['window'][0]}, {mi['window'][1]})")
 print(f"  Cached n_inliers   = {mi['n_inliers']}")
 
-# ─── Render the map page ────────────────────────────────────────────────────
+# Render the map page
 map_page = pdf_info["map_pages"][0]
 print(f"\nRendering page {map_page} of {PDF_PATH.name} at 200 DPI...")
 rendered = render_map_page(str(PDF_PATH), int(map_page), dpi=200, case_name=CASE)
@@ -68,12 +68,12 @@ if rendered is None:
 map_img, rot_info = rendered
 print(f"  raw map: {map_img.shape[1]}x{map_img.shape[0]} (rotation_applied={rot_info.get('applied')})")
 
-# ─── Load MINIMA ────────────────────────────────────────────────────────────
+# Load MINIMA
 print("\nLoading MINIMA-LoFTR weights...")
 matcher = load_minima()
 print("  loaded.")
 
-# ─── Fetch OS tile canvas ───────────────────────────────────────────────────
+# Fetch OS tile canvas
 nx, ny = tile_info_cached["nx"], tile_info_cached["ny"]
 print(f"\nFetching {nx}x{ny} OS Open Zoomstack tiles at z{zoom}...")
 tile_info = fetch_os_opendata_grid(anchor_lat, anchor_lon, zoom, nx, ny)
@@ -81,7 +81,7 @@ os_canvas = tile_info["image"]
 ch, cw = os_canvas.shape[:2]
 print(f"  canvas: {cw}x{ch}")
 
-# ─── Resize map to match the cached scale ───────────────────────────────────
+# Resize map to match the cached scale
 # We force the cached scale so the sliding-window grid matches what
 # actually ran in production for this case.
 new_w = int(round(map_img.shape[1] * scale_factor_cached))
@@ -97,7 +97,7 @@ if rh >= ch or rw >= cw:
         "pick a different case or zoom."
     )
 
-# ─── Compute the stride the same way sliding_window_position does ───────────
+# Compute the stride the same way sliding_window_position does
 WINDOW_STRIDE_TARGET = 100
 _area_available = max(1, (ch - rh) * (cw - rw))
 _target_stride = int(math.sqrt(_area_available / WINDOW_STRIDE_TARGET))
@@ -107,7 +107,7 @@ xs = list(range(0, cw - rw + 1, step_x))
 ys = list(range(0, ch - rh + 1, step_y))
 print(f"  stride: {step_x}x{step_y}  ⇒  {len(xs)}x{len(ys)} = {len(xs) * len(ys)} windows")
 
-# ─── Run sliding window MINIMA ──────────────────────────────────────────────
+# Run sliding window MINIMA
 windows: list[dict] = []
 best_n = 0
 best_meta: dict | None = None
@@ -154,7 +154,7 @@ for iy, wy in enumerate(ys):
             flush=True,
         )
 
-# ─── Save outputs ───────────────────────────────────────────────────────────
+# Save outputs
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Resized map: keep as BGR (cv2 writes BGR). The OS canvas is RGB (per

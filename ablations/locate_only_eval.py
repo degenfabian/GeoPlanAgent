@@ -80,7 +80,7 @@ DEFAULT_PROMPTS_DIR = REPO_ROOT / "ablations" / "prompts"
 DEFAULT_OUT_ROOT = REPO_ROOT / "ablations" / "locate_only_eval"
 
 
-# ── Helpers ────────────────────────────────────────────────────────────────
+# Helpers
 
 
 def _config_label(disabled: frozenset) -> str:
@@ -110,7 +110,7 @@ def _parse_disabled(s: Optional[str]) -> frozenset[str]:
 # nearest_part_err_km.
 
 
-# ── Prompt dump (no LLM calls) ─────────────────────────────────────────────
+# Prompt dump (no LLM calls)
 
 
 def dump_prompts(out_dir: Path) -> None:
@@ -190,7 +190,7 @@ def dump_prompts(out_dir: Path) -> None:
     print(f"  + diff view:  {diff_path.relative_to(REPO_ROOT)}")
 
 
-# ── Main eval ──────────────────────────────────────────────────────────────
+# Main eval
 
 
 def evaluate(args: argparse.Namespace) -> int:
@@ -398,7 +398,7 @@ def evaluate(args: argparse.Namespace) -> int:
     return 0
 
 
-# ── CLI ────────────────────────────────────────────────────────────────────
+# CLI
 
 
 def main() -> int:

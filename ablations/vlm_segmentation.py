@@ -46,7 +46,7 @@ sys.path.insert(0, str(REPO))
 from tools.agent._model import resolve_model
 
 
-# ── Output schema (enforced by pydantic-ai) ────────────────────────────────
+# Output schema (enforced by pydantic-ai)
 
 class Polygon(BaseModel):
     """One boundary polygon: ordered (y, x) integer vertices in [0, 1000] —
@@ -80,7 +80,7 @@ class VlmSegmentation(BaseModel):
     )
 
 
-# ── Default prompt (iterate via --prompt-file) ─────────────────────────────
+# Default prompt (iterate via --prompt-file)
 
 DEFAULT_PROMPT = """You are a UK planning-permission boundary segmentation model.
 
@@ -118,7 +118,7 @@ WHAT TO IGNORE
   specifically follows those features"""
 
 
-# ── Pydantic-ai agent ──────────────────────────────────────────────────────
+# Pydantic-ai agent
 
 def build_agent(instructions: str, temperature: float = 0.0) -> Agent:
     return Agent(
@@ -153,7 +153,7 @@ def build_agent(instructions: str, temperature: float = 0.0) -> Agent:
     )
 
 
-# ── Rasterization + IoU ────────────────────────────────────────────────────
+# Rasterization + IoU
 
 def rasterize_polygons(polys: List[Polygon], width: int, height: int) -> np.ndarray:
     """Render (y, x) [0, 1000] polygons to a binary HxW mask (uint8 0/1).
@@ -188,7 +188,7 @@ def iou_score(pred: np.ndarray, gt: np.ndarray) -> float:
     return float(inter / union) if union > 0 else 0.0
 
 
-# ── Aggregation (mirrors scripts/eval_sam_kfold_v2.py:summarise) ───────────
+# Aggregation (mirrors scripts/eval_sam_kfold_v2.py:summarise)
 
 def summarise(name: str, xs: List[float]) -> dict:
     n = len(xs)
@@ -263,7 +263,7 @@ def print_summary(s: dict) -> None:
     print(f"  >=0.90 = {s['ge_0.90']*100:.1f}%")
 
 
-# ── Main eval loop ─────────────────────────────────────────────────────────
+# Main eval loop
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -317,7 +317,7 @@ def main() -> None:
                          "case; do not call the API.")
     args = ap.parse_args()
 
-    # ── Load manifest + filter ──────────────────────────────────────────────
+    # Load manifest + filter
     # Build the manifest in-memory from `maps/*.png` + `fold_assignment.json`
     # using the same helper the training scripts use. We deliberately do
     # NOT persist a `manifest.json` on disk — it would just duplicate
@@ -353,7 +353,7 @@ def main() -> None:
     print(f"manifest: {len(manifest)} cases  "
           f"(fold={args.fold}, held_out_only={args.held_out_only})")
 
-    # ── Load prompt ─────────────────────────────────────────────────────────
+    # Load prompt
     if args.prompt_file:
         instructions = Path(args.prompt_file).read_text()
         print(f"prompt: loaded from {args.prompt_file} ({len(instructions)} chars)")
@@ -361,14 +361,14 @@ def main() -> None:
         instructions = DEFAULT_PROMPT
         print(f"prompt: built-in default ({len(instructions)} chars)")
 
-    # ── Output paths ────────────────────────────────────────────────────────
+    # Output paths
     out_dir = REPO / args.out_dir / args.model.replace("/", "_")
     out_dir.mkdir(parents=True, exist_ok=True)
     preds_dir = out_dir / "pred_masks"
     preds_dir.mkdir(exist_ok=True)
     print(f"output: {out_dir}")
 
-    # ── Dry-run preview ─────────────────────────────────────────────────────
+    # Dry-run preview
     if args.dry_run:
         e = manifest[0]
         img_path = dataset_dir / "maps" / e["filename"]
@@ -381,7 +381,7 @@ def main() -> None:
               f"output it per the schema.'")
         return
 
-    # ── Build agent ─────────────────────────────────────────────────────────
+    # Build agent
     agent = build_agent(instructions, temperature=args.temperature)
     model = resolve_model(args.model)
     print(f"agent: model={args.model}  temperature={args.temperature}  "
@@ -470,7 +470,7 @@ def main() -> None:
             print(f"  [{i+1:>3}] WARN {case}: gt shape {gt_bin.shape} "
                   f"!= original image (h,w)=({orig_h},{orig_w})")
 
-        # ── Call the VLM ────────────────────────────────────────────────────
+        # Call the VLM
         t_call = time.time()
         try:
             result = agent.run_sync(
@@ -511,7 +511,7 @@ def main() -> None:
             time.sleep(args.throttle_s)
             continue
 
-        # ── Rasterize + IoU ─────────────────────────────────────────────────
+        # Rasterize + IoU
         # Rasterize at the ORIGINAL map resolution — polygons are in
         # normalised [0,1000] coords, so this is independent of any
         # --max-image-dim resize applied above. Keeps IoU comparable
@@ -543,7 +543,7 @@ def main() -> None:
     elapsed = time.time() - t0
     print(f"\nTotal wall time: {elapsed:.0f}s")
 
-    # ── Aggregate (final) ──────────────────────────────────────────────────
+    # Aggregate (final)
     valid = [r["iou"] for r in rows if r["iou"] is not None]
     fails = sum(1 for r in rows if r["iou"] is None)
     print("\n" + "=" * 60)

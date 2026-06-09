@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 _ZOOMSTACK_WARNED = False
 
 
-# ─── Road-name verifier ────────────────────────────────────────────────────
+# Road-name verifier
 
 def _query_gpkg_road_names(lat, lon, radius_m=1500):
     """Query OS GeoPackage for road names near a point. Fully offline."""

@@ -68,7 +68,7 @@ from tools.core.fold_routing import (  # noqa: E402
 )
 
 
-# ── Shared constants ────────────────────────────────────────────────────────
+# Shared constants
 
 CLASS_DEGREES = [0, 90, 180, 270]  # class_idx → degrees CW to make upright
 
@@ -87,7 +87,7 @@ IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
 
-# ── Shared model + utilities ────────────────────────────────────────────────
+# Shared model + utilities
 
 def seed_everything(seed: int = 42) -> torch.Generator:
     random.seed(seed)

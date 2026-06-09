@@ -50,7 +50,7 @@ from peft import LoraConfig, get_peft_model
 from transformers import Sam3Model, Sam3Processor
 
 
-# ── Config ─────────────────────────────────────────────────────────────────
+# Config
 MODEL_ID = "facebook/sam3"
 DATASET_DIR = REPO / "training" / "dataset"
 OUTPUT_BASE = REPO / "models" / "sam3_lora"
@@ -135,7 +135,7 @@ def seed_everything(seed: int) -> torch.Generator:
     return g
 
 
-# ── Loss components ────────────────────────────────────────────────────────
+# Loss components
 
 def compute_signed_distance_map(mask_np):
     mask_bool = mask_np > 0.5
@@ -333,7 +333,7 @@ def instance_loss(pred_masks, pred_logits, presence_logits, gt_mask):
     return mask_l + cls_l + pres_l, best_idx
 
 
-# ── Dataset ────────────────────────────────────────────────────────────────
+# Dataset
 
 
 _FILENAME_SAFE_RE = re.compile(r"[^A-Za-z0-9._-]")
@@ -437,7 +437,7 @@ def collate(batch):
     return out, list(gts), list(dms)
 
 
-# ── Train one fold ─────────────────────────────────────────────────────────
+# Train one fold
 
 def _ensure_pred_mask_on_gt(pred, gt):
     if pred.shape[-2:] != gt.shape[-2:]:

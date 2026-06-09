@@ -59,7 +59,7 @@ def run_agent(
     else:
         return {"success": False, "error": "No SAM3 model loaded"}
 
-    # ── Phase 1: read the PDF (skipped in folded ablation) ───────────────
+    # Phase 1: read the PDF (skipped in folded ablation)
     if folded:
         # In folded mode pdf_info is populated by the worker's first tool
         # call (submit_pdf_info); start empty.
@@ -87,7 +87,7 @@ def run_agent(
                 if verbose:
                     print(f"  Warning: failed to flush pdf_info.json: {_e}")
 
-        # ── Phase 2 setup: state + worker user_parts ──────────────────────
+        # Phase 2 setup: state + worker user_parts
         state, user_parts = _rt.prepare_worker_state(
             pdf_path=pdf_path, sam3=sam3, minima_matcher=models_state["minima"],
             pdf_info=pdf_info, dpi=dpi, case_name=case_name, verbose=verbose,
@@ -100,7 +100,7 @@ def run_agent(
 
     from pydantic_ai.exceptions import UnexpectedModelBehavior, UsageLimitExceeded
 
-    # ── Phase 2: invoke the worker ────────────────────────────────────────
+    # Phase 2: invoke the worker
     result = None
     outcome: Optional[BoundaryOutcome] = None  # may stay None on exception path
     try:
@@ -138,7 +138,7 @@ def run_agent(
                   f"inliers={outcome.final_n_inliers} "
                   f"rotation_checked={outcome.rotation_checked}")
 
-    # ── Phase 3 (optional): critic loop ───────────────────────────────────
+    # Phase 3 (optional): critic loop
     # Snapshot the worker's first commit so critic-crash and critic-disabled
     # stay distinguishable downstream.
     critic_result: Optional[Dict[str, Any]] = None
@@ -201,7 +201,7 @@ def run_agent(
             if verbose:
                 print(f"  Warning: failed to save critic panels: {_e}")
 
-    # ── Cleanup, stats, soft quality gate, return ─────────────────────────
+    # Cleanup, stats, soft quality gate, return
     _rt.cleanup_temp_pages(state)
 
     # In folded mode pdf_info was populated by the worker's submit_pdf_info

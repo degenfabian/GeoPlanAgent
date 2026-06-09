@@ -66,7 +66,7 @@ DEFAULT_OUT_ROOT = REPO_ROOT / "ablations" / "locate_only_eval"
 DEFAULT_PROMPT_DUMP = REPO_ROOT / "ablations" / "prompts" / "vlm_direct_prompt.md"
 
 
-# ── Prompt ─────────────────────────────────────────────────────────────────
+# Prompt
 
 VLM_DIRECT_PROMPT = """You are a UK planning permission geocoder. You will be given a UK
 planning permission PDF. Your job: output the WGS84 (lat, lon) of the
@@ -146,7 +146,7 @@ def _model_label(model_name: str) -> str:
     return model_name.replace("/", "_").replace(":", "_")
 
 
-# ── Prompt dump (no LLM calls) ─────────────────────────────────────────────
+# Prompt dump (no LLM calls)
 
 
 def dump_prompt(out_path: Path) -> None:
@@ -157,7 +157,7 @@ def dump_prompt(out_path: Path) -> None:
           f"{VLM_DIRECT_PROMPT.count(chr(10)) + 1} lines)")
 
 
-# ── Main eval ──────────────────────────────────────────────────────────────
+# Main eval
 
 
 def evaluate(args: argparse.Namespace) -> int:
@@ -351,7 +351,7 @@ def evaluate(args: argparse.Namespace) -> int:
     return 0
 
 
-# ── CLI ────────────────────────────────────────────────────────────────────
+# CLI
 
 
 def main() -> int:

@@ -29,7 +29,7 @@ from pydantic_ai import RunContext
 from tools.agent.state import _agent, AgentState
 
 
-# ── propose_centers ─────────────────────────────────────────────────────────
+# propose_centers
 
 @_agent.tool
 def propose_centers(

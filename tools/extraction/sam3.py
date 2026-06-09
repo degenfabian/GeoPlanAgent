@@ -11,7 +11,7 @@ import numpy as np
 import torch
 
 
-# ── Model loading ───────────────────────────────────────────────────────────
+# Model loading
 
 # Production model: k-fold both-head LoRA, mean val_iou 0.908 ± 0.016 across
 # folds. If this directory is missing the loader falls through to base SAM3
@@ -281,7 +281,7 @@ def load_sam3_ft(kfold_dir=DEFAULT_KFOLD_DIR):
             "kind": "base"}
 
 
-# ── Semantic segmentation ───────────────────────────────────────────────────
+# Semantic segmentation
 
 def extract_boundary_sam3_semantic(map_crop_path, processor, model, device,
                                    query="planning boundary", bbox=None):

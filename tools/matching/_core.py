@@ -33,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 WINDOW_STRIDE_TARGET = 100
 
 
-# ── MINIMA model management ──────────────────────────────────────────────────
+# MINIMA model management
 
 def load_minima(base_dir=None):
     """Load MINIMA LoFTR matcher model."""
@@ -123,7 +123,7 @@ def estimate_affine(mkpts0, mkpts1, mconf=None, reproj_thresh=10.0):
     return H, n_inliers, score, inlier_mask
 
 
-# ── Scale and zoom utilities ─────────────────────────────────────────────────
+# Scale and zoom utilities
 
 from tools.geo.coords import (
     WEB_MERCATOR_C,
@@ -161,7 +161,7 @@ def resize_map_to_match_zoom(map_img, map_mpp, zoom, lat):
     return resized, scale_factor
 
 
-# ── Coordinate transform and GeoJSON ─────────────────────────────────────────
+# Coordinate transform and GeoJSON
 
 def affine_center_to_latlon(affine_H, map_h, map_w, tile_info):
     """Apply affine to map center, convert to lat/lon."""
@@ -206,7 +206,7 @@ def mask_to_geojson_affine(mask, affine_H, tile_info):
     return {"type": "Feature", "geometry": {"type": "MultiPolygon", "coordinates": all_polys}, "properties": {}}
 
 
-# ── Internal helpers ─────────────────────────────────────────────────────────
+# Internal helpers
 
 def _build_scale_H(affine_H, wx, wy, sf):
     """Build final affine: shift by window offset, scale for map resize.
@@ -229,7 +229,7 @@ def _build_scale_H(affine_H, wx, wy, sf):
 from tools.matching.road_verify import _verify_candidates_with_road_names
 
 
-# ── Main entry point ─────────────────────────────────────────────────────────
+# Main entry point
 
 def sliding_window_position(
     matcher,

@@ -14,7 +14,7 @@ from typing import Literal
 from tools.agent._model import resolve_model
 
 
-# ── Critic output schema ───────────────────────────────────────────────────
+# Critic output schema
 
 
 class CriticDirective(BaseModel):
@@ -184,7 +184,7 @@ def _ensure_agent(model_name: str) -> Agent:
     return _critic_agent
 
 
-# ── Panel-building helpers ─────────────────────────────────────────────────
+# Panel-building helpers
 
 
 def _label_strip(img: np.ndarray, text: str, height: int = 32) -> np.ndarray:
@@ -358,7 +358,7 @@ def _format_metrics_text(state: Any,
     return "\n".join(lines)
 
 
-# ── Critic single-call + rehand ────────────────────────────────────────────
+# Critic single-call + rehand
 
 
 def _run_critic_once(state: Any, model_name: str,
@@ -696,7 +696,7 @@ def _rehand_to_worker(state: Any,
         return worker_result, rehand_error
 
 
-# ── Outer loop ─────────────────────────────────────────────────────────────
+# Outer loop
 
 
 def _snapshot_geojson(state: Any) -> Optional[dict]:

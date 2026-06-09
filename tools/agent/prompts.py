@@ -324,7 +324,7 @@ def _build_folded_system_prompt() -> str:
     propagates automatically. The edit list at the bottom of this function
     documents exactly what was changed.
     """
-    # ── Slice the reader's FIELD GUIDANCE block (verbatim) ─────────────
+    # Slice the reader's FIELD GUIDANCE block (verbatim)
     _reader_split = READER_SYSTEM_PROMPT.split("FIELD GUIDANCE", 1)
     assert len(_reader_split) == 2, (
         "READER_SYSTEM_PROMPT no longer contains the 'FIELD GUIDANCE' "
@@ -332,7 +332,7 @@ def _build_folded_system_prompt() -> str:
     )
     reader_field_guidance = "FIELD GUIDANCE" + _reader_split[1].rstrip()
 
-    # ── Slice the worker's body (verbatim from "Your job:" onwards) ────
+    # Slice the worker's body (verbatim from "Your job:" onwards)
     _worker_split = WORKER_SYSTEM_PROMPT.split("Your job:", 1)
     assert len(_worker_split) == 2, (
         "WORKER_SYSTEM_PROMPT no longer starts its body with 'Your job:'; "
@@ -340,7 +340,7 @@ def _build_folded_system_prompt() -> str:
     )
     worker_body = "Your job:" + _worker_split[1].rstrip()
 
-    # ── Surgical edits: remove two-agent-pipeline assumptions ──────────
+    # Surgical edits: remove two-agent-pipeline assumptions
     # (old, new) pairs. Each `old` MUST appear exactly once in worker_body.
     edits = [
         (

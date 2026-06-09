@@ -46,7 +46,7 @@ SAM_KFOLD = REPO / "training/eval/predictions/sam_kfold.json"
 XLSX = REPO / "evaluation_data/new_updated.xlsx"
 
 
-# ── Load per-case IoU and join to classifications ─────────────────────────
+# Load per-case IoU and join to classifications
 
 
 def _load_iou_by_folder() -> dict[str, float]:
@@ -103,7 +103,7 @@ def _agg(df: pd.DataFrame, col: str, order: list[str]) -> list[tuple]:
     return rows
 
 
-# ── Plot helpers ──────────────────────────────────────────────────────────
+# Plot helpers
 
 
 # One distinct hue per classification panel; Total bar always grey.
@@ -218,7 +218,7 @@ def _draw_combined(panels: list[tuple], out_stem: str) -> None:
     print(f"Wrote {FIG_DIR / out_stem}.pdf (and .png)")
 
 
-# ── Main ────────────────────────────────────────────────────────────────────
+# Main
 
 
 plt.rcParams.update({"font.size": 9, "axes.labelsize": 9,

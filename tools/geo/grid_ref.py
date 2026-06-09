@@ -22,7 +22,7 @@ from pyproj import Transformer
 # Average meters per degree of latitude
 METERS_PER_DEGREE_LAT = 111111.0
 
-# ── OS Grid Reference → WGS84 ───────────────────────────────────────────────
+# OS Grid Reference → WGS84
 
 # OS National Grid: 2-letter prefix → (easting, northing) base in metres.
 # Standard formula: each letter is 0-24 (A-Z skipping I).
