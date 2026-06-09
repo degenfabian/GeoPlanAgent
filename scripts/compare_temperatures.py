@@ -66,34 +66,24 @@ def main() -> int:
     v1 = [t1[c] for c in paired]
     diffs = [b - a for a, b in zip(v0, v1)]
 
-    print(f"\n┌─ Temperature ablation, paired by case ─────────────────────┐")
-    print(f"│ {'Stat':<22s} {'T=0':>11s} {'T=1':>11s} {'Δ (T1-T0)':>11s} │")
-    print(f"│ {'mean IoU':<22s} {st.mean(v0):>11.4f} {st.mean(v1):>11.4f} {st.mean(diffs):>+11.4f} │")
-    print(f"│ {'median IoU':<22s} {st.median(v0):>11.4f} {st.median(v1):>11.4f} {st.median(diffs):>+11.4f} │")
-    print(f"│ {'≥0.5 fraction':<22s} "
-          f"{sum(1 for x in v0 if x >= 0.5)/len(v0)*100:>10.1f}% "
-          f"{sum(1 for x in v1 if x >= 0.5)/len(v1)*100:>10.1f}% "
-          f"{(sum(1 for x in v1 if x >= 0.5) - sum(1 for x in v0 if x >= 0.5))/len(v0)*100:>+10.1f}% │")
-    print(f"│ {'≥0.8 fraction':<22s} "
-          f"{sum(1 for x in v0 if x >= 0.8)/len(v0)*100:>10.1f}% "
-          f"{sum(1 for x in v1 if x >= 0.8)/len(v1)*100:>10.1f}% "
-          f"{(sum(1 for x in v1 if x >= 0.8) - sum(1 for x in v0 if x >= 0.8))/len(v0)*100:>+10.1f}% │")
-    print(f"│ {'max |Δ| per case':<22s}      {'-':>5s} {'-':>11s} {max(abs(d) for d in diffs):>+11.4f} │")
-    print(f"│ {'mean |Δ|':<22s}      {'-':>5s} {'-':>11s} {st.mean(abs(d) for d in diffs):>+11.4f} │")
+    frac = lambda vals, t: sum(1 for x in vals if x >= t) / len(vals) * 100
+    print(f"\n{'':<16s} {'T=0':>9s} {'T=1':>9s} {'delta':>9s}")
+    print(f"{'mean IoU':<16s} {st.mean(v0):>9.4f} {st.mean(v1):>9.4f} {st.mean(diffs):>+9.4f}")
+    print(f"{'median IoU':<16s} {st.median(v0):>9.4f} {st.median(v1):>9.4f} {st.median(diffs):>+9.4f}")
+    print(f"{'>=0.5':<16s} {frac(v0, 0.5):>8.1f}% {frac(v1, 0.5):>8.1f}% {frac(v1, 0.5) - frac(v0, 0.5):>+8.1f}%")
+    print(f"{'>=0.8':<16s} {frac(v0, 0.8):>8.1f}% {frac(v1, 0.8):>8.1f}% {frac(v1, 0.8) - frac(v0, 0.8):>+8.1f}%")
+    print(f"{'max |delta|':<16s} {max(abs(d) for d in diffs):>29.4f}")
+    print(f"{'mean |delta|':<16s} {st.mean(abs(d) for d in diffs):>29.4f}")
 
     p = wilcoxon(diffs)
-    if p is not None:
-        print(f"│ {'Wilcoxon p (two-sided)':<22s}      {'-':>5s} {'-':>11s} {p:>+11.4f} │")
-    else:
-        print(f"│ {'Wilcoxon p':<22s}      {'-':>5s} {'-':>11s} {'(scipy needed)':>11s} │")
-    print("└────────────────────────────────────────────────────────────┘")
+    print(f"{'Wilcoxon p':<16s} "
+          + (f"{p:>29.4f}" if p is not None else f"{'(needs scipy)':>29s}"))
 
-    # Print top per-case shifts so a glance tells you whether change is
-    # spread or concentrated on one or two cases
+    # is the change spread out or driven by a couple of cases?
     shifts = sorted(zip(paired, v0, v1, diffs), key=lambda r: abs(r[3]), reverse=True)
-    print(f"\nLargest per-case shifts (case, T=0, T=1, Δ):")
+    print("\nLargest per-case shifts:")
     for c, a, b, d in shifts[:8]:
-        print(f"  {c:<40s} {a:.4f} → {b:.4f}   Δ={d:+.4f}")
+        print(f"  {c:<40s} {a:.4f} -> {b:.4f}   ({d:+.4f})")
     return 0
 
 
