@@ -456,24 +456,18 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
 def _compute_summary(results):
     """Compute aggregate stats.
 
-    Headline metrics count "no polygon produced" cases as IoU=0 — this is
-    the production-honest number since the operator ends up with no result
-    for that case. Pre-2026-05-14 this counter was 'rejected_by_agent';
-    rejection has since been removed from the schema, so a no-polygon case
-    now reflects an upstream failure (empty SAM mask, projection failure,
-    validator exhaustion), not the agent giving up.
+    Headline metrics count every failure mode as IoU=0: cases that ran but
+    produced no polygon, and cases that crashed outright. Either way the
+    operator ends up with no result, so both score 0 in the denominator.
 
-    Pipeline crashes (entries with 'error' set) are excluded entirely.
-
-    The 'successful_only' block is the old behaviour (mean over cases that
-    produced a polygon). Useful for separating "did the produced polygons
-    score well" from "how often did we produce one at all".
+    The 'successful_only' block restricts to cases that produced a
+    polygon, which separates "did the produced polygons score well" from
+    "how often did we produce one at all".
     """
     crashes = [r for r in results if "error" in r]
     non_crashed = [r for r in results if "error" not in r]
-    # Production-honest: produced polygon → real IoU; no-polygon → 0.
     honest = [(r["iou"] if r.get("iou") is not None else 0.0)
-              for r in non_crashed]
+              for r in non_crashed] + [0.0] * len(crashes)
     no_polygon = [r for r in non_crashed if r.get("iou") is None]
     polygons = [r for r in non_crashed if r.get("iou") is not None]
 
@@ -485,7 +479,7 @@ def _compute_summary(results):
         "timestamp": datetime.now().isoformat(),
     }
 
-    if non_crashed:
+    if honest:
         def _stats(values):
             arr = np.array(values)
             return {

@@ -1,9 +1,12 @@
 """IoU and related spatial metrics for predicted vs. GT planning boundaries."""
 
 import json
+import logging
 from typing import Dict, Any, Optional
 from pathlib import Path
 from shapely.geometry import shape, Polygon, MultiPolygon
+
+log = logging.getLogger(__name__)
 
 
 def load_geojson(geojson_path: str) -> Optional[Dict[str, Any]]:
@@ -57,8 +60,8 @@ def calculate_iou(
 
         return float(intersection.area / union.area)
 
-    except Exception as e:
-        print(f"Error calculating IoU: {e}")
+    except Exception:
+        log.warning("IoU computation failed, scoring 0", exc_info=True)
         return 0.0
 
 

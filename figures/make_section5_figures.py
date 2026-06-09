@@ -54,7 +54,7 @@ locate_vlm = _read_locate_errs(
 
 # Full-pipeline centroid error + GeoJSON IoU (n=208)
 benchmark = json.loads(
-    (REPO / "results/benchmark_v_post_refactor/gemini-flash/summary.json").read_text())
+    (REPO / "results/benchmark_std_post_fix/gemini-flash/summary.json").read_text())
 pipeline_errs = [c["positioning_error_m"] for c in benchmark["per_case"]
                  if c.get("positioning_error_m") is not None]
 pipeline_ious = [c.get("iou", 0.0) for c in benchmark["per_case"]]
