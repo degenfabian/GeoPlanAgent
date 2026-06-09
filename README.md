@@ -73,7 +73,8 @@ GeoMapAgent_autonomous/
 │
 ├── ablations/                 # Paper ablation scripts (see ablations/README.md)
 ├── training/                  # SAM3 LoRA + rotation classifier (see training/README.md)
-├── scripts/                   # One-off utilities (e.g. monitor_run.py)
+├── scripts/                   # reproduce_paper.py, compute_costs.py, utilities
+├── tests/                     # pytest suite (fold routing)
 │
 ├── MINIMA/                    # LoFTR matcher (external, gitignored)
 ├── evaluation_data/           # Test dataset (PDFs + GT GeoJSON, gitignored)
@@ -332,16 +333,50 @@ Scoring formulas live in [`tools/metrics/reward.py`](tools/metrics/reward.py).
 | Full pipeline | 208 | cases with IoU > 0 | 89.4% |
 | Full pipeline | 208 | cases with IoU ≥ 0.8 | 67.8% |
 | Full pipeline | 208 | median centroid error | 4.6 m |
-| Full pipeline | 208 | mean cost / doc | $0.019 |
+| Full pipeline | 208 | Acc@0.1D | 78.8% |
+| Full pipeline | 208 | mean cost / doc | $0.043 |
 | Full pipeline | 208 | mean wall-clock / case | 155 s |
 | + Critic | 208 | mean IoU | 0.740 |
-| SAM3-LoRA only | 211 | mean pixel IoU (5-fold OOF) | 0.912 |
-| Rotation classifier (TTA) | 211 | 5-fold mean top-1 acc | 0.960 |
+| SAM3-LoRA only | 208 | mean pixel IoU (5-fold OOF, case-level) | 0.912 |
+| Rotation classifier (TTA) | 208 | 5-fold mean top-1 acc (case-level) | 0.981 |
+
+The full-pipeline rows are pre-critic (the paper's main row); the cost
+includes the locate sub-agent's LLM calls, which are roughly half of it
+(reader + worker alone come to about $0.020/doc — see
+`scripts/compute_costs.py`).
 
 VLM-direct PDF-to-GeoJSON on the strongest of four models
 (Gemini-3.1-Pro, 40-case stratified subset): mean IoU 0.112.
 See [`paper.tex`](paper.tex) for the full table and the four-model
 breakdown.
+
+## Reproducing the paper
+
+Every number in the paper is recomputed from the cached per-case
+artifacts under `results/`, `ablations/` and `training/eval/` — no API
+calls needed:
+
+```bash
+uv run scripts/reproduce_paper.py all          # everything
+uv run scripts/reproduce_paper.py table1 fig3  # or individual sections
+```
+
+Sections: `table1` `table2` `table4` `table9` `table11` `table12`
+`fig3` `fig4` `costs` `dataset`. Each line prints the recomputed value
+next to the value reported in the paper.
+
+To re-run the underlying experiments rather than re-aggregate them:
+
+| What | Command |
+|---|---|
+| Main benchmark (Table 1) | `uv run benchmark_runner.py --model gemini-flash --enable-critic --output-dir results/<name>` |
+| Collapsed-reader ablation | `uv run benchmark_runner.py --model gemini-flash --no-reader --output-dir ablations/no_reader` |
+| Locate-only ablations (Table 2) | `uv run ablations/locate_only_eval.py` / `ablations/locate_vlm_direct.py` |
+| VLM end-to-end baselines | `uv run ablations/vlm_e2e_pdf_to_geojson.py --model <alias>` |
+| Vanilla-SAM prompt sweep (Table 12) | `uv run ablations/sam_base_prompt_search.py` |
+| SAM3-LoRA / rotation k-fold eval (Tables 9, 11) | `uv run training/eval/eval_sam_kfold.py` / `eval_rotation_kfold.py [--tta]` |
+| Cost decomposition | `uv run scripts/compute_costs.py results/cost_audit_v1` |
+| Section-5 figures | `uv run figures/make_section5_figures.py` |
 
 ## External dependencies (offline)
 
@@ -363,3 +398,20 @@ breakdown.
 - ~10 GB disk: SAM3 base weights (~3 GB) + LoRA + rotation
   adapters (~830 MB) + OS OpenData (~5 GB) + tile cache (grows with
   use; ~200 GB at full benchmark scale, cached lazily)
+
+## Data
+
+`evaluation_data/` holds the 208-case Plan2Map benchmark: one folder
+per case containing the planning PDF and the ground-truth GeoJSON,
+plus the metadata spreadsheet (`new_updated.xlsx`). Ground-truth
+polygons originate from planning.data.gov.uk and the source PDFs from
+the issuing local planning authorities; see the paper's dataset
+section for the release. `boundary_annotations/` and
+`training/dataset/` hold the 211 hand-annotated map-page masks used to
+fine-tune and evaluate SAM3-LoRA.
+
+## License
+
+Code is MIT-licensed (see [LICENSE](LICENSE)). Ordnance Survey
+OpenData and planning.data.gov.uk ground truth are used under the
+[Open Government Licence v3](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
