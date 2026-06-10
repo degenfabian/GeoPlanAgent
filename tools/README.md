@@ -34,8 +34,8 @@ Top-level helpers:
 
 | File | Purpose |
 |---|---|
-| `scoring.py` | `composite_window_score(vanilla_metric, quadrant_coverage)` — single source of truth for the sliding-window reranker (`V × Q/4`). |
-| `verification_checks.py` | OS BoundaryLine LA-polygon resolver (`_resolve_la`, `_load_la_polygons`). Used by `lookup_district`, the locate sub-agent's `la_check`, and the emergency LA-centroid fallback. |
+| `matching/scoring.py` | `composite_window_score(vanilla_metric, quadrant_coverage)` — single source of truth for the sliding-window reranker (`V × Q/4`). |
+| `geo/boundary_line.py` | OS BoundaryLine LA-polygon resolver (`resolve_la`, `lookup_district_boundary`). Used by `lookup_district`, the locate sub-agent's `la_check`, and the emergency LA-centroid fallback. |
 | `build_oml_road_index.py` | One-off script to regenerate `oml_road_index.json` + `oml_road_geom_subset.json` from OS OpenMap Local zip files. Consumed by the locate sub-agent's `road` / `intersect` tools (off by default). |
 
 ## Worker tools

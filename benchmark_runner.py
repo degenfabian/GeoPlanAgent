@@ -84,32 +84,10 @@ def save_visualizations(result_dir, map_img, boundary_mask, predicted_geojson,
 
 # Main Runner
 
-def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
-                  dpi=200, max_iterations=12,
-                  dataset_path="evaluation_data/0_planning_dataset_list.xlsx",
-                  eval_dir="evaluation_data",
-                  only_cases=None, force=False,
-                  enable_critic=False, critic_max_iters=2,
-                  locate_model="google/gemini-3-flash-preview",
-                  locate_disabled_tools=frozenset(
-                      {"postcode", "grid_ref", "road", "intersect", "la_check"}
-                  ),
-                  folded=False):
-    """Run benchmark using the unified tool-calling agent.
-
-    Args:
-        model_name: OpenRouter model identifier (reader + worker).
-        output_dir: Base output directory for results.
-        max_cases: Limit number of cases to run.
-        start_from: Skip first N cases.
-        dpi: PDF rendering DPI.
-        max_iterations: Max agent turns per case.
-        only_cases: If set, only run these specific folder names.
-        locate_model: Model for the locate sub-agent (independent of
-            model_name). Default google/gemini-3-flash-preview.
-    """
-    from tools.agent import run_agent
-
+def _load_dataset(dataset_path, eval_dir, only_cases, start_from, max_cases):
+    """Build the case list: Excel rows that exist under eval_dir, plus
+    *_merged folders on disk that aren't in the spreadsheet, minus the
+    physically-removed duplicates; then apply the case/range filters."""
     dataset = pd.read_excel(dataset_path, sheet_name="0_planning_dataset_list")
     n_total = len(dataset)
 
@@ -158,270 +136,326 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
         if max_cases:
             dataset = dataset.head(max_cases)
 
+    return dataset
+
+
+def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
+              all_results, *, model_name, dpi, max_iterations, force,
+              enable_critic, critic_max_iters, locate_model,
+              locate_disabled_tools, folded):
+    """Run one case (or load it from cache), appending its summary row to
+    ``all_results``. Returns True only on a fatal error that should stop
+    the whole benchmark (invalid model ID)."""
+    from tools.agent import run_agent
+
+    folder_name = str(row["Unique ID (Folder_Name)"])
+    sl_no = int(row["Sl no"])
+    # The xlsx cells were authored on POSIX; PurePosixPath always uses
+    # '/' regardless of host OS, so the basename extraction works the
+    # same on Windows or Linux.
+    geojson_file = PurePosixPath(
+        str(row["geojson ID (for sanity check)"])).name
+
+    print(f"\n{'─' * 70}")
+    print(f"[{case_idx+1}/{n_cases}] Sl {sl_no}: {folder_name}")
+
+    folder_path = eval_path / folder_name
+    pdf_path = resolve_case_pdf(folder_path)
+    if pdf_path is None:
+        print("  SKIP: no PDF")
+        all_results.append({
+            "folder": folder_name, "sl_no": sl_no, "error": "no PDF"
+        })
+        return False
+    gt_files = list(folder_path.glob(geojson_file))
+    if not gt_files:
+        gt_files = list(folder_path.glob("*.geojson"))
+    gt_geojson = load_geojson(str(gt_files[0])) if gt_files else None
+
+    # Check for cached result
+    case_dir = output_path / folder_name
+    cached_metrics = case_dir / "metrics.json"
+    if cached_metrics.exists() and not force:
+        prev = json.loads(cached_metrics.read_text())
+        # Cache-mode mismatch detection: a cached entry that contains
+        # worker_first_iou came from a --enable-critic run. If the
+        # current invocation is in a different mode, the cached IoU
+        # is not comparable — force re-run to avoid silently mixing
+        # critic and no-critic results. district_lookup cases are
+        # mode-agnostic: the critic never runs on them, so their cached
+        # entry has no worker_first_iou in either mode and stays valid.
+        cached_had_critic = ("worker_first_iou" in prev)
+        is_district = ((prev.get("agent_stats") or {})
+                       .get("outcome_status") == "district_lookup")
+        if cached_had_critic != enable_critic and not is_district:
+            print(f"  [cache mode mismatch — re-running] "
+                  f"cached_had_critic={cached_had_critic} "
+                  f"current={enable_critic}")
+        else:
+            print(f"  [cached] IoU={prev.get('iou', 0):.3f}")
+            all_results.append({
+                "folder": folder_name, "sl_no": sl_no,
+                **{k: v for k, v in prev.items()
+                   if k not in ("sl_no",)}
+            })
+            return False
+
+    # ── Run the agent ──
+    try:
+        t0 = time.time()
+        result = run_agent(
+            pdf_path=str(pdf_path),
+            models_state=models_state,
+            model_name=model_name,
+            max_iterations=max_iterations,
+            dpi=dpi,
+            verbose=True,
+            case_name=folder_name,
+            case_dir=case_dir,
+            enable_critic=enable_critic,
+            critic_max_iters=critic_max_iters,
+            locate_model=locate_model,
+            locate_disabled_tools=locate_disabled_tools,
+            folded=folded,
+        )
+        dt = time.time() - t0
+
+        if not result.get("success"):
+            err = result.get("error", "agent failed")
+            print(f"  Error: {err}")
+            # Fail fast only on invalid model ID (don't waste 200 cases)
+            if "not a valid model ID" in str(err):
+                print("\n  FATAL: Invalid model ID, stopping benchmark.")
+                return True
+            # Still save what we can from failed cases
+            case_dir.mkdir(parents=True, exist_ok=True)
+            (case_dir / "metrics.json").write_text(json.dumps({
+                "sl_no": sl_no, "error": err,
+                "processing_time": dt,
+                "agent_stats": result.get("agent_stats", {}),
+            }, indent=2, default=str))
+            msg_log = result.get("message_log", [])
+            if msg_log:
+                (case_dir / "message_log.json").write_text(
+                    json.dumps(msg_log, indent=2, default=str))
+            # Save partial geojson if any
+            partial_gj = result.get("geojson")
+            if partial_gj:
+                (case_dir / "predicted.geojson").write_text(
+                    json.dumps(partial_gj, indent=2))
+            all_results.append({
+                "folder": folder_name, "sl_no": sl_no,
+                "error": err,
+                "processing_time": dt,
+            })
+            return False
+
+        geojson = result.get("geojson")
+        mi = result.get("match_info", {})
+
+        # Compute metrics on the (final) geojson — this is the
+        # critic_iou when the critic is enabled, or the worker_iou
+        # when it isn't.
+        metrics = {}
+        if gt_geojson and geojson:
+            metrics = calculate_spatial_metrics(gt_geojson, geojson)
+
+        iou = metrics.get("iou", 0)
+
+        # When critic was enabled, also compute the worker's
+        # first-commit IoU (no-critic baseline) and stash it.
+        worker_first_iou = None
+        worker_first_metrics = None
+        worker_first_gj = result.get("worker_first_geojson")
+        if worker_first_gj is not None and gt_geojson:
+            worker_first_metrics = calculate_spatial_metrics(
+                gt_geojson, worker_first_gj)
+            worker_first_iou = worker_first_metrics.get("iou")
+
+        if worker_first_iou is not None:
+            delta = (iou or 0) - (worker_first_iou or 0)
+            print(f"  IoU={iou:.3f} (critic) vs {worker_first_iou:.3f} "
+                  f"(worker_first) Δ={delta:+.3f}  "
+                  f"inliers={mi.get('n_inliers', 0)}  t={dt:.1f}s  "
+                  f"reason={result.get('agent_reason', '')[:60]}")
+        else:
+            print(f"  IoU={iou:.3f}  inliers={mi.get('n_inliers', 0)}  "
+                  f"t={dt:.1f}s  reason={result.get('agent_reason', '')[:60]}")
+
+        # Save results — cache everything for offline analysis.
+        # CRITICAL invariant: append to ``all_results`` immediately
+        # after writing metrics.json, BEFORE any side-effect writes
+        # (cv2.imwrite, np.save, save_visualizations, ...). Otherwise
+        # a failure in one of those calls causes the outer except
+        # block to record the case as a crash in this run's summary,
+        # while a subsequent cached re-run loads metrics.json and
+        # counts the case as a polygon — same on-disk data,
+        # different headline numbers.
+        case_dir.mkdir(parents=True, exist_ok=True)
+        if geojson:
+            (case_dir / "predicted.geojson").write_text(
+                json.dumps(geojson, indent=2)
+            )
+
+        # Core metrics (used for cache-hit detection on re-runs)
+        metrics_payload = {
+            "sl_no": sl_no,
+            "match_info": mi,
+            "processing_time": dt,
+            "agent_accepted": result.get("agent_accepted"),
+            "agent_reason": result.get("agent_reason"),
+            "agent_stats": result.get("agent_stats", {}),
+            **metrics,
+        }
+        # Paired no-critic / with-critic snapshot from a single run
+        # (only present when --enable-critic was set).
+        if worker_first_metrics is not None:
+            metrics_payload["worker_first_iou"] = worker_first_iou
+            metrics_payload["worker_first_metrics"] = worker_first_metrics
+        (case_dir / "metrics.json").write_text(
+            json.dumps(metrics_payload, indent=2, default=str))
+
+        # Record the result before any optional side-effect writes
+        # that could raise and wrongly tag this case as a crash;
+        # metrics.json is already on disk at this point.
+        # Mirror metrics.json's full payload (minus sl_no) so the
+        # fresh-run per_case entry has the SAME schema as the
+        # cache-hit path's entry — otherwise summary.json["per_case"]
+        # is sparse for fresh runs and complete for cached runs,
+        # which breaks downstream analyses that read e.g.
+        # ``worker_first_iou`` from per_case.
+        all_results.append({
+            "folder": folder_name, "sl_no": sl_no,
+            **{k: v for k, v in metrics_payload.items() if k != "sl_no"},
+        })
+
+        # Optional side-effect writes. Each is wrapped in its own
+        # try/except so one failed write (e.g. an unwritable mask
+        # because cv2 hit a corrupted page, or a viz timeout) does
+        # NOT discard the IoU we already recorded above.
+        def _safe(label, fn):
+            try:
+                fn()
+            except Exception as _e:
+                print(f"  warn: {label} failed: {str(_e)[:120]}")
+
+        if worker_first_gj is not None:
+            _safe("write predicted_worker_first.geojson", lambda:
+                (case_dir / "predicted_worker_first.geojson").write_text(
+                    json.dumps(worker_first_gj, indent=2)))
+
+        msg_log = result.get("message_log", [])
+        if msg_log:
+            _safe("write message_log.json", lambda:
+                (case_dir / "message_log.json").write_text(
+                    json.dumps(msg_log, indent=2, default=str)))
+
+        pdf_info = result.get("agent_stats", {}).get("pdf_info")
+        if pdf_info:
+            _safe("write pdf_info.json", lambda:
+                (case_dir / "pdf_info.json").write_text(
+                    json.dumps(pdf_info, indent=2, default=str)))
+
+        mask = result.get("mask")
+        if mask is not None:
+            _safe("write boundary_mask.png", lambda:
+                cv2.imwrite(str(case_dir / "boundary_mask.png"), mask))
+
+        affine_H = result.get("affine_H")
+        if affine_H is not None:
+            _safe("write affine_H.npy", lambda:
+                np.save(str(case_dir / "affine_H.npy"), affine_H))
+
+        tile_meta = result.get("tile_info_meta", {})
+        if tile_meta:
+            _safe("write tile_info.json", lambda:
+                (case_dir / "tile_info.json").write_text(
+                    json.dumps(tile_meta, indent=2, default=str)))
+
+        selected_overlay = result.get("selected_overlay")
+        if selected_overlay is not None:
+            _safe("write selected_boundary.png", lambda:
+                cv2.imwrite(str(case_dir / "selected_boundary.png"),
+                              selected_overlay))
+
+        # Visualization (with timeout on POSIX). The agent cleans up
+        # map_img before returning, so only comparison viz runs here.
+        # SIGALRM is Unix-only; on Windows we skip the timeout — viz
+        # is bounded by the typical work it does (comparison overlay
+        # on a 2k×2k canvas, single-digit seconds), so the lack of a
+        # hard cap is a small risk vs the cross-platform win.
+        has_alarm = hasattr(signal, "SIGALRM")
+        old_handler = None
+        if has_alarm:
+            old_handler = signal.signal(signal.SIGALRM,
+                lambda s, f: (_ for _ in ()).throw(TimeoutError))
+            signal.alarm(60)
+        try:
+            save_visualizations(
+                case_dir, None, None, geojson, gt_geojson
+            )
+        except TimeoutError:
+            print("  Viz timed out")
+        except Exception as _e:
+            print(f"  warn: viz failed: {str(_e)[:120]}")
+        finally:
+            if has_alarm:
+                signal.alarm(0)
+                signal.signal(signal.SIGALRM, old_handler)
+
+    except Exception as e:
+        traceback.print_exc()
+        all_results.append({
+            "folder": folder_name, "sl_no": sl_no, "error": str(e)
+        })
+    return False
+
+
+def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
+                  dpi=200, max_iterations=12,
+                  dataset_path="evaluation_data/0_planning_dataset_list.xlsx",
+                  eval_dir="evaluation_data",
+                  only_cases=None, force=False,
+                  enable_critic=False, critic_max_iters=2,
+                  locate_model="google/gemini-3-flash-preview",
+                  locate_disabled_tools=frozenset(
+                      {"postcode", "grid_ref", "road", "intersect", "la_check"}
+                  ),
+                  folded=False):
+    """Run benchmark using the unified tool-calling agent.
+
+    Args:
+        model_name: OpenRouter model identifier (reader + worker).
+        output_dir: Base output directory for results.
+        max_cases: Limit number of cases to run.
+        start_from: Skip first N cases.
+        dpi: PDF rendering DPI.
+        max_iterations: Max agent turns per case.
+        only_cases: If set, only run these specific folder names.
+        locate_model: Model for the locate sub-agent (independent of
+            model_name). Default google/gemini-3-flash-preview.
+    """
+    dataset = _load_dataset(dataset_path, eval_dir, only_cases, start_from,
+                            max_cases)
     print(f"Running: {len(dataset)} cases\n")
 
     models_state = load_models()
 
+    eval_path = Path(eval_dir)
     output_path = Path(output_dir) / model_name.replace("/", "_")
     all_results = []
 
     for case_idx, (_, row) in enumerate(dataset.iterrows()):
-        folder_name = str(row["Unique ID (Folder_Name)"])
-        sl_no = int(row["Sl no"])
-        # The xlsx cells were authored on POSIX; PurePosixPath always uses
-        # '/' regardless of host OS, so the basename extraction works the
-        # same on Windows or Linux.
-        geojson_file = PurePosixPath(
-            str(row["geojson ID (for sanity check)"])).name
+        fatal = _run_case(
+            row, case_idx, len(dataset), eval_path, output_path,
+            models_state, all_results,
+            model_name=model_name, dpi=dpi, max_iterations=max_iterations,
+            force=force, enable_critic=enable_critic,
+            critic_max_iters=critic_max_iters, locate_model=locate_model,
+            locate_disabled_tools=locate_disabled_tools, folded=folded)
+        if fatal:
+            break
 
-        print(f"\n{'─' * 70}")
-        print(f"[{case_idx+1}/{len(dataset)}] Sl {sl_no}: {folder_name}")
-
-        folder_path = eval_path / folder_name
-        pdf_path = resolve_case_pdf(folder_path)
-        if pdf_path is None:
-            print("  SKIP: no PDF")
-            all_results.append({
-                "folder": folder_name, "sl_no": sl_no, "error": "no PDF"
-            })
-            continue
-        gt_files = list(folder_path.glob(geojson_file))
-        if not gt_files:
-            gt_files = list(folder_path.glob("*.geojson"))
-        gt_geojson = load_geojson(str(gt_files[0])) if gt_files else None
-
-        # Check for cached result
-        case_dir = output_path / folder_name
-        cached_metrics = case_dir / "metrics.json"
-        if cached_metrics.exists() and not force:
-            prev = json.loads(cached_metrics.read_text())
-            # Cache-mode mismatch detection: a cached entry that contains
-            # worker_first_iou came from a --enable-critic run. If the
-            # current invocation is in a different mode, the cached IoU
-            # is not comparable — force re-run to avoid silently mixing
-            # critic and no-critic results.
-            cached_had_critic = ("worker_first_iou" in prev)
-            if cached_had_critic != enable_critic:
-                print(f"  [cache mode mismatch — re-running] "
-                      f"cached_had_critic={cached_had_critic} "
-                      f"current={enable_critic}")
-            else:
-                print(f"  [cached] IoU={prev.get('iou', 0):.3f}")
-                all_results.append({
-                    "folder": folder_name, "sl_no": sl_no,
-                    **{k: v for k, v in prev.items()
-                       if k not in ("sl_no",)}
-                })
-                continue
-
-        # ── Run the agent ──
-        try:
-            t0 = time.time()
-            result = run_agent(
-                pdf_path=str(pdf_path),
-                models_state=models_state,
-                model_name=model_name,
-                max_iterations=max_iterations,
-                dpi=dpi,
-                verbose=True,
-                case_name=folder_name,
-                case_dir=case_dir,
-                enable_critic=enable_critic,
-                critic_max_iters=critic_max_iters,
-                locate_model=locate_model,
-                locate_disabled_tools=locate_disabled_tools,
-                folded=folded,
-            )
-            dt = time.time() - t0
-
-            if not result.get("success"):
-                err = result.get("error", "agent failed")
-                print(f"  Error: {err}")
-                # Fail fast only on invalid model ID (don't waste 200 cases)
-                if "not a valid model ID" in str(err):
-                    print("\n  FATAL: Invalid model ID, stopping benchmark.")
-                    break
-                # Still save what we can from failed cases
-                case_dir.mkdir(parents=True, exist_ok=True)
-                (case_dir / "metrics.json").write_text(json.dumps({
-                    "sl_no": sl_no, "error": err,
-                    "processing_time": dt,
-                    "agent_stats": result.get("agent_stats", {}),
-                }, indent=2, default=str))
-                msg_log = result.get("message_log", [])
-                if msg_log:
-                    (case_dir / "message_log.json").write_text(
-                        json.dumps(msg_log, indent=2, default=str))
-                # Save partial geojson if any
-                partial_gj = result.get("geojson")
-                if partial_gj:
-                    (case_dir / "predicted.geojson").write_text(
-                        json.dumps(partial_gj, indent=2))
-                all_results.append({
-                    "folder": folder_name, "sl_no": sl_no,
-                    "error": err,
-                    "processing_time": dt,
-                })
-                continue
-
-            geojson = result.get("geojson")
-            mi = result.get("match_info", {})
-
-            # Compute metrics on the (final) geojson — this is the
-            # critic_iou when the critic is enabled, or the worker_iou
-            # when it isn't.
-            metrics = {}
-            if gt_geojson and geojson:
-                metrics = calculate_spatial_metrics(gt_geojson, geojson)
-
-            iou = metrics.get("iou", 0)
-
-            # When critic was enabled, also compute the worker's
-            # first-commit IoU (no-critic baseline) and stash it.
-            worker_first_iou = None
-            worker_first_metrics = None
-            worker_first_gj = result.get("worker_first_geojson")
-            if worker_first_gj is not None and gt_geojson:
-                worker_first_metrics = calculate_spatial_metrics(
-                    gt_geojson, worker_first_gj)
-                worker_first_iou = worker_first_metrics.get("iou")
-
-            if worker_first_iou is not None:
-                delta = (iou or 0) - (worker_first_iou or 0)
-                print(f"  IoU={iou:.3f} (critic) vs {worker_first_iou:.3f} "
-                      f"(worker_first) Δ={delta:+.3f}  "
-                      f"inliers={mi.get('n_inliers', 0)}  t={dt:.1f}s  "
-                      f"reason={result.get('agent_reason', '')[:60]}")
-            else:
-                print(f"  IoU={iou:.3f}  inliers={mi.get('n_inliers', 0)}  "
-                      f"t={dt:.1f}s  reason={result.get('agent_reason', '')[:60]}")
-
-            # Save results — cache everything for offline analysis.
-            # CRITICAL invariant: append to ``all_results`` immediately
-            # after writing metrics.json, BEFORE any side-effect writes
-            # (cv2.imwrite, np.save, save_visualizations, ...). Otherwise
-            # a failure in one of those calls causes the outer except
-            # block to record the case as a crash in this run's summary,
-            # while a subsequent cached re-run loads metrics.json and
-            # counts the case as a polygon — same on-disk data,
-            # different headline numbers.
-            case_dir.mkdir(parents=True, exist_ok=True)
-            if geojson:
-                (case_dir / "predicted.geojson").write_text(
-                    json.dumps(geojson, indent=2)
-                )
-
-            # Core metrics (used for cache-hit detection on re-runs)
-            metrics_payload = {
-                "sl_no": sl_no,
-                "match_info": mi,
-                "processing_time": dt,
-                "agent_accepted": result.get("agent_accepted"),
-                "agent_reason": result.get("agent_reason"),
-                "agent_stats": result.get("agent_stats", {}),
-                **metrics,
-            }
-            # Paired no-critic / with-critic snapshot from a single run
-            # (only present when --enable-critic was set).
-            if worker_first_metrics is not None:
-                metrics_payload["worker_first_iou"] = worker_first_iou
-                metrics_payload["worker_first_metrics"] = worker_first_metrics
-            (case_dir / "metrics.json").write_text(
-                json.dumps(metrics_payload, indent=2, default=str))
-
-            # Record the result before any optional side-effect writes
-            # that could raise and wrongly tag this case as a crash;
-            # metrics.json is already on disk at this point.
-            # Mirror metrics.json's full payload (minus sl_no) so the
-            # fresh-run per_case entry has the SAME schema as the
-            # cache-hit path's entry — otherwise summary.json["per_case"]
-            # is sparse for fresh runs and complete for cached runs,
-            # which breaks downstream analyses that read e.g.
-            # ``worker_first_iou`` from per_case.
-            all_results.append({
-                "folder": folder_name, "sl_no": sl_no,
-                **{k: v for k, v in metrics_payload.items() if k != "sl_no"},
-            })
-
-            # Optional side-effect writes. Each is wrapped in its own
-            # try/except so one failed write (e.g. an unwritable mask
-            # because cv2 hit a corrupted page, or a viz timeout) does
-            # NOT discard the IoU we already recorded above.
-            def _safe(label, fn):
-                try:
-                    fn()
-                except Exception as _e:
-                    print(f"  warn: {label} failed: {str(_e)[:120]}")
-
-            if worker_first_gj is not None:
-                _safe("write predicted_worker_first.geojson", lambda:
-                    (case_dir / "predicted_worker_first.geojson").write_text(
-                        json.dumps(worker_first_gj, indent=2)))
-
-            msg_log = result.get("message_log", [])
-            if msg_log:
-                _safe("write message_log.json", lambda:
-                    (case_dir / "message_log.json").write_text(
-                        json.dumps(msg_log, indent=2, default=str)))
-
-            pdf_info = result.get("agent_stats", {}).get("pdf_info")
-            if pdf_info:
-                _safe("write pdf_info.json", lambda:
-                    (case_dir / "pdf_info.json").write_text(
-                        json.dumps(pdf_info, indent=2, default=str)))
-
-            mask = result.get("mask")
-            if mask is not None:
-                _safe("write boundary_mask.png", lambda:
-                    cv2.imwrite(str(case_dir / "boundary_mask.png"), mask))
-
-            affine_H = result.get("affine_H")
-            if affine_H is not None:
-                _safe("write affine_H.npy", lambda:
-                    np.save(str(case_dir / "affine_H.npy"), affine_H))
-
-            tile_meta = result.get("tile_info_meta", {})
-            if tile_meta:
-                _safe("write tile_info.json", lambda:
-                    (case_dir / "tile_info.json").write_text(
-                        json.dumps(tile_meta, indent=2, default=str)))
-
-            selected_overlay = result.get("selected_overlay")
-            if selected_overlay is not None:
-                _safe("write selected_boundary.png", lambda:
-                    cv2.imwrite(str(case_dir / "selected_boundary.png"),
-                                  selected_overlay))
-
-            # Visualization (with timeout on POSIX). The agent cleans up
-            # map_img before returning, so only comparison viz runs here.
-            # SIGALRM is Unix-only; on Windows we skip the timeout — viz
-            # is bounded by the typical work it does (comparison overlay
-            # on a 2k×2k canvas, single-digit seconds), so the lack of a
-            # hard cap is a small risk vs the cross-platform win.
-            has_alarm = hasattr(signal, "SIGALRM")
-            old_handler = None
-            if has_alarm:
-                old_handler = signal.signal(signal.SIGALRM,
-                    lambda s, f: (_ for _ in ()).throw(TimeoutError))
-                signal.alarm(60)
-            try:
-                save_visualizations(
-                    case_dir, None, None, geojson, gt_geojson
-                )
-            except TimeoutError:
-                print("  Viz timed out")
-            except Exception as _e:
-                print(f"  warn: viz failed: {str(_e)[:120]}")
-            finally:
-                if has_alarm:
-                    signal.alarm(0)
-                    signal.signal(signal.SIGALRM, old_handler)
-
-        except Exception as e:
-            traceback.print_exc()
-            all_results.append({
-                "folder": folder_name, "sl_no": sl_no, "error": str(e)
-            })
 
     # Summary
     print(f"\n{'=' * 70}")

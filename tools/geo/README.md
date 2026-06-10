@@ -23,7 +23,7 @@ they exist for the locate-LOO ablation in
 `benchmark_runner.py --locate-disabled-tools "..."`. The same modules
 are also imported directly by the worker tool `lookup_district`, by
 the locate sub-agent's emergency LA-centroid fallback, and by
-`tools.verification_checks._resolve_la`.
+`tools.geo.boundary_line.resolve_la`.
 
 ## Data assets (offline)
 
@@ -88,7 +88,7 @@ dist = lookup_district_boundary(
 #    "matched_variant": "City of Westminster, UK"}
 ```
 
-`lookup_district_boundary` uses `tools.verification_checks._resolve_la`
+`lookup_district_boundary` uses `tools.geo.boundary_line.resolve_la`
 under the hood. Name normalisation handles `"London Borough of X"
 → "X"` and strips trailing `"District" / "Borough" / "Council"`. The
 `|`-alternates syntax lets the worker hedge between ambiguous names.

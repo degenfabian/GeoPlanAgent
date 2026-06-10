@@ -196,11 +196,11 @@ def road(query: str, la: Optional[str] = None, limit: int = 5) -> dict:
         idx = json.loads(idx_p.read_text())
         q_key = query.lower().strip()
         instances = idx.get(q_key, []) + idx.get(q_key + " road", [])
-        from tools.verification_checks import _resolve_la
+        from tools.geo.boundary_line import resolve_la
         la_poly = None
         if la:
             try:
-                la_poly = _resolve_la(la)
+                la_poly = resolve_la(la)
             except Exception:
                 la_poly = None
         rev = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True)
@@ -242,7 +242,7 @@ def intersect(road_a: str, road_b: str, la: Optional[str] = None,
     try:
         from pyproj import Transformer
         from shapely.geometry import LineString
-        from tools.verification_checks import _resolve_la
+        from tools.geo.boundary_line import resolve_la
         geom_p = REPO / "tools" / "oml_road_geom_subset.json"
         if not geom_p.exists():
             return {"success": False, "error": "OML road geom missing"}
@@ -252,7 +252,7 @@ def intersect(road_a: str, road_b: str, la: Optional[str] = None,
         la_bbox_bng = None
         if la:
             try:
-                la_poly = _resolve_la(la)
+                la_poly = resolve_la(la)
                 if la_poly is not None:
                     mn_lon, mn_lat, mx_lon, mx_lat = la_poly.bounds
                     x1, y1 = fwd.transform(mn_lon, mn_lat)
@@ -334,9 +334,9 @@ def la_check(lat: float, lon: float, la: str) -> dict:
         "la_centroid_lat": float, "la_centroid_lon": float}
     """
     try:
-        from tools.verification_checks import _resolve_la
+        from tools.geo.boundary_line import resolve_la
         from shapely.geometry import Point
-        poly = _resolve_la(la)
+        poly = resolve_la(la)
         if poly is None:
             return {"success": False,
                     "error": f"No polygon for LA '{la}'"}
@@ -838,8 +838,8 @@ def _emergency_la_centroid_pick(pdf_info: dict, reason: str) -> LocatePick:
              or pdf_info.get("likely_town_or_city")
              or pdf_info.get("district_name") or "").strip()
     try:
-        from tools.verification_checks import _resolve_la
-        poly = _resolve_la(admin) if admin else None
+        from tools.geo.boundary_line import resolve_la
+        poly = resolve_la(admin) if admin else None
     except Exception:
         poly = None
     if poly is not None:

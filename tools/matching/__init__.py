@@ -13,18 +13,17 @@ The pipeline is:
    to a WGS84 GeoJSON polygon.
 """
 
+from tools.geo.coords import best_zoom_for_scale, compute_map_mpp
 from tools.matching._core import (
     # MINIMA model management
     load_minima, run_minima, estimate_affine,
-    # Scale / zoom / sigma helpers
-    compute_map_mpp, best_zoom_for_scale, sigma_from_scale,
-    effective_sigma,
     # Affine + GeoJSON
     resize_map_to_match_zoom,
     affine_center_to_latlon, mask_to_geojson_affine,
     # Sliding-window search (the master entry point)
     sliding_window_position,
 )
+from tools.matching.source_priorities import effective_sigma, sigma_from_scale
 
 # Road-name verification (re-exported from tools.matching.road_verify)
 from tools.matching.road_verify import (

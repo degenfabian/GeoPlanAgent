@@ -66,8 +66,6 @@ GeoMapAgent_autonomous/
 │   ├── io/                    # PDF render, OS tiles, rotation classifier
 │   ├── metrics/               # IoU/F1, MINIMA reward, viz
 │   ├── core/                  # Shared k-fold case→fold routing
-│   ├── scoring.py             # composite_window_score (sliding-window reranker)
-│   ├── verification_checks.py # OS BoundaryLine LA-polygon resolver
 │   └── build_oml_road_index.py # One-shot OS OpenMap Local index builder
 │
 ├── ablations/                 # Paper ablation scripts (see ablations/README.md)

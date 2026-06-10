@@ -28,19 +28,7 @@ from pathlib import Path
 from typing import Optional
 
 
-# OpenRouter $/MTok (input, output) at submission time.
-PRICES: dict[str, tuple[float, float]] = {
-    "google/gemini-3-flash-preview":    (0.55,  2.20),
-    "gemini-flash":                     (0.55,  2.20),
-    "google/gemini-3.1-pro-preview":    (1.25, 12.50),
-    "gemini-pro":                       (1.25, 12.50),
-    "anthropic/claude-opus-4.7":        (5.00, 25.00),
-    "claude-opus":                      (5.00, 25.00),
-    "openai/gpt-5.5-pro":               (30.0, 180.0),
-    "gpt-5.5-pro":                      (30.0, 180.0),
-}
-
-DEFAULT_MODEL = "gemini-flash"
+from _pricing import DEFAULT_MODEL, PRICES  # noqa: E402 (scripts/ on sys.path when run as a file)
 
 
 def _pull_tokens(metrics: dict) -> dict:

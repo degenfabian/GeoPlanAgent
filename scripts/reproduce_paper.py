@@ -29,13 +29,7 @@ REPO = Path(__file__).resolve().parent.parent
 EVAL = REPO / "evaluation_data"
 DEFAULT_RUN = REPO / "results/benchmark_std_post_fix/gemini-flash"
 
-# OpenRouter prices at submission time, $/MTok (input, output).
-PRICES = {
-    "gemini-flash": (0.55, 2.20),
-    "gemini-pro": (1.25, 12.50),
-    "claude-opus": (5.00, 25.00),
-    "gpt-5.5-pro": (30.0, 180.0),
-}
+from _pricing import PRICES  # noqa: E402 (scripts/ on sys.path when run as a file)
 
 
 # ---------------------------------------------------------------- geometry

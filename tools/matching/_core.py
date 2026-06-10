@@ -464,9 +464,9 @@ def sliding_window_position(
     # Sort candidates best-first by raw metric
     ranked = sorted(top_candidates, key=lambda x: -x[0])
 
-    # Composite rescore: pick by V × Q/4 (see tools.scoring.composite_window_score).
+    # Composite rescore: pick by V × Q/4 (see tools.matching.scoring.composite_window_score).
     if ranked:
-        from tools.scoring import (
+        from tools.matching.scoring import (
             composite_window_score,
             quadrant_coverage_from_inlier_points,
         )

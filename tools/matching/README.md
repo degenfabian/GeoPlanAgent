@@ -49,7 +49,7 @@ package. Each `match_at` call covers ONE page (= one area_group):
      a 2×3 RANSAC similarity (4-DOF).
    - Keeps the best per-bucket window via a composite reranker — first
      `composite_window_score = vanilla_metric × Q/4` (Q = number of
-     map quadrants with ≥1 inlier; from `tools.scoring`), then
+     map quadrants with ≥1 inlier; from `tools.matching.scoring`), then
      `_verify_candidates_with_road_names` re-weights by
      `metric × (1 + road_match_ratio)²` when the reader extracted any
      road names. Sparse-rural candidates with no nearby OS roads get a

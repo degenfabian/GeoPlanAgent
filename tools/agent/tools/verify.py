@@ -57,7 +57,7 @@ def lookup_district(
     state = ctx.deps
     _dedup_check(state, "lookup_district", {"district_name": district_name})
 
-    from tools.geo.grid_ref import lookup_district_boundary
+    from tools.geo.boundary_line import lookup_district_boundary
 
     # Support '|' alternates: try each variant in order until one works.
     variants = [v.strip() for v in district_name.split("|") if v.strip()]
