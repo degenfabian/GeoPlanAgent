@@ -6,7 +6,7 @@ via an offline OS Open Names sub-agent, positions the planning map
 against Ordnance Survey OpenData tiles using MINIMA-LoFTR feature
 matching, segments the drawn boundary with a fine-tuned SAM3 model,
 and projects the result to a WGS84 GeoJSON polygon. Reference baseline
-for the [Plan2Map](paper.tex) benchmark.
+for the [Plan2Map benchmark](https://arxiv.org/abs/2606.02747).
 
 ## Pipeline
 
@@ -55,7 +55,6 @@ GeoMapAgent_autonomous/
 ├── README.md
 ├── benchmark_runner.py        # Evaluation driver across the dataset
 ├── check_credits.py           # OpenRouter credits / usage check
-├── paper.tex                  # Plan2Map paper (ACL-style)
 ├── pyproject.toml             # Dependencies (uv-managed)
 ├── uv.lock
 │
@@ -78,7 +77,7 @@ GeoMapAgent_autonomous/
 │
 ├── MINIMA/                    # LoFTR matcher (external, gitignored)
 ├── evaluation_data/           # Test dataset (PDFs + GT GeoJSON, gitignored)
-├── boundary_annotations/      # Per-case annotated map + mask (gitignored)
+├── boundary_annotations/      # Per-case annotated map + mask (tracked)
 ├── models/                    # Model weights (gitignored, see models/README.md)
 ├── os_opendata/               # OS OpenData (Zoomstack, BoundaryLine,
 │                              # OpenNames, OpenMapLocal, Code-Point Open)
@@ -122,7 +121,7 @@ uv run benchmark_runner.py \
 
 | Flag | Default | Purpose |
 |---|---|---|
-| `--model` | `gemini-pro` | Reader + worker model (alias or full OpenRouter ID) |
+| `--model` | `gemini-flash` | Reader + worker model (alias or full OpenRouter ID); default is the paper configuration |
 | `--locate-model` | `google/gemini-3-flash-preview` | Locate sub-agent model (separate from `--model`) |
 | `--locate-disabled-tools` | `postcode,grid_ref,road,intersect,la_check` | Disable named geocoders in the locate sub-agent. Default leaves only `place` enabled — the production kit; pass an empty string for the full 6-tool kit |
 | `--max-iterations` | `12` | Max worker turns per case |
@@ -335,7 +334,7 @@ Scoring formulas live in [`tools/metrics/reward.py`](tools/metrics/reward.py).
 | Full pipeline | 208 | median centroid error | 4.6 m |
 | Full pipeline | 208 | Acc@0.1D | 78.8% |
 | Full pipeline | 208 | mean cost / doc | $0.043 |
-| Full pipeline | 208 | mean wall-clock / case | 155 s |
+| Full pipeline | 208 | mean wall-clock / case | 153 s |
 | + Critic | 208 | mean IoU | 0.740 |
 | SAM3-LoRA only | 208 | mean pixel IoU (5-fold OOF, case-level) | 0.912 |
 | Rotation classifier (TTA) | 208 | 5-fold mean top-1 acc (case-level) | 0.981 |
@@ -347,8 +346,8 @@ includes the locate sub-agent's LLM calls, which are roughly half of it
 
 VLM-direct PDF-to-GeoJSON on the strongest of four models
 (Gemini-3.1-Pro, 40-case stratified subset): mean IoU 0.112.
-See [`paper.tex`](paper.tex) for the full table and the four-model
-breakdown.
+See [the paper](https://arxiv.org/abs/2606.02747) for the full table
+and the four-model breakdown.
 
 ## Reproducing the paper
 
@@ -365,23 +364,33 @@ Sections: `table1` `table2` `table4` `table9` `table11` `table12`
 `fig3` `fig4` `costs` `dataset`. Each line prints the recomputed value
 next to the value reported in the paper.
 
-To re-run the underlying experiments rather than re-aggregate them:
+To re-run the underlying experiments rather than re-aggregate them
+(these call OpenRouter and cost API credits), the main benchmark is
+`benchmark_runner.py` and every ablation goes through one entry point,
+`ablations/run.py` — see [`ablations/README.md`](ablations/README.md)
+for the exact command behind each published row:
 
 | What | Command |
 |---|---|
 | Main benchmark (Table 1) | `uv run benchmark_runner.py --model gemini-flash --enable-critic --output-dir results/<name>` |
-| Collapsed-reader ablation | `uv run benchmark_runner.py --model gemini-flash --no-reader --output-dir ablations/no_reader` |
-| Locate-only ablations (Table 2) | `uv run ablations/locate_only_eval.py` / `ablations/locate_vlm_direct.py` |
-| VLM end-to-end baselines | `uv run ablations/vlm_e2e_pdf_to_geojson.py --model <alias>` |
-| Vanilla-SAM prompt sweep (Table 12) | `uv run ablations/sam_base_prompt_search.py` |
-| SAM3-LoRA / rotation k-fold eval (Tables 9, 11) | `uv run training/eval/eval_sam_kfold.py` / `eval_rotation_kfold.py [--tta]` |
-| Cost decomposition | `uv run scripts/compute_costs.py results/cost_audit_v1` |
-| Section-5 figures | `uv run figures/make_section5_figures.py` |
+| Collapsed-reader ablation | `uv run ablations/run.py collapsed-reader --model gemini-flash --output-dir ablations/no_reader` |
+| Locate-stage ablations (Table 2) | `uv run ablations/run.py locate …` / `uv run ablations/run.py locate-vlm …` |
+| VLM end-to-end baselines | `uv run ablations/run.py vlm-e2e --vlm-model <alias>` |
+| VLM-direct segmentation | `uv run ablations/run.py vlm-seg --model <alias>` |
+| Vanilla-SAM prompt sweep | `uv run ablations/run.py sam-prompts` |
+| SAM3-LoRA / rotation k-fold eval (offline) | `uv run training/eval/eval_sam_kfold.py` / `eval_rotation_kfold.py [--tta]` |
+| Cost decomposition (offline) | `uv run scripts/compute_costs.py results/cost_audit_v1` |
+| Paper figures (offline) | `uv run figures/make_section5_figures.py` |
+
+The test suite is offline and instant: `uv run pytest`.
 
 ## External dependencies (offline)
 
-- **MINIMA** — LoFTR-based map-to-tile matcher. Clone into `MINIMA/`;
-  weights in `MINIMA/weights/minima_loftr.ckpt`.
+- **MINIMA** — LoFTR-based map-to-tile matcher. Clone
+  [LSXI7/MINIMA](https://github.com/LSXI7/MINIMA) into `MINIMA/` and
+  place its released LoFTR checkpoint at
+  `MINIMA/weights/minima_loftr.ckpt` (download link in the MINIMA
+  README). Apache-2.0, not vendored here.
 - **SAM3 + LoRA** — Facebook SAM3 base weights auto-downloaded from
   HuggingFace on first run (`HF_TOKEN`). The fine-tuned LoRA adapters
   ship per fold in `models/sam3_lora/fold_*/` as PEFT-format
@@ -403,7 +412,9 @@ To re-run the underlying experiments rather than re-aggregate them:
 
 `evaluation_data/` holds the 208-case Plan2Map benchmark: one folder
 per case containing the planning PDF and the ground-truth GeoJSON,
-plus the metadata spreadsheet (`new_updated.xlsx`). Ground-truth
+plus two spreadsheets — `0_planning_dataset_list.xlsx` (the case list
+the benchmark runner loads) and `new_updated.xlsx` (the full metadata
+table behind the dataset statistics and figures). Ground-truth
 polygons originate from planning.data.gov.uk and the source PDFs from
 the issuing local planning authorities; see the paper's dataset
 section for the release. `boundary_annotations/` and

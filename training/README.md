@@ -208,14 +208,14 @@ validators. They write `training/eval/predictions/<model>.json`.
 With a fixed `--seed` and the same dataset, two runs on the same
 hardware produce matching trajectories:
 
-- ✅ `random` (Python), `numpy`, `torch`, CUDA RNG all seeded.
-- ✅ `DataLoader` shuffle uses a `torch.Generator` seeded per fold.
-- ✅ LoRA init seeded (PEFT honours `torch.manual_seed`).
-- ✅ Per-fold seed = `master_seed + fold_idx` so folds explore
+- `random` (Python), `numpy`, `torch`, CUDA RNG all seeded.
+- `DataLoader` shuffle uses a `torch.Generator` seeded per fold.
+- LoRA init seeded (PEFT honours `torch.manual_seed`).
+- Per-fold seed = `master_seed + fold_idx` so folds explore
   independent sequences.
-- ⚠️ With `--bf16` on, tiny float-rounding deltas across runs (same
+- Caveat: with `--bf16` on, tiny float-rounding deltas across runs (same
   trajectory, different last-bits). Disable for bit-exact repro.
-- ⚠️ MPS has a few non-deterministic ops. CUDA with
+- Caveat: MPS has a few non-deterministic ops. CUDA with
   `torch.use_deterministic_algorithms(True)` is the gold path for
   bit-exact reproduction.
 

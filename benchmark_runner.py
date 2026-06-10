@@ -6,8 +6,8 @@ The agent reads each PDF, geocodes locations, positions the map via MINIMA,
 extracts boundaries with SAM3, and verifies — all through tool calls.
 
 Usage:
-    uv run benchmark_runner.py --model claude-sonnet                  # default
-    uv run benchmark_runner.py --max-cases 5                          # quick test
+    uv run benchmark_runner.py --model gemini-flash --enable-critic   # paper configuration
+    uv run benchmark_runner.py --max-cases 5                          # quick smoke test
     uv run benchmark_runner.py --cases 12:00116:ART4                  # specific case
     uv run benchmark_runner.py --max-iterations 3                     # limit agent turns
 """
@@ -510,8 +510,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Benchmark planning document GeoJSON extraction"
     )
-    parser.add_argument("--model", default="gemini-pro",
-                        help="OpenRouter model identifier (reader + worker)")
+    parser.add_argument("--model", default="gemini-flash",
+                        help="OpenRouter model identifier (reader + worker). "
+                             "Default matches the paper configuration.")
     parser.add_argument(
         "--locate-model", default="google/gemini-3-flash-preview",
         help="Model alias or OpenRouter identifier for the locate "

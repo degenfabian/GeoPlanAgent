@@ -4,9 +4,8 @@ OS Code-Point Open contains 1.6M GB postcode unit centroids at sub-metre
 BNG resolution — much tighter than os_names postcode-district lookup
 (which only knows outward codes like "AL1") or postcodes.io (~100m).
 
-Use as a high-priority anchor source when pdf_info.postcodes contains a
-full postcode (outward + inward, e.g. "AL1 3JE"). Drop sigma_m to ~50m
-for these cases vs the 800-2500m floor we currently pay.
+Used as a high-priority anchor source when pdf_info.postcodes contains a
+full postcode (outward + inward, e.g. "AL1 3JE"); hits carry sigma_m ≈ 50 m.
 
 Setup: download once via
     curl -L -o codepo_gb.zip \\

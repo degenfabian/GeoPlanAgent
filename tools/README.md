@@ -70,7 +70,7 @@ to keep the prompt + tool schema sent to the LLM minimal.
 
 | Tool | Source | Production? | Note |
 |---|---|---|---|
-| `place(q, la?)` | OS Open Names | ✅ | Villages, churches, schools, named roads/buildings. Sigma 200–1500 m by feature type. |
+| `place(q, la?)` | OS Open Names | yes | Villages, churches, schools, named roads/buildings. Sigma 200–1500 m by feature type. |
 | `postcode(pc)` | Code-Point Open | off | Sub-100 m per full UK postcode (~1.6 M GB units). |
 | `grid_ref(gr)` | OS BNG parser | off | Accepts many formats (`TL 150 067`, `TR3559`, `485700 148600`, etc.). |
 | `road(q, la?)` | OS OpenMap Local | off | Road-instance centroid, LA-bbox-filtered. Needs `oml_road_index.json`. |

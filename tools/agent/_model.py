@@ -18,7 +18,7 @@ MODEL_ALIASES = {
 
 
 def resolve_model_name(name: str) -> str:
-    """Map a short alias (gemini-flash, claude-sonnet, …) to a full
+    """Map a short alias (gemini-flash, claude-opus, …) to a full
     OpenRouter model identifier. Already-qualified IDs (containing "/")
     or unknown aliases pass through unchanged."""
     return MODEL_ALIASES.get(name, name)

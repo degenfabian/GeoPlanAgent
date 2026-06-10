@@ -1,5 +1,5 @@
 [project]
-name = "GeoMapAgent"
+name = "GeoPlanAgent"
 version = "1.0.0"
 description = "GeoPlanAgent: georeferenced boundary extraction from UK planning documents (Plan2Map)"
 readme = "README.md"
@@ -59,11 +59,20 @@ training = [
     "tensorboardx>=2.6.4",
     "tqdm>=4.60.0",
 ]
-dev = [
-    "ruff>=0.14.10",
-]
-
 [dependency-groups]
 dev = [
     "pytest>=9.0.3",
+    "ruff>=0.14.10",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+# One-line guards (E701/E702) and small lambdas (E731) are house style;
+# E402 covers the deliberate sys.path bootstrap in entry-point scripts.
+ignore = ["E402", "E701", "E702", "E731"]

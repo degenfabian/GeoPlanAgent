@@ -1,11 +1,13 @@
 """SAM3 LoRA fine-tuning — 5-fold CV, combined semantic + instance loss.
 
-Each fold trains a fresh adapter on ~96 train / ~24 val cases (md5(case_name) % 5
-split). Semantic head: focal + dice + surface (ramped over 15 epochs). Instance
-head: focal + dice on the best-IoU slot; no presence loss so the other slots stay
-diverse for instance-mode inference. Per-fold checkpoints saved under
-models/sam3_lora/fold_<k>/. fold_assignment.json is mirrored from training/dataset/
-to models/ so production can resolve checkpoints without the training set.
+Each fold trains a fresh adapter; the split comes from
+training/dataset/fold_assignment.json (LPT bin-packing over stay-together
+groups, built by build_sam3_training_set.py), ~168 train / ~42 val maps per
+fold. Semantic head: focal + dice + surface (ramped over 15 epochs). Instance
+head: focal + dice on the matched slot, plus classification and presence
+losses. Per-fold checkpoints are saved under models/sam3_lora/fold_<k>/;
+fold_assignment.json is mirrored from training/dataset/ to models/ so
+production can resolve checkpoints without the training set.
 
 Seed: --seed (default 42). --bf16 off + same seed = bit-identical on same hardware.
 See training/README.md for the full data-pipeline recipe.

@@ -7,58 +7,16 @@ the figures under `assets/`.
 
 ## Deploy to GitHub Pages
 
-1. Commit + push this `docs/` folder to your `main` branch.
+1. Commit + push this `docs/` folder to the `main` branch.
 2. In the GitHub repo, open **Settings → Pages**.
 3. Under **Build and deployment → Source**, choose **Deploy from a branch**.
 4. Under **Branch**, pick `main` and **`/docs`**. Save.
-5. Wait ~1 min, then the site is live at
-   `https://<your-user>.github.io/<your-repo>/`.
-
-That's it — no Actions config, no Jekyll, nothing to configure.
-
-## Sharing pre-publication (paper not out yet)
-
-The page already ships with `<meta name="robots" content="noindex, nofollow, noarchive">`
-in `<head>`, so search engines won't index it. Pick the option that
-matches how locked-down you want the link to be:
-
-| Option | Setup | Who can see it |
-|---|---|---|
-| **GitHub Pages on public repo + noindex** | already done if you followed the deploy steps above | anyone with the URL; nothing in Google. Easiest. |
-| **Netlify drag-and-drop** | go to <https://app.netlify.com/drop>, drop the `docs/` folder | anyone with the URL; random `*.netlify.app` URL is unguessable in practice. No GitHub needed. |
-| **Cloudflare Pages + Access** | connect a GitHub repo to CF Pages, then add an Access rule (free tier covers up to 50 users) | only colleagues whose email is on your allowlist; they get a one-time login code |
-| **GitHub Pages on private repo** | requires GitHub Pro / Team ($4/mo) | only GitHub users you've granted repo access |
-| **Local + ngrok tunnel** | `cd docs && python3 -m http.server 8000` in one shell, `ngrok http 8000` in another | anyone with the URL — but only while your laptop is on and ngrok is running |
-
-For the "send the link to a few colleagues this week" use case I'd start
-with **Netlify drop** — zero accounts, zero config, takes 30 seconds,
-gives you `https://something-something-XXXXX.netlify.app/` to paste into
-Slack / email.
-
-When the paper is out, delete the `noindex` `<meta>` tag in `index.html`
-and the page will be eligible for search indexing again.
-
-## Things to update before publishing
-
-`index.html` has a few placeholders you'll want to fill in:
-
-| Where | What to replace |
-|---|---|
-| Top-bar **Code →** button | `href="https://github.com/"` → your repo URL |
-| Cite section, **Code** link | same as above |
-| Cite section, **Paper** link | `href="#"` → arXiv / OpenReview URL when ready |
-| Cite section, **Dataset** link | `href="#"` → HuggingFace / Zenodo URL |
-| BibTeX block | replace the placeholder `Anonymous` / venue |
-
-A quick `grep` to find them all:
-
-```bash
-grep -nE 'href="(#"|https://github.com/")' docs/index.html
-```
+5. After ~1 min the site is live at
+   `https://<user>.github.io/<repo>/`.
 
 ## Local preview
 
-Any static-file server works. The simplest:
+Any static-file server works:
 
 ```bash
 cd docs
@@ -66,18 +24,11 @@ python3 -m http.server 8000
 # then open http://localhost:8000/
 ```
 
-If you prefer Node:
-
-```bash
-npx serve docs
-```
-
 ## What's in here
 
 - `index.html` — the page itself. One-shot, no client-side framework.
-- `styles.css` — design tokens + layout. Inspired by the Anthropic blog
-  (cream paper, Newsreader serif headlines, Inter body) and the user's
-  existing `geomap_writing_plan.html` palette.
+- `styles.css` — design tokens + layout (cream paper, Newsreader serif
+  headlines, Inter body).
 - `app.js` — two interactive bits:
   - The **pipeline diagram** — an SVG drawn at runtime from the `NODES` +
     `ARROWS` arrays. Stage buttons (and an autoplay loop) light up the

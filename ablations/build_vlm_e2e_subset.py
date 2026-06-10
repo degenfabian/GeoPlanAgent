@@ -114,7 +114,7 @@ def allocate_strata(strata_counts: dict[str, int], n_total: int,
         raise ValueError(
             f"asked for {n_total} cases but only {pop_total} clean candidates")
 
-    # Step 1: floor allocation.
+    # Floor allocation.
     alloc = {s: min(floor, p) for s, p in pop.items()}
     used = sum(alloc.values())
     remaining = n_total - used
@@ -122,7 +122,7 @@ def allocate_strata(strata_counts: dict[str, int], n_total: int,
         raise ValueError(
             f"floor={floor} across {len(pop)} strata exceeds n_total={n_total}")
 
-    # Step 2: proportional fill on remaining capacity.
+    # Proportional fill on remaining capacity.
     remaining_cap = {s: pop[s] - alloc[s] for s in pop}
     cap_total = sum(remaining_cap.values())
     if cap_total == 0:
@@ -135,7 +135,7 @@ def allocate_strata(strata_counts: dict[str, int], n_total: int,
     for s in pop:
         alloc[s] += floored[s]
 
-    # Step 3: distribute the residual to strata with the largest fractional
+    # Distribute the residual to strata with the largest fractional
     # remainder until totals match. Deterministic tie-break: stratum name.
     remainder_after_floor = n_total - sum(alloc.values())
     if remainder_after_floor > 0:

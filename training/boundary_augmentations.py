@@ -6,9 +6,7 @@ import random
 from PIL import Image
 
 
-# ============================================================================
-# Color palette for boundary recoloring
-# ============================================================================
+# BGR palette for boundary recoloring.
 BOUNDARY_COLORS_BGR = [
     (0, 0, 255),       # red
     (0, 0, 200),       # dark red
@@ -272,14 +270,12 @@ def style_transfer_augment(image_pil, mask_pil, p=0.5):
     if not contours:
         return image_pil, mask_pil
 
-    # Step 1: Fade the existing boundary fill (don't try to fully remove it)
+    # Fade rather than fully remove the existing boundary fill.
     faded_map = _fade_boundary(image_bgr, mask)
 
-    # Step 2: Choose random style and color
     style = random.choice(BOUNDARY_STYLES)
     color = random.choice(BOUNDARY_COLORS_BGR)
 
-    # Step 3: Draw boundary in new style on the faded map
     result = faded_map.copy()
 
     # Track which pixels we drew so we can roughen them
@@ -333,7 +329,7 @@ def style_transfer_augment(image_pil, mask_pil, p=0.5):
                                 thickness=hatch_thickness)
         drawn_mask = (np.any(result != before, axis=2) * 255).astype(np.uint8)
 
-    # Step 4: Roughen the drawn boundary to look like a real scan
+    # Roughen the drawn boundary to mimic scan artefacts.
     result = _roughen_boundary(result, drawn_mask)
 
     result_rgb = cv2.cvtColor(result, cv2.COLOR_BGR2RGB)
@@ -377,11 +373,9 @@ def copy_paste_augment(image_pil, mask_pil, donor_image_pil, donor_mask_pil, p=0
     if dw < 10 or dh < 10:
         return image_pil, mask_pil
 
-    # Step 1: Fade existing boundary on recipient
     faded_map = _fade_boundary(image_bgr, mask)
 
-    # Step 2: Scale donor contour to fit recipient image
-    # Random scale: 30-80% of recipient image size
+    # Scale the donor contour to 30-80% of the recipient image.
     target_fraction = random.uniform(0.3, 0.8)
     scale_w = (w * target_fraction) / dw
     scale_h = (h * target_fraction) / dh
@@ -410,7 +404,6 @@ def copy_paste_augment(image_pil, mask_pil, donor_image_pil, donor_mask_pil, p=0
         c[:, :, 0] += offset_x
         c[:, :, 1] += offset_y
 
-    # Step 3: Create new mask (filled contour)
     new_mask = np.zeros((h, w), dtype=np.uint8)
     cv2.drawContours(new_mask, scaled_contours, -1, 255, thickness=-1)
 
@@ -419,7 +412,6 @@ def copy_paste_augment(image_pil, mask_pil, donor_image_pil, donor_mask_pil, p=0
     if mask_pct < 0.1 or mask_pct > 60:
         return image_pil, mask_pil
 
-    # Step 4: Draw boundary in random style
     color = random.choice(BOUNDARY_COLORS_BGR)
     style = random.choice(BOUNDARY_STYLES)
     result = faded_map.copy()
@@ -479,9 +471,7 @@ def copy_paste_augment(image_pil, mask_pil, donor_image_pil, donor_mask_pil, p=0
     return Image.fromarray(result_rgb), Image.fromarray(new_mask)
 
 
-# ============================================================================
-# Quick visual test
-# ============================================================================
+# Quick visual test: writes augmented samples for eyeballing.
 if __name__ == "__main__":
     import os
     from pathlib import Path
