@@ -80,7 +80,7 @@ GeoMapAgent_autonomous/
 ├── os_opendata/               # OS OpenData (Zoomstack, BoundaryLine,
 │                              # OpenNames, OpenMapLocal, Code-Point Open)
 │                              # — gitignored
-├── cache/                     # OS tile cache (gitignored)
+├── cache/                     # Rendered tile-canvas cache (gitignored, disposable)
 ├── results/                   # Benchmark outputs (gitignored)
 └── figures/                   # Paper figures (regenerable)
 ```
@@ -411,8 +411,9 @@ The test suite is offline and instant: `uv run pytest`.
 - Python 3.10+ (managed via `uv`)
 - macOS with MPS or Linux with CUDA for GPU acceleration
 - ~10 GB disk: SAM3 base weights (~3 GB) + LoRA + rotation
-  adapters (~830 MB) + OS OpenData (~5 GB) + tile cache (grows with
-  use; ~200 GB at full benchmark scale, cached lazily)
+  adapters (~830 MB) + OS OpenData (~5 GB) + rendered tile-canvas
+  cache (`cache/`, lazily populated; ≈250 MB after a full benchmark
+  run, safe to delete at any time)
 
 ## Data
 
