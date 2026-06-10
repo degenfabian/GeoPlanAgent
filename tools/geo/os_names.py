@@ -24,8 +24,6 @@ name index. Subsequent calls are O(log n) for exact-match, O(n) for
 fuzzy. Cache is process-local; restart re-loads.
 """
 from __future__ import annotations
-import math
-import os
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -400,7 +398,8 @@ def is_loaded() -> bool:
 
 
 if __name__ == "__main__":
-    import sys, time
+    import sys
+    import time
     if len(sys.argv) < 2:
         print("usage: python -m tools.geo.os_names <query> [context]")
         sys.exit(1)

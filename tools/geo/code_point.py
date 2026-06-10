@@ -28,7 +28,6 @@ Admin_District_Code, Admin_Ward_Code
 Memory: lazy-loaded per area on first call. Full UK in-memory ~150MB.
 """
 from __future__ import annotations
-import os
 from pathlib import Path
 from typing import Dict, Optional
 
@@ -188,7 +187,8 @@ def is_loaded(area: str = None) -> bool:
 
 
 if __name__ == "__main__":
-    import sys, time
+    import sys
+    import time
     if len(sys.argv) < 2:
         print("usage: python -m tools.geo.code_point <postcode>")
         sys.exit(1)

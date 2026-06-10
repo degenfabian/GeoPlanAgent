@@ -7,11 +7,7 @@ import traceback
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from tools.agent.schemas import (
-    BoundaryOutcome,
-    PDFInfo,
-)
-from tools.agent.state import AgentState
+from tools.agent.schemas import BoundaryOutcome
 
 # Imports trigger @_agent.tool decorator side-effects; must come after worker_agent.
 from tools.agent.tools import (  # noqa: F401

@@ -943,7 +943,7 @@ def main() -> int:
             w.writeheader()
             for row in cv["folds"]: w.writerow(row)
 
-        print(f"\n=== 5-fold summary (sem-gated) ===")
+        print("\n=== 5-fold summary (sem-gated) ===")
         for s in summary:
             print(f"  fold {s['fold']:>1d} (n_val={s.get('n_val','?'):>3}, "
                   f"best_ep={s.get('best_epoch')}): "

@@ -242,9 +242,9 @@ def write_outputs(subset: pd.DataFrame, bench_per_case: dict, out_dir: Path,
     lines = [
         f"# VLM-E2E subset (N={n_total})",
         "",
-        f"- source: `evaluation_data/new_updated.xlsx` → `Cleaned_up_208_planning_dataset`",
-        f"- filter: `Shape Matches correctly` ∈ {{`yes`, `yes - across …`}}",
-        f"- stratification: Document Quality × Shape Complexity, floor=2",
+        "- source: `evaluation_data/new_updated.xlsx` → `Cleaned_up_208_planning_dataset`",
+        "- filter: `Shape Matches correctly` ∈ {`yes`, `yes - across …`}",
+        "- stratification: Document Quality × Shape Complexity, floor=2",
         f"- seed: {seed}",
         "",
         "## Stratum allocation",
@@ -259,7 +259,6 @@ def write_outputs(subset: pd.DataFrame, bench_per_case: dict, out_dir: Path,
             pipeline_iou_by_stratum.setdefault(r["stratum"], []).append(v)
 
     for s in sorted(alloc.keys()):
-        pop = int((subset["stratum"] == s).sum())  # in subset
         # Population in the clean candidate pool, not the picked subset.
         n_alloc = alloc[s]
         ious = pipeline_iou_by_stratum.get(s, [])
@@ -362,7 +361,7 @@ def main() -> int:
         write_outputs(clean, bench_per_case, out_dir, eval_dir,
                       seed=args.seed, n_total=len(clean), alloc=full_alloc)
         print()
-        print(f"Wrote:")
+        print("Wrote:")
         print(f"  {out_dir.relative_to(REPO_ROOT)}/subset_{len(clean)}.json")
         print(f"  {out_dir.relative_to(REPO_ROOT)}/subset_{len(clean)}_pipeline_baseline.json")
         print(f"  {out_dir.relative_to(REPO_ROOT)}/subset_{len(clean)}_summary.md")
@@ -393,7 +392,7 @@ def main() -> int:
     write_outputs(subset, bench_per_case, out_dir, eval_dir,
                   seed=args.seed, n_total=args.n, alloc=alloc)
     print()
-    print(f"Wrote:")
+    print("Wrote:")
     print(f"  {out_dir.relative_to(REPO_ROOT)}/subset_{args.n}.json")
     print(f"  {out_dir.relative_to(REPO_ROOT)}/subset_{args.n}_pipeline_baseline.json")
     print(f"  {out_dir.relative_to(REPO_ROOT)}/subset_{args.n}_summary.md")

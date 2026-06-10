@@ -265,7 +265,7 @@ def summary():
     annotated_cases = set(real.keys())
     unannotated = [c for c in cases if c not in annotated_cases]
 
-    lines = [f"<h2>Annotation summary</h2>",
+    lines = ["<h2>Annotation summary</h2>",
              f"<p>{len(annotated_cases)} / {len(cases)} cases annotated.</p>",
              "<table border=1 cellpadding=6><tr><th>Label</th><th>Count</th></tr>"]
     for k, v in by_rot.items():
@@ -283,5 +283,5 @@ if __name__ == "__main__":
     print(f"Loaded {len(cases)} cases from {DATASET_DIR}")
     print(f"Existing annotations: {len([k for k in anns if not k.startswith('__')])}")
     print(f"Annotations file: {ANNOTATIONS_FILE}")
-    print(f"Open http://127.0.0.1:5000 in your browser.")
+    print("Open http://127.0.0.1:5000 in your browser.")
     app.run(host="127.0.0.1", port=5000, debug=False)

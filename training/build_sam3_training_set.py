@@ -21,7 +21,6 @@ Re-running the script is idempotent (same input → bit-identical output).
 from __future__ import annotations
 
 import json
-import os
 import re
 import shutil
 import sys
@@ -145,7 +144,7 @@ def main() -> int:
     print(f"  cases:  {len(cases_summary)}")
     print(f"  groups: {len(by_group)}  (each group → exactly one fold)")
     print(f"  skipped: {len(skipped)}" + (": " + str(skipped[:5]) if skipped else ""))
-    print(f"\nFold distribution:")
+    print("\nFold distribution:")
     for f in range(N_FOLDS):
         print(f"  fold {f}: {by_fold[f]} cases")
 

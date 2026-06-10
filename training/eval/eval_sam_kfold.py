@@ -19,7 +19,6 @@ import statistics
 import sys
 from pathlib import Path
 
-import numpy as np
 import torch
 import torch.nn.functional as F
 from peft import PeftModel
@@ -33,8 +32,7 @@ sys.path.insert(0, str(REPO))
 # Reuse the exact training-time dataset class and config constants
 from training.eval._util import write_predictions_json
 from training.train_sam3_kfold import (
-    FoldDataset, collate, seed_everything,
-    _ensure_pred_mask_on_gt, _autocast_ctx,
+    FoldDataset, collate, _ensure_pred_mask_on_gt, _autocast_ctx,
     _build_manifest_from_disk,
     MODEL_ID,
     DATASET_DIR as TRAIN_DATASET_DIR,

@@ -4,7 +4,7 @@ The pipeline is:
 
 1. Load the MINIMA-LoFTR matcher with :func:`load_minima`.
 2. Render OS Zoomstack tiles around candidate centres
-   (``tools.os_opendata_tiles.fetch_os_opendata_grid``).
+   (``tools.io.os_tiles.fetch_os_opendata_grid``).
 3. :func:`sliding_window_position` slides a planning-map-sized window across
    the rendered canvas, calling :func:`run_minima` at each position and
    keeping the best window via the quadrant-coverage reranker.
@@ -22,7 +22,6 @@ from tools.matching._core import (
     # Affine + GeoJSON
     resize_map_to_match_zoom,
     affine_center_to_latlon, mask_to_geojson_affine,
-    _build_scale_H,
     # Sliding-window search (the master entry point)
     sliding_window_position,
 )

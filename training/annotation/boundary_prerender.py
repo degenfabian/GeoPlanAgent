@@ -26,7 +26,9 @@ Outputs per case under ``boundary_annotations/<case_id>/``:
 """
 from __future__ import annotations
 
-import json, os, sys
+import json
+import os
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -124,7 +126,7 @@ def _cached_affine(case_id: str) -> Optional[Tuple[np.ndarray, Dict[str, Any], s
 
 def _latlon_to_tile_px(lat: float, lon: float, tile_info: Dict[str, Any]) -> Tuple[float, float]:
     """WGS84 → pixel in the OS tile canvas (used at match time).
-    Web-Mercator slippy tile math; matches tools.os_opendata_tiles convention."""
+    Web-Mercator slippy tile math; matches tools.io.os_tiles convention."""
     import math
     z = tile_info["zoom"]
     tx_min = tile_info["tx_min"]

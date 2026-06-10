@@ -43,28 +43,6 @@ def geojson_to_shape(geojson_data: Dict[str, Any]) -> Optional[Polygon | MultiPo
         raise ValueError(f"Error converting GeoJSON to shape: {e}")
 
 
-def calculate_iou(
-    ground_truth: Polygon | MultiPolygon, prediction: Polygon | MultiPolygon
-) -> float:
-    try:
-        if not ground_truth.is_valid:
-            ground_truth = ground_truth.buffer(0)
-        if not prediction.is_valid:
-            prediction = prediction.buffer(0)
-
-        intersection = ground_truth.intersection(prediction)
-        union = ground_truth.union(prediction)
-
-        if union.area == 0:
-            return 0.0
-
-        return float(intersection.area / union.area)
-
-    except Exception:
-        log.warning("IoU computation failed, scoring 0", exc_info=True)
-        return 0.0
-
-
 def calculate_positioning_error_m(pred_geojson, gt_geojson):
     from tools.geo.coords import haversine_km
     try:

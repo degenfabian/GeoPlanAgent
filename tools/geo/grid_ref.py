@@ -15,7 +15,6 @@ corresponds to an entire administrative district.
 import re
 import numpy as np
 from typing import List, Dict, Any, Optional, Tuple
-import json
 
 from pyproj import Transformer
 
@@ -472,24 +471,3 @@ def lookup_district_boundary(
         },
         "resolved_variant": resolved_variant,
     }
-
-
-def try_district_boundary(analysis: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    """If analysis says covers_district, look up boundary and normalize to MultiPolygon.
-
-    Returns GeoJSON Feature dict on success, None otherwise.
-    """
-    if not (analysis.get("covers_district") and analysis.get("district_name")):
-        return None
-    lookup = lookup_district_boundary(analysis["district_name"])
-    if not lookup.get("success"):
-        return None
-    geojson = lookup["geojson"]
-    geom = geojson.get("geometry", {})
-    if geom.get("type") == "Polygon":
-        geojson["geometry"] = {
-            "type": "MultiPolygon",
-            "coordinates": [geom["coordinates"]],
-        }
-    geojson["properties"]["source"] = "os_boundaryline_district_lookup"
-    return geojson

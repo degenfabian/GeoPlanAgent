@@ -825,8 +825,8 @@ def run_critic_loop(
         # couldn't comply — break to avoid spinning on a stuck case.
         if not iter_entry["geojson_changed"] and directive.action != "approve":
             if verbose:
-                print(f"  critic rehand: geojson unchanged after rehand, "
-                      f"exiting loop")
+                print("  critic rehand: geojson unchanged after rehand, "
+                      "exiting loop")
             break
 
     critic_final_geojson = _snapshot_geojson(state)

@@ -120,7 +120,6 @@ def estimate_affine(mkpts0, mkpts1, mconf=None, reproj_thresh=10.0):
 # Scale and zoom utilities
 
 from tools.geo.coords import (
-    WEB_MERCATOR_C,
     best_zoom_for_scale,
     compute_map_mpp,
     latlon_to_global_tile_pixel,
@@ -132,7 +131,6 @@ _latlon_to_global_tile_pixel = latlon_to_global_tile_pixel
 
 from tools.matching.source_priorities import (
     effective_sigma,
-    sigma_from_scale,
 )
 
 def resize_map_to_match_zoom(map_img, map_mpp, zoom, lat):

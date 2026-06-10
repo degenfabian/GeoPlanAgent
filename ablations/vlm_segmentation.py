@@ -27,12 +27,10 @@ Held-out-fold-only (true zero-shot comparison vs SAM3-fine-tune):
 from __future__ import annotations
 import argparse
 import json
-import os
 import sys
 import time
-import traceback
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List
 
 import numpy as np
 from PIL import Image, ImageDraw
@@ -377,8 +375,8 @@ def main() -> None:
         print(f"  case:   {e['case']}")
         print(f"  image:  {img_path}  ({img.width}x{img.height})")
         print(f"  prompt (first 600 chars):\n{instructions[:600]}")
-        print(f"\nUser message: 'Locate the drawn site boundary and "
-              f"output it per the schema.'")
+        print("\nUser message: 'Locate the drawn site boundary and "
+              "output it per the schema.'")
         return
 
     # Build agent
@@ -501,7 +499,6 @@ def main() -> None:
                       f"[0, 1000] (e.g. {example}). Model may have ignored "
                       f"the (y, x) ∈ [0, 1000] convention.")
         except Exception as e:
-            tb = traceback.format_exc(limit=2)
             print(f"  [{i+1:>3}/{len(manifest)}] FAIL {case[:30]}  "
                   f"{type(e).__name__}: {str(e)[:80]}")
             rows.append({"case": case, "fold": fold, "filename": fname,

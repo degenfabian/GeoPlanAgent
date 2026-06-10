@@ -241,7 +241,7 @@ def intersect(road_a: str, road_b: str, la: Optional[str] = None,
     """
     try:
         from pyproj import Transformer
-        from shapely.geometry import LineString, Point
+        from shapely.geometry import LineString
         from tools.verification_checks import _resolve_la
         geom_p = REPO / "tools" / "oml_road_geom_subset.json"
         if not geom_p.exists():

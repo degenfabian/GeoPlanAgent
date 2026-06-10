@@ -15,18 +15,15 @@ import sys
 from pathlib import Path
 
 import cv2
-import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from tools.geo.coords import tile_mpp as _tile_mpp_at  # noqa: E402
 from tools.io.map_page import render_map_page  # noqa: E402
 from tools.io.os_tiles import fetch_os_opendata_grid  # noqa: E402
 from tools.matching._core import (  # noqa: E402
     estimate_affine,
     load_minima,
-    resize_map_to_match_zoom,
     run_minima,
 )
 
@@ -162,13 +159,6 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 cv2.imwrite(str(OUT_DIR / "resized_map.png"), resized_map)
 cv2.imwrite(str(OUT_DIR / "tile_canvas.png"), cv2.cvtColor(os_canvas, cv2.COLOR_RGB2BGR))
 
-# Down-sample the correspondences to keep the JSON small (cap at 80 each)
-def _subsample(seq: list, keep: int) -> list[int]:
-    if len(seq) <= keep:
-        return list(range(len(seq)))
-    step = len(seq) / keep
-    return [int(i * step) for i in range(keep)]
-
 if best_meta is not None and best_meta["mkpts0"]:
     # Prefer inliers, then top-scoring outliers, capped to 80 total
     inl = best_meta["inlier_mask"]
@@ -196,7 +186,7 @@ payload = {
 }
 (OUT_DIR / "windows.json").write_text(json.dumps(payload, indent=2))
 
-print(f"\nDone.")
+print("\nDone.")
 print(f"  Best window: ({best_meta['x']},{best_meta['y']}) "
       f"n_inliers={best_meta['n_inliers']}")
 print(f"  Wrote {OUT_DIR}/resized_map.png  ({rw}x{rh})")

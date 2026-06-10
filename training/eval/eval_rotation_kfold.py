@@ -26,9 +26,7 @@ import sys
 import time
 from pathlib import Path
 
-import cv2
 import torch
-from torch.utils.data import DataLoader
 
 THIS = Path(__file__).resolve().parent
 REPO = THIS.parent.parent

@@ -5,9 +5,8 @@ from __future__ import annotations
 import json
 import os
 import tempfile
-import traceback
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import cv2
 from pydantic_ai import BinaryContent
@@ -18,7 +17,7 @@ from tools.agent._model import resolve_model
 from tools.agent._retry import _run_sync_with_retry
 from tools.agent.reader_agent import _reader_agent
 from tools.agent.worker_agent import _agent
-from tools.agent.schemas import BoundaryOutcome, PDFInfo
+from tools.agent.schemas import PDFInfo
 from tools.agent.state import AgentState
 
 

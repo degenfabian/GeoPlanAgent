@@ -63,7 +63,6 @@ sys.path.insert(0, str(REPO))
 # Reuse SAM3's fold routing verbatim.
 from tools.core.fold_routing import (  # noqa: E402
     N_FOLDS,
-    normalise_case_name as _normalise_case_name,
     resolve_fold as _resolve_fold,
 )
 

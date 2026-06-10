@@ -1,6 +1,5 @@
 """PDF rendering helpers used by the agent + dataset scripts."""
 
-import os
 
 import cv2
 import numpy as np
@@ -56,19 +55,3 @@ def render_pdf_page(pdf_path, page_index, dpi=200):
         if not pages:
             return None
         return cv2.cvtColor(np.array(pages[0]), cv2.COLOR_RGB2BGR)
-
-
-def find_pdf_for_case(case_folder, eval_dir=None):
-    """Find the PDF file in evaluation_data/<case>/."""
-    if eval_dir is None:
-        eval_dir = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "evaluation_data",
-        )
-    case_dir = os.path.join(eval_dir, case_folder)
-    if not os.path.isdir(case_dir):
-        return None
-    pdfs = [f for f in os.listdir(case_dir) if f.lower().endswith(".pdf")]
-    if not pdfs:
-        return None
-    return os.path.join(case_dir, pdfs[0])

@@ -18,7 +18,6 @@ Run once. Subsequent v3 calls just read the JSON.
 """
 from __future__ import annotations
 import json
-import sys
 import time
 import zipfile
 from pathlib import Path
@@ -51,10 +50,10 @@ def main():
             with zipfile.ZipFile(zp) as zf:
                 # Find the Road shapefile members
                 shp_members = [n for n in zf.namelist()
-                               if n.endswith(f"_Road.shp")
-                               or n.endswith(f"_Road.dbf")
-                               or n.endswith(f"_Road.shx")
-                               or n.endswith(f"_Road.prj")]
+                               if n.endswith("_Road.shp")
+                               or n.endswith("_Road.dbf")
+                               or n.endswith("_Road.shx")
+                               or n.endswith("_Road.prj")]
                 if not shp_members: continue
                 zf.extractall(td, members=shp_members)
             # Find the extracted .shp

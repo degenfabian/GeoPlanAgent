@@ -18,12 +18,13 @@ script `annotate_export.py` will project image-pixel rings back to WGS84
 via the same affine that was used to project them in.
 """
 from __future__ import annotations
-import json, os, sys
+import json
+import sys
 from pathlib import Path
 
 import cv2
 import numpy as np
-from flask import Flask, jsonify, request, send_file, abort, send_from_directory
+from flask import Flask, jsonify, request, send_file, abort
 
 REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO))

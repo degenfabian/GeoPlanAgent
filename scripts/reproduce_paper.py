@@ -225,8 +225,6 @@ def table1(run_dir: Path):
 
 def table2(run_dir: Path):
     print("\n=== Table 2: locate-stage centroid error ===")
-    sys.path.insert(0, str(REPO))
-    from ablations._shared import gt_part_centroids, nearest_part_err_km
 
     def stats(errs_m, label, paper):
         a = np.asarray(errs_m, float)
