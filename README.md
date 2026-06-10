@@ -351,9 +351,10 @@ and the four-model breakdown.
 
 ## Reproducing the paper
 
-Every number in the paper is recomputed from the cached per-case
-artifacts under `results/`, `ablations/` and `training/eval/` — no API
-calls needed:
+Every number in the paper is recomputed from the cached per-case run
+artifacts (`metrics.json`, `results.csv`), which are tracked in this
+repo under `results/`, `ablations/` and `training/eval/` — no API calls
+needed:
 
 ```bash
 uv run scripts/reproduce_paper.py all          # everything
@@ -363,6 +364,13 @@ uv run scripts/reproduce_paper.py table1 fig3  # or individual sections
 Sections: `table1` `table2` `table4` `table9` `table11` `table12`
 `fig3` `fig4` `costs` `dataset`. Each line prints the recomputed value
 next to the value reported in the paper.
+
+From a bare clone (without `evaluation_data/`), the sections that need
+only run artifacts work immediately: `table2` `table4` `table9`
+`table11` `table12` `fig3` `costs`. The remaining sections (`table1`,
+`fig4`, `dataset`) additionally read the ground-truth GeoJSONs and the
+metadata spreadsheet from `evaluation_data/` — place the dataset
+release there first.
 
 To re-run the underlying experiments rather than re-aggregate them
 (these call OpenRouter and cost API credits), the main benchmark is

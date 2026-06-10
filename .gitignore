@@ -82,9 +82,12 @@ ablations/vlm_e2e_pdf_to_geojson/*/
 !ablations/vlm_e2e_pdf_to_geojson/subset_*.json
 !ablations/vlm_e2e_pdf_to_geojson/subset_*_summary.md
 
-# Locate-only ablation per-case outputs. Paper-relevant artifacts
-# (locate_picks.csv and the per-case trajectories) are tracked
-# explicitly via `git add -f`; logs stay ignored.
+# Run outputs are ignored wholesale; the per-case artifacts that
+# scripts/reproduce_paper.py and the figure scripts read (metrics.json,
+# results.csv, the main run's summary.json, locate_picks.csv and the
+# locate trajectories) are tracked explicitly via `git add -f` so every
+# paper number recomputes from a fresh clone. Logs, images, message
+# logs and predicted geometries stay ignored.
 ablations/locate_only_eval/*/trajectories/
 ablations/locate_only_eval/*/run.log
 ablations/locate_only_eval/*/rerun*.log
