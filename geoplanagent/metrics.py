@@ -34,7 +34,8 @@ def geojson_to_shape(geojson_data: Dict[str, Any]) -> Polygon | MultiPolygon:
 
     Raises ValueError on anything outside the benchmark's output contract
     (a Feature with Polygon/MultiPolygon geometry), on conversion errors,
-    and when even repair cannot produce a valid geometry.
+    and when the geometry is empty or irreparably invalid — so a returned
+    shape is always a valid, non-empty boundary.
     """
     is_valid, error_msg = validate_geojson_format(geojson_data)
     if not is_valid:
@@ -47,6 +48,8 @@ def geojson_to_shape(geojson_data: Dict[str, Any]) -> Polygon | MultiPolygon:
             s = s.buffer(0)
         if not s.is_valid:
             raise ValueError("geometry invalid even after buffer(0) repair")
+        if s.is_empty:
+            raise ValueError("geometry is empty")
         return s
     except ValueError:
         raise
@@ -60,8 +63,6 @@ def calculate_positioning_error_m(pred_geojson, gt_geojson):
     try:
         pred_shape = geojson_to_shape(pred_geojson)
         gt_shape = geojson_to_shape(gt_geojson)
-        if pred_shape.is_empty or gt_shape.is_empty:
-            return None
         pc, gc = pred_shape.centroid, gt_shape.centroid
         return haversine_km(gc.y, gc.x, pc.y, pc.x) * 1000.0
     except Exception:
