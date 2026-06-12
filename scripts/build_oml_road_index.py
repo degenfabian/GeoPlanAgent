@@ -27,7 +27,7 @@ import tempfile
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
 OML_DIR = REPO / "os_opendata" / "open_map_local"
-OUT = HERE / "oml_road_index.json"
+OUT = HERE.parent / "geoplanagent" / "oml_road_index.json"
 
 
 def main():
