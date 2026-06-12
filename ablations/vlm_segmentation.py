@@ -41,7 +41,7 @@ from pydantic_ai.usage import UsageLimits
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
-from tools.agent._model import resolve_model
+from geoplanagent.agent._model import resolve_model
 
 
 # Output schema (enforced by pydantic-ai)

@@ -58,7 +58,7 @@ GeoMapAgent_autonomous/
 ├── pyproject.toml             # Dependencies (uv-managed)
 ├── uv.lock
 │
-├── tools/                     # Core pipeline (see tools/README.md)
+├── geoplanagent/              # Core pipeline (see geoplanagent/README.md)
 │   ├── agent/                 # Reader + worker + locate sub-agent + critic
 │   ├── matching/              # MINIMA sliding-window + RANSAC
 │   ├── extraction/            # SAM3 + LoRA k-fold loader (single module)
@@ -140,7 +140,7 @@ and auto-injects any `*_merged` folders not in the spreadsheet.
 ### Model aliases
 
 The aliases listed below are the only ones resolved in
-[`tools/agent/_model.py`](tools/agent/_model.py); any other string is
+[`geoplanagent/agent/_model.py`](geoplanagent/agent/_model.py); any other string is
 treated as a full OpenRouter ID and passed through unchanged. So
 `--model openai/gpt-4o-mini` works directly; `--model claude-sonnet`
 would be sent to OpenRouter literally and fail.
@@ -155,9 +155,9 @@ would be sent to OpenRouter literally and fail.
 ### Programmatic single-case usage
 
 ```python
-from tools.agent import run_agent
-from tools.extraction.sam3 import load_sam3_ft
-from tools.matching import load_minima
+from geoplanagent.agent import run_agent
+from geoplanagent.extraction.sam3 import load_sam3_ft
+from geoplanagent.matching import load_minima
 
 models = {"sam3_ft": load_sam3_ft(), "minima": load_minima()}
 
@@ -188,8 +188,8 @@ schema covering: site address, postcodes, grid references, scale,
 ranked map pages with per-page area-group / boundary-clarity /
 detail-level metadata, district info, and locate-stage signals
 (road names, place names, parishes, admin region, visible map
-labels). Schema lives in [`tools/agent/schemas.py`](tools/agent/schemas.py);
-prompt in [`tools/agent/prompts.py`](tools/agent/prompts.py).
+labels). Schema lives in [`geoplanagent/agent/schemas.py`](geoplanagent/agent/schemas.py);
+prompt in [`geoplanagent/agent/prompts.py`](geoplanagent/agent/prompts.py).
 
 In the `--no-reader` folded variant this phase is skipped: the PDF
 binary is attached to the worker's first user message and the worker
@@ -201,7 +201,7 @@ positioning tool. The downstream state is identical.
 Tool-calling pydantic-ai agent. Four worker tools:
 
 1. **`propose_centers(extra_terms?, match_context?)`** — invokes the
-   locate sub-agent (see [`tools/agent/locate_agent.py`](tools/agent/locate_agent.py)).
+   locate sub-agent (see [`geoplanagent/agent/locate_agent.py`](geoplanagent/agent/locate_agent.py)).
    The sub-agent reads pdf_info + the rendered map image and returns
    ONE `LocatePick` (lat, lon, σ, confidence, source, evidence).
    **In production the sub-agent ships with a single geocoder tool —
@@ -261,7 +261,7 @@ re-invoke the worker with a templated instruction.
 The worker's first-committed polygon is deep-copied before the loop
 fires, so a single run with `--enable-critic` produces paired
 no-critic / with-critic IoUs (saved as `worker_first_iou` in
-`metrics.json`). Implementation in [`tools/agent/critic_agent.py`](tools/agent/critic_agent.py).
+`metrics.json`). Implementation in [`geoplanagent/agent/critic_agent.py`](geoplanagent/agent/critic_agent.py).
 Max 2 rejection iterations per case by default.
 
 ## Output layout (per case)
@@ -319,7 +319,7 @@ exactly in the critic prompt for cross-phase consistency):
 
 Tie-break order across candidates (within the same `area_group`):
 `n_inliers` → `scale_consistency` (closer to 1.0 wins) → `road_name_agreement`.
-Scoring formulas live in [`tools/matching/reward.py`](tools/matching/reward.py).
+Scoring formulas live in [`geoplanagent/matching/reward.py`](geoplanagent/matching/reward.py).
 
 ## Headline numbers (paper, Gemini 3 Flash)
 
@@ -404,7 +404,7 @@ The test suite is offline and instant: `uv run pytest`.
 - **OS OpenData** — `OS_Open_Zoomstack.gpkg`, BoundaryLine, OpenNames,
   OpenMapLocal, Code-Point Open. All OGL v3, no API key, no rate limit.
   Placed under `os_opendata/`. Per-dataset setup instructions live in
-  the relevant geocoder docstrings (see [`tools/geo/README.md`](tools/geo/README.md)).
+  the relevant geocoder docstrings (see [`geoplanagent/geo/README.md`](geoplanagent/geo/README.md)).
 
 ## Requirements
 

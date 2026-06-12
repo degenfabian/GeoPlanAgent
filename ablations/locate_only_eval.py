@@ -62,13 +62,13 @@ import cv2  # noqa: E402
 from ablations._shared import (  # noqa: E402
     CSV_FIELDNAMES, gt_part_centroids, nearest_part_err_km,
 )
-from tools.agent.locate_agent import (  # noqa: E402
+from geoplanagent.agent.locate_agent import (  # noqa: E402
     _LOCATE_TOOL_NAMES, _build_locate_prompt, run_locate,
 )
-from tools.agent.runtime import extract_message_log_from_msgs  # noqa: E402
-from tools.io.pdf import resolve_case_pdf  # noqa: E402
-from tools.io.pdf import render_map_page  # noqa: E402
-from tools.metrics.geojson import load_geojson  # noqa: E402
+from geoplanagent.agent.runtime import extract_message_log_from_msgs  # noqa: E402
+from geoplanagent.io.pdf import resolve_case_pdf  # noqa: E402
+from geoplanagent.io.pdf import render_map_page  # noqa: E402
+from geoplanagent.metrics.geojson import load_geojson  # noqa: E402
 
 
 DEFAULT_CACHE = (

@@ -30,7 +30,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from tools.geo.coords import haversine_km   # noqa: E402
+from geoplanagent.geo.coords import haversine_km   # noqa: E402
 
 EVAL_ROOT = REPO_ROOT / "ablations" / "locate_only_eval"
 

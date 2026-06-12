@@ -53,8 +53,8 @@ total across the two model families and ten folds.
 
 ### Fold routing at inference
 
-`tools.extraction.sam3.set_fold_for_case(state, case_name)` delegates
-to the shared helper `tools.core.fold_routing.resolve_fold`:
+`geoplanagent.extraction.sam3.set_fold_for_case(state, case_name)` delegates
+to the shared helper `geoplanagent.fold_routing.resolve_fold`:
 
 1. Try `fold_assignment[case_name]` (raw eval-data folder name).
 2. Fall back to the canonical underscore form
@@ -90,7 +90,7 @@ uv run python training/eval/eval_sam_kfold.py
 ### Loading at inference
 
 ```python
-from tools.extraction.sam3 import load_sam3_ft, set_fold_for_case
+from geoplanagent.extraction.sam3 import load_sam3_ft, set_fold_for_case
 
 state = load_sam3_ft()                # base SAM3 + PEFT wrapper
 set_fold_for_case(state, case_name)   # swap in fold k's adapter
@@ -147,11 +147,11 @@ uv run python training/eval/eval_rotation_kfold.py --tta  # 4-way TTA → rotati
 
 ### Loading at inference
 
-Handled internally by `tools.io.map_page.render_map_page`. No need to
+Handled internally by `geoplanagent.io.pdf.render_map_page`. No need to
 call directly:
 
 ```python
-from tools.io.map_page import render_map_page
+from geoplanagent.io.pdf import render_map_page
 img, rot_info = render_map_page(pdf_path, page_1based=3, dpi=200,
                                   case_name="12:00116:ART4")
 # rot_info["rotation_cw_degrees"]: 90  (CW degrees the classifier applied)

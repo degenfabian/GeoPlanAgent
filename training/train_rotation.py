@@ -5,7 +5,7 @@ Inputs:
   - training/dataset/rotation_annotations.json  (corrective-rotation
     labels in degrees, hand-annotated)
 
-Fold routing is shared with SAM3 via tools.fold_routing + the
+Fold routing is shared with SAM3 via geoplanagent.fold_routing + the
 existing models/sam3_lora/fold_assignment.json. A case routed to fold
 K at SAM3 inference is the same case routed to fold K here, so the
 rotation classifier's hold-out partition matches SAM3's.
@@ -61,7 +61,7 @@ REPO = THIS.parent
 sys.path.insert(0, str(REPO))
 
 # Reuse SAM3's fold routing verbatim.
-from tools.fold_routing import (  # noqa: E402
+from geoplanagent.fold_routing import (  # noqa: E402
     N_FOLDS,
     resolve_fold as _resolve_fold,
 )

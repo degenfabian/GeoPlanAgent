@@ -22,8 +22,8 @@ import cv2
 from pathlib import Path, PurePosixPath
 from datetime import datetime
 
-from tools.io.pdf import resolve_case_pdf
-from tools.metrics.geojson import load_geojson, calculate_spatial_metrics
+from geoplanagent.io.pdf import resolve_case_pdf
+from geoplanagent.metrics.geojson import load_geojson, calculate_spatial_metrics
 
 # Duplicates removed from disk; filtered out of the dataset at load time.
 DUPLICATE_SL_NOS = {9, 68, 83, 232, 253}
@@ -33,8 +33,8 @@ DUPLICATE_SL_NOS = {9, 68, 83, 232, 253}
 
 def load_models():
     """Load SAM3 fine-tuned model and MINIMA matcher."""
-    from tools.extraction.sam3 import load_sam3_ft
-    from tools.matching import load_minima
+    from geoplanagent.extraction.sam3 import load_sam3_ft
+    from geoplanagent.matching import load_minima
 
     state = {}
     state["sam3_ft"] = load_sam3_ft()
@@ -61,7 +61,7 @@ def save_visualizations(result_dir, map_img, boundary_mask, predicted_geojson,
     if predicted_geojson is not None:
         viz_path = result_dir / "viz_comparison.png"
         try:
-            from tools.metrics.visualization import visualize_comparison
+            from geoplanagent.metrics.visualization import visualize_comparison
             visualize_comparison(
                 predicted_geojson=predicted_geojson,
                 ground_truth_geojson=gt_geojson,
@@ -146,7 +146,7 @@ def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
     """Run one case (or load it from cache), appending its summary row to
     ``all_results``. Returns True only on a fatal error that should stop
     the whole benchmark (invalid model ID)."""
-    from tools.agent import run_agent
+    from geoplanagent.agent import run_agent
 
     folder_name = str(row["Unique ID (Folder_Name)"])
     sl_no = int(row["Sl no"])

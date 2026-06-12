@@ -1,0 +1,251 @@
+"""Per-case mutable AgentState (the worker's deps) plus shared agent-runtime
+support: image/mask conversion helpers, dedup tracking, and the
+transient-HTTP retry wrapper for OpenRouter calls.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
+import numpy as np
+import hashlib
+import json
+import cv2
+from pydantic_ai import BinaryContent, ModelRetry
+import re
+import time as _time
+
+
+if TYPE_CHECKING:
+    from geoplanagent.agent.schemas import BoundaryOutcome
+
+
+class AgentState:
+    """Mutable state shared across all tool calls."""
+
+    def __init__(self, pdf_path, sam3_processor, sam3_model, device,
+                 minima_matcher, dpi=200, sam3_state=None, case_name=None,
+                 locate_model: str = "google/gemini-3-flash-preview",
+                 locate_disabled_tools: frozenset = frozenset(
+                     {"postcode", "grid_ref", "road", "intersect", "la_check"}
+                 ),
+                 folded_mode: bool = False):
+        self.pdf_path = pdf_path
+        self.sam3_processor = sam3_processor
+        self.sam3_model = sam3_model
+        self.device = device
+        self.minima_matcher = minima_matcher
+        self.dpi = dpi
+        self.locate_model: str = locate_model
+        # Production ships the locate sub-agent with `place` only — the
+        # locate-stage ablation showed 1-tool ≈ 6-tool in IoU (Δmean = +0.001
+        # on the 11 cross-1km regression-risk cases), and dropping the 5
+        # other tools shrinks the prompt + tool schema sent to the LLM.
+        #
+        # The other 5 tool wrappers + the factory pattern are RETAINED in
+        # geoplanagent.agent.locate_agent for paper-ablation reproducibility — the
+        # ablation harness calls run_locate(disabled_tools=…) directly with
+        # the LOO/min_N kits. Override via benchmark_runner's
+        # --locate-disabled-tools to run those kits in production too.
+        self.locate_disabled_tools: frozenset = locate_disabled_tools
+        # Ablation flag: when True the worker is also responsible for
+        # PDFInfo extraction (no separate reader phase). Drives the
+        # system_prompt branch, the submit_pdf_info tool gate, and the
+        # validator's pdf_info-empty check.
+        self.folded_mode: bool = folded_mode
+        self.sam3_state: Optional[Dict[str, Any]] = sam3_state
+        # Case folder name; needed for k-fold adapter routing.
+        self.case_name: Optional[str] = case_name
+        if self.case_name is None and pdf_path:
+            try:
+                self.case_name = Path(pdf_path).parent.name
+            except Exception:
+                pass
+
+        # Pre-rendered match pages, keyed by 1-based page number.
+        self.rendered_pages: Dict[int, np.ndarray] = {}
+        self.rendered_page_paths: Dict[int, str] = {}
+
+        # Lazily computed in match_at on first need per page.
+        self.sam_masks_by_page: Dict[int, np.ndarray] = {}
+
+        self.current_result: dict = {}
+
+        self.accepted = False
+        self.accept_reason = ""
+        self.recent_calls: set = set()
+        self.position_calls: int = 0
+
+        self.pdf_info: Dict[str, Any] = {}
+        self.rotation_checked: bool = False
+        self.last_output: Optional["BoundaryOutcome"] = None
+
+        # Locate sub-agent's picked candidates (one entry usually).
+        self.proposed_centers: List[Dict[str, Any]] = []
+        # Full message history from the most recent run_locate call.
+        # When the worker re-invokes propose_centers, this is passed back
+        # to run_locate as `prior_messages` so the locate sub-agent sees
+        # its previous reasoning + tool calls + pick.
+        self.locate_message_history: List[Any] = []
+        # Per-invocation token telemetry from the locate sub-agent. Each
+        # propose_centers call appends one dict:
+        #   {request_tokens: int, response_tokens: int,
+        #    n_messages: int, generation_id: Optional[str]}
+        # Collected here (rather than aggregated inline) so the audit
+        # script can attribute per-call costs to the right area_group
+        # if needed and so the cost telemetry stays additive across
+        # re-invocations within the same case.
+        self.locate_calls: List[Dict[str, Any]] = []
+        # Each match attempt covers one area_group; commit_match references by id.
+        self.match_attempts: Dict[int, Dict[str, Any]] = {}
+        self._match_attempt_counter: int = 0
+        # area_group → committed candidate_id. Multi-area docs accumulate;
+        # current_result["geojson"] is the union across groups.
+        self.committed_groups: Dict[int, int] = {}
+        self.match_at_budget: int = 5
+
+
+# Page-of-interest helpers
+
+def primary_match_page(state: "AgentState") -> Optional[int]:
+    """Highest-ranked map_page from the reader, or None."""
+    pages = ((state.pdf_info or {}).get("map_pages") or [])
+    return int(pages[0]) if pages else None
+
+
+def committed_primary_page(state: "AgentState") -> Optional[int]:
+    """Page of the worker's committed primary group, else the default match page."""
+    cr = state.current_result or {}
+    per_group = cr.get("per_group") or []
+    if per_group:
+        requested = cr.get("requested_group")
+        primary = next(
+            (g for g in per_group if g.get("area_group") == requested),
+            per_group[0],
+        )
+        page = primary.get("page")
+        if page is not None:
+            return int(page)
+    return primary_match_page(state)
+
+
+if TYPE_CHECKING:
+    from geoplanagent.agent.state import AgentState
+
+
+def resize_for_api(img: np.ndarray, max_dim: int = 1024) -> np.ndarray:
+    """Resize image so largest dimension is max_dim."""
+    h, w = img.shape[:2]
+    if max(h, w) <= max_dim:
+        return img
+    scale = max_dim / max(h, w)
+    return cv2.resize(img, (int(w * scale), int(h * scale)))
+
+
+def _img_to_binary(img: np.ndarray) -> BinaryContent:
+    """Convert numpy BGR image to PydanticAI BinaryContent."""
+    _, buf = cv2.imencode('.png', resize_for_api(img))
+    return BinaryContent(data=buf.tobytes(), media_type='image/png')
+
+
+def _dedup_check(state: "AgentState", tool_name: str, args: dict) -> None:
+    """Raise ModelRetry if this exact tool+args was already called."""
+    key = tool_name + ":" + hashlib.md5(
+        json.dumps(args, sort_keys=True, default=str).encode()
+    ).hexdigest()
+    if key in state.recent_calls:
+        raise ModelRetry(
+            "You already called this tool with the same arguments. "
+            "Try different arguments or respond with DONE."
+        )
+    state.recent_calls.add(key)
+
+
+def _create_boundary_overlay(map_img: np.ndarray, mask: np.ndarray) -> np.ndarray:
+    """Overlay boundary mask on map image (red tint, 40% opacity)."""
+    overlay = map_img.copy()
+    if mask is not None and mask.shape[:2] == map_img.shape[:2]:
+        overlay[mask > 0] = [0, 0, 255]
+    return cv2.addWeighted(map_img, 0.6, overlay, 0.4, 0)
+
+
+def _draw_geojson_on_tiles(tile_bgr, geojson, tile_info):
+    """Draw GeoJSON boundary outline on tile canvas."""
+    geom = geojson.get("geometry", {})
+    coord_rings = []
+    if geom.get("type") == "Polygon":
+        coord_rings = [geom["coordinates"][0]]
+    elif geom.get("type") == "MultiPolygon":
+        coord_rings = [poly[0] for poly in geom["coordinates"]]
+
+    zoom = tile_info.get("zoom", 17)
+    tx_min = tile_info.get("tx_min", 0)
+    ty_min = tile_info.get("ty_min", 0)
+    tile_size = tile_info.get("tile_size", 256)
+
+    from geoplanagent.geo.coords import latlon_to_global_tile_pixel
+    for ring in coord_rings:
+        pts = []
+        for lon_c, lat_c in ring:
+            abs_px, abs_py = latlon_to_global_tile_pixel(
+                lat_c, lon_c, zoom, tile_size)
+            px = abs_px - tx_min * tile_size
+            py = abs_py - ty_min * tile_size
+            pts.append([int(px), int(py)])
+        if len(pts) >= 3:
+            cv2.polylines(tile_bgr, [np.array(pts, dtype=np.int32)],
+                          True, (0, 0, 255), 2)
+    return tile_bgr
+
+
+# Status codes that are typically transient and worth retrying. 400 is
+# included because OpenRouter routinely surfaces upstream Gemini hiccups
+# (rate limit, model overload, transient safety-check backend failures)
+# as a generic 400 with body "Provider returned error".
+_RETRYABLE_STATUS = {400, 408, 425, 429, 500, 502, 503, 504}
+
+
+def _is_retryable_http_error(exc: Exception) -> bool:
+    """True if this exception looks like a transient OpenRouter/provider hiccup."""
+    try:
+        from pydantic_ai.exceptions import ModelHTTPError
+    except Exception:
+        return False
+    if not isinstance(exc, ModelHTTPError):
+        return False
+    s = str(exc)
+    m = re.search(r"status_code:\s*(\d+)", s)
+    if not m:
+        return False
+    return int(m.group(1)) in _RETRYABLE_STATUS
+
+
+def _run_sync_with_retry(agent_obj, *args, max_retries: int = 2,
+                          backoff_s: float = 5.0, label: str = "agent",
+                          **kwargs):
+    """Wrap Agent.run_sync with retries on transient HTTP errors.
+
+    Non-retryable errors (auth, bad input, ModelRetry / UnexpectedModelBehavior)
+    are re-raised immediately so we don't waste cycles.
+    """
+    last_exc = None
+    for attempt in range(max_retries + 1):
+        try:
+            return agent_obj.run_sync(*args, **kwargs)
+        except Exception as e:
+            if not _is_retryable_http_error(e) or attempt == max_retries:
+                raise
+            wait = backoff_s * (2 ** attempt)
+            print(f"  {label}: transient HTTP error (attempt "
+                  f"{attempt + 1}/{max_retries + 1}): {str(e)[:140]}"
+                  f" — retrying in {wait:.0f}s")
+            _time.sleep(wait)
+            last_exc = e
+    if last_exc is not None:
+        raise last_exc
+    raise RuntimeError(f"{label}: retry loop fell through without error")
+
+
+# Deferred: worker_agent imports AgentState from this module, so this
+# re-export (used by worker_tools) must come after AgentState exists.
+from geoplanagent.agent.worker_agent import _agent  # noqa: E402, F401

@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from tools.geo.coords import haversine_km
-from tools.metrics.geojson import geojson_to_shape
+from geoplanagent.geo.coords import haversine_km
+from geoplanagent.metrics.geojson import geojson_to_shape
 
 
 # Canonical per-case scoring CSV schema, shared across harnesses.
