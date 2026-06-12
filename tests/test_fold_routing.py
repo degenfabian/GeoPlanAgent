@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from tools.core.fold_routing import normalise_case_name, resolve_fold
+from geoplanagent.utils import normalise_case_name, resolve_fold
 
 ASSIGNMENT = Path("models/sam3_lora/fold_assignment.json")
 ALL_FOLDS = {0, 1, 2, 3, 4}
