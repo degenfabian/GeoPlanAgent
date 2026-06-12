@@ -59,18 +59,6 @@ def geojson_to_shape(geojson_data: Dict[str, Any]) -> Polygon | MultiPolygon:
     return s
 
 
-def calculate_positioning_error_m(pred_geojson, gt_geojson):
-    """Haversine distance in metres between the two polygon centroids"""
-
-    try:
-        pred_shape = geojson_to_shape(pred_geojson)
-        gt_shape = geojson_to_shape(gt_geojson)
-        pc, gc = pred_shape.centroid, gt_shape.centroid
-        return haversine_km(gc.y, gc.x, pc.y, pc.x) * 1000.0
-    except Exception:
-        return None
-
-
 def calculate_spatial_metrics(
     ground_truth_geojson: Dict[str, Any], predicted_geojson: Dict[str, Any]
 ) -> Dict[str, Any]:
@@ -124,9 +112,11 @@ def calculate_spatial_metrics(
                 "precision": float(precision),
                 "recall": float(recall),
                 "f1_score": float(f1),
-                "positioning_error_m": calculate_positioning_error_m(
-                    predicted_geojson, ground_truth_geojson
-                ),
+                # Centroid distance in metres (haversine, WGS84 centroids).
+                "positioning_error_m": haversine_km(
+                    gt_shape.centroid.y, gt_shape.centroid.x,
+                    pred_shape.centroid.y, pred_shape.centroid.x,
+                ) * 1000.0,
             }
         )
 
