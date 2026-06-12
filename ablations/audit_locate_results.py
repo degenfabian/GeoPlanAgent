@@ -177,8 +177,13 @@ def main() -> int:
         total_b += b
         rerun_total += len(rerun_list)
 
+        # Only materialise a rerun list when there is something to rerun;
+        # a clean config leaves no file behind.
         rerun_file = cfg / "rerun_cases.txt"
-        rerun_file.write_text("\n".join(rerun_list) + ("\n" if rerun_list else ""))
+        if rerun_list:
+            rerun_file.write_text("\n".join(rerun_list) + "\n")
+        elif rerun_file.exists():
+            rerun_file.unlink()
 
         md.append(f"| {cfg.name} | {a} | {b} | {len(rerun_list)} |\n")
 

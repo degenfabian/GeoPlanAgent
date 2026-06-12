@@ -7,7 +7,6 @@ Two buckets per config:
 |---|---:|---:|---:|
 | full | 0 | 0 | 0 |
 | min_1_tool | 0 | 1 | 1 |
-| min_2_tool | 0 | 0 | 0 |
 | no_grid_ref | 0 | 0 | 0 |
 | no_intersect | 0 | 0 | 0 |
 | no_la_check | 0 | 0 | 0 |
