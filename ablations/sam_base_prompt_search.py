@@ -136,7 +136,7 @@ def run_prompt(
                           f"IoU={iou:.4f}")
                     rows.append({"case": case, "fold": fold, "filename": fname,
                                  "iou": iou, "call_seconds": "",
-                                 "error": "", "notes": "resumed"})
+                                 "error": ""})
                     continue
             except Exception:
                 pass  # fall through to fresh inference

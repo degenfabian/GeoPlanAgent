@@ -6,10 +6,20 @@
 - WORKER_SYSTEM_PROMPT  : instructions for the worker agent
                           (output_type=BoundaryOutcome). Drives the
                           tool-calling positioning + extraction loop.
+- FOLDED_SYSTEM_PROMPT  : single-agent prompt for the folded-reader
+                          ablation, composed from the two prompts above
+                          by _build_folded_system_prompt.
+- _LOCATE_* / _STEP_*   : locate sub-agent prompt sections, assembled by
+                          agents.locate._build_locate_prompt (supports the
+                          leave-one-out tool ablation).
+- CRITIC_INSTRUCTIONS   : system prompt for the independent critic agent
+                          (agents.critic).
 
 Field descriptions in `geoplanagent/schemas.py` are authoritative; these
-prompts add behaviour, decision rules, and tool-flow guidance. The
-strings appear verbatim in the paper appendix, so edit with care.
+prompts add behaviour, decision rules, and tool-flow guidance.
+READER_SYSTEM_PROMPT and WORKER_SYSTEM_PROMPT appear verbatim in the
+paper appendix (and FOLDED_SYSTEM_PROMPT is derived from them), so edit
+with care.
 """
 
 from __future__ import annotations
@@ -315,12 +325,14 @@ def _build_folded_system_prompt() -> str:
     its WORKFLOW description onwards), wrapped in a thin connector that frames
     the work as two phases and explains the new submit_pdf_info tool gate.
 
-    Three surgical edits remove sentences in the worker prompt that explicitly
-    assume a separate reader phase. These are the ONLY paraphrases in the
-    folded prompt; everything else is verbatim from the source prompts so
-    that any future edit to READER_SYSTEM_PROMPT or WORKER_SYSTEM_PROMPT
-    propagates automatically. The edit list at the bottom of this function
-    documents exactly what was changed.
+    Six surgical edits are applied to the worker body: three remove
+    sentences that explicitly assume a separate reader phase, and three
+    rename "reader's ..." references to the PDFInfo fields the folded agent
+    populates itself (PDFInfo.scale / PDFInfo.road_names). These are the
+    only paraphrases in the folded prompt; everything else is verbatim from
+    the source prompts so that any future edit to READER_SYSTEM_PROMPT or
+    WORKER_SYSTEM_PROMPT propagates automatically. The `edits` list in this
+    function documents exactly what was changed.
     """
     # Slice the reader's FIELD GUIDANCE block (verbatim)
     _reader_split = READER_SYSTEM_PROMPT.split("FIELD GUIDANCE", 1)

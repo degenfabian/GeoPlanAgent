@@ -40,7 +40,7 @@ Aggregation back into paper numbers is `scripts/reproduce_paper.py`
 | `locate-vlm` | [`locate_vlm_direct.py`](locate_vlm_direct.py) | Single-shot VLM-direct geocoder (no tools): sends the PDF, asks for one (lat, lon). |
 | `collapsed-reader` | `benchmark_runner.py --no-reader` | Folded ablation — the worker fills `PDFInfo` itself via a first tool call instead of a dedicated Reader phase. |
 | `build-subset` | [`build_vlm_e2e_subset.py`](build_vlm_e2e_subset.py) | Deterministic (seed 42) stratified 40-case subset over document-quality × shape-complexity. Offline. |
-| `reader-cache` | [`extract_pdf_info_cache.py`](extract_pdf_info_cache.py) | Runs the reader once per case and caches `PDFInfo` to `cached_pdf_info_for_locate_ablations.json`, so every locate variant reuses identical reader output. |
+| `reader-cache` | [`extract_pdf_info_cache.py`](extract_pdf_info_cache.py) | Freezes per-case `PDFInfo` from an existing benchmark run into `cached_pdf_info_for_locate_ablations.json` (no reader execution, offline), so every locate variant reuses identical reader output. |
 | `audit-locate` | [`audit_locate_results.py`](audit_locate_results.py) | Post-hoc audit of locate trajectories: flags LA-centroid emergency fallbacks and picks > 5 km from every tool return. Drives [`locate_only_eval/AUDIT.md`](locate_only_eval/AUDIT.md). Offline. |
 
 [`_shared.py`](_shared.py) holds the GT-centroid extraction and

@@ -20,7 +20,6 @@ aggregation step can pivot all configs into one table:
         vlm_direct_<model_alias>/        # this script
             locate_picks.csv             # same column schema
             trajectories/<case>.json
-            run.log
 
 Usage (from repo root):
 
@@ -107,7 +106,7 @@ is ambiguous, default to your most confident interpretation."""
 class VlmGeocodePick(BaseModel):
     """Single-shot VLM-direct geocode output. Mirrors the locate
     sub-agent's LocatePick on the fields that downstream scoring needs;
-    omits sigma_m / confidence / verification (no tools available)."""
+    omits sigma_m / confidence (no tools available)."""
     lat: float = Field(
         description="WGS84 latitude of the application site. UK range "
                     "roughly 49.8 to 60.9.",
@@ -234,8 +233,6 @@ def evaluate(args: argparse.Namespace) -> int:
             row["case"] = case
             row["n_gt_parts"] = len(centroids)
             row["picked_source"] = "vlm_direct"
-            row["confidence"] = ""
-            row["sigma_m"] = ""
 
             if pdf_path is None:
                 row["error"] = "no PDF"

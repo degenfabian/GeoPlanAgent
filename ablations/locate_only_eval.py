@@ -8,7 +8,7 @@ Used for:
   1. Locate LOO ablation: run with ``--disabled-tools postcode`` (etc.)
      for each of the 6 tools and compare per-tool error deltas against
      the no-disabled baseline.
-  2. Locate vs VLM-direct geocode (sibling script — coming next).
+  2. Locate vs VLM-direct geocode (sibling: locate_vlm_direct.py).
 
 Inputs:
   ablations/cached_pdf_info_for_locate_ablations.json (frozen reader
@@ -196,8 +196,8 @@ def dump_prompts(out_dir: Path) -> None:
 def evaluate(args: argparse.Namespace) -> int:
     disabled = _parse_disabled(args.disabled_tools)
     # Allow caller to override the auto-derived dir name. Useful for
-    # named subset ablations (e.g. "min_3_tool" instead of the verbose
-    # "no_grid_ref_intersect_road").
+    # named subset ablations (e.g. "min_1_tool" instead of the verbose
+    # "no_grid_ref_intersect_la_check_postcode_road").
     label = args.config_label or _config_label(disabled)
     out_root = Path(args.out_root)
     out_dir = out_root / label
@@ -397,7 +397,7 @@ def main() -> int:
         "--config-label", default=None,
         help="Override the auto-derived output dir name. Default: "
              "'full' / 'no_<tool>' / 'no_<tool1>_<tool2>'. Set this "
-             "(e.g. 'min_3_tool') when running multi-tool subsets so "
+             "(e.g. 'min_1_tool') when running multi-tool subsets so "
              "the output path is human-readable.",
     )
     parser.add_argument(

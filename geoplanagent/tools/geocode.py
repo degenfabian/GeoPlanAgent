@@ -6,16 +6,18 @@ OS BoundaryLine administrative-area polygon resolution.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
-import numpy as np
+from typing import Any, Dict, List, Optional, Tuple
 import pandas as pd
 import re
 from pyproj import Transformer
-from typing import Any
 
 
-DATA_DIR = (Path(__file__).resolve().parent.parent.parent
-            / "os_opendata" / "open_names" / "csv" / "Data")
+ROOT = Path(__file__).resolve().parent.parent.parent
+DATA_DIR = ROOT / "os_opendata" / "open_names" / "csv" / "Data"
+
+# Shared BNG (EPSG:27700) → WGS84 transformer. pyproj is a hard dep, so
+# the construction cost is paid once, eagerly, at import.
+_OSGB_TO_WGS84 = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True)
 
 _HEADER = [
     "ID", "NAMES_URI", "NAME1", "NAME1_LANG", "NAME2", "NAME2_LANG",
@@ -30,7 +32,7 @@ _HEADER = [
     "RELATED_SPATIAL_OBJECT", "SAME_AS_DBPEDIA", "SAME_AS_GEONAMES",
 ]
 
-_KEEP_COLS = ["NAME1", "TYPE", "LOCAL_TYPE",
+_KEEP_COLS = ["NAME1", "LOCAL_TYPE",
               "GEOMETRY_X", "GEOMETRY_Y",
               "DISTRICT_BOROUGH", "COUNTY_UNITARY", "COUNTRY",
               # POPULATED_PLACE is the village/hamlet-level context
@@ -42,29 +44,14 @@ _KEEP_COLS = ["NAME1", "TYPE", "LOCAL_TYPE",
               # could not match by Cullivoe).
               "POPULATED_PLACE"]
 
-# Sigma (meters) by LOCAL_TYPE — uncertainty about the planning-doc site
-# location given this gazetteer hit. The OS BLPU centroid is sub-metre
-# accurate, but a "City" feature has 5km extent and the site within it
-# could be anywhere; "Section of Named Road" is much tighter.
-_SIGMA_BY_TYPE = {
-    "city": 4000, "town": 1500, "suburban area": 800, "village": 600,
-    "hamlet": 400, "other settlement": 800,
-    "section of named road": 200, "named road": 250,
-    "postcode": 300,
-    "named place": 500, "named area": 1000,
-    "spot height": 200, "valley": 1500, "wood or forest": 800,
-}
-_DEFAULT_SIGMA = 1000
-
 
 _TABLE: Optional[pd.DataFrame] = None
-_NAME_INDEX: Optional[Dict[str, np.ndarray]] = None  # lowercase NAME1 -> row idxs
 
 
 def _load() -> pd.DataFrame:
     """Lazy-load the full Open Names dataset into a single DataFrame.
     Memory: ~150MB. Loads in ~3-5s on first call. Idempotent."""
-    global _TABLE, _NAME_INDEX
+    global _TABLE
     if _TABLE is not None:
         return _TABLE
     if not DATA_DIR.is_dir():
@@ -88,35 +75,9 @@ def _load() -> pd.DataFrame:
             continue
     _TABLE = pd.concat(parts, ignore_index=True)
     _TABLE["LOCAL_TYPE"] = _TABLE["LOCAL_TYPE"].fillna("").str.lower()
-    _TABLE["TYPE"] = _TABLE["TYPE"].fillna("").str.lower()
-    # Build lowercase index for O(1) exact lookup
+    # Lowercase name column for the exact/prefix matching in search()
     _TABLE["_NAME_LC"] = _TABLE["NAME1"].fillna("").str.lower().str.strip()
-    name_idx: Dict[str, list] = {}
-    for i, n in enumerate(_TABLE["_NAME_LC"].values):
-        if not n: continue
-        name_idx.setdefault(n, []).append(i)
-    _NAME_INDEX = {k: np.asarray(v, dtype=np.int64) for k, v in name_idx.items()}
     return _TABLE
-
-
-def _bng_to_wgs84(easting: float, northing: float) -> Tuple[float, float]:
-    """BNG (EPSG:27700) → WGS84 lat/lon. Cached transformer is module-level."""
-    global _TRANSFORMER
-    try:
-        return _TRANSFORMER.transform(easting, northing)[::-1]
-    except NameError:
-        from pyproj import Transformer
-        _TRANSFORMER = Transformer.from_crs(27700, 4326, always_xy=True)
-        lon, lat = _TRANSFORMER.transform(easting, northing)
-        return lat, lon
-
-
-def _sigma_for_type(local_type: str) -> int:
-    lt = (local_type or "").lower()
-    for k, sig in _SIGMA_BY_TYPE.items():
-        if k in lt:
-            return sig
-    return _DEFAULT_SIGMA
 
 
 def _safe_str(v) -> str:
@@ -131,22 +92,15 @@ def _row_to_hit(row: pd.Series) -> Dict:
     name = _safe_str(row.get("NAME1"))
     bo = _safe_str(row.get("DISTRICT_BOROUGH"))
     co = _safe_str(row.get("COUNTY_UNITARY"))
-    name_full = ", ".join(p for p in (name, bo, co) if p)
-    lat, lon = _bng_to_wgs84(float(row["GEOMETRY_X"]), float(row["GEOMETRY_Y"]))
+    lon, lat = _OSGB_TO_WGS84.transform(float(row["GEOMETRY_X"]),
+                                        float(row["GEOMETRY_Y"]))
     lt = row.get("LOCAL_TYPE", "") or ""
-    # Surface ``name``, ``admin_district`` and ``county`` as their own
-    # keys. The locate-agent's ``place`` tool reads them under those
-    # names — previously ``_row_to_hit`` only set ``name_full`` and
-    # folded district/county into it, so the LLM got nulls for all
-    # three disambiguation fields and had to spend extra ``la_check``
-    # calls.
+    # The locate-agent's ``place`` tool reads ``name``, ``type``,
+    # ``admin_district`` and ``county`` under exactly these keys.
     return {
-        "name_full": name_full or name,
         "name": name or None,
         "type": lt,
         "lat": float(lat), "lon": float(lon),
-        "sigma_m": _sigma_for_type(lt),
-        "source": f"os_open_names:{lt or 'unknown'}",
         "admin_district": bo or None,
         "county": co or None,
     }
@@ -168,23 +122,8 @@ def _normalize_query(q: str) -> List[str]:
     return cands
 
 
-def _wgs84_bbox_to_bng(lat_min: float, lon_min: float,
-                          lat_max: float, lon_max: float) -> Tuple[float, float, float, float]:
-    """Convert a WGS84 bbox to a BNG bbox (axis-aligned, slight inflation
-    for safety since BNG isn't axis-aligned with WGS84)."""
-    from pyproj import Transformer
-    t = Transformer.from_crs(4326, 27700, always_xy=True)
-    corners = [t.transform(lon, lat) for lat in (lat_min, lat_max)
-               for lon in (lon_min, lon_max)]
-    xs = [c[0] for c in corners]; ys = [c[1] for c in corners]
-    return min(xs), min(ys), max(xs), max(ys)
-
-
 def search(query: str, max_results: int = 10,
-           context: Optional[str] = None,
-           bbox_wgs84: Optional[Tuple[float, float, float, float]] = None,
-           bbox_radius_km: Optional[float] = None,
-           bbox_center: Optional[Tuple[float, float]] = None) -> List[Dict]:
+           context: Optional[str] = None) -> List[Dict]:
     """Return up to `max_results` hits ranked by exact > prefix > fuzzy.
 
     Args:
@@ -195,13 +134,6 @@ def search(query: str, max_results: int = 10,
         context: optional UK county/region/district to disambiguate. Pre-FILTERS
             the search to rows whose DISTRICT_BOROUGH/COUNTY_UNITARY/COUNTRY
             contains any context token. Falls back to global if no rows match.
-        bbox_wgs84: optional (lat_min, lon_min, lat_max, lon_max) to spatially
-            constrain the search. Stronger than `context` for disambiguating
-            common road names (Manor Road, West Street). Cases where every
-            postcode/parish hit is within ~5km of one location should pass
-            the bbox derived from those.
-        bbox_center, bbox_radius_km: alternative to bbox_wgs84; if both given,
-            constructs a bbox of ±(radius/111) degrees around (lat, lon).
     """
     if not query or not query.strip():
         return []
@@ -209,36 +141,7 @@ def search(query: str, max_results: int = 10,
 
     rows_pool = df
 
-    # 1. Spatial bbox filter (strongest disambiguator — UK postcodes give
-    #    sub-borough precision).
-    # 111 km/°: rough mean length of one degree of latitude on the WGS84
-    # ellipsoid (varies by ±0.5% with latitude — fine for a filter bbox).
-    # 1.6× lon half-width: at mid-UK latitude (~54°), cos(54°) ≈ 0.588,
-    # so one degree of longitude is ~65 km. Symmetric-in-km coverage
-    # therefore needs lon-degree half-width ≈ 1/0.588 ≈ 1.7× the lat
-    # half-width; 1.6 is the safe rounded approximation.
-    if bbox_wgs84 is None and bbox_center is not None and bbox_radius_km:
-        clat, clon = bbox_center
-        d = bbox_radius_km / 111.0
-        bbox_wgs84 = (clat - d, clon - 1.6 * d, clat + d, clon + 1.6 * d)
-    if bbox_wgs84 is not None:
-        lat_min, lon_min, lat_max, lon_max = bbox_wgs84
-        x_min, y_min, x_max, y_max = _wgs84_bbox_to_bng(
-            lat_min, lon_min, lat_max, lon_max)
-        # 500 m BNG inflation: handles place-name records whose
-        # GEOMETRY_X/Y is the centroid of a feature whose extent crosses
-        # the bbox boundary (parks, large estates). 500 m comfortably
-        # exceeds the largest such offset in Open Names while staying
-        # tight enough that the resulting candidate pool is small.
-        x_min -= 500; y_min -= 500; x_max += 500; y_max += 500
-        spatial_mask = (
-            (df["GEOMETRY_X"] >= x_min) & (df["GEOMETRY_X"] <= x_max) &
-            (df["GEOMETRY_Y"] >= y_min) & (df["GEOMETRY_Y"] <= y_max)
-        )
-        if spatial_mask.any():
-            rows_pool = df[spatial_mask]
-
-    # 2. Pre-filter by context if provided (cumulative with spatial filter).
+    # Pre-filter by context if provided.
     #    Strip "District"/"Borough" suffixes so "South Norfolk District" matches
     #    DISTRICT_BOROUGH="South Norfolk".
     if context:
@@ -297,18 +200,9 @@ def search(query: str, max_results: int = 10,
             pass
 
     if not idxs:
-        # Context filter eliminated everything? Retry globally — but
-        # KEEP the bbox / radius constraints. A caller that supplied
-        # both context and a bbox is using the bbox as the stronger
-        # spatial signal (it's typically sub-borough); dropping it on
-        # the fallback would silently widen the recursive search to
-        # the whole UK and could return wrong-LA hits the bbox was
-        # supposed to prevent.
+        # Context filter eliminated everything? Retry globally.
         if context and rows_pool is not df:
-            return search(query, max_results=max_results, context=None,
-                           bbox_wgs84=bbox_wgs84,
-                           bbox_center=bbox_center,
-                           bbox_radius_km=bbox_radius_km)
+            return search(query, max_results=max_results, context=None)
         return []
 
     rows = df.iloc[idxs]
@@ -327,78 +221,6 @@ def search(query: str, max_results: int = 10,
     return hits
 
 
-def lookup(query: str, context: Optional[str] = None,
-           bbox_center: Optional[Tuple[float, float]] = None,
-           bbox_radius_km: Optional[float] = None) -> Optional[Dict]:
-    """Single-best-hit lookup. Returns the top hit or None."""
-    hits = search(query, max_results=1, context=context,
-                       bbox_center=bbox_center, bbox_radius_km=bbox_radius_km)
-    return hits[0] if hits else None
-
-
-def lookup_postcode_os_names(postcode: str) -> Optional[Dict]:
-    """Lookup a UK postcode — returns the postcode centroid (BLPU sub-metre
-    BNG). OS Open Names stores 1.74M full postcodes with NAME1='NW3 7QR'
-    etc. Falls back to averaging all postcodes sharing the outward code if
-    only outward (e.g. 'NW3') was provided.
-    """
-    if not postcode: return None
-    df = _load()
-    pc = postcode.strip().upper()
-    # Normalize: insert space if missing ("NW37QR" -> "NW3 7QR")
-    norm = pc.replace(" ", "")
-    if len(norm) > 4:
-        # Full postcode: outward (3-4 chars) + inward (3 chars)
-        full = f"{norm[:-3]} {norm[-3:]}"
-    else:
-        full = norm
-    # Try full postcode exact
-    if full.lower() in (_NAME_INDEX or {}):
-        idxs = _NAME_INDEX[full.lower()]
-        return _row_to_hit(df.iloc[idxs[0]])
-    # Try outward-only: NAME1 starts with the outward + space
-    outward = norm[:-3] if len(norm) > 4 else norm
-    mask = (df["_NAME_LC"].str.startswith(outward.lower() + " ", na=False) &
-            df["LOCAL_TYPE"].str.contains("postcode", na=False, case=False))
-    idxs = df.index[mask].tolist()
-    if not idxs: return None
-    # Return centroid of all matching postcodes (outward area centroid)
-    sub = df.iloc[idxs]
-    cx = float(sub["GEOMETRY_X"].mean())
-    cy = float(sub["GEOMETRY_Y"].mean())
-    lat, lon = _bng_to_wgs84(cx, cy)
-    return {
-        "name_full": f"{outward} (outward area)",
-        "type": "postcode_outward",
-        "lat": float(lat), "lon": float(lon),
-        "sigma_m": 1500,  # outward postcodes are ~1-3 sq km
-        "source": "os_open_names:postcode_outward",
-        "n_subcodes": len(idxs),
-    }
-
-
-def os_names_is_loaded() -> bool:
-    return _TABLE is not None
-
-
-if __name__ == "__main__":
-    import sys
-    import time
-    if len(sys.argv) < 2:
-        print("usage: python -m geoplanagent.tools.geocode <query> [context]")
-        sys.exit(1)
-    t0 = time.time()
-    df = _load()
-    print(f"Loaded {len(df):,} rows in {time.time()-t0:.1f}s")
-    q = sys.argv[1]
-    ctx = sys.argv[2] if len(sys.argv) > 2 else None
-    print(f"Query: {q!r}  context={ctx!r}")
-    for h in search(q, max_results=5, context=ctx):
-        print(f"  {h['name_full']:50s} {h['type']:25s} "
-              f"({h['lat']:.5f}, {h['lon']:.5f}) σ={h['sigma_m']}m")
-
-
-ROOT = Path(__file__).resolve().parent.parent.parent
 CSV_DIR = ROOT / "os_opendata" / "code_point_open" / "csv" / "Data" / "CSV"
 _CODELIST_XLSX = (ROOT / "os_opendata" / "code_point_open" / "csv" / "Doc"
                   / "Codelist.xlsx")
@@ -408,7 +230,6 @@ _CODELIST_XLSX = (ROOT / "os_opendata" / "code_point_open" / "csv" / "Doc"
 # admin district, or '' when the CSV row omitted it. Used by
 # `lookup_postcode` to surface a human-readable admin_district name.
 _CACHE: Dict[str, Dict[str, tuple]] = {}
-_TRANSFORMER_CP = None
 # GSS code -> name, lazily loaded from the Codelist.xlsx that ships with
 # Code-Point Open. Resolves codes from DIS / LBO / MTD / UTA sheets
 # (district + borough + metropolitan + unitary). Empty dict if the
@@ -496,7 +317,6 @@ def _load_district_names() -> Dict[str, str]:
         _DISTRICT_NAMES = {}
         return _DISTRICT_NAMES
     try:
-        import pandas as pd
         names: Dict[str, str] = {}
         for sheet in ("DIS", "LBO", "MTD", "UTA"):
             try:
@@ -515,15 +335,6 @@ def _load_district_names() -> Dict[str, str]:
         return _DISTRICT_NAMES
 
 
-def _bng_to_wgs84_cp(easting: float, northing: float):
-    global _TRANSFORMER_CP
-    if _TRANSFORMER_CP is None:
-        from pyproj import Transformer
-        _TRANSFORMER_CP = Transformer.from_crs(27700, 4326, always_xy=True)
-    lon, lat = _TRANSFORMER_CP.transform(easting, northing)
-    return lat, lon
-
-
 def lookup_postcode(postcode: str) -> Optional[Dict]:
     """Lookup a full UK postcode (e.g. 'AL1 3JE'). Returns None if not found."""
     pc_norm = _normalize_postcode(postcode)
@@ -534,43 +345,13 @@ def lookup_postcode(postcode: str) -> Optional[Dict]:
     coords = area_dict.get(pc_norm)
     if coords is None: return None
     e, n, dcode = coords
-    lat, lon = _bng_to_wgs84_cp(e, n)
+    lon, lat = _OSGB_TO_WGS84.transform(e, n)
     district_name = _load_district_names().get(dcode) if dcode else None
     return {
         "lat": float(lat), "lon": float(lon),
-        "easting": int(e), "northing": int(n),
-        "sigma_m": 50,  # Code-Point Open is sub-metre; sigma is positional uncertainty
-        "source": "code_point_open",
-        "name_full": f"Postcode {pc_norm}",
-        "type": "postcode_unit",
         "admin_district": district_name,
-        "admin_district_code": dcode or None,
     }
 
-
-def code_point_is_loaded(area: str = None) -> bool:
-    if area is None: return bool(_CACHE)
-    return area in _CACHE
-
-
-if __name__ == "__main__":
-    import sys
-    import time
-    if len(sys.argv) < 2:
-        print("usage: python -m geoplanagent.tools.geocode <postcode>")
-        sys.exit(1)
-    t0 = time.time()
-    pc = " ".join(sys.argv[1:])
-    h = lookup_postcode(pc)
-    if h:
-        print(f"{pc} -> ({h['lat']:.6f}, {h['lon']:.6f})  BNG=({h['easting']}, {h['northing']})  σ={h['sigma_m']}m")
-        print(f"(load + lookup: {time.time()-t0:.2f}s)")
-    else:
-        print(f"{pc} -> not found")
-
-
-# Average meters per degree of latitude
-METERS_PER_DEGREE_LAT = 111111.0
 
 # OS Grid Reference → WGS84
 
@@ -587,8 +368,6 @@ for _c1 in range(26):
         n = 19 - 5 * (_l1 // 5) - (_l2 // 5)
         if 0 <= e <= 9 and 0 <= n <= 24:  # valid GB range
             _OS_GRID_LETTERS[chr(_c1 + 65) + chr(_c2 + 65)] = (e * 100000, n * 100000)
-
-_OSGB_TO_WGS84 = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True)
 
 
 _EN_RE = re.compile(r"(\d{4,7})\s*E\s*(\d{4,7})\s*N", re.IGNORECASE)
@@ -624,68 +403,10 @@ def parse_easting_northing(text: str) -> Optional[Tuple[float, float]]:
     except Exception:
         return None
     # Defence-in-depth: reject anything outside the UK lat/lon bbox
-    # too. Matches the guard in os_grid_ref_to_latlon and
-    # os_grid_ref_to_latlon_coarse.
+    # too. Matches the guard in os_grid_ref_to_latlon.
     if not (49.0 <= lat <= 61.0 and -8.5 <= lon <= 2.0):
         return None
     return float(lat), float(lon)
-
-
-def os_grid_ref_to_latlon_coarse(grid_ref: str) -> Optional[Tuple[float, float]]:
-    """Convert a low-resolution OS grid ref (10km or 5km square) to (lat, lon).
-
-    Handles ``TR 34`` (10km tile centre) and ``TR 34 SE`` (south-east 5km
-    quadrant centre). These are too imprecise for the strict
-    ``os_grid_ref_to_latlon`` (which requires 1km resolution) but still
-    make a useful coarse anchor when no better signal exists.
-
-    Returns (lat, lon) at the CENTRE of the referenced tile / quadrant,
-    or None if parsing fails.
-    """
-    if not grid_ref:
-        return None
-    s = grid_ref.strip().upper().replace(",", "").replace("  ", " ")
-
-    # Optional trailing compass quadrant
-    quad = None
-    m = re.search(r"\s+(NE|NW|SE|SW)$", s)
-    if m:
-        quad = m.group(1)
-        s = s[:m.start()]
-
-    # Parse letters + 2 digits (10km tile)
-    m = re.match(r"^([A-Z]{2})\s*(\d)\s*(\d)$", s) or \
-        re.match(r"^([A-Z]{2})\s*(\d)(\d)$", s)
-    if not m:
-        return None
-    letters, e_dig, n_dig = m.group(1), m.group(2), m.group(3)
-    if letters not in _OS_GRID_LETTERS:
-        return None
-
-    base_e, base_n = _OS_GRID_LETTERS[letters]
-    # 10km tile: digit × 10000 metres, centred at +5000 within the tile
-    easting = base_e + int(e_dig) * 10_000
-    northing = base_n + int(n_dig) * 10_000
-    easting += 5_000
-    northing += 5_000
-
-    # Quadrant = 5km sub-square; offset from 10km centre by ±2500 m
-    if quad == "NE":
-        easting += 2_500;  northing += 2_500
-    elif quad == "NW":
-        easting -= 2_500;  northing += 2_500
-    elif quad == "SE":
-        easting += 2_500;  northing -= 2_500
-    elif quad == "SW":
-        easting -= 2_500;  northing -= 2_500
-
-    try:
-        lon, lat = _OSGB_TO_WGS84.transform(easting, northing)
-    except Exception:
-        return None
-    if not (49.0 <= lat <= 61.0 and -8.5 <= lon <= 2.0):
-        return None
-    return lat, lon
 
 
 def os_grid_ref_to_latlon(grid_ref: str) -> Optional[Tuple[float, float]]:
@@ -766,9 +487,6 @@ def os_grid_ref_to_latlon(grid_ref: str) -> Optional[Tuple[float, float]]:
         return None
 
     return lat, lon
-
-# Minimum points required to form a valid polygon
-MIN_POLYGON_POINTS = 3
 
 
 _LA_POLYGONS = None
@@ -914,44 +632,30 @@ def lookup_district_boundary(
     Look up the boundary polygon of a UK administrative district from
     OS BoundaryLine (offline, OS Open Data).
 
-    Resolves the name through resolve_la, which
-    normalises common UK admin variants (strips "District", "Borough",
-    "London Borough of", "City of …", "Council", etc.) and tries all
-    "|"-separated alternates in order until one resolves.
+    Resolves the name through resolve_la, which normalises common UK
+    admin variants (strips "District", "Borough", "London Borough of",
+    "City of …", "Council", etc.).
 
     Used by the worker's `lookup_district` tool for district-wide planning
     documents (entire LA / borough / ward covered).
 
     Args:
         district_name: e.g. "Camden, UK", "Royal Borough of Kensington
-            and Chelsea, UK", "Broadland District, Norfolk, UK", or
-            "City of Westminster, UK | Westminster, UK".
+            and Chelsea, UK", or "Broadland District, Norfolk, UK".
 
     Returns:
         Dict with:
           - success (bool)
           - geojson (Feature with MultiPolygon geometry; source =
             "os_boundaryline")
-          - coordinates, geometry_type, bbox
-          - resolved_variant (which "|" alternate matched)
           - error (on failure)
     """
     from shapely.geometry import mapping, MultiPolygon, Polygon
 
-    variants = [v.strip() for v in district_name.split("|") if v.strip()]
-    if not variants:
-        variants = [district_name]
-
-    poly = None
-    resolved_variant = None
-    for v in variants:
-        try:
-            poly = resolve_la(v)
-        except Exception:
-            poly = None
-        if poly is not None:
-            resolved_variant = v
-            break
+    try:
+        poly = resolve_la(district_name)
+    except Exception:
+        poly = None
 
     if poly is None:
         return {
@@ -969,9 +673,6 @@ def lookup_district_boundary(
                      f"{type(poly).__name__}",
         }
 
-    geometry = mapping(poly)
-    minx, miny, maxx, maxy = poly.bounds
-
     return {
         "success": True,
         "geojson": {
@@ -979,17 +680,37 @@ def lookup_district_boundary(
             "properties": {
                 "source": "os_boundaryline",
                 "query": district_name,
-                "resolved_variant": resolved_variant,
+                "resolved_variant": district_name,
             },
-            "geometry": geometry,
+            "geometry": mapping(poly),
         },
-        "coordinates": geometry["coordinates"],
-        "geometry_type": geometry["type"],
-        "bbox": {
-            "min_lon": float(minx),
-            "max_lon": float(maxx),
-            "min_lat": float(miny),
-            "max_lat": float(maxy),
-        },
-        "resolved_variant": resolved_variant,
     }
+
+
+if __name__ == "__main__":
+    import sys
+    import time
+    if len(sys.argv) < 2:
+        print("usage: python -m geoplanagent.tools.geocode <query|postcode> [context]")
+        sys.exit(1)
+    joined = " ".join(sys.argv[1:]).strip()
+    t0 = time.time()
+    if re.fullmatch(r"[A-Za-z]{1,2}\d[A-Za-z\d]?\s*\d[A-Za-z]{2}", joined):
+        # Postcode-looking arg → Code-Point Open
+        h = lookup_postcode(joined)
+        if h:
+            print(f"{joined} -> ({h['lat']:.6f}, {h['lon']:.6f})  "
+                  f"district={h['admin_district']}")
+        else:
+            print(f"{joined} -> not found")
+        print(f"(load + lookup: {time.time()-t0:.2f}s)")
+    else:
+        df = _load()
+        print(f"Loaded {len(df):,} rows in {time.time()-t0:.1f}s")
+        q = sys.argv[1]
+        ctx = sys.argv[2] if len(sys.argv) > 2 else None
+        print(f"Query: {q!r}  context={ctx!r}")
+        for h in search(q, max_results=5, context=ctx):
+            print(f"  {(h['name'] or ''):40s} {h['type']:25s} "
+                  f"({h['lat']:.5f}, {h['lon']:.5f})  "
+                  f"{h['admin_district'] or h['county'] or ''}")

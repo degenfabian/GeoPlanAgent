@@ -7,20 +7,17 @@ BoundaryLine shortcut for district-wide documents).
 
 from __future__ import annotations
 
-from typing import List, Optional
-import cv2
-from pydantic_ai import RunContext
-from geoplanagent.agents.worker import _agent
-from geoplanagent.utils import AgentState
 import tempfile
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, List, Optional, Tuple
+
+import cv2
 import numpy as np
-from pydantic_ai import ModelRetry
-from geoplanagent.utils import (
-    _dedup_check,
-)
+from pydantic_ai import ModelRetry, RunContext
 from pydantic_ai.tools import ToolDefinition
+
+from geoplanagent.agents.worker import _agent
 from geoplanagent.schemas import PDFInfo
+from geoplanagent.utils import AgentState, _dedup_check
 
 
 # propose_centers
@@ -90,9 +87,9 @@ def propose_centers(
     model_name = state.locate_model
 
     # Locate sub-agent always sees the primary match page (the
-    # reader's top-ranked one). Single image is sufficient — locate
-    # picks one centre per worker run regardless of how many
-    # area_groups the document has.
+    # reader's top-ranked one). That single image is sent on EVERY
+    # invocation — including re-invocations made while the worker is
+    # positioning a different area_group's page on multi-area docs.
     from geoplanagent.utils import primary_match_page
     primary_page = primary_match_page(state)
     map_img = state.rendered_pages.get(primary_page) if primary_page else None
@@ -133,9 +130,11 @@ def propose_centers(
         extra_terms=extra_terms,
         disabled_tools=getattr(state, "locate_disabled_tools", frozenset()),
         # Telemetry sink: one dict per invocation appended to state.locate_calls.
-        # Aggregated in runtime.collect_agent_stats so each metrics.json carries
-        # locate_request_tokens / locate_response_tokens / locate_n_calls /
-        # locate_generation_ids alongside the reader + worker stats.
+        # Aggregated in run.collect_agent_stats so each metrics.json carries
+        # locate_request_tokens / locate_response_tokens / locate_n_calls plus
+        # the per-call dicts in agent_stats["locate_calls"] (whose
+        # generation_ids scripts/compute_costs.py turns into
+        # locate_generation_ids) alongside the reader + worker stats.
         usage_sink=state.locate_calls,
     )
     state.locate_message_history = new_history
@@ -164,10 +163,6 @@ def propose_centers(
 # affine_H (and therefore a geojson) for it. The mathematical floor is
 # 3 inlier point pairs (6 equations, 6 unknowns), but MINIMA's internal
 # RANSAC already enforces that — if we got a geojson back, we trust it.
-
-# Fixed query for SAM3 semantic segmentation. The LoRA was trained against
-# this literal phrase.
-_SAM3_QUERY = "planning boundary"
 
 
 def _axis_field(reward_dict: Optional[Dict[str, Any]], axis_name: str,
@@ -217,7 +212,7 @@ def _get_or_compute_mask(state: AgentState, page: int,
     set_fold_for_case(state.sam3_state, state.case_name)
     mask = extract_boundary_sam3_semantic(
         map_crop_path, state.sam3_processor, state.sam3_model,
-        state.device, query=_SAM3_QUERY,
+        state.device,
     )
     if mask is not None:
         state.sam_masks_by_page[page] = mask
@@ -282,7 +277,7 @@ def match_at(
         {"success": True, "candidate_id": int, "area_group": int,
          "page": int, "n_inliers": int, "road_name_agreement": float,
          "road_name_verdict": str, "scale_consistency": float,
-         "budget_remaining": int}
+         "budget_remaining": int, "committed_groups": [int]}
     """
     state = ctx.deps
     if state.match_at_budget <= 0:
@@ -361,7 +356,7 @@ def match_at(
 
     # Match the single requested page.
     single = _match_single_page(state, int(page), name, float(lat), float(lon),
-                                  float(sigma_m), scale_ratio, matched_candidate)
+                                  float(sigma_m), scale_ratio)
     single["area_group"] = area_group
     single["page"] = int(page)
     valid = single.get("affine_H") is not None and not single.get("error")
@@ -369,17 +364,16 @@ def match_at(
     geojson = single.get("geojson") if valid else None
 
     # Store the attempt. per_group is a 1-element list (kept for shape
-    # parity with the rest of the pipeline — critic_agent, output
-    # validator, and the saved metrics.json all read per_group).
+    # parity with the rest of the pipeline — the critic,
+    # utils.committed_primary_page, and the crash-path
+    # partial_state.json all read per_group).
     cid = state._match_attempt_counter
     state._match_attempt_counter += 1
     state.match_attempts[cid] = {
         "candidate_id": cid,
         "name": name, "lat": float(lat), "lon": float(lon),
-        "sigma_m": float(sigma_m), "scale_ratio": scale_ratio,
         "per_group": [single],
         "geojson": geojson,
-        "n_groups": 1,
         "n_groups_committed": 1 if valid else 0,
         "requested_page": int(page),
         "requested_group": area_group,
@@ -431,9 +425,7 @@ def _search_window(state: AgentState, map_img, mask, name: str,
             matcher=state.minima_matcher, map_img=map_img,
             sam3_mask=mask, centers=[(name, lat, lon, sigma_m)],
             scale_ratio=scale_ratio, dpi=state.dpi,
-            rotations=None,
             road_names=road_names,
-            grayscale=False, return_candidates=False,
         )
     except Exception as e:
         return {"error": f"sliding_window_position: {e!s:.140}"}
@@ -465,27 +457,20 @@ def _project_candidate(state: AgentState, mask, result) -> Dict[str, Any]:
 
 def _match_single_page(state: AgentState, page: int, name: str,
                         lat: float, lon: float, sigma_m: float,
-                        scale_ratio: Optional[int],
-                        matched_candidate: Optional[dict]) -> Dict[str, Any]:
+                        scale_ratio: Optional[int]) -> Dict[str, Any]:
     """One match_at attempt = segment → search → project on a single page.
     Returns a dict with affine_H / tile_info / match_info / geojson /
-    mask_frac / reward; or error."""
+    reward; or error."""
     map_img, mask, err = _segment_boundary(state, page)
     if err is not None:
         return err
-    mask_frac = float(np.sum(mask > 0)) / float(mask.size)
 
     result = _search_window(state, map_img, mask, name, lat, lon,
                             sigma_m, scale_ratio)
     if result.get("error"):
-        out = dict(result)
-        if out["error"] == "MINIMA returned no usable match":
-            out["mask_frac"] = mask_frac
-        return out
+        return result
 
-    out = _project_candidate(state, mask, result)
-    out["mask_frac"] = mask_frac
-    return out
+    return _project_candidate(state, mask, result)
 
 
 # Polygon union helper
@@ -541,7 +526,7 @@ def _recompute_current_result(state: AgentState) -> None:
     ``state.committed_groups``.
 
     The geojson field is the shapely-union of every committed group's
-    geojson. The other fields (affine_H, tile_info, match_info, reward)
+    geojson. The other fields (affine_H, tile_info, match_info)
     come from the "primary" committed group — the one with the highest
     n_inliers — since they're single-page values that downstream
     visualisations only render against one page.
@@ -555,14 +540,10 @@ def _recompute_current_result(state: AgentState) -> None:
         state.current_result = {}
         return
 
-    # Union every group's geojson.
+    # Union every group's geojson (helper handles the empty and
+    # single-input cases: None / as-is).
     geojsons = [c.get("geojson") for c in cands if c.get("geojson")]
-    if len(geojsons) == 1:
-        unioned = geojsons[0]
-    elif len(geojsons) > 1:
-        unioned = _union_geojsons(geojsons)
-    else:
-        unioned = None
+    unioned = _union_geojsons(geojsons)
 
     # Primary = highest-inlier committed group. Its affine/tile/mask
     # are the ones we render for human visualisations and what
@@ -587,13 +568,10 @@ def _recompute_current_result(state: AgentState) -> None:
         "match_info": primary_pg.get("match_info"),
         "geojson": unioned,
         "candidate_id": primary.get("candidate_id"),
-        "reward": primary_pg.get("reward"),
         # per_group on current_result lists ONE entry per committed
         # group (the first/only per_group entry from each candidate).
         "per_group": [(c.get("per_group") or [{}])[0] for c in cands],
         "requested_group": primary.get("requested_group"),
-        "requested_page": primary.get("requested_page"),
-        "n_groups_committed": len(cands),
         "total_inliers": total,
     }
 
@@ -779,7 +757,11 @@ def submit_pdf_info(ctx: RunContext[AgentState], info: PDFInfo) -> dict:
 
     # Mirror prepare_worker_state's render loop. We can't import
     # prepare_worker_state here without a cycle, so the render code is
-    # duplicated (small, stable).
+    # duplicated (small, stable). It also duplicates this module's
+    # _get_or_render_page helper, with one deliberate difference: it
+    # sets rotation_checked only when the FIRST map page was rotated,
+    # whereas the helper sets it for any rotated page — collapsing onto
+    # the helper would change that telemetry field.
     from geoplanagent.tools.pdf import render_map_page
 
     map_pages = state.pdf_info.get("map_pages") or []

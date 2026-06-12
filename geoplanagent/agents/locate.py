@@ -1,8 +1,9 @@
 """Live locate sub-agent: pdf_info + map page → one (lat, lon, sigma) LocatePick.
 
 Six offline geocoder tools (postcode / grid_ref / place / road / intersect /
-la_check). ``make_locate_agent(disabled_tools)`` is a factory used by the
-locate LOO ablation; production callers omit the kwarg for the cached default.
+la_check). ``make_locate_agent(disabled_tools)`` is a cached factory:
+production passes the place-only disabled set from AgentState; the
+empty-set default serves the full-tool ablation config.
 """
 from __future__ import annotations
 import json
@@ -60,17 +61,6 @@ class LocatePick(BaseModel):
         description="1-2 sentence explanation of WHY this pick. "
                     "Mention letterhead/LA-consistency checks done.",
     )
-
-
-# State (deps)
-
-class LocateState:
-    """Per-case state passed to the locate agent's tools as deps."""
-    def __init__(self, pdf_info: dict, admin_region_hint: Optional[str] = None):
-        self.pdf_info = pdf_info or {}
-        self.admin_region_hint = (
-            admin_region_hint or pdf_info.get("admin_region") or None
-        )
 
 
 # ── Tool implementations (registered conditionally by make_locate_agent) ──
@@ -190,7 +180,7 @@ def road(query: str, la: Optional[str] = None, limit: int = 5) -> dict:
     """
     try:
         from pyproj import Transformer
-        idx_p = REPO / "tools" / "oml_road_index.json"
+        idx_p = REPO / "geoplanagent" / "oml_road_index.json"
         if not idx_p.exists():
             return {"success": False, "error": "OML road index missing"}
         idx = json.loads(idx_p.read_text())
@@ -243,7 +233,7 @@ def intersect(road_a: str, road_b: str, la: Optional[str] = None,
         from pyproj import Transformer
         from shapely.geometry import LineString
         from geoplanagent.tools.geocode import resolve_la
-        geom_p = REPO / "tools" / "oml_road_geom_subset.json"
+        geom_p = REPO / "geoplanagent" / "oml_road_geom_subset.json"
         if not geom_p.exists():
             return {"success": False, "error": "OML road geom missing"}
         geom = json.loads(geom_p.read_text())
@@ -354,7 +344,6 @@ def la_check(lat: float, lon: float, la: str) -> dict:
             # handles the cos(lat) factor correctly regardless of
             # bearing.
             from shapely.ops import nearest_points
-            from geoplanagent.utils import haversine_km
             _, q = nearest_points(p, poly.boundary)
             d_km = haversine_km(lat, lon, q.y, q.x)
         centroid = poly.centroid
@@ -367,14 +356,8 @@ def la_check(lat: float, lon: float, la: str) -> dict:
         return {"success": False, "error": str(e)[:160]}
 
 
-# Tool registry. Each entry is (name, impl, advertised_name). The
-# advertised name is what the agent calls; we want callers to invoke
-# ``postcode(...)`` not ``_tool_postcode(...)``, so we wrap each impl
-# in a lambda that pydantic-ai introspects by argument signature.
-#
-# pydantic-ai derives the tool name from the function's ``__name__``,
-# so we attach a clean public name to each wrapper function (set below
-# via the public-named alias) before registration.
+# Tool registry: advertised name -> implementation. pydantic-ai derives
+# the tool name from ``__name__``.
 _TOOL_IMPLS: dict[str, callable] = {
     "postcode":  postcode,
     "grid_ref":  grid_ref,
@@ -436,11 +419,10 @@ def _build_locate_prompt(disabled: frozenset[str] = frozenset()) -> str:
         )
 
     enabled_set = _LOCATE_TOOL_NAMES - disabled
-    # Stable order for the bulleted tool list — same order as the
-    # original prompt so unchanged variants produce a byte-identical
-    # prompt (modulo the one auto-fixed count word).
-    tool_order = ["postcode", "grid_ref", "place", "road", "intersect", "la_check"]
-    enabled_tools_ordered = [t for t in tool_order if t in enabled_set]
+    # Stable order for the bulleted tool list — _TOOL_IMPLS insertion
+    # order matches the original prompt so unchanged variants produce a
+    # byte-identical prompt (modulo the one auto-fixed count word).
+    enabled_tools_ordered = [t for t in _TOOL_IMPLS if t in enabled_set]
     n = len(enabled_tools_ordered)
 
     parts: list[str] = []
@@ -494,7 +476,6 @@ def _build_locate_prompt(disabled: frozenset[str] = frozenset()) -> str:
 
     parts.append(_LOCATE_BUDGET)
     parts.append("")
-    # (EDGE CASES section removed — agent infers from schema + pdf_info)
 
     return "\n".join(parts)
 
@@ -512,16 +493,8 @@ def make_locate_agent(disabled_tools=None) -> Agent:
 @lru_cache(maxsize=16)
 def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
     """Cached builder; keyed on normalised frozenset."""
-    unknown = disabled_tools - _LOCATE_TOOL_NAMES
-    if unknown:
-        raise ValueError(
-            f"Unknown locate tool name(s): {sorted(unknown)}. "
-            f"Valid: {sorted(_LOCATE_TOOL_NAMES)}"
-        )
-
     agent = Agent(
         "test",  # placeholder, overridden per-run via model=...
-        deps_type=LocateState,
         output_type=LocatePick,
         retries=5,
         output_retries=5,
@@ -529,12 +502,10 @@ def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
         instructions=_build_locate_prompt(disabled_tools),
     )
 
-    for tool_name in [
-        "postcode", "grid_ref", "place", "road", "intersect", "la_check"
-    ]:
+    for tool_name, impl in _TOOL_IMPLS.items():
         if tool_name in disabled_tools:
             continue
-        agent.tool_plain(_TOOL_IMPLS[tool_name])
+        agent.tool_plain(impl)
 
     # L2 output validator: cross-check the agent's final LocatePick
     # against the MIN distance to every coord-returning tool call in the
@@ -559,7 +530,7 @@ def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
 
     @agent.output_validator
     async def _validate_pick_against_tool_returns(
-        ctx: RunContext[LocateState], pick: LocatePick
+        ctx: RunContext[None], pick: LocatePick
     ) -> LocatePick:
         distances = []
         for msg in ctx.messages:
@@ -621,10 +592,6 @@ def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
         return pick
 
     return agent
-
-
-# Default production singleton (built lazily via lru_cache).
-_locate_agent = make_locate_agent()
 
 
 # Helpers for transient-error handling
@@ -748,14 +715,13 @@ def run_locate(
 
     `usage_sink`: optional list. If supplied, one dict per invocation is
     appended:
-       {request_tokens, response_tokens, n_messages, generation_id}
+       {request_tokens, response_tokens, generation_id}
     The locate ablation harness doesn't pass it; the worker tool
     (``geoplanagent.tools.positioning.propose_centers``) does, so per-case cost
     telemetry survives in ``state.locate_calls``.
     """
     model = resolve_model(model_name)
     agent = make_locate_agent(disabled_tools)
-    deps = LocateState(pdf_info=pdf_info)
 
     if prior_messages:
         # Continuation: pdf_info already in history; just append feedback.
@@ -866,7 +832,6 @@ def run_locate(
         try:
             result = agent.run_sync(
                 user_parts,
-                deps=deps,
                 model=model,
                 usage_limits=UsageLimits(request_limit=15),
                 message_history=prior_messages,
@@ -892,7 +857,7 @@ def run_locate(
         if usage_sink is not None:
             usage_sink.append({
                 "request_tokens": 0, "response_tokens": 0,
-                "n_messages": 0, "generation_id": None,
+                "generation_id": None,
                 "error": f"{type(e).__name__}: {e!s:.120}",
             })
         return pick, (prior_messages or [])
@@ -920,7 +885,6 @@ def run_locate(
         usage_sink.append({
             "request_tokens": int(req_tok),
             "response_tokens": int(resp_tok),
-            "n_messages": len(all_msgs),
             "generation_id": _extract_generation_id(result),
         })
 
@@ -988,8 +952,6 @@ def _print_locate_trajectory(result) -> None:
 
 
 def _fmt_args(args: dict) -> str:
-    if not isinstance(args, dict):
-        return str(args)[:100]
     pieces = []
     for k, v in args.items():
         if isinstance(v, (list, tuple)):

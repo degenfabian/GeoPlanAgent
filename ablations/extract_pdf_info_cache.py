@@ -13,9 +13,10 @@ Outputs (relative to repo root):
     ablations/cached_pdf_info_for_locate_ablations.json
         Single JSON object {case_name: pdf_info_dict, ...}
     ablations/locate_ablation_missing_cases.txt
-        Human-readable report of cases that were expected in the eval
-        xlsx but had no usable pdf_info (missing / malformed / reader
-        error / empty map_pages), one per line with a reason.
+        Human-readable report of cases that were expected in the
+        evaluation_data folder list but had no usable pdf_info (missing
+        / malformed / reader error / empty map_pages), one per line
+        with a reason.
 
 Usage (from repo root):
     uv run python ablations/extract_pdf_info_cache.py
@@ -103,7 +104,7 @@ def main() -> int:
         cache[case] = pi
 
     # Inventory: src dirs that have pdf_info.json but are NOT in the
-    # canonical xlsx list (e.g. excluded cases that were still attempted,
+    # evaluation_data folder list (e.g. excluded cases that were still attempted,
     # or stale dirs from a prior naming scheme). Informational only.
     skipped_other: list[str] = []
     if src_root.is_dir():

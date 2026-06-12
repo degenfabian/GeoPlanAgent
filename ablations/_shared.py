@@ -64,13 +64,6 @@ def nearest_part_err_km(
     )
 
 
-__all__ = [
-    "CSV_FIELDNAMES",
-    "gt_part_centroids",
-    "nearest_part_err_km",
-]
-
-
 def add_subset_args(parser) -> None:
     """The case-subset flags every harness shares."""
     parser.add_argument(
@@ -126,7 +119,7 @@ def print_err_km_summary(out_csv) -> None:
     with open(out_csv) as f:
         rows = list(csv.DictReader(f))
     errs = sorted(float(r["err_km"]) for r in rows
-                  if r.get("err_km") and r["err_km"])
+                  if r.get("err_km"))
     if errs:
         mean = sum(errs) / len(errs)
         median = errs[len(errs) // 2]

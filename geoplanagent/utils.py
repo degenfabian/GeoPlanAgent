@@ -23,15 +23,20 @@ if TYPE_CHECKING:
     from geoplanagent.schemas import BoundaryOutcome
 
 
+# Production locate sub-agent ships with `place` only — see the rationale on
+# AgentState.locate_disabled_tools below.
+PRODUCTION_LOCATE_DISABLED_TOOLS: frozenset = frozenset(
+    {"postcode", "grid_ref", "road", "intersect", "la_check"}
+)
+
+
 class AgentState:
     """Mutable state shared across all tool calls."""
 
     def __init__(self, pdf_path, sam3_processor, sam3_model, device,
-                 minima_matcher, dpi=200, sam3_state=None, case_name=None,
-                 locate_model: str = "google/gemini-3-flash-preview",
-                 locate_disabled_tools: frozenset = frozenset(
-                     {"postcode", "grid_ref", "road", "intersect", "la_check"}
-                 ),
+                 minima_matcher, dpi, sam3_state, case_name,
+                 locate_model: str,
+                 locate_disabled_tools: frozenset,
                  folded_mode: bool = False):
         self.pdf_path = pdf_path
         self.sam3_processor = sam3_processor
@@ -93,7 +98,7 @@ class AgentState:
         # Per-invocation token telemetry from the locate sub-agent. Each
         # propose_centers call appends one dict:
         #   {request_tokens: int, response_tokens: int,
-        #    n_messages: int, generation_id: Optional[str]}
+        #    generation_id: Optional[str]}
         # Collected here (rather than aggregated inline) so the audit
         # script can attribute per-call costs to the right area_group
         # if needed and so the cost telemetry stays additive across
@@ -132,10 +137,6 @@ def committed_primary_page(state: "AgentState") -> Optional[int]:
     return primary_match_page(state)
 
 
-if TYPE_CHECKING:
-    from geoplanagent.utils import AgentState
-
-
 def resize_for_api(img: np.ndarray, max_dim: int = 1024) -> np.ndarray:
     """Resize image so largest dimension is max_dim."""
     h, w = img.shape[:2]
@@ -164,48 +165,12 @@ def _dedup_check(state: "AgentState", tool_name: str, args: dict) -> None:
     state.recent_calls.add(key)
 
 
-def _create_boundary_overlay(map_img: np.ndarray, mask: np.ndarray) -> np.ndarray:
-    """Overlay boundary mask on map image (red tint, 40% opacity)."""
-    overlay = map_img.copy()
-    if mask is not None and mask.shape[:2] == map_img.shape[:2]:
-        overlay[mask > 0] = [0, 0, 255]
-    return cv2.addWeighted(map_img, 0.6, overlay, 0.4, 0)
-
-
-def _draw_geojson_on_tiles(tile_bgr, geojson, tile_info):
-    """Draw GeoJSON boundary outline on tile canvas."""
-    geom = geojson.get("geometry", {})
-    coord_rings = []
-    if geom.get("type") == "Polygon":
-        coord_rings = [geom["coordinates"][0]]
-    elif geom.get("type") == "MultiPolygon":
-        coord_rings = [poly[0] for poly in geom["coordinates"]]
-
-    zoom = tile_info.get("zoom", 17)
-    tx_min = tile_info.get("tx_min", 0)
-    ty_min = tile_info.get("ty_min", 0)
-    tile_size = tile_info.get("tile_size", 256)
-
-    from geoplanagent.utils import latlon_to_global_tile_pixel
-    for ring in coord_rings:
-        pts = []
-        for lon_c, lat_c in ring:
-            abs_px, abs_py = latlon_to_global_tile_pixel(
-                lat_c, lon_c, zoom, tile_size)
-            px = abs_px - tx_min * tile_size
-            py = abs_py - ty_min * tile_size
-            pts.append([int(px), int(py)])
-        if len(pts) >= 3:
-            cv2.polylines(tile_bgr, [np.array(pts, dtype=np.int32)],
-                          True, (0, 0, 255), 2)
-    return tile_bgr
-
-
 # Status codes that are typically transient and worth retrying. 400 is
 # included because OpenRouter routinely surfaces upstream Gemini hiccups
 # (rate limit, model overload, transient safety-check backend failures)
-# as a generic 400 with body "Provider returned error".
-_RETRYABLE_STATUS = {400, 408, 425, 429, 500, 502, 503, 504}
+# as a generic 400 with body "Provider returned error"; 413 (payload too
+# large, e.g. an oversized image) is likewise retried.
+_RETRYABLE_STATUS = {400, 408, 413, 425, 429, 500, 502, 503, 504}
 
 
 def _is_retryable_http_error(exc: Exception) -> bool:
@@ -223,15 +188,10 @@ def _is_retryable_http_error(exc: Exception) -> bool:
     return int(m.group(1)) in _RETRYABLE_STATUS
 
 
-_TRANSIENT_HTTP_MARKERS = (
-    "status_code: 400",   # Provider sometimes returns 400 for rate-limit /
-                          # quota / oversize-request issues.
-    "status_code: 413",   # Payload too large (oversized image).
-    "status_code: 429",   # Rate limited.
-    "status_code: 500",   # Provider internal error.
-    "status_code: 502",   # Bad gateway.
-    "status_code: 503",   # Service unavailable.
-    "status_code: 504",   # Gateway timeout.
+# Substring forms of the same canonical status set, for raw transport
+# exceptions that aren't wrapped in ModelHTTPError.
+_TRANSIENT_HTTP_MARKERS = tuple(
+    f"status_code: {s}" for s in sorted(_RETRYABLE_STATUS)
 )
 
 
@@ -251,7 +211,6 @@ def _run_sync_with_retry(agent_obj, *args, max_retries: int = 2,
     Non-retryable errors (auth, bad input, ModelRetry / UnexpectedModelBehavior)
     are re-raised immediately so we don't waste cycles.
     """
-    last_exc = None
     for attempt in range(max_retries + 1):
         try:
             return agent_obj.run_sync(*args, **kwargs)
@@ -263,10 +222,6 @@ def _run_sync_with_retry(agent_obj, *args, max_retries: int = 2,
                   f"{attempt + 1}/{max_retries + 1}): {str(e)[:140]}"
                   f" — retrying in {wait:.0f}s")
             _time.sleep(wait)
-            last_exc = e
-    if last_exc is not None:
-        raise last_exc
-    raise RuntimeError(f"{label}: retry loop fell through without error")
 
 
 

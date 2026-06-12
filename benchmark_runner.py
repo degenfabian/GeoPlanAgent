@@ -24,6 +24,7 @@ from datetime import datetime
 
 from geoplanagent.tools.pdf import resolve_case_pdf
 from geoplanagent.metrics import load_geojson, calculate_spatial_metrics
+from geoplanagent.utils import PRODUCTION_LOCATE_DISABLED_TOOLS
 
 # Duplicates removed from disk; filtered out of the dataset at load time.
 DUPLICATE_SL_NOS = {9, 68, 83, 232, 253}
@@ -44,19 +45,9 @@ def load_models():
 
 # Visualization
 
-def save_visualizations(result_dir, map_img, boundary_mask, predicted_geojson,
-                         gt_geojson):
+def save_visualizations(result_dir, predicted_geojson, gt_geojson):
     """Save per-case visualizations."""
     result_dir = Path(result_dir)
-
-    if map_img is not None:
-        cv2.imwrite(str(result_dir / "viz_map.png"), map_img)
-
-    if boundary_mask is not None and map_img is not None:
-        overlay = map_img.copy()
-        overlay[boundary_mask > 0] = [0, 0, 255]
-        blended = cv2.addWeighted(map_img, 0.6, overlay, 0.4, 0)
-        cv2.imwrite(str(result_dir / "viz_boundary.png"), blended)
 
     if predicted_geojson is not None:
         viz_path = result_dir / "viz_comparison.png"
@@ -391,9 +382,7 @@ def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
                 lambda s, f: (_ for _ in ()).throw(TimeoutError))
             signal.alarm(60)
         try:
-            save_visualizations(
-                case_dir, None, None, geojson, gt_geojson
-            )
+            save_visualizations(case_dir, geojson, gt_geojson)
         except TimeoutError:
             print("  Viz timed out")
         except Exception as _e:
@@ -418,9 +407,7 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
                   only_cases=None, force=False,
                   enable_critic=False, critic_max_iters=2,
                   locate_model="google/gemini-3-flash-preview",
-                  locate_disabled_tools=frozenset(
-                      {"postcode", "grid_ref", "road", "intersect", "la_check"}
-                  ),
+                  locate_disabled_tools=PRODUCTION_LOCATE_DISABLED_TOOLS,
                   folded=False):
     """Run benchmark using the unified tool-calling agent.
 

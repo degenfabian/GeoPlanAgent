@@ -2,9 +2,9 @@
 
 Each subcommand forwards to one self-contained harness and exposes that
 harness's full CLI — run `<subcommand> -h` for its flags. All
-subcommands except build-subset and audit-locate call OpenRouter and
-cost API credits; every harness supports --max-cases N for a cheap
-smoke run first.
+subcommands except build-subset, audit-locate, reader-cache and
+sam-prompts call OpenRouter and cost API credits; every harness
+supports --max-cases N for a cheap smoke run first.
 
 Usage:
     uv run ablations/run.py <subcommand> [harness flags...]

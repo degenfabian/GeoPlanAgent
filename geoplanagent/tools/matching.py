@@ -16,13 +16,12 @@ import numpy as np
 from geoplanagent.utils import (
     best_zoom_for_scale,
     compute_map_mpp,
-    latlon_to_global_tile_pixel,
     osm_pixel_to_latlon,
     tile_mpp as _tile_mpp_at,
 )
 from typing import Optional
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 
@@ -30,8 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Constants empirically tuned against the 211-case cached MINIMA sweep on v3
-# benchmark output. Per-case stats are in
-# results/benchmark_v3/gemini-flash/<case>/metrics.json.
+# benchmark output.
 
 # Target sliding-window count per (center, zoom, rotation).
 WINDOW_STRIDE_TARGET = 100
@@ -39,13 +37,11 @@ WINDOW_STRIDE_TARGET = 100
 
 # MINIMA model management
 
-def load_minima(base_dir=None):
+def load_minima():
     """Load MINIMA LoFTR matcher model."""
     from argparse import Namespace
 
-    if base_dir is None:
-        base_dir = BASE_DIR
-    minima_dir = os.path.join(str(base_dir), "MINIMA")
+    minima_dir = os.path.join(str(BASE_DIR), "MINIMA")
     prev_dir = os.getcwd()
     try:
         os.chdir(minima_dir)
@@ -60,11 +56,8 @@ def load_minima(base_dir=None):
         os.chdir(prev_dir)
 
 
-def run_minima(matcher, map_img, tile_img, grayscale=False):
-    """MINIMA match map↔tile. Returns (mkpts0, mkpts1, mconf).
-
-    `grayscale=True` helps B&W or sepia maps against coloured tiles.
-    """
+def run_minima(matcher, map_img, tile_img):
+    """MINIMA match map↔tile. Returns (mkpts0, mkpts1, mconf)."""
     if len(map_img.shape) == 2:
         map_bgr = cv2.cvtColor(map_img, cv2.COLOR_GRAY2BGR)
     elif map_img.shape[2] == 4:
@@ -76,17 +69,11 @@ def run_minima(matcher, map_img, tile_img, grayscale=False):
     else:
         tile_bgr = tile_img.copy()
 
-    if grayscale:
-        map_gray = cv2.cvtColor(map_bgr, cv2.COLOR_BGR2GRAY)
-        tile_gray = cv2.cvtColor(tile_bgr, cv2.COLOR_BGR2GRAY)
-        map_bgr = cv2.cvtColor(map_gray, cv2.COLOR_GRAY2BGR)
-        tile_bgr = cv2.cvtColor(tile_gray, cv2.COLOR_GRAY2BGR)
-
     result = matcher(map_bgr, tile_bgr)
     return result["mkpts0"], result["mkpts1"], result["mconf"]
 
 
-def estimate_affine(mkpts0, mkpts1, mconf=None, reproj_thresh=10.0):
+def estimate_affine(mkpts0, mkpts1, mconf=None):
     """Estimate a 4-DOF similarity transform (rotation + uniform scale +
     translation) via RANSAC.
 
@@ -106,7 +93,7 @@ def estimate_affine(mkpts0, mkpts1, mconf=None, reproj_thresh=10.0):
         pass
     H, inlier_mask = cv2.estimateAffinePartial2D(
         mkpts0, mkpts1, method=cv2.RANSAC,
-        ransacReprojThreshold=reproj_thresh,
+        ransacReprojThreshold=10.0,
     )
     if H is None or inlier_mask is None:
         return None, 0, 0.0, None
@@ -122,10 +109,6 @@ def estimate_affine(mkpts0, mkpts1, mconf=None, reproj_thresh=10.0):
 
 
 # Scale and zoom utilities
-
-
-_latlon_to_global_tile_pixel = latlon_to_global_tile_pixel
-
 
 def resize_map_to_match_zoom(map_img, map_mpp, zoom, lat):
     """Resize map so its pixel scale matches the tile pixel scale at given zoom.
@@ -211,9 +194,6 @@ def _build_scale_H(affine_H, wx, wy, sf):
     return scale_H
 
 
-# Road-name verification helper (directional verifier remains ripped).
-
-
 # Main entry point
 
 def sliding_window_position(
@@ -223,13 +203,7 @@ def sliding_window_position(
     centers=None,
     scale_ratio=None,
     dpi=200,
-    rotations=None,
     road_names=None,
-    tile_fetcher=None,
-    grayscale=False,
-    return_candidates=False,
-    pdf_path=None,
-    map_pages=None,
 ):
     """Sliding-window MINIMA positioning on OS tiles. Production entry point.
 
@@ -237,9 +211,7 @@ def sliding_window_position(
     entry; list shape is historical). scale_ratio=None tries common scales.
     Returns: geojson, affine_H, tile_info, match_info, n_windows.
     """
-    if tile_fetcher is None:
-        from geoplanagent.tools.tiles import fetch_os_opendata_grid
-        tile_fetcher = fetch_os_opendata_grid
+    from geoplanagent.tools.tiles import fetch_os_opendata_grid
 
     if not centers:
         return {
@@ -261,7 +233,6 @@ def sliding_window_position(
     per_bucket: Dict[Tuple[str, int], List[Tuple[float, int, dict]]] = {}
     _seq = 0  # tiebreaker for heap
     best_metric = 0
-    best_result = None
     total_windows = 0
 
     map_mpp = compute_map_mpp(scale_ratio, dpi)
@@ -297,16 +268,6 @@ def sliding_window_position(
         zoom_mpp_configs.append((modal_z, modal_mpp * 0.85))
         zoom_mpp_configs.append((modal_z, modal_mpp * 1.15))
 
-    if rotations is None:
-        # Image arrives upright (auto-rotation runs in render_map_page).
-        rotations = [0]
-
-    # Tightest sigma first.
-    centers = sorted(centers, key=lambda x: x[3] if x[3] is not None else 9e9)
-    if centers:
-        print(f"  Centers sorted by sigma: {centers[0][0]}(σ={centers[0][3]}) "
-              f"→ {centers[-1][0]}(σ={centers[-1][3]})")
-
     for cname, clat, clon, sigma in centers:
         for zoom, cur_mpp in zoom_mpp_configs:
             tmpp = _tile_mpp_at(clat, zoom)
@@ -329,7 +290,7 @@ def sliding_window_position(
             if ny % 2 == 0:
                 ny += 1
 
-            tile_info = tile_fetcher(clat, clon, zoom, nx, ny)
+            tile_info = fetch_os_opendata_grid(clat, clon, zoom, nx, ny)
             os_canvas = tile_info["image"]
             ch, cw = os_canvas.shape[:2]
 
@@ -337,105 +298,78 @@ def sliding_window_position(
                 continue
 
             n_windows = 0
-            for rot_angle in rotations:
-                if rot_angle == 0:
-                    rot_map = resized_map
-                    cur_mask = sam3_mask
-                    rot_h, rot_w = rh, rw
-                else:
-                    rot_codes = {
-                        90: cv2.ROTATE_90_CLOCKWISE,
-                        180: cv2.ROTATE_180,
-                        270: cv2.ROTATE_90_COUNTERCLOCKWISE,
-                    }
-                    if rot_angle not in rot_codes:
+
+            # Stride targets ~WINDOW_STRIDE_TARGET windows; 32 px floor
+            # (~48 m at z18) is the spatial-accuracy limit of MINIMA.
+            _area_available = max(1, (ch - rh) * (cw - rw))
+            _target_stride = int(math.sqrt(_area_available / WINDOW_STRIDE_TARGET))
+            step_x = max(32, min(_target_stride, max(1, cw - rw)))
+            step_y = max(32, min(_target_stride, max(1, ch - rh)))
+
+            for wy in range(0, ch - rh + 1, step_y):
+                for wx in range(0, cw - rw + 1, step_x):
+                    window = os_canvas[wy:wy + rh, wx:wx + rw]
+                    mkpts0, mkpts1, mconf = run_minima(matcher, resized_map, window)
+                    affine_H, n_inliers, score, inlier_mask = estimate_affine(
+                        mkpts0, mkpts1, mconf=mconf)
+                    n_windows += 1
+                    total_windows += 1
+
+                    if affine_H is None or n_inliers < 5:
                         continue
-                    rot_map = cv2.rotate(resized_map, rot_codes[rot_angle])
-                    cur_mask = (cv2.rotate(sam3_mask, rot_codes[rot_angle])
-                                if sam3_mask is not None else None)
-                    if rot_angle in (90, 270):
-                        rot_h, rot_w = rw, rh
-                    else:
-                        rot_h, rot_w = rh, rw
 
-                if rot_h >= ch or rot_w >= cw:
-                    continue
+                    # avg_scale (column-norm mean) feeds the scale_consistency reward.
+                    a, b = affine_H[0, 0], affine_H[0, 1]
+                    c_a, d = affine_H[1, 0], affine_H[1, 1]
+                    sx = math.sqrt(a * a + c_a * c_a)
+                    sy = math.sqrt(b * b + d * d)
+                    avg_scale_now = (sx + sy) / 2
 
-                # Stride targets ~WINDOW_STRIDE_TARGET windows; 32 px floor
-                # (~48 m at z18) is the spatial-accuracy limit of MINIMA.
-                _area_available = max(1, (ch - rot_h) * (cw - rot_w))
-                _target_stride = int(math.sqrt(_area_available / WINDOW_STRIDE_TARGET))
-                step_x = max(32, min(_target_stride, max(1, cw - rot_w)))
-                step_y = max(32, min(_target_stride, max(1, ch - rot_h)))
+                    metric = float(n_inliers)
+                    if metric > best_metric:
+                        best_metric = metric
 
-                for wy in range(0, ch - rot_h + 1, step_y):
-                    for wx in range(0, cw - rot_w + 1, step_x):
-                        window = os_canvas[wy:wy + rot_h, wx:wx + rot_w]
-                        mkpts0, mkpts1, mconf = run_minima(matcher, rot_map, window, grayscale=grayscale)
-                        affine_H, n_inliers, score, inlier_mask = estimate_affine(
-                            mkpts0, mkpts1, mconf=mconf)
-                        n_windows += 1
-                        total_windows += 1
-
-                        if affine_H is None or n_inliers < 5:
-                            continue
-
-                        # avg_scale (column-norm mean) feeds the scale_consistency reward.
-                        a, b = affine_H[0, 0], affine_H[0, 1]
-                        c_a, d = affine_H[1, 0], affine_H[1, 1]
-                        sx = math.sqrt(a * a + c_a * c_a)
-                        sy = math.sqrt(b * b + d * d)
-                        avg_scale_now = (sx + sy) / 2
-
-                        metric = float(n_inliers)
-                        if metric > best_metric:
-                            best_metric = metric
-
-                        # Keep top-N candidates for post-verification
-                        if metric > 0:
-                            scale_H = _build_scale_H(affine_H, wx, wy, sf)
-                            center_ll = affine_center_to_latlon(
-                                scale_H, map_h, map_w, tile_info)
-                            avg_scale = avg_scale_now
-                            # Inlier keypoints (rot_map coords) for the composite reranker.
+                    # Keep top-N candidates for post-verification
+                    scale_H = _build_scale_H(affine_H, wx, wy, sf)
+                    center_ll = affine_center_to_latlon(
+                        scale_H, map_h, map_w, tile_info)
+                    # Inlier keypoints (map coords) for the composite reranker.
+                    inlier_pts_map = None
+                    if inlier_mask is not None:
+                        try:
+                            flag = inlier_mask.ravel().astype(bool)
+                            in0 = mkpts0[flag]
+                            if len(in0) > 0:
+                                inlier_pts_map = in0.tolist()
+                        except Exception:
                             inlier_pts_map = None
-                            if inlier_mask is not None:
-                                try:
-                                    flag = inlier_mask.ravel().astype(bool)
-                                    in0 = mkpts0[flag]
-                                    if len(in0) > 0:
-                                        inlier_pts_map = in0.tolist()
-                                except Exception:
-                                    inlier_pts_map = None
-                            candidate = {
-                                "geojson": None,  # defer mask projection
-                                "affine_H": scale_H,
-                                "tile_info": tile_info,
-                                "match_info": {
-                                    "center": cname,
-                                    "zoom": zoom,
-                                    "rotation": rot_angle,
-                                    "n_inliers": n_inliers,
-                                    "score": round(score, 2),
-                                    "scale_factor": round(sf, 3),
-                                    "avg_scale": round(avg_scale, 4),
-                                    "window": (wx, wy),
-                                    "center_latlon": center_ll,
-                                    "anchor_latlon": (float(clat), float(clon)),
-                                    "_inlier_pts_map": inlier_pts_map,
-                                    "_rot_map_shape": (rot_h, rot_w),
-                                },
-                                "n_windows": 0,
-                                "_metric": metric,
-                                "_sam3_mask": cur_mask,
-                            }
-                            _seq += 1
-                            bucket_key = (cname, zoom)
-                            bucket = per_bucket.setdefault(bucket_key, [])
-                            if len(bucket) < PER_BUCKET:
-                                heapq.heappush(bucket, (metric, _seq, candidate))
-                            elif metric > bucket[0][0]:
-                                heapq.heapreplace(bucket, (metric, _seq, candidate))
+                    candidate = {
+                        "geojson": None,  # defer mask projection
+                        "affine_H": scale_H,
+                        "tile_info": tile_info,
+                        "match_info": {
+                            "center": cname,
+                            "zoom": zoom,
+                            "rotation": 0,
+                            "n_inliers": n_inliers,
+                            "scale_factor": round(sf, 3),
+                            "avg_scale": round(avg_scale_now, 4),
+                            "window": (wx, wy),
+                            "center_latlon": center_ll,
+                            "anchor_latlon": (float(clat), float(clon)),
+                            "_inlier_pts_map": inlier_pts_map,
+                            "_rot_map_shape": (rh, rw),
+                        },
+                        "_metric": metric,
+                        "_sam3_mask": sam3_mask,
+                    }
+                    _seq += 1
+                    bucket_key = (cname, zoom)
+                    bucket = per_bucket.setdefault(bucket_key, [])
+                    if len(bucket) < PER_BUCKET:
+                        heapq.heappush(bucket, (metric, _seq, candidate))
+                    elif metric > bucket[0][0]:
+                        heapq.heapreplace(bucket, (metric, _seq, candidate))
 
             if n_windows > 0:
                 print(f"    z{zoom}:{cname}: {n_windows}w, "
@@ -452,32 +386,26 @@ def sliding_window_position(
         }
     all_candidates.sort(key=lambda x: -x[0])
 
-    top_candidates = all_candidates[:MAX_CANDIDATES]
-
-    # Sort candidates best-first by raw metric
-    ranked = sorted(top_candidates, key=lambda x: -x[0])
+    ranked = all_candidates[:MAX_CANDIDATES]
 
     # Composite rescore: pick by V × Q/4 (composite_window_score, this module).
-    if ranked:
-        rescored = []
-        for metric, seq, cand in ranked:
-            mi = cand.get("match_info") or {}
-            q = quadrant_coverage_from_inlier_points(
-                mi.get("_inlier_pts_map") or [],
-                mi.get("_rot_map_shape"),
-            )
-            composite_score = composite_window_score(metric, q)
-            cand["_vanilla_metric"] = metric
-            cand["_composite_score"] = composite_score
-            cand["_quadrant_cov"] = q
-            rescored.append((composite_score, seq, cand))
-        rescored.sort(key=lambda x: -x[0])
-        ranked = rescored
-        if ranked:
-            top = ranked[0][2]
-            print(f"  Composite rerank: top score={ranked[0][0]:.2f} "
-                  f"(V={top.get('_vanilla_metric',0):.2f} "
-                  f"Q={top.get('_quadrant_cov',0)})")
+    rescored = []
+    for metric, seq, cand in ranked:
+        mi = cand.get("match_info") or {}
+        q = quadrant_coverage_from_inlier_points(
+            mi.get("_inlier_pts_map") or [],
+            mi.get("_rot_map_shape"),
+        )
+        composite_score = composite_window_score(metric, q)
+        cand["_vanilla_metric"] = metric
+        cand["_quadrant_cov"] = q
+        rescored.append((composite_score, seq, cand))
+    rescored.sort(key=lambda x: -x[0])
+    ranked = rescored
+    top = ranked[0][2]
+    print(f"  Composite rerank: top score={ranked[0][0]:.2f} "
+          f"(V={top.get('_vanilla_metric',0):.2f} "
+          f"Q={top.get('_quadrant_cov',0)})")
 
     # Road-name verifier: re-rank by metric * (1 + road_match_ratio)^2.
     best_result = None
@@ -487,24 +415,13 @@ def sliding_window_position(
         _, _, best_result = ranked[0]
 
     # Project mask now (deferred from inner loop).
-    cur_mask = best_result.get("_sam3_mask") if return_candidates \
-        else best_result.pop("_sam3_mask", None)
-    if not return_candidates:
-        best_result.pop("_metric", None)
+    cur_mask = best_result.pop("_sam3_mask", None)
+    best_result.pop("_metric", None)
     if sam3_mask is not None and cur_mask is not None:
         best_result["geojson"] = mask_to_geojson_affine(
             cur_mask, best_result["affine_H"], best_result["tile_info"])
 
     best_result["n_windows"] = total_windows
-
-    if return_candidates:
-        out_candidates = []
-        for metric, _, cand in ranked:
-            cand = dict(cand)
-            cand["sam3_mask"] = cand.pop("_sam3_mask", None)
-            cand["metric"] = cand.pop("_metric", metric)
-            out_candidates.append(cand)
-        best_result["candidates"] = out_candidates
 
     return best_result
 
@@ -535,7 +452,6 @@ def quadrant_coverage_from_inlier_points(
     if not inlier_pts_map or not rot_shape:
         return 4
     try:
-        import numpy as np
         rh, rw = rot_shape
         cx, cy = rw / 2.0, rh / 2.0
         arr = np.asarray(inlier_pts_map)
@@ -557,15 +473,14 @@ def quadrant_coverage_from_inlier_points(
 _FALLBACK_SIGMA_M = 5000
 
 
-def sigma_from_scale(scale_ratio, page_mm=(297, 210)):
+def sigma_from_scale(scale_ratio):
     """Compute MAP-SCALE-DRIVEN search sigma (meters).
 
     Lower bound on σ — the area MINIMA must search to fit the planning
-    map's visible extent against OS tiles.
+    map's visible extent against OS tiles, assuming an A4-landscape page.
 
     Args:
         scale_ratio: Map scale denominator (e.g., 2500 for 1:2500). None if unknown.
-        page_mm: Paper size (default A4 landscape).
 
     Returns:
         Sigma in metres = half-diagonal of the printed map's real-world extent.
@@ -574,7 +489,7 @@ def sigma_from_scale(scale_ratio, page_mm=(297, 210)):
     """
     if scale_ratio is None:
         return 2500
-    diag_mm = math.sqrt(page_mm[0] ** 2 + page_mm[1] ** 2)
+    diag_mm = math.sqrt(297 ** 2 + 210 ** 2)  # A4 landscape
     half_diag_m = 0.5 * (diag_mm / 1000.0) * scale_ratio
     return max(150, int(half_diag_m))  # tiny floor — only covers numerical safety
 
@@ -604,7 +519,6 @@ _SCALE_PATTERN_RE = re.compile(r"\b1\s*[:/]\s*\d")
 class AxisResult:
     score: float                 # in [0, 1]
     verdict: str                 # 1-line human-readable verdict
-    evidence: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -614,8 +528,7 @@ class RewardResult:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "axes": {
-                name: {"score": ax.score, "verdict": ax.verdict,
-                       "evidence": ax.evidence}
+                name: {"score": ax.score, "verdict": ax.verdict}
                 for name, ax in self.axes.items()
             },
         }
@@ -642,8 +555,7 @@ def axis_scale_consistency(
     """
     s = float(avg_scale or 0.0)
     if s <= 0:
-        return AxisResult(score=0.0, verdict="invalid (avg_scale ≤ 0)",
-                           evidence={"avg_scale": s})
+        return AxisResult(score=0.0, verdict="invalid (avg_scale ≤ 0)")
 
     reader_provided = bool(
         reader_scale_text
@@ -657,16 +569,12 @@ def axis_scale_consistency(
         v = (f"scale_consistency={score:.2f} (avg_scale={s:.3f}, "
              f"no reader scale)")
 
-    return AxisResult(score=score, verdict=v,
-                       evidence={"avg_scale": s,
-                                  "reader_scale": reader_scale_text,
-                                  "reader_provided_scale": reader_provided})
+    return AxisResult(score=score, verdict=v)
 
 
 def axis_road_name_agreement(
     chosen_lat: float, chosen_lon: float,
     reader_road_names: List[str],
-    radius_m: float = 1500.0,
 ) -> AxisResult:
     """Are the reader-extracted road names present in the OS road network
     at the matched location?
@@ -683,25 +591,14 @@ def axis_road_name_agreement(
     n_total = len(reader_road_names or [])
     if n_total == 0:
         return AxisResult(
-            score=0.5, verdict="no road names extracted by reader (no signal)",
-            evidence={"reader_roads": [], "matched_roads": []})
+            score=0.5, verdict="no road names extracted by reader (no signal)")
 
-    try:
-        from geoplanagent.tools.matching import _query_gpkg_road_names, _fuzzy_road_match
-    except Exception:
-        return AxisResult(
-            score=0.5, verdict="gpkg helpers unavailable (no signal)",
-            evidence={"reader_roads": list(reader_road_names),
-                      "matched_roads": []})
-
-    nearby = _query_gpkg_road_names(chosen_lat, chosen_lon, radius_m=radius_m)
+    nearby = _query_gpkg_road_names(chosen_lat, chosen_lon, radius_m=1500.0)
     if not nearby:
         return AxisResult(
             score=0.5,
             verdict=("no OS roads within radius — sparse cartography "
-                     "(rural / unlabelled), neutral signal"),
-            evidence={"reader_roads": list(reader_road_names),
-                      "matched_roads": [], "radius_m": radius_m})
+                     "(rural / unlabelled), neutral signal"))
 
     matched: List[str] = []
     for rn in reader_road_names:
@@ -721,10 +618,7 @@ def axis_road_name_agreement(
     else:
         v = f"{n_matched}/{n_total} reader roads found in OS"
 
-    return AxisResult(
-        score=score, verdict=v,
-        evidence={"reader_roads": list(reader_road_names),
-                  "matched_roads": matched, "radius_m": radius_m})
+    return AxisResult(score=score, verdict=v)
 
 
 # Top-level entry point
@@ -756,7 +650,7 @@ def compute_match_reward(
         )
     else:
         axes["road_name_agreement"] = AxisResult(
-            score=0.5, verdict="no center_latlon (no signal)", evidence={})
+            score=0.5, verdict="no center_latlon (no signal)")
 
     return RewardResult(axes=axes)
 

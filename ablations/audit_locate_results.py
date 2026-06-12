@@ -1,17 +1,18 @@
 """Identify cases that should be re-run after the three locate fixes:
-HTTP retry, image downscale, L2 cross-check validator.
+HTTP retry, image downscale, L2 cross-check validator (all three are
+wired in geoplanagent/agents/locate.py).
 
 For each config directory under ``ablations/locate_only_eval/``, find:
 
   - Bucket A — emergency fallbacks: rows where ``picked_source`` contains
     ``emergency_la_centroid`` (the locate agent hit an HTTP error and fell
-    back to the LA centroid). These will retry with the new HTTP retry +
-    image downscale and hopefully succeed.
+    back to the LA centroid). A rerun picks up the HTTP retry +
+    image downscale fixes.
 
   - Bucket B — L2-catchable: rows where the most recent ``la_check`` call
     in the trajectory has a coord >1 km from the final pick. These are
-    sign-flip / lat-lon-swap LLM output bugs the new L2 validator would
-    catch.
+    sign-flip / lat-lon-swap LLM output bugs the L2 validator now
+    catches.
 
 Writes per-config rerun lists to
 ``ablations/locate_only_eval/<cfg>/rerun_cases.txt``, plus an aggregate
@@ -34,7 +35,8 @@ from geoplanagent.utils import haversine_km   # noqa: E402
 
 EVAL_ROOT = REPO_ROOT / "ablations" / "locate_only_eval"
 
-# Empirically calibrated (see investigate_bucket_b notebook): sign-flips
+# Empirically calibrated (see the matching calibration note on the L2
+# output validator in geoplanagent/agents/locate.py): sign-flips
 # on UK lon produce drift > 20 km; "agent picked a different candidate
 # after la_check" cases stay < 5 km from at least one tool return. A 5 km
 # threshold cleanly separates them.
@@ -148,7 +150,6 @@ def main() -> int:
 
     print(f"Auditing {len(cfg_dirs)} configs...\n")
 
-    results = []
     total_a = 0
     total_b = 0
     rerun_total = 0
@@ -165,7 +166,6 @@ def main() -> int:
 
     for cfg in cfg_dirs:
         r = audit_config(cfg)
-        results.append(r)
         if "skipped" in r:
             continue
         a, b = len(r["bucket_a"]), len(r["bucket_b"])

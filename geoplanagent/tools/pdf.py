@@ -99,8 +99,6 @@ def render_map_page(
         auto_rotate — the caller can read rot_info["applied"] to know
         whether rotation was performed.
     """
-    from geoplanagent.tools.pdf import render_pdf_page
-
     page_idx = max(0, int(page_1based) - 1)
     try:
         img = render_pdf_page(str(pdf_path), page_idx, dpi=dpi)
@@ -111,7 +109,6 @@ def render_map_page(
 
     rot_info: dict = {"applied": False}
     try:
-        from geoplanagent.tools.pdf import auto_rotate
         img, rot_info = auto_rotate(img, case_name=case_name, verbose=verbose)
     except Exception as e:
         if verbose:
@@ -184,10 +181,6 @@ class _RotationClassifier(torch.nn.Module):
         return self.backbone(x)
 
 
-def _build_model(n_classes: int = 4) -> torch.nn.Module:
-    return _RotationClassifier(n_classes=n_classes)
-
-
 def _device() -> torch.device:
     return torch.device(
         "mps" if torch.backends.mps.is_available()
@@ -222,7 +215,7 @@ def _load_state() -> dict:
         img_size = int(cfg.get("img_size", 768))
 
         device = _device()
-        model = _build_model(n_classes=int(cfg.get("n_classes", 4)))
+        model = _RotationClassifier(n_classes=int(cfg.get("n_classes", 4)))
         model.load_state_dict(ckpt["state_dict"])
         model = model.to(device).eval()
 
@@ -231,9 +224,7 @@ def _load_state() -> dict:
             "device": device,
             "img_size": img_size,
             "transform": _make_transform(img_size),
-            "fold_assignment": None,
             "kind": "legacy",
-            "best_val_acc": float(ckpt.get("best_val_acc", 0.0)),
         }
         return _state
 
@@ -274,7 +265,7 @@ def _load_kfold_state() -> Optional[dict]:
             ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
             cfg = ckpt.get("config") or {}
             per_fold_img_size[fold_k] = int(cfg.get("img_size", 768))
-            model = _build_model(n_classes=int(cfg.get("n_classes", 4)))
+            model = _RotationClassifier(n_classes=int(cfg.get("n_classes", 4)))
             model.load_state_dict(ckpt["state_dict"])
             model = model.to(device).eval()
             models[fold_k] = model
@@ -336,12 +327,12 @@ def _preprocess(map_bgr: np.ndarray, transform) -> torch.Tensor:
 def predict_rotation_with_confidence(
     map_bgr: np.ndarray,
     case_name: Optional[str] = None,
-    threshold: float = _DEFAULT_CONFIDENCE_THRESHOLD,
 ) -> dict:
     """CW rotation (0/90/180/270) to make `map_bgr` upright, with 4-view TTA.
 
-    Abstains (returns 0) when the top-class softmax prob is below `threshold`.
-    Returns dict: rotation_cw_degrees, applied, confidence, all_probs,
+    Abstains (returns 0) when the top-class softmax prob is below
+    `_DEFAULT_CONFIDENCE_THRESHOLD`.
+    Returns dict: rotation_cw_degrees, applied, confidence,
     abstained_low_confidence, raw_class, fold.
     """
     model, state = _model_for_case(case_name)
@@ -376,35 +367,22 @@ def predict_rotation_with_confidence(
     top_class = int(np.argmax(probs_np))
     confidence = float(probs_np[top_class])
 
-    abstained = confidence < threshold
+    abstained = confidence < _DEFAULT_CONFIDENCE_THRESHOLD
     rotation = 0 if abstained else _CLASS_TO_DEGREES[top_class]
 
     return {
         "rotation_cw_degrees": rotation,
         "applied": rotation != 0,
         "confidence": confidence,
-        "all_probs": probs_np.tolist(),
         "abstained_low_confidence": abstained,
         "raw_class": top_class,
         "fold": fold,
     }
 
 
-def predict_rotation_cw(
-    map_bgr: np.ndarray,
-    case_name: Optional[str] = None,
-    threshold: float = _DEFAULT_CONFIDENCE_THRESHOLD,
-) -> int:
-    """Convenience wrapper: returns just the CW degrees to rotate (0 if abstained)."""
-    return predict_rotation_with_confidence(
-        map_bgr, case_name=case_name, threshold=threshold,
-    )["rotation_cw_degrees"]
-
-
 def auto_rotate(
     map_bgr: np.ndarray,
     case_name: Optional[str] = None,
-    threshold: float = _DEFAULT_CONFIDENCE_THRESHOLD,
     verbose: bool = False,
 ) -> tuple[np.ndarray, dict]:
     """Predict + apply rotation. Returns (rotated_map, info_dict).
@@ -414,14 +392,14 @@ def auto_rotate(
     predict_rotation_with_confidence's return. Pass `case_name` to route
     the prediction through k-fold (excludes the case from training).
     """
-    info = predict_rotation_with_confidence(
-        map_bgr, case_name=case_name, threshold=threshold)
+    info = predict_rotation_with_confidence(map_bgr, case_name=case_name)
     rot = info["rotation_cw_degrees"]
     if rot == 0:
         if verbose:
             if info["abstained_low_confidence"]:
                 print(f"  rotation_classifier: abstained "
-                      f"(conf={info['confidence']:.2f} < {threshold:.2f}); "
+                      f"(conf={info['confidence']:.2f} < "
+                      f"{_DEFAULT_CONFIDENCE_THRESHOLD:.2f}); "
                       f"raw_class={info['raw_class']} -> "
                       f"{_CLASS_TO_DEGREES[info['raw_class']]}°. "
                       f"Leaving map unrotated.")

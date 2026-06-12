@@ -19,11 +19,7 @@ import torch
 # accuracy will drop noticeably.
 DEFAULT_KFOLD_DIR = "models/sam3_lora"
 
-# Re-export fold-routing helpers under their historical private names
-# so external imports (`from geoplanagent.tools.segment import N_FOLDS`,
-# `_normalise_case_name`) keep working. The canonical source lives in
-# geoplanagent.utils; both SAM3 and the rotation classifier
-# delegate there.
+# Fold-routing helpers; canonical source is geoplanagent.utils.
 from geoplanagent.utils import (
     N_FOLDS,
     resolve_fold as _resolve_fold,
@@ -244,12 +240,12 @@ def set_fold_for_case(sam_state, case_name):
         print(f"  SAM3 set_adapter(fold_{fold}) failed: {e}")
 
 
-def load_sam3_ft(kfold_dir=DEFAULT_KFOLD_DIR):
+def load_sam3_ft():
     """Load SAM3 base model + k-fold LoRA adapters.
 
     Resolution order:
-      1) k-fold adapters at `kfold_dir` if present — returns a dict that
-         supports per-case fold switching via `set_fold_for_case`.
+      1) k-fold adapters at `DEFAULT_KFOLD_DIR` if present — returns a dict
+         that supports per-case fold switching via `set_fold_for_case`.
       2) Base SAM3 with no LoRA (warns; production accuracy will drop).
 
     The returned dict has the same shape in either case (processor, model,
@@ -266,11 +262,11 @@ def load_sam3_ft(kfold_dir=DEFAULT_KFOLD_DIR):
     device = torch.device("mps" if torch.backends.mps.is_available()
                           else "cuda" if torch.cuda.is_available() else "cpu")
 
-    out = _load_kfold(kfold_dir, hf_token, device)
+    out = _load_kfold(DEFAULT_KFOLD_DIR, hf_token, device)
     if out is not None:
         return out
 
-    print(f"  WARNING: k-fold dir ({kfold_dir}) missing. "
+    print(f"  WARNING: k-fold dir ({DEFAULT_KFOLD_DIR}) missing. "
           f"Falling back to base SAM3 (no LoRA).")
     processor = Sam3Processor.from_pretrained("facebook/sam3", token=hf_token)
     model = Sam3Model.from_pretrained("facebook/sam3", token=hf_token)
@@ -307,8 +303,8 @@ def extract_boundary_sam3_semantic(map_crop_path, processor, model, device,
     # The LoRA was trained on the literal phrase "planning boundary"
     # (the default value of `query`). Other phrasings still work via the
     # underlying SAM3 + CLIP, but slot quality is best on the trained
-    # phrase. The agent is free to override the default if a particular
-    # case needs it — we just truncate to fit CLIP's 32-token limit.
+    # phrase. Offline callers (e.g. the prompt-search ablation) may
+    # override the default — we just truncate to fit CLIP's 32-token limit.
     if isinstance(query, str):
         words = query.split()
         if len(words) > 6:

@@ -8,7 +8,7 @@ planning boundary directly from the rendered map page. Reports pixel IoU
 against the human-traced ground-truth masks at
 ``training/dataset/boundary_masks/`` — the same masks used to fine-tune
 SAM3 — so the numbers slot directly into the paper table next to the
-SAM3-fine-tune row produced by ``scripts/eval_sam_kfold_v2.py``.
+SAM3-fine-tune row produced by ``training/eval/eval_sam_kfold.py``.
 
 No pipeline involvement: pure single-shot VLM inference, no SAM3, no
 MINIMA, no agent loop. Safe to run in parallel with the main benchmark.
@@ -20,12 +20,10 @@ Quick prompt iteration on 3 cases:
 
 Full run (all manifest cases, all folds):
     uv run python ablations/vlm_segmentation.py --model gemini-flash
-
-Held-out-fold-only (true zero-shot comparison vs SAM3-fine-tune):
-    uv run python ablations/vlm_segmentation.py --model gemini-flash --held-out-only
 """
 from __future__ import annotations
 import argparse
+import io
 import json
 import sys
 import time
@@ -186,7 +184,7 @@ def iou_score(pred: np.ndarray, gt: np.ndarray) -> float:
     return float(inter / union) if union > 0 else 0.0
 
 
-# Aggregation (mirrors scripts/eval_sam_kfold_v2.py:summarise)
+# Aggregation (mirrors training/eval/eval_sam_kfold.py:summarise)
 
 def summarise(name: str, xs: List[float]) -> dict:
     n = len(xs)
@@ -269,15 +267,10 @@ def main() -> None:
                     help="OpenRouter alias (gemini-flash, gemini-pro, …) or full ID")
     ap.add_argument("--max-cases", type=int, default=None,
                     help="Cap on number of cases (for quick iteration)")
-    ap.add_argument("--held-out-only", action="store_true",
-                    help="Only evaluate cases that were in the held-out fold for "
-                         "their fine-tune run (no fold-by-fold loop here — VLM "
-                         "is fold-agnostic, but this filters to cases SAM3 "
-                         "didn't train on, giving a like-for-like comparison)")
     ap.add_argument("--fold", type=int, default=None,
                     help="Only evaluate cases assigned to this fold (per "
-                         "manifest). Useful to A/B against eval_sam_kfold_v2's "
-                         "per-fold output.")
+                         "manifest). Useful to A/B against "
+                         "training/eval/eval_sam_kfold.py's per-fold output.")
     ap.add_argument("--out-dir", default="results/ablation_vlm_seg")
     ap.add_argument("--cases", nargs="+", default=None,
                     help="Only run these specific case identifiers (matches "
@@ -327,15 +320,10 @@ def main() -> None:
             print(f"WARNING: {len(missing)} requested cases not in manifest: {sorted(missing)}")
     if args.fold is not None:
         manifest = [r for r in manifest if r.get("fold") == args.fold]
-    if args.held_out_only:
-        # No-op: VLM has no training, so every case is "held out". Flag is
-        # accepted for API parity with future ablations that do care.
-        pass
     if args.max_cases:
         manifest = manifest[:args.max_cases]
 
-    print(f"manifest: {len(manifest)} cases  "
-          f"(fold={args.fold}, held_out_only={args.held_out_only})")
+    print(f"manifest: {len(manifest)} cases  (fold={args.fold})")
 
     # Load prompt
     if args.prompt_file:
@@ -430,15 +418,14 @@ def main() -> None:
         # Encode as JPEG (smaller payload, dodges 413 on large maps) or PNG
         # (lossless, default).
         if args.jpeg_quality is not None:
-            import io as _io
-            buf = _io.BytesIO()
+            buf = io.BytesIO()
             img.save(buf, format="JPEG", quality=int(args.jpeg_quality))
             png_bytes = buf.getvalue()
             media_type = "image/jpeg"
-        elif args.max_image_dim is not None and max(img.width, img.height) <= args.max_image_dim:
-            # Resized → re-encode PNG from the resized image
-            import io as _io
-            buf = _io.BytesIO()
+        elif args.max_image_dim is not None:
+            # max-image-dim set → re-encode PNG from the in-memory image
+            # (resized above, or already within the limit)
+            buf = io.BytesIO()
             img.save(buf, format="PNG")
             png_bytes = buf.getvalue()
             media_type = "image/png"
@@ -538,7 +525,7 @@ def main() -> None:
     summary_all = summarise("VLM-direct pixel IoU (all)", valid)
     print_summary(summary_all)
 
-    # Per-fold breakdown (matches eval_sam_kfold_v2 fold-by-fold output)
+    # Per-fold breakdown (matches training/eval/eval_sam_kfold.py fold-by-fold output)
     if any(r.get("fold") is not None for r in rows):
         print("\nPer-fold breakdown:")
         for f_id in sorted({r["fold"] for r in rows if r.get("fold") is not None}):

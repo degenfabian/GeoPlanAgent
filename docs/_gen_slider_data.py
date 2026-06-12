@@ -22,6 +22,7 @@ sys.path.insert(0, str(ROOT))
 from geoplanagent.tools.pdf import render_map_page  # noqa: E402
 from geoplanagent.tools.tiles import fetch_os_opendata_grid  # noqa: E402
 from geoplanagent.tools.matching import (  # noqa: E402
+    WINDOW_STRIDE_TARGET,
     estimate_affine,
     load_minima,
     run_minima,
@@ -95,7 +96,6 @@ if rh >= ch or rw >= cw:
     )
 
 # Compute the stride the same way sliding_window_position does
-WINDOW_STRIDE_TARGET = 100
 _area_available = max(1, (ch - rh) * (cw - rw))
 _target_stride = int(math.sqrt(_area_available / WINDOW_STRIDE_TARGET))
 step_x = max(32, min(_target_stride, max(1, cw - rw)))
@@ -124,7 +124,6 @@ for iy, wy in enumerate(ys):
         rec = {
             "x": int(wx), "y": int(wy), "w": int(rw), "h": int(rh),
             "n_inliers": int(n_inliers),
-            "score": float(round(score, 2)) if score is not None else 0.0,
             "avg_scale": round(avg_scale, 4) if avg_scale is not None else None,
         }
         windows.append(rec)
@@ -135,13 +134,11 @@ for iy, wy in enumerate(ys):
             # MINIMA correspondences in the demo.
             inl = inlier_mask.ravel().astype(bool) if inlier_mask is not None else None
             best_meta = {
-                "x": int(wx), "y": int(wy), "w": int(rw), "h": int(rh),
+                "x": int(wx), "y": int(wy),
                 "n_inliers": int(n_inliers),
-                "avg_scale": round(avg_scale, 4) if avg_scale is not None else None,
                 # Keep ALL matches (so the UI can show outliers in grey + inliers bright)
                 "mkpts0":      mkpts0.tolist() if mkpts0 is not None else [],
                 "mkpts1":      mkpts1.tolist() if mkpts1 is not None else [],
-                "mconf":       [float(round(c, 4)) for c in mconf.tolist()] if mconf is not None else [],
                 "inlier_mask": [int(v) for v in inl.tolist()] if inl is not None else [],
             }
         print(
@@ -168,9 +165,7 @@ if best_meta is not None and best_meta["mkpts0"]:
                 + outlier_idx[: max(0, 80 - min(64, len(inlier_idx)))])
     best_meta["mkpts0"] = [best_meta["mkpts0"][i] for i in keep_idx]
     best_meta["mkpts1"] = [best_meta["mkpts1"][i] for i in keep_idx]
-    best_meta["mconf"]  = [best_meta["mconf"][i]  for i in keep_idx]
     best_meta["inlier_mask"] = [best_meta["inlier_mask"][i] for i in keep_idx]
-    best_meta["n_shown"] = len(keep_idx)
 
 payload = {
     "case": CASE,
@@ -178,8 +173,6 @@ payload = {
     "scale_factor": scale_factor_cached,
     "canvas_w": cw, "canvas_h": ch,
     "map_w": rw, "map_h": rh,
-    "step_x": step_x, "step_y": step_y,
-    "n_cols": len(xs), "n_rows": len(ys),
     "anchor_latlon": [anchor_lat, anchor_lon],
     "windows": windows,
     "best_window": best_meta,

@@ -12,9 +12,9 @@ PDFs is insufficient for the task" — the VLM has every text and image
 signal in the PDF; what it lacks is location lookup, image-to-WGS84
 registration, and any access to OS basemap data.
 
-Output sits under the same root that holds the subset definitions, so
-the aggregation step can compare VLM-direct against the pipeline
-baseline already cached at ``subset_40_pipeline_baseline.json``:
+Output sits under the same root that holds the subset definitions;
+``scripts/reproduce_paper.py`` (table1) reads the per-model
+``results.csv`` to compare VLM-direct against the pipeline baseline:
 
     ablations/vlm_e2e_pdf_to_geojson/
         subset_40.json                    # subset definition (committed)
@@ -306,10 +306,6 @@ def count_polygons(feature: GeoJSONFeature) -> int:
     return len(feature.geometry.coordinates)
 
 
-def feature_to_dict(feature: GeoJSONFeature) -> dict:
-    return feature.model_dump()
-
-
 def gt_is_multipolygon(gt_geojson: dict) -> bool:
     geom = (gt_geojson or {}).get("geometry") or {}
     return geom.get("type") == "MultiPolygon"
@@ -338,7 +334,7 @@ CSV_FIELDNAMES = [
     "n_polygons", "is_multipolygon_pred", "is_multipolygon_gt",
     "latlon_swap_warning",
     "call_seconds", "vlm_request_tokens", "vlm_response_tokens",
-    "error", "evidence",
+    "error",
 ]
 
 
@@ -539,7 +535,7 @@ def evaluate(args: argparse.Namespace) -> int:
                 continue
 
             assert feature is not None
-            pred_dict = feature_to_dict(feature)
+            pred_dict = feature.model_dump()
             row["n_polygons"] = count_polygons(feature)
             row["is_multipolygon_pred"] = isinstance(
                 feature.geometry, GeoJSONMultiPolygon)
@@ -565,9 +561,6 @@ def evaluate(args: argparse.Namespace) -> int:
             )
             if metrics.get("validation_error"):
                 row["validation_error"] = str(metrics["validation_error"])[:200]
-
-            evidence = (feature.properties or {}).get("reasoning") or ""
-            row["evidence"] = str(evidence)[:240]
 
             writer.writerow(row); f.flush()
             n_ok += 1
@@ -595,7 +588,6 @@ def evaluate(args: argparse.Namespace) -> int:
                         k: v for k, v in metrics.items()
                         if k != "validation_error" or v
                     },
-                    "pipeline_baseline_iou": meta.get("pipeline_baseline_iou"),
                     "trajectory_stats": traj_stats,
                     "trajectory": trajectory,
                 }

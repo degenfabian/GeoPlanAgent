@@ -28,7 +28,7 @@ from pathlib import Path
 from typing import Optional
 
 
-from _pricing import DEFAULT_MODEL, PRICES  # noqa: E402 (scripts/ on sys.path when run as a file)
+from _pricing import DEFAULT_MODEL, PRICES  # scripts/ on sys.path when run as a file
 
 
 def _pull_tokens(metrics: dict) -> dict:

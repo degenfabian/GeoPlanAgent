@@ -22,9 +22,9 @@ Writes (PDF + PNG):
   figures/cls_bars_seg_quality.{pdf,png}
   figures/cls_bars_seg_complexity.{pdf,png}
 
-Style matches figures/abl_seg_bars.pdf: solid bars = mean IoU, hatched
-bars = fraction of cases at IoU >= 0.8. Each panel starts with a Total
-bar followed by the per-bucket bars; each panel uses a distinct hue.
+Style: solid bars = mean IoU, hatched bars = fraction of cases at
+IoU >= 0.8. Each panel starts with a Total bar followed by the
+per-bucket bars; each panel uses a distinct hue.
 """
 from __future__ import annotations
 
@@ -89,18 +89,8 @@ def _norm(s: object) -> str | None:
 
 
 def _bucket_with_other(series: pd.Series, keep: list[str],
-                       fallback: str = "other") -> pd.Series:
+                       fallback: str) -> pd.Series:
     return series.map(lambda x: x if x in keep else fallback)
-
-
-# Aggregate per bucket: (n, mean IoU, fraction at IoU >= 0.8)
-def _agg(df: pd.DataFrame, col: str, order: list[str]) -> list[tuple]:
-    rows = []
-    for b in order:
-        sub = df[df[col] == b]
-        rows.append((b, len(sub), sub["iou"].mean(),
-                     (sub["iou"] >= 0.8).mean()))
-    return rows
 
 
 # Plot helpers
@@ -186,8 +176,6 @@ def _draw_combined(panels: list[tuple], out_stem: str) -> None:
     fig, axes = plt.subplots(
         1, len(panels), figsize=(7.8, 2.8),
         gridspec_kw={"width_ratios": widths})
-    if len(panels) == 1:
-        axes = [axes]
 
     for i, (ax, (rows, sub_title, hue)) in enumerate(zip(axes, panels)):
         # Compact panels share the tighter bar/label settings.

@@ -54,7 +54,6 @@ returns the OS BoundaryLine polygon directly and the worker submits
 GeoMapAgent_autonomous/
 ├── README.md
 ├── benchmark_runner.py        # Evaluation driver across the dataset
-├── check_credits.py           # OpenRouter credits / usage check
 ├── pyproject.toml             # Dependencies (uv-managed)
 ├── uv.lock
 │

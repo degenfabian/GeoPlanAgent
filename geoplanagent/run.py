@@ -8,27 +8,27 @@ from __future__ import annotations
 import json
 import traceback
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 import os
 import tempfile
-from typing import Tuple
 import cv2
 from pydantic_ai import BinaryContent
+from pydantic_ai.exceptions import UnexpectedModelBehavior, UsageLimitExceeded
 from pydantic_ai.usage import UsageLimits
 from geoplanagent.schemas import BoundaryOutcome, PDFInfo
 from geoplanagent.utils import (
+    PRODUCTION_LOCATE_DISABLED_TOOLS,
     AgentState,
     _img_to_binary,
     _run_sync_with_retry,
+    committed_primary_page,
     resolve_model,
+    resolve_model_name,
 )
 from geoplanagent.agents.reader import _reader_agent
 from geoplanagent.agents.worker import _agent
 # Import registers the worker tools on the agent in definition order.
 from geoplanagent.tools import positioning as _positioning  # noqa: F401
-
-
-
 
 
 def run_agent(
@@ -43,9 +43,7 @@ def run_agent(
     enable_critic: bool = False,
     critic_max_iters: int = 2,
     locate_model: str = "google/gemini-3-flash-preview",
-    locate_disabled_tools: frozenset = frozenset(
-        {"postcode", "grid_ref", "road", "intersect", "la_check"}
-    ),
+    locate_disabled_tools: frozenset = PRODUCTION_LOCATE_DISABLED_TOOLS,
     folded: bool = False,
 ) -> Dict[str, Any]:
     """Run reader → worker on one planning PDF. Returns geojson, mask, stats.
@@ -56,7 +54,6 @@ def run_agent(
     user message and the worker is forced to call submit_pdf_info before
     any other tool. Everything downstream of pdf_info is identical.
     """
-    from geoplanagent.utils import resolve_model_name
     model_name = resolve_model_name(model_name)
 
     if "sam3_ft" in models_state:
@@ -105,8 +102,6 @@ def run_agent(
     if verbose:
         print(f"  Running agent ({model_name}, max {max_iterations} turns)")
 
-    from pydantic_ai.exceptions import UnexpectedModelBehavior, UsageLimitExceeded
-
     # Phase 2: invoke the worker
     result = None
     outcome: Optional[BoundaryOutcome] = None  # may stay None on exception path
@@ -125,14 +120,10 @@ def run_agent(
             print(f"  Agent error: {e}")
             traceback.print_exc()
         partial_stats = dump_partial_state(state, pdf_info, e, case_dir, verbose)
-        from geoplanagent.utils import committed_primary_page
-        pp = committed_primary_page(state)
         return {
             "success": False,
             "error": str(e),
             "geojson": state.current_result.get("geojson"),
-            "match_info": state.current_result.get("match_info", {}),
-            "mask": state.sam_masks_by_page.get(pp) if pp else None,
             "agent_stats": partial_stats,
         }
     else:
@@ -173,7 +164,7 @@ def run_agent(
             if verbose:
                 n_rej = critic_result.get("n_rejections", 0)
                 its = critic_result.get("iterations") or [{}]
-                final_action = its[-1].get("action", "?") if its else "n/a"
+                final_action = its[-1].get("action", "?")
                 print(f"  Phase 3 done: {n_rej} rejection(s), "
                       f"final_decision={final_action}")
         except Exception as e:
@@ -190,20 +181,19 @@ def run_agent(
             and "error" not in critic_result
             and case_dir is not None):
         try:
-            import cv2 as _cv2
             case_dir.mkdir(parents=True, exist_ok=True)
             for _i, _p in enumerate(critic_result.get("panels_by_iter") or []):
                 if _p is None:
                     continue
                 _path = case_dir / f"critic_panel_iter{_i}.png"
-                _cv2.imwrite(str(_path), _p)
+                cv2.imwrite(str(_path), _p)
             for _i, _cands in enumerate(
                     critic_result.get("per_cand_panels_by_iter") or []):
                 for _cid, _cp in _cands or []:
                     if _cp is None:
                         continue
                     _path = case_dir / f"critic_panel_iter{_i}_cand{_cid}.png"
-                    _cv2.imwrite(str(_path), _cp)
+                    cv2.imwrite(str(_path), _cp)
         except Exception as _e:
             if verbose:
                 print(f"  Warning: failed to save critic panels: {_e}")
@@ -245,7 +235,8 @@ def run_agent(
     extracted_stats: dict = {}
     if log_source_result is not None:
         try:
-            message_log, extracted_stats = extract_message_log(log_source_result)
+            message_log, extracted_stats = extract_message_log_from_msgs(
+                log_source_result.all_messages())
         except Exception:
             pass
 
@@ -255,10 +246,7 @@ def run_agent(
     if critic_result is not None and "error" not in critic_result:
         agent_stats["critic"] = {
             "n_rejections": critic_result.get("n_rejections", 0),
-            "iterations": [
-                {k: v for k, v in it.items() if k != "panel"}
-                for it in critic_result.get("iterations") or []
-            ],
+            "iterations": list(critic_result.get("iterations") or []),
             "tokens": critic_result.get("tokens", {}),
         }
     elif critic_result is not None:
@@ -280,8 +268,6 @@ def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict
         print(f"  Phase 1: reading PDF ({len(pdf_bytes) // 1024} KB)...")
 
     model = resolve_model(model_name)
-
-    from pydantic_ai.exceptions import UnexpectedModelBehavior
 
     try:
         result = _run_sync_with_retry(
@@ -330,10 +316,8 @@ def prepare_worker_state(
     dpi: int,
     case_name: Optional[str],
     verbose: bool,
-    locate_model: str = "google/gemini-3-flash-preview",
-    locate_disabled_tools: frozenset = frozenset(
-        {"postcode", "grid_ref", "road", "intersect", "la_check"}
-    ),
+    locate_model: str,
+    locate_disabled_tools: frozenset,
 ) -> Tuple[AgentState, list]:
     """Build AgentState + worker user_parts (summary JSON + primary page image)."""
     state = AgentState(
@@ -438,8 +422,8 @@ def prepare_folded_state(
     dpi: int,
     case_name: Optional[str],
     verbose: bool,
-    locate_model: str = "google/gemini-3-flash-preview",
-    locate_disabled_tools: frozenset = frozenset(),
+    locate_model: str,
+    locate_disabled_tools: frozenset,
 ) -> Tuple[AgentState, list]:
     """Build AgentState + worker user_parts for the folded ablation.
 
@@ -553,21 +537,9 @@ def cleanup_temp_pages(state: AgentState) -> None:
             os.unlink(p)
         except OSError:
             pass
-        try:
-            for rot_path in Path(p).parent.glob(Path(p).stem + "_rot*.png"):
-                try:
-                    rot_path.unlink()
-                except OSError:
-                    pass
-        except OSError:
-            pass
 
 
 # Message log + stats extraction
-
-def extract_message_log(result: Any) -> Tuple[list, dict]:
-    return extract_message_log_from_msgs(result.all_messages())
-
 
 def extract_message_log_from_msgs(messages: list) -> Tuple[list, dict]:
     """Return (message_log, stats) for a pydantic-ai message list.
@@ -676,10 +648,9 @@ def collect_agent_stats(
     # Locate sub-agent telemetry
     # Populated by ``geoplanagent.tools.positioning.propose_centers`` via the
     # ``usage_sink=state.locate_calls`` kwarg threaded into ``run_locate``.
-    # On runs that pre-date the telemetry patch, ``state.locate_calls`` is
-    # absent / empty and these fields stay 0 — safe to compare with
-    # legacy ``metrics.json`` files.
-    locate_calls = getattr(state, "locate_calls", None) or []
+    # Legacy ``metrics.json`` files that pre-date the telemetry patch lack
+    # the locate_* keys (read back as 0) — safe to compare against.
+    locate_calls = state.locate_calls
     locate_req = sum(int(c.get("request_tokens", 0) or 0) for c in locate_calls)
     locate_resp = sum(int(c.get("response_tokens", 0) or 0) for c in locate_calls)
     agent_stats["locate_n_calls"] = len(locate_calls)
@@ -710,14 +681,6 @@ def collect_agent_stats(
             # Old cached metrics.json files that pre-date this patch will
             # have locate_* = 0, so their totals are reader + worker only
             # (matching the paper's $/doc computation).
-            agent_stats["request_tokens"] = (
-                (reader_tokens.get("request", 0) or 0)
-                + (usage.request_tokens or 0)
-                + locate_req)
-            agent_stats["response_tokens"] = (
-                (reader_tokens.get("response", 0) or 0)
-                + (usage.response_tokens or 0)
-                + locate_resp)
             agent_stats["total_tokens"] = (reader_total + worker_total
                                             + locate_req + locate_resp)
         except Exception:
@@ -742,7 +705,6 @@ def build_run_agent_return(
     worker's commit otherwise). This lets downstream score both
     conditions from a single run.
     """
-    from geoplanagent.utils import committed_primary_page
     primary_page = committed_primary_page(state)
     primary_img = state.rendered_pages.get(primary_page) if primary_page else None
     primary_mask = state.sam_masks_by_page.get(primary_page) if primary_page else None

@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 import cv2
 import numpy as np
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, BinaryContent
-from typing import Literal
 
 from geoplanagent.utils import resolve_model
 from geoplanagent.prompts import CRITIC_INSTRUCTIONS
@@ -48,7 +47,7 @@ class CriticDirective(BaseModel):
     )
 
 
-# Critic instructions — pairwise framing across candidates.
+# Agent cache
 
 
 _critic_agent: Optional[Agent] = None
@@ -110,10 +109,7 @@ def _build_one_group_panel(map_img: np.ndarray,
     left = cv2.resize(left, (max(1, int(w_l * target_h / h_l)), target_h))
 
     tile_img = tile_info["image"]
-    if tile_img.shape[2] == 3 and tile_info.get("_was_rgb", True):
-        tile_bgr = cv2.cvtColor(tile_img, cv2.COLOR_RGB2BGR)
-    else:
-        tile_bgr = tile_img.copy()
+    tile_bgr = cv2.cvtColor(tile_img, cv2.COLOR_RGB2BGR)
 
     # Project SAM-mask contour through affine_H onto the OS tile.
     if isinstance(mask, np.ndarray) and mask.sum() > 0 and affine_H is not None:
@@ -152,8 +148,7 @@ def _build_candidate_panel(state: Any, attempt: Dict[str, Any],
         page = g.get("page")
         map_img = state.rendered_pages.get(page) if state.rendered_pages else None
         mask = (state.sam_masks_by_page or {}).get(page)
-        mi = g.get("match_info") or {}
-        tile_info = g.get("tile_info") or mi.get("tile_info")
+        tile_info = g.get("tile_info")
         affine_H = g.get("affine_H")
         group_id = g.get("area_group", "?")
         zoom = (tile_info or {}).get("zoom", "?")
@@ -201,8 +196,7 @@ def _stack_candidate_panels(panels: List[np.ndarray]) -> Optional[np.ndarray]:
     return big
 
 
-def _format_metrics_text(state: Any,
-                          attempts: List[Dict[str, Any]],
+def _format_metrics_text(attempts: List[Dict[str, Any]],
                           committed_ids: set) -> str:
     """Per-candidate metrics block; tags [COMMITTED] for each id in committed_ids."""
     lines = ["=== CANDIDATES ==="]
@@ -267,12 +261,6 @@ def _run_critic_once(state: Any, model_name: str,
     # docs have one entry; multi-area docs can have several.
     committed_ids: set = set(int(c) for c in (
         getattr(state, "committed_groups", {}) or {}).values())
-    # Legacy fallback: if committed_groups wasn't populated (very old
-    # state shape), read from current_result["candidate_id"].
-    if not committed_ids:
-        cr = state.current_result or {}
-        if cr.get("candidate_id") is not None:
-            committed_ids = {int(cr["candidate_id"])}
 
     # Rank candidates by n_inliers (each attempt covers one area_group
     # so this is the per-group strength). Tie-break by candidate_id
@@ -294,8 +282,7 @@ def _run_critic_once(state: Any, model_name: str,
     for cid in committed_ids:
         if cid in shown_ids:
             continue
-        committed_attempt = next(
-            (a for a in attempts if a.get("candidate_id") == cid), None)
+        committed_attempt = state.match_attempts.get(cid)
         if committed_attempt is not None:
             shown.append(committed_attempt)
             shown_ids.add(cid)
@@ -316,7 +303,7 @@ def _run_critic_once(state: Any, model_name: str,
     # Aggregated stack — for disk save only, not sent to the LLM.
     panel = _stack_candidate_panels([p for _, p in cand_panels_with_id])
 
-    metrics_text = _format_metrics_text(state, shown, committed_ids)
+    metrics_text = _format_metrics_text(shown, committed_ids)
     selection_note = (
         f"Showing top-{len(shown)} of {total_n_attempts} stored candidates "
         f"(ranked by n_inliers; the worker's committed candidate(s) are "
@@ -397,30 +384,25 @@ def _run_critic_once(state: Any, model_name: str,
 
 
 def _direct_switch_commit(state: Any,
-                           worker_result: Any,
                            chosen_id: int,
                            directive_reasoning: str,
-                           verbose: bool = True) -> Any:
+                           verbose: bool = True) -> None:
     """Commit ``chosen_id`` directly into state — no worker LLM call.
 
     The critic has already decided which candidate to commit; the
     candidate is already in ``state.match_attempts`` (it was put there
-    by an earlier ``match_at`` call). An LLM re-invocation here would
-    just be a middleman that types out ``commit_match(N)`` — wasted
-    cost and deterministic risk (the worker could rationalise around
-    the pick).
+    by an earlier ``match_at`` call, and the caller has verified the
+    id is present). An LLM re-invocation here would just be a
+    middleman that types out ``commit_match(N)`` — wasted cost and
+    deterministic risk (the worker could rationalise around the pick).
 
     Mutates ``state.current_result`` / ``state.last_output`` /
     ``state.accepted`` / ``state.accept_reason`` to mirror what a
-    successful ``commit_match`` would have produced. Returns the
-    ORIGINAL ``worker_result`` unchanged — the critic loop breaks on
-    ``switch``, so we never need fresh worker messages downstream.
+    successful ``commit_match`` would have produced. The critic loop
+    breaks on ``switch``, so we never need fresh worker messages
+    downstream.
     """
     cand = state.match_attempts.get(int(chosen_id))
-    if cand is None:
-        if verbose:
-            print(f"  direct_switch: id {chosen_id} not in match_attempts")
-        return worker_result
 
     # Strict gate: refuse to commit a candidate that produced no
     # valid affine for any group — mirrors commit_match's check at
@@ -434,7 +416,7 @@ def _direct_switch_commit(state: Any,
         if verbose:
             print(f"  direct_switch: id {chosen_id} has no usable affine / "
                   f"geojson (n_groups_committed={n_committed}); skipping")
-        return worker_result
+        return
 
     # Per-group commit: replace the entry for THIS candidate's
     # area_group, then rebuild current_result by re-unioning every
@@ -480,7 +462,6 @@ def _direct_switch_commit(state: Any,
         print(f"  direct_switch: committed candidate {chosen_id} "
               f"(sum_n_inliers={state.current_result['total_inliers']}) "
               f"without worker re-invoke")
-    return worker_result
 
 
 def _rehand_to_worker(state: Any,
@@ -519,11 +500,10 @@ def _rehand_to_worker(state: Any,
                 print(f"  critic switch: id {chosen} not in stored "
                       f"candidates, skipping")
             return worker_result, None
-        new_result = _direct_switch_commit(
-            state, worker_result, chosen,
-            directive.reasoning or "", verbose=verbose,
+        _direct_switch_commit(
+            state, chosen, directive.reasoning or "", verbose=verbose,
         )
-        return new_result, None
+        return worker_result, None
 
     elif action == "retry_locate":
         # Refill the worker's match_at budget and partial-clear the
@@ -617,11 +597,11 @@ def run_critic_loop(
 
     Returns a dict with:
         - worker_first_geojson : worker's commit BEFORE any critic intervention
-        - critic_final_geojson : geojson AFTER the critic loop
         - iterations           : list of per-iter records (action, reasoning, ...)
         - n_rejections         : count of switch/retry_locate actions issued
         - tokens               : {request, response} totals across critic calls
-        - panel_iter0          : first iteration's panel (np.ndarray) for viz
+        - panels_by_iter       : per-iteration stacked panel (np.ndarray) for viz
+        - per_cand_panels_by_iter : per-iteration (candidate_id, panel) tuples
     """
     # Snapshot the worker's first commit BEFORE any critic intervention.
     worker_first_geojson = _snapshot_geojson(state)
@@ -630,11 +610,9 @@ def run_critic_loop(
             print("  critic: no geojson committed, skipping")
         return {
             "worker_first_geojson": None,
-            "critic_final_geojson": None,
             "iterations": [],
             "n_rejections": 0,
             "tokens": {"request": 0, "response": 0},
-            "panel_iter0": None,
         }
 
     iterations: List[Dict[str, Any]] = []
@@ -708,13 +686,12 @@ def run_critic_loop(
 
         # If a retry_locate rehand didn't change state, the worker
         # couldn't comply — break to avoid spinning on a stuck case.
-        if not iter_entry["geojson_changed"] and directive.action != "approve":
+        if not iter_entry["geojson_changed"]:
             if verbose:
                 print("  critic rehand: geojson unchanged after rehand, "
                       "exiting loop")
             break
 
-    critic_final_geojson = _snapshot_geojson(state)
     # A genuine rejection is any iteration where the critic asked us
     # to change state. The crashed-LLM path synthesises a directive
     # with action="approve" + llm_error set; we must NOT count those
@@ -726,7 +703,6 @@ def run_critic_loop(
 
     return {
         "worker_first_geojson": worker_first_geojson,
-        "critic_final_geojson": critic_final_geojson,
         "iterations": iterations,
         "n_rejections": n_rej,
         "tokens": {"request": total_in, "response": total_out},
