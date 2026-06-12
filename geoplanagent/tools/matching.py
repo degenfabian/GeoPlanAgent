@@ -1,6 +1,7 @@
-"""MINIMA model management, the sliding-window matcher, affine recovery and
-GeoJSON projection, plus the scale/sigma priors and the composite
-window-score reranker it ranks candidates with.
+"""MINIMA-LoFTR map-to-tile registration: model management, the sliding-window
+search with RANSAC affine fit and diversity-bucketed re-ranking, the
+scale/sigma priors, road-name verification, and the per-axis match-quality
+reward signals fed to the worker's commit policy.
 """
 
 from __future__ import annotations
@@ -12,16 +13,18 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 import cv2
 import numpy as np
-from geoplanagent.geo.coords import (
+from geoplanagent.utils import (
     best_zoom_for_scale,
     compute_map_mpp,
     latlon_to_global_tile_pixel,
     osm_pixel_to_latlon,
     tile_mpp as _tile_mpp_at,
 )
-from geoplanagent.matching.road_verify import _verify_candidates_with_road_names
 import logging
 from typing import Optional
+import re
+from dataclasses import dataclass, field
+from typing import Any
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -236,7 +239,7 @@ def sliding_window_position(
     Returns: geojson, affine_H, tile_info, match_info, n_windows.
     """
     if tile_fetcher is None:
-        from geoplanagent.io.os_tiles import fetch_os_opendata_grid
+        from geoplanagent.tools.tiles import fetch_os_opendata_grid
         tile_fetcher = fetch_os_opendata_grid
 
     if not centers:
@@ -528,7 +531,7 @@ def quadrant_coverage_from_inlier_points(
     """How many of the rotated map's 4 quadrants contain an inlier.
 
     inlier_pts_map is the list of (x, y) points that
-    geoplanagent.matching.sliding_window_position stores in
+    geoplanagent.tools.matching.sliding_window_position stores in
     match_info["_inlier_pts_map"]; rot_shape is the (h, w) of the rotated
     map crop at match time.
     """
@@ -589,3 +592,304 @@ def effective_sigma(scale_ratio: Optional[int]) -> int:
     locate sub-agent always supplies σ on its picks.
     """
     return max(_FALLBACK_SIGMA_M, sigma_from_scale(scale_ratio))
+
+
+# A reader-provided scale is signaled by a real "1:N" / "1/N" pattern in
+# the extracted text — not by the absence of a few stop-words. The old
+# substring check "not in reader_scale_text.lower()" mis-classified valid
+# scales like "1:2500 (note: ...)" or "1:2500 cannot be guaranteed" as
+# "no reader scale" because "not" appears as a substring.
+_SCALE_PATTERN_RE = re.compile(r"\b1\s*[:/]\s*\d")
+
+
+# Axis primitives
+
+@dataclass
+class AxisResult:
+    score: float                 # in [0, 1]
+    verdict: str                 # 1-line human-readable verdict
+    evidence: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class RewardResult:
+    axes: Dict[str, AxisResult]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "axes": {
+                name: {"score": ax.score, "verdict": ax.verdict,
+                       "evidence": ax.evidence}
+                for name, ax in self.axes.items()
+            },
+        }
+
+
+# Axis implementations
+
+def axis_scale_consistency(
+    avg_scale: float, reader_scale_text: Optional[str] = None,
+) -> AxisResult:
+    """Does the recovered affine scale agree with the assumed scale?
+
+    avg_scale ≈ 1.0 means the resize-to-tile-pixel-scale was correct,
+    which means the assumed map scale was right. Far from 1.0 indicates
+    the assumed scale was wrong AND/OR MINIMA found a coincidental match
+    at a different scale.
+
+    Score is ``min(s, 1/s) ** 2`` — symmetric about identity (treats
+    "stretched 31% more" and "compressed by 24%" as equally suspicious),
+    returns 1.0 at s=1, smoothly decays toward 0. The squaring is the
+    only knob (``p=2``); it sharpens the slope near identity enough
+    that a 10–30% deviation produces a decisive ranking difference
+    when the worker or critic compares candidates.
+    """
+    s = float(avg_scale or 0.0)
+    if s <= 0:
+        return AxisResult(score=0.0, verdict="invalid (avg_scale ≤ 0)",
+                           evidence={"avg_scale": s})
+
+    reader_provided = bool(
+        reader_scale_text
+        and _SCALE_PATTERN_RE.search(str(reader_scale_text)))
+    score = min(s, 1.0 / s) ** 2
+
+    if reader_provided:
+        v = (f"scale_consistency={score:.2f} (avg_scale={s:.3f}, "
+             f"reader said {reader_scale_text!r})")
+    else:
+        v = (f"scale_consistency={score:.2f} (avg_scale={s:.3f}, "
+             f"no reader scale)")
+
+    return AxisResult(score=score, verdict=v,
+                       evidence={"avg_scale": s,
+                                  "reader_scale": reader_scale_text,
+                                  "reader_provided_scale": reader_provided})
+
+
+def axis_road_name_agreement(
+    chosen_lat: float, chosen_lon: float,
+    reader_road_names: List[str],
+    radius_m: float = 1500.0,
+) -> AxisResult:
+    """Are the reader-extracted road names present in the OS road network
+    at the matched location?
+
+    Uses the offline OS Open Zoomstack GeoPackage (no network calls).
+
+    Three regimes (distinguishes "no data" from "data disagrees"):
+      * `reader_road_names` empty           → 0.5 neutral (no signal to test)
+      * OS has no roads in radius           → 0.5 neutral (sparse cartography,
+        common in rural villages — NOT a wrong-area signal)
+      * OS has roads, but none match reader → 0.0 strong wrong-area signal
+      * Some / all match                    → matched / total
+    """
+    n_total = len(reader_road_names or [])
+    if n_total == 0:
+        return AxisResult(
+            score=0.5, verdict="no road names extracted by reader (no signal)",
+            evidence={"reader_roads": [], "matched_roads": []})
+
+    try:
+        from geoplanagent.tools.matching import _query_gpkg_road_names, _fuzzy_road_match
+    except Exception:
+        return AxisResult(
+            score=0.5, verdict="gpkg helpers unavailable (no signal)",
+            evidence={"reader_roads": list(reader_road_names),
+                      "matched_roads": []})
+
+    nearby = _query_gpkg_road_names(chosen_lat, chosen_lon, radius_m=radius_m)
+    if not nearby:
+        return AxisResult(
+            score=0.5,
+            verdict=("no OS roads within radius — sparse cartography "
+                     "(rural / unlabelled), neutral signal"),
+            evidence={"reader_roads": list(reader_road_names),
+                      "matched_roads": [], "radius_m": radius_m})
+
+    matched: List[str] = []
+    for rn in reader_road_names:
+        if _fuzzy_road_match(rn, nearby):
+            matched.append(rn)
+
+    # Score is the raw match ratio; the verdict is just human-readable
+    # context. Resist the urge to add tier thresholds here — the critic
+    # reads the score directly, and any "strong/partial/weak" labels would
+    # be arbitrary cutoffs masquerading as principled signal.
+    n_matched = len(matched)
+    score = n_matched / n_total
+    if score == 0:
+        v = (f"OS roads present here but ZERO of {n_total} reader roads "
+             f"match — possible wrong-area signal (trust strong inliers "
+             f"over this)")
+    else:
+        v = f"{n_matched}/{n_total} reader roads found in OS"
+
+    return AxisResult(
+        score=score, verdict=v,
+        evidence={"reader_roads": list(reader_road_names),
+                  "matched_roads": matched, "radius_m": radius_m})
+
+
+# Top-level entry point
+
+def compute_match_reward(
+    *,
+    match_info: Dict[str, Any],
+    pdf_info: Dict[str, Any],
+) -> RewardResult:
+    """Compute the per-axis consistency reward for a single match.
+
+    Args:
+        match_info: dict from sliding_window_position with at least
+            n_inliers, avg_scale, center_latlon.
+        pdf_info: PDFInfo dict from the reader (scale, road_names, …).
+    """
+    avg_scale = float(match_info.get("avg_scale", 0.0) or 0.0)
+    center_ll = match_info.get("center_latlon")
+
+    axes: Dict[str, AxisResult] = {
+        "scale_consistency": axis_scale_consistency(
+            avg_scale, reader_scale_text=pdf_info.get("scale")),
+    }
+
+    if center_ll and len(center_ll) == 2:
+        axes["road_name_agreement"] = axis_road_name_agreement(
+            float(center_ll[0]), float(center_ll[1]),
+            list(pdf_info.get("road_names") or []),
+        )
+    else:
+        axes["road_name_agreement"] = AxisResult(
+            score=0.5, verdict="no center_latlon (no signal)", evidence={})
+
+    return RewardResult(axes=axes)
+
+
+# Set to True the first time we notice the OS Zoomstack file is missing,
+# so the verifier prints exactly one warning per process instead of
+# spamming every candidate iteration.
+_ZOOMSTACK_WARNED = False
+
+
+# Road-name verifier
+
+def _query_gpkg_road_names(lat, lon, radius_m=1500):
+    """Query OS GeoPackage for road names near a point. Fully offline."""
+    try:
+        import geopandas as gpd
+        import pyproj
+
+        gpkg_path = BASE_DIR / "os_opendata" / "OS_Open_Zoomstack.gpkg"
+        if not gpkg_path.exists():
+            # Warn ONCE per process, not per-call (this fires inside the
+            # per-candidate verifier loop and the per-call critic axis).
+            global _ZOOMSTACK_WARNED
+            if not _ZOOMSTACK_WARNED:
+                print(f"  road_verify: WARNING — {gpkg_path} not found; "
+                      f"road-name verification disabled. Download from "
+                      f"OS Open Zoomstack and place at this path.")
+                _ZOOMSTACK_WARNED = True
+            return []
+
+        transformer = pyproj.Transformer.from_crs(
+            "EPSG:4326", "EPSG:27700", always_xy=True)
+        x, y = transformer.transform(lon, lat)
+
+        names = set()
+        for layer in ["roads_local", "roads_regional", "roads_national"]:
+            try:
+                gdf = gpd.read_file(
+                    str(gpkg_path), layer=layer,
+                    bbox=(x - radius_m, y - radius_m,
+                          x + radius_m, y + radius_m))
+                for _, row in gdf.iterrows():
+                    name = row.get("name")
+                    if name and str(name).strip() and str(name) != "None":
+                        names.add(str(name).strip())
+            except Exception:
+                pass
+        return list(names)
+    except ImportError:
+        return []
+
+
+def _fuzzy_road_match(llm_name, reference_names):
+    """Check if an LLM-extracted road name matches any reference name."""
+    llm_lower = llm_name.lower().strip()
+    for ref in reference_names:
+        ref_lower = ref.lower().strip()
+        if llm_lower == ref_lower:
+            return True
+        if llm_lower in ref_lower or ref_lower in llm_lower:
+            return True
+        # Handle common abbreviations
+        llm_norm = (llm_lower
+                    .replace(" street", " st").replace(" road", " rd")
+                    .replace(" lane", " ln").replace(" avenue", " ave")
+                    .replace(" drive", " dr").replace(" close", " cl"))
+        ref_norm = (ref_lower
+                    .replace(" street", " st").replace(" road", " rd")
+                    .replace(" lane", " ln").replace(" avenue", " ave")
+                    .replace(" drive", " dr").replace(" close", " cl"))
+        if llm_norm == ref_norm:
+            return True
+    return False
+
+
+def _verify_candidates_with_road_names(ranked_candidates, road_names):
+    """Re-rank candidates by metric × (1 + road_match_ratio) ** 2.
+
+    Each candidate's metric is multiplied by a quadratic boost from its
+    road-name overlap ratio: 0 matches → 1× (no change), all matches →
+    4× (full boost). The quadratic shape is symmetric with the squared
+    scale_consistency penalty — both treat the relevant signal as
+    multiplicatively-quadratic in their evidence.
+
+    Single knob (exponent ``p = 2``); replaces the previous triple-gated
+    scheme (5 magic numbers: 0.5 / 0.6 / 2× / 0.7 / 0.01) with one
+    decisive multiplicative form.
+
+    Candidates with no nearby OS roads (sparse cartography) get a
+    neutral boost of 1.0 — neither helped nor penalised — so the metric
+    fully decides for them.
+    """
+    if not road_names:
+        return None
+
+    n_road = len(road_names)
+    scored = []
+    for metric, _seq, candidate in ranked_candidates:
+        center_ll = candidate["match_info"].get("center_latlon")
+        if not center_ll:
+            scored.append((metric, metric, candidate, None))
+            continue
+        lat, lon = center_ll
+        nearby = _query_gpkg_road_names(lat, lon, radius_m=1500)
+        if not nearby:
+            scored.append((metric, metric, candidate, None))
+            continue
+        matches = sum(1 for rn in road_names if _fuzzy_road_match(rn, nearby))
+        ratio = matches / n_road
+        boosted = metric * (1.0 + ratio) ** 2
+        scored.append((boosted, metric, candidate, matches))
+
+    if not scored:
+        return None
+
+    for boosted, orig, cand, matches in scored:
+        cname = cand["match_info"]["center"]
+        inliers = cand["match_info"]["n_inliers"]
+        m_str = "n/a" if matches is None else f"{matches}/{n_road}"
+        print(f"    Road verify: {cname} inl={inliers} "
+              f"metric={orig:.1f} boosted={boosted:.1f} roads={m_str}")
+
+    scored.sort(key=lambda r: -r[0])
+    top_cand = scored[0][2]
+    metric_best_cand = ranked_candidates[0][2]
+    if top_cand is metric_best_cand:
+        print("    Road verify: top candidate confirmed")
+        return None
+    cname = top_cand["match_info"]["center"]
+    print(f"    Road verify: OVERRIDE → {cname} "
+          f"(boosted {scored[0][0]:.1f})")
+    return top_cand

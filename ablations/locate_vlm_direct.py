@@ -51,10 +51,10 @@ from pydantic_ai.usage import UsageLimits  # noqa: E402
 from ablations._shared import (  # noqa: E402
     CSV_FIELDNAMES, gt_part_centroids, nearest_part_err_km,
 )
-from geoplanagent.agent._model import resolve_model  # noqa: E402
-from geoplanagent.agent.runtime import extract_message_log_from_msgs  # noqa: E402
-from geoplanagent.io.pdf import resolve_case_pdf  # noqa: E402
-from geoplanagent.metrics.geojson import load_geojson  # noqa: E402
+from geoplanagent.utils import resolve_model  # noqa: E402
+from geoplanagent.run import extract_message_log_from_msgs  # noqa: E402
+from geoplanagent.tools.pdf import resolve_case_pdf  # noqa: E402
+from geoplanagent.metrics import load_geojson  # noqa: E402
 
 load_dotenv()
 

@@ -11,7 +11,8 @@ from pydantic import BaseModel, Field
 from pydantic_ai import Agent, BinaryContent
 from typing import Literal
 
-from geoplanagent.agent._model import resolve_model
+from geoplanagent.utils import resolve_model
+from geoplanagent.prompts import CRITIC_INSTRUCTIONS
 
 
 # Critic output schema
@@ -48,122 +49,6 @@ class CriticDirective(BaseModel):
 
 
 # Critic instructions — pairwise framing across candidates.
-CRITIC_INSTRUCTIONS = """\
-You are an independent reviewer of a UK planning-boundary extraction
-pipeline. The agent has matched a planning map to OS map tiles, generated
-candidate match attempts at different locations, projected SAM3 boundary
-masks through those matches, and committed one candidate as its final
-answer. Your job is pairwise comparison across the stored candidates and
-a single directive on whether to accept or redirect.
-
-WHAT YOU SEE
-- ONE image per candidate (sent as separate images so each renders at
-  full resolution rather than getting downscaled inside a tall stack).
-  Each candidate covers exactly ONE area_group and one page. On
-  multi-area documents the worker commits group-by-group, producing
-  one candidate per (group, attempt); they appear here as separate
-  panels.
-  Each image is LEFT|RIGHT, with labels acting purely as identifiers
-  (numeric metrics live in the text block — see "INTERPRETING THE
-  METRICS" below):
-    LEFT  = planning map with the SAM mask overlaid in translucent green.
-            Label: "CANDIDATE {id} [COMMITTED] group {g} page {p}".
-            The COMMITTED tag marks the worker's choice for THIS group
-            (on multi-area docs more than one candidate can be tagged).
-            "page" = the 1-based PDF page this match was run on.
-            "group" = area_group index.
-    RIGHT = OS tile render at the matched window, with the projected
-            polygon outlined in red. Label: "OS tile @ zoom={z}".
-            "OS" = Ordnance Survey, the UK national mapping agency
-            whose vector + raster tiles the agent matches against.
-            "zoom" = web-mercator tile zoom level (z17 ≈ 0.6m/px,
-            z18 ≈ 0.3m/px, z19 ≈ 0.15m/px) — different candidates
-            may have matched at different zooms, so each panel
-            reports its own.
-- Only the TOP-3 candidates by n_inliers are shown, plus the worker's
-  committed candidate(s) if they fall outside the top-3 (so you always
-  see the worker's pick alongside the strongest alternatives). A note
-  at the top of the metrics block tells you how many total candidates
-  exist and how many are shown.
-- A metrics block accompanying the images, with one line per candidate.
-  Each line is:
-    "cand {id}  group {g}  page {p}  n_inliers={N}  "
-    "road_name_agreement={r}  scale_consistency={s}  [COMMITTED]?"
-  The "cand", "group", "page" fields match the corresponding panel-
-  label identifiers, so you can map every metrics row back to its
-  image. The [COMMITTED] tag appears on the worker's committed
-  candidate(s).
-- For multi-area documents the worker's committed candidate_ids
-  (one per area_group) are listed at the top of the metrics block.
-
-WHAT "GOOD" LOOKS LIKE — for a candidate
-Trace named roads, settlement shapes, or distinctive features between
-the planning map (left) and OS render (right). The boundary line on the
-planning map (any colour / hatch) should sit where the red outlined
-polygon sits in the OS render. Road junctions, building blocks, water
-bodies should line up.
-
-WHAT "BAD" LOOKS LIKE
-- No road / feature correspondence: planning map shows urban streets;
-  OS render shows farmland or a different street pattern.
-- The SAM mask covers something other than the boundary (title block,
-  legend, scale bar, large blob of text).
-- The polygon outline lands well outside the planning map's drawn
-  boundary, or its shape clearly doesn't match.
-
-INTERPRETING THE METRICS (same tiers the worker uses)
-
-  n_inliers (RANSAC match strength, integer ≥ 0):
-    ≥ 100   STRONG     — the affine is almost always correct here.
-    50-99   OK         — borderline; lean on the visual panels.
-    25-49   WEAK       — likely wrong; needs visual confirmation.
-    < 25    TOO WEAK   — almost certainly wrong location.
-
-  scale_consistency (range 0..1):
-    ≥ 0.8   GOOD       — recovered scale matches the document's stated scale.
-    0.5-0.8 MARGINAL   — scale stretched; suspect alternative is better.
-    < 0.5   BAD        — scale very off; trust only if n_inliers ≥ 100.
-
-  road_name_agreement (range 0..1):
-    ≥ 0.6   STRONG     — reader's road names found at the matched location.
-    0.0     CONFLICT   — OS has roads here but NONE match the reader;
-                         possible wrong-area signal. Trust only if
-                         n_inliers ≥ 100.
-    0.5     NEUTRAL    — verdict says "no OS roads within radius"
-                         (sparse cartography); no signal.
-    other   PARTIAL    — some roads matched; weak corroboration.
-
-These numbers are supporting evidence — the visual panels are the
-primary signal for your decision.
-
-DECISION (pick exactly one action)
-
-- approve
-    The worker's committed candidate(s) show clear road/feature
-    correspondence AND the polygon outline aligns with the drawn
-    boundary. Set chosen_candidate_id = committed_id (use any one of
-    the committed ids on multi-area docs; the action applies to the
-    whole set).
-
-- switch
-    A DIFFERENT stored candidate looks visually better (clearer
-    correspondence, better polygon alignment) than the committed one
-    FOR ITS area_group. Set chosen_candidate_id to that candidate's
-    id; the worker's commit for that group will be replaced. Cite
-    the specific visual feature that swayed you.
-
-- retry_locate
-    None of the stored candidates show good correspondence — they all
-    appear to be in the wrong region (no road / feature match, polygons
-    in totally different terrain). The worker will be asked to
-    re-locate from a different geocoding signal (postcode vs place vs
-    road, etc.). Set chosen_candidate_id = committed_id (placeholder).
-
-OUTPUT
-A single CriticDirective. Reasoning MUST cite a concrete observation —
-specific feature you saw matched or mismatched, or a specific metric.
-Never use vague language ('looks fine', 'reasonable').
-"""
 
 
 _critic_agent: Optional[Agent] = None
@@ -473,7 +358,7 @@ def _run_critic_once(state: Any, model_name: str,
     new_history: Optional[list] = None
     t0 = time.time()
     try:
-        from geoplanagent.agent.state import _run_sync_with_retry
+        from geoplanagent.utils import _run_sync_with_retry
         result = _run_sync_with_retry(
             agent, user_input, label="critic",
             message_history=message_history,
@@ -557,7 +442,7 @@ def _direct_switch_commit(state: Any,
     # this just replaces the one entry. For multi-area docs the
     # critic's switch affects only the group it picked; the other
     # groups stay committed to whatever the worker chose for them.
-    from geoplanagent.agent.worker_tools import _recompute_current_result
+    from geoplanagent.tools.positioning import _recompute_current_result
     group_id = int(cand.get("requested_group", 0))
     state.committed_groups[group_id] = int(chosen_id)
     _recompute_current_result(state)
@@ -572,7 +457,7 @@ def _direct_switch_commit(state: Any,
     # — district_lookup outcomes never reach the critic, so this is
     # almost always "accepted", but we keep the carry-forward to be
     # safe against schema changes.
-    from geoplanagent.agent.schemas import BoundaryOutcome
+    from geoplanagent.schemas import BoundaryOutcome
     prev = getattr(state, "last_output", None)
     prev_status = prev.status if prev is not None else "accepted"
     new_reasoning = (
@@ -615,7 +500,7 @@ def _rehand_to_worker(state: Any,
 
     Returns ``(worker_result, rehand_error_or_None)``.
     """
-    from geoplanagent.agent.worker_agent import _agent
+    from geoplanagent.agents.worker import _agent
 
     action = directive.action
     cr = state.current_result or {}
@@ -670,7 +555,7 @@ def _rehand_to_worker(state: Any,
         history = (worker_result.all_messages()
                    if worker_result is not None and
                    hasattr(worker_result, "all_messages") else None)
-        from geoplanagent.agent.state import _run_sync_with_retry
+        from geoplanagent.utils import _run_sync_with_retry
         sub_result = _run_sync_with_retry(
             _agent, instruction, deps=state, message_history=history,
             label="critic-rehand",

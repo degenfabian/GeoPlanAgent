@@ -10,7 +10,7 @@ No API key required. Data: https://osdatahub.os.uk/downloads/open/OpenZoomstack
 Contains OS data © Crown Copyright and database right.
 
 Usage:
-    from geoplanagent.io.os_tiles import fetch_os_opendata_grid
+    from geoplanagent.tools.tiles import fetch_os_opendata_grid
 
     tile_info = fetch_os_opendata_grid(lat, lon, zoom, n_tiles_x, n_tiles_y)
     # Returns dict compatible with existing pipeline:
@@ -31,7 +31,7 @@ TILE_CACHE_DIR = BASE / "cache" / "os_opendata_tiles"
 
 def _lat_lon_to_tile(lat, lon, zoom):
     """WGS84 → (tx, ty) integer tile indices."""
-    from geoplanagent.geo.coords import latlon_to_tile_xy
+    from geoplanagent.utils import latlon_to_tile_xy
     return latlon_to_tile_xy(lat, lon, zoom)
 
 

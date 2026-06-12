@@ -1,7 +1,7 @@
 """OpenRouter $/MTok (input, output) at paper-submission time (2026-05-24).
 
 Single source of truth for every cost computation in scripts/. Keyed by
-both the full OpenRouter ID and the short alias from geoplanagent/agent/_model.py.
+both the full OpenRouter ID and the short alias from geoplanagent/utils.py.
 """
 
 PRICES: dict[str, tuple[float, float]] = {

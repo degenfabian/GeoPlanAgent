@@ -21,8 +21,8 @@ from pydantic import BaseModel, Field
 from pydantic_ai import Agent, BinaryContent, ModelRetry, RunContext
 from pydantic_ai.usage import UsageLimits
 
-from geoplanagent.agent._model import resolve_model
-from geoplanagent.geo.coords import haversine_km
+from geoplanagent.utils import resolve_model
+from geoplanagent.utils import haversine_km
 
 REPO = Path(__file__).resolve().parent.parent.parent
 
@@ -87,7 +87,7 @@ def postcode(pc: str) -> dict:
         or {"success": False, "error": str} on not-found.
     """
     try:
-        from geoplanagent.geo.code_point import lookup_postcode
+        from geoplanagent.tools.geocode import lookup_postcode
         h = lookup_postcode(pc)
         if not h:
             return {"success": False,
@@ -111,7 +111,7 @@ def grid_ref(gr: str) -> dict:
         {"success": bool, "lat": float, "lon": float} or error.
     """
     try:
-        from geoplanagent.geo.grid_ref import (
+        from geoplanagent.tools.geocode import (
             os_grid_ref_to_latlon, parse_easting_northing,
         )
         # Try the pure-numeric easting/northing format first — the
@@ -146,7 +146,7 @@ def place(query: str, la: Optional[str] = None, limit: int = 5) -> dict:
         "lat", "lon", "admin_district", "county"}, ...]}
     """
     try:
-        from geoplanagent.geo.os_names import search as os_search
+        from geoplanagent.tools.geocode import search as os_search
         hits = os_search(query, max_results=limit * 3, context=la) or []
         hits = hits[:limit]
         out = []
@@ -196,7 +196,7 @@ def road(query: str, la: Optional[str] = None, limit: int = 5) -> dict:
         idx = json.loads(idx_p.read_text())
         q_key = query.lower().strip()
         instances = idx.get(q_key, []) + idx.get(q_key + " road", [])
-        from geoplanagent.geo.boundary_line import resolve_la
+        from geoplanagent.tools.geocode import resolve_la
         la_poly = None
         if la:
             try:
@@ -242,7 +242,7 @@ def intersect(road_a: str, road_b: str, la: Optional[str] = None,
     try:
         from pyproj import Transformer
         from shapely.geometry import LineString
-        from geoplanagent.geo.boundary_line import resolve_la
+        from geoplanagent.tools.geocode import resolve_la
         geom_p = REPO / "tools" / "oml_road_geom_subset.json"
         if not geom_p.exists():
             return {"success": False, "error": "OML road geom missing"}
@@ -334,7 +334,7 @@ def la_check(lat: float, lon: float, la: str) -> dict:
         "la_centroid_lat": float, "la_centroid_lon": float}
     """
     try:
-        from geoplanagent.geo.boundary_line import resolve_la
+        from geoplanagent.tools.geocode import resolve_la
         from shapely.geometry import Point
         poly = resolve_la(la)
         if poly is None:
@@ -354,7 +354,7 @@ def la_check(lat: float, lon: float, la: str) -> dict:
             # handles the cos(lat) factor correctly regardless of
             # bearing.
             from shapely.ops import nearest_points
-            from geoplanagent.geo.coords import haversine_km
+            from geoplanagent.utils import haversine_km
             _, q = nearest_points(p, poly.boundary)
             d_km = haversine_km(lat, lon, q.y, q.x)
         centroid = poly.centroid
@@ -401,137 +401,18 @@ _LOCATE_TOOL_NAMES: frozenset[str] = frozenset(_TOOL_IMPLS.keys())
 # stubbed but still listed in the prompt → agent calls it anyway and
 # gets confused by the error".
 
-_LOCATE_HEADER = (
-    "You are the LOCATE STAGE for a UK planning permission boundary extraction pipeline.\n"
-    "\n"
-    "Your job: given planning-document metadata (pdf_info text fields) AND the rendered "
-    "planning map image, produce ONE center coordinate (lat, lon) + an uncertainty "
-    "radius σ + confidence, so that downstream MINIMA can refine it visually."
+from geoplanagent.prompts import (  # locate prompt sections
+    _LOCATE_BUDGET,
+    _LOCATE_TOOL_DESCS,
+    _LOCATE_SIGNAL_PRIORITIES,
+    _cluster_step_body,
+    _LOCATE_HEADER,
+    _STEP_BUILD_POOL_BODY,
+    _STEP_EMIT_BODY,
+    _STEP_LETTERHEAD_BODY,
+    _STEP_VALIDATE_BODY,
+    _STEP_VIEW_MAP_BODY,
 )
-
-_LOCATE_TOOL_DESCS: dict[str, str] = {
-    "postcode":  "- postcode(pc) — UK postcode → coord (Code-Point Open, sub-100m)",
-    "grid_ref":  "- grid_ref(gr) — OS BNG grid reference → coord",
-    "place":     "- place(q, la=None) — OS Open Names search (villages, schools, churches, named buildings)",
-    "road":      "- road(q, la=None) — OML road centroid in LA bbox",
-    "intersect": "- intersect(road_a, road_b, la=None, road_c=None) — geometric junction of 2-3 roads",
-    "la_check":  "- la_check(lat, lon, la) — verify coord falls inside LA polygon",
-}
-
-# Step 2 priority list — each line is (gating_tool, text). gating_tool=None
-# means the bullet is tool-independent (text-only signal, not a tool call).
-# A bullet is included only if its gating_tool is enabled.
-_LOCATE_SIGNAL_PRIORITIES: list[tuple[Optional[str], str]] = [
-    ("postcode",  "   - Full postcode IN site_address (= SITE postcode, trust)"),
-    ("grid_ref",  "   - OS grid_ref (any precision)"),
-    (None,        "   - house_number + named road in site_address"),
-    ("place",     "   - Named place / landmark from pdf_info OR from the map image"),
-    ("road",      "   - Road name (when LA-filtered)"),
-    ("place",     "   - Parish name"),
-    ("la_check",  "   - LA centroid (last resort)"),
-]
-
-_STEP_VIEW_MAP_BODY = (
-    "Look for labels, landmarks, distinctive features, road junctions, "
-    "named buildings, hatched site polygon, neighbouring features. Note "
-    "ANYTHING that's on the map but missing from pdf_info."
-)
-
-_STEP_LETTERHEAD_BODY = (
-    "for each postcode in pdf_info.postcodes, if it's NOT in site_address, "
-    "treat as POSSIBLE letterhead. Run la_check to verify it's inside "
-    "admin_region; if it falls outside admin_region, drop unless no other "
-    "signal is available."
-)
-
-_STEP_BUILD_POOL_BODY = (
-    "Aim for 2-4 candidates from different signal types. Augment with terms "
-    "FROM THE MAP IMAGE (don't limit yourself to pdf_info)."
-)
-
-_STEP_VALIDATE_BODY = (
-    "Final pick should be inside the admin_region polygon. If la_check "
-    "returns outside-or-far for every candidate, prefer the one closest "
-    "to the LA boundary and lower confidence accordingly."
-)
-
-_STEP_EMIT_BODY = (
-    "Once you have your pick, output the LocatePick directly as your "
-    "final response — do NOT make further tool calls. Pydantic-ai parses "
-    "your final structured output as the LocatePick schema. "
-    "**Be meticulous and avoid clerical errors when submitting your "
-    "final pick.** Copy the lat/lon EXACTLY from your strongest tool "
-    "result — don't paraphrase, don't round prematurely. The bugs we "
-    "see most often: (a) dropping a minus sign that should be there "
-    "(e.g. -0.14 emitted as 0.14), (b) adding a minus sign that "
-    "shouldn't be (e.g. +1.4 emitted as -1.4), (c) swapping top_lat "
-    "and top_lon. Before emitting, verify the sign and order of the "
-    "values against the tool result you're using. If the coord you're "
-    "about to emit isn't close to a coord any of your tool calls "
-    "returned, you've made an entry error — fix it."
-)
-
-_LOCATE_BUDGET = (
-    "BUDGET: ≤ 8 geocode tool calls per case. If you've made 8 calls, "
-    "commit your best current guess with confidence='low'."
-)
-
-# No explicit edge-case prose in the prompt: the agent handles
-# empty-pdf_info / district-wide / multi-parish cases fine from the
-# schema's sigma guidance plus pdf_info's is_district_wide and
-# parish_names fields.
-
-
-def _cluster_step_body(enabled: frozenset[str]) -> str:
-    """CLUSTER & PICK body, adapted to the enabled tools.
-
-    The four confidence tiers are gated on which tools are available:
-      - Multi-candidate consensus → always applicable (any tool can be
-        called repeatedly)
-      - "Clean single confident signal" tier → only if at least one
-        sub-500m-precision tool is enabled (postcode / grid_ref /
-        intersect). Dropped entirely otherwise — there's no clean
-        confident signal to point at.
-      - "Single ambiguous" tier → names only the enabled
-        ambiguous-precision tools (road / place). Dropped if neither
-        is enabled.
-      - LA-only fallback → only if la_check is enabled (it's the tool
-        that returns the LA centroid).
-    """
-    confident: list[str] = []
-    if "postcode" in enabled:
-        confident.append("SITE postcode")
-    if "grid_ref" in enabled:
-        confident.append("grid_ref")
-    if "intersect" in enabled:
-        confident.append("intersect")
-
-    ambiguous: list[str] = []
-    if "road" in enabled:
-        ambiguous.append("road name")
-    if "place" in enabled:
-        ambiguous.append("common place")
-
-    lines = [
-        "",
-        "   - 2+ candidates within 500m → tight consensus, σ=200m, "
-        "confidence='high'",
-    ]
-    if confident:
-        lines.append(
-            f"   - Clean single confident signal "
-            f"({', '.join(confident)}) → σ=300-500m, 'high'"
-        )
-    if ambiguous:
-        lines.append(
-            f"   - Single ambiguous ({', '.join(ambiguous)}) → σ=800-"
-            f"1500m, 'med'"
-        )
-    if "la_check" in enabled:
-        lines.append(
-            "   - LA-only fallback → σ from tool, 'low'"
-        )
-    return "\n".join(lines)
 
 
 def _build_locate_prompt(disabled: frozenset[str] = frozenset()) -> str:
@@ -838,7 +719,7 @@ def _emergency_la_centroid_pick(pdf_info: dict, reason: str) -> LocatePick:
              or pdf_info.get("likely_town_or_city")
              or pdf_info.get("district_name") or "").strip()
     try:
-        from geoplanagent.geo.boundary_line import resolve_la
+        from geoplanagent.tools.geocode import resolve_la
         poly = resolve_la(admin) if admin else None
     except Exception:
         poly = None
@@ -886,7 +767,7 @@ def run_locate(
     appended:
        {request_tokens, response_tokens, n_messages, generation_id}
     The locate ablation harness doesn't pass it; the worker tool
-    (``geoplanagent.agent.worker_tools.propose_centers``) does, so per-case cost
+    (``geoplanagent.tools.positioning.propose_centers``) does, so per-case cost
     telemetry survives in ``state.locate_calls``.
     """
     model = resolve_model(model_name)

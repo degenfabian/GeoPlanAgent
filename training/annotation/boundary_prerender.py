@@ -5,7 +5,7 @@
      so we don't depend on the rotation classifier for the eval frame.
 
 Title-block cropping was removed (the heuristic ate real map content);
-``geoplanagent.io.map_crop`` no longer exists. Pages are taken from the
+a since-removed map-crop helper no longer exists. Pages are taken from the
 reader's ``pdf_info.map_pages`` directly — manual page overrides used
 to live in ``scripts/annotate_page_overrides.json`` but the reader now
 produces correct ``map_pages`` for every case that used to need an
@@ -38,7 +38,7 @@ import numpy as np
 REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO))
 
-from geoplanagent.io.pdf import render_pdf_page
+from geoplanagent.tools.pdf import render_pdf_page
 
 
 OUT_ROOT = REPO / "boundary_annotations"
@@ -126,7 +126,7 @@ def _cached_affine(case_id: str) -> Optional[Tuple[np.ndarray, Dict[str, Any], s
 
 def _latlon_to_tile_px(lat: float, lon: float, tile_info: Dict[str, Any]) -> Tuple[float, float]:
     """WGS84 → pixel in the OS tile canvas (used at match time).
-    Web-Mercator slippy tile math; matches geoplanagent.io.os_tiles convention."""
+    Web-Mercator slippy tile math; matches geoplanagent.tools.tiles convention."""
     import math
     z = tile_info["zoom"]
     tx_min = tile_info["tx_min"]

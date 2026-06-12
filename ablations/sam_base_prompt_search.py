@@ -41,7 +41,7 @@ sys.path.insert(0, str(REPO))
 
 # Production SAM3 semantic-segmentation call — same code path the LoRA
 # pipeline uses. We just pass a base model loaded without an adapter.
-from geoplanagent.extraction.sam3 import extract_boundary_sam3_semantic  # noqa: E402
+from geoplanagent.tools.segment import extract_boundary_sam3_semantic  # noqa: E402
 
 # IoU + per-prompt summary helpers from the sibling VLM ablation.
 from ablations.vlm_segmentation import (  # noqa: E402

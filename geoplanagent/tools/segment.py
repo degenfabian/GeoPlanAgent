@@ -20,11 +20,11 @@ import torch
 DEFAULT_KFOLD_DIR = "models/sam3_lora"
 
 # Re-export fold-routing helpers under their historical private names
-# so external imports (`from geoplanagent.extraction.sam3 import N_FOLDS`,
+# so external imports (`from geoplanagent.tools.segment import N_FOLDS`,
 # `_normalise_case_name`) keep working. The canonical source lives in
-# geoplanagent.fold_routing; both SAM3 and the rotation classifier
+# geoplanagent.utils; both SAM3 and the rotation classifier
 # delegate there.
-from geoplanagent.fold_routing import (
+from geoplanagent.utils import (
     N_FOLDS,
     resolve_fold as _resolve_fold,
 )
@@ -221,7 +221,7 @@ def set_fold_for_case(sam_state, case_name):
     from training. No-op when the loaded model is the legacy single
     adapter or when ``case_name`` resolves to the currently-active fold.
 
-    Routing is delegated to :func:`geoplanagent.fold_routing.resolve_fold`:
+    Routing is delegated to :func:`geoplanagent.utils.resolve_fold`:
     look up by case name, then by canonical underscore form, then fall
     back to ``min(available_folds)`` for cases the training pool didn't
     contain.

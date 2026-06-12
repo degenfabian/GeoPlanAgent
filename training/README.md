@@ -3,10 +3,10 @@
 Fine-tuning code for the two learned components in the pipeline:
 
 1. **SAM3 LoRA** — the boundary segmentation adapter loaded by
-   `geoplanagent.extraction.sam3.load_sam3_ft`.
+   `geoplanagent.tools.segment.load_sam3_ft`.
 2. **Rotation classifier** — the 4-way ResNet50 used by
-   `geoplanagent.io.rotation_classifier.predict_rotation_cw` (called via
-   `geoplanagent.io.map_page.render_map_page`).
+   `geoplanagent.tools.pdf.predict_rotation_cw` (called via
+   `geoplanagent.tools.pdf.render_map_page`).
 
 Both are 5-fold cross-validated so each benchmark case is evaluated by
 the fold whose val set it belonged to (no leakage). Routing is via
@@ -149,7 +149,7 @@ target only — delete it after training completes (or skip it
 entirely if you don't intend to resume).
 
 The top-level PEFT files are rewritten whenever val IoU improves;
-they're what production loads via `geoplanagent.extraction.sam3.load_sam3_ft`.
+they're what production loads via `geoplanagent.tools.segment.load_sam3_ft`.
 
 Wall time: ~1.5–2 hr per fold on Apple MPS with bf16; ~1 hr per fold
 on CUDA. ~8–10 hr for all five.
@@ -292,8 +292,8 @@ augmentation could close the gap.
 
 The shared routing helper is
 [`tools.core.fold_routing.resolve_fold`](../tools/core/fold_routing.py),
-used both by `geoplanagent.extraction.sam3.set_fold_for_case` and by
-`geoplanagent.io.rotation_classifier`:
+used both by `geoplanagent.tools.segment.set_fold_for_case` and by
+`geoplanagent.tools.pdf`:
 
 1. Look up `fold_assignment.json[case_name]` (raw eval-data folder name).
 2. If missing, retry the canonical underscore form

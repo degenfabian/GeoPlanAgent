@@ -1,27 +1,18 @@
-"""Planning-document boundary extraction toolkit.
+"""GeoPlanAgent: planning-document boundary extraction.
 
-Start reading at geoplanagent/agent/__init__.py::run_agent — the per-case entry
-point the benchmark drives. It calls runtime.py (phases: render pages →
-reader → worker loop → optional critic); the worker's four tools live in
-agent/worker_tools.py and fan out into the subsystem packages:
+Start reading at run.py::run_agent — the per-case entry point the
+benchmark drives (reader phase → map-page rendering with auto-rotation →
+worker tool loop → optional critic).
 
-  agent/      — the LLM layer: runtime, worker agent + validator,
-                locate sub-agent, critic, prompts, pydantic schemas,
-                shared state/support, model-alias resolution.
-  matching/   — MINIMA sliding-window matcher, RANSAC affine, composite
-                rerank, match-quality reward signals, road-name check.
-  extraction/ — SAM3 boundary segmentation (k-fold LoRA loader).
-  geo/        — one module per offline data source: coordinate math,
-                BNG grid refs, OS BoundaryLine, Code-Point Open,
-                OS Open Names.
-  io/         — PDF/page rendering + case files, OS tile rendering,
-                rotation classifier.
-  metrics/    — IoU/F1/centroid metrics and comparison visualisation.
-
-Top-level helpers:
-
-  fold_routing.py — k-fold case→fold routing shared by SAM3 and the
-                    rotation classifier.
-  build_oml_road_index.py — script to regenerate oml_road_index.json /
-                            oml_road_geom_subset.json from OS OpenMap Local
+  agents/     — one file per LLM agent: reader, worker (+ output
+                validator), locate sub-agent, critic.
+  tools/      — what the agents call: positioning.py (the worker's tool
+                surface), matching.py (MINIMA registration engine),
+                geocode.py (offline UK geocoders), segment.py (SAM3
+                k-fold), tiles.py (OS Zoomstack renderer), pdf.py
+                (rendering + rotation).
+  prompts.py  — every system prompt and prompt section.
+  schemas.py  — the pydantic contracts (LLM-visible field docs).
+  utils.py    — AgentState, model aliases, retry, geodesy, fold routing.
+  metrics.py  — IoU/F1/centroid scoring + comparison visualisation.
 """

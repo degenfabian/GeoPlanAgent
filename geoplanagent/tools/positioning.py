@@ -10,16 +10,17 @@ from __future__ import annotations
 from typing import List, Optional
 import cv2
 from pydantic_ai import RunContext
-from geoplanagent.agent.state import _agent, AgentState
+from geoplanagent.agents.worker import _agent
+from geoplanagent.utils import AgentState
 import tempfile
 from typing import Any, Dict, Tuple
 import numpy as np
 from pydantic_ai import ModelRetry
-from geoplanagent.agent.state import (
+from geoplanagent.utils import (
     _dedup_check,
 )
 from pydantic_ai.tools import ToolDefinition
-from geoplanagent.agent.schemas import PDFInfo
+from geoplanagent.schemas import PDFInfo
 
 
 # propose_centers
@@ -41,7 +42,7 @@ def propose_centers(
     (OS Open Names) — and views the rendered map image to compose 2-4
     queries before returning one picked (lat, lon, sigma_m, confidence,
     source). The five other geocoders implemented in
-    ``geoplanagent.agent.locate_agent`` (postcode, grid_ref, road, intersect,
+    ``geoplanagent.agents.locate`` (postcode, grid_ref, road, intersect,
     la_check) are off by default; they remain available via the factory's
     ``disabled_tools`` parameter for paper-ablation reproducibility.
 
@@ -81,7 +82,7 @@ def propose_centers(
             }
         return {"success": False, "error": "PDFInfo missing — reader hasn't run"}
 
-    from geoplanagent.agent.locate_agent import run_locate
+    from geoplanagent.agents.locate import run_locate
 
     # Model is configured at run_agent time via the CLI --locate-model
     # flag, threaded through AgentState. Default in AgentState is
@@ -92,7 +93,7 @@ def propose_centers(
     # reader's top-ranked one). Single image is sufficient — locate
     # picks one centre per worker run regardless of how many
     # area_groups the document has.
-    from geoplanagent.agent.state import primary_match_page
+    from geoplanagent.utils import primary_match_page
     primary_page = primary_match_page(state)
     map_img = state.rendered_pages.get(primary_page) if primary_page else None
     map_bytes = None
@@ -189,7 +190,7 @@ def _get_or_render_page(state: AgentState, page: int) -> Tuple[Optional[np.ndarr
     if cached is not None and cached_path is not None:
         return cached, cached_path
 
-    from geoplanagent.io.pdf import render_map_page
+    from geoplanagent.tools.pdf import render_map_page
     rendered = render_map_page(state.pdf_path, page, dpi=state.dpi,
                                   verbose=False, case_name=state.case_name)
     if rendered is None:
@@ -211,7 +212,7 @@ def _get_or_compute_mask(state: AgentState, page: int,
     cached = state.sam_masks_by_page.get(page)
     if cached is not None:
         return cached
-    from geoplanagent.extraction.sam3 import (extract_boundary_sam3_semantic,
+    from geoplanagent.tools.segment import (extract_boundary_sam3_semantic,
                                         set_fold_for_case)
     set_fold_for_case(state.sam3_state, state.case_name)
     mask = extract_boundary_sam3_semantic(
@@ -300,7 +301,7 @@ def match_at(
     # Reject invented coordinates.
     matched_candidate = None
     if state.proposed_centers:
-        from geoplanagent.geo.coords import haversine_km
+        from geoplanagent.utils import haversine_km
         nearest = min(
             (haversine_km(lat, lon, c["lat"], c["lon"]) * 1000.0, c)
             for c in state.proposed_centers
@@ -329,7 +330,7 @@ def match_at(
     state.match_at_budget -= 1
 
     # σ resolution.
-    from geoplanagent.matching import sigma_from_scale
+    from geoplanagent.tools.matching import sigma_from_scale
 
     def _parse_scale(s: Any) -> Optional[int]:
         if not s:
@@ -403,54 +404,51 @@ def match_at(
 
 # Per-page MINIMA driver (called once per group inside match_at)
 
-def _match_single_page(state: AgentState, page: int, name: str,
-                        lat: float, lon: float, sigma_m: float,
-                        scale_ratio: Optional[int],
-                        matched_candidate: Optional[dict]) -> Dict[str, Any]:
-    """Render+segment+MINIMA on a single page at (lat, lon). Returns a dict
-    with affine_H / tile_info / match_info / geojson / mask_frac / reward;
-    or error."""
+def _segment_boundary(state: AgentState, page: int):
+    """match_at step 1 — render the page and segment the drawn boundary
+    with the fold-routed SAM3 (paper §4.2 step 2). Returns
+    (map_img, mask, error_dict)."""
     map_img, map_crop_path = _get_or_render_page(state, page)
     if map_img is None or map_crop_path is None:
-        return {"error": f"render failed for page {page}"}
+        return None, None, {"error": f"render failed for page {page}"}
     mask = _get_or_compute_mask(state, page, map_crop_path)
     if mask is None:
-        return {"error": f"SAM3 returned no mask for page {page}"}
-    mask_frac = float(np.sum(mask > 0)) / float(mask.size)
+        return map_img, None, {"error": f"SAM3 returned no mask for page {page}"}
+    return map_img, mask, None
 
-    from geoplanagent.matching import sliding_window_position, mask_to_geojson_affine
-    from geoplanagent.matching.reward import compute_match_reward
+
+def _search_window(state: AgentState, map_img, mask, name: str,
+                   lat: float, lon: float, sigma_m: float,
+                   scale_ratio: Optional[int]) -> Dict[str, Any]:
+    """match_at step 2 — sliding-window MINIMA search of the map against
+    OS tiles around (lat, lon) (paper §4.2 step 1). Returns the matcher
+    result, or a dict with only an "error" key."""
+    from geoplanagent.tools.matching import sliding_window_position
 
     road_names = (state.pdf_info or {}).get("road_names") or []
-
-    def _run_minima(sigma_used):
-        return sliding_window_position(
+    try:
+        result = sliding_window_position(
             matcher=state.minima_matcher, map_img=map_img,
-            sam3_mask=mask, centers=[(name, lat, lon, sigma_used)],
+            sam3_mask=mask, centers=[(name, lat, lon, sigma_m)],
             scale_ratio=scale_ratio, dpi=state.dpi,
             rotations=None,
             road_names=road_names,
             grayscale=False, return_candidates=False,
         )
-
-    def _evaluate(res):
-        if not res or res.get("affine_H") is None:
-            return None, None
-        mi_local = res.get("match_info") or {}
-        rw = compute_match_reward(
-            match_info=mi_local, pdf_info=state.pdf_info,
-        )
-        return mi_local, rw
-
-    try:
-        result = _run_minima(sigma_m)
     except Exception as e:
         return {"error": f"sliding_window_position: {e!s:.140}"}
     if not result or result.get("affine_H") is None:
-        return {"error": "MINIMA returned no usable match",
-                "mask_frac": mask_frac}
+        return {"error": "MINIMA returned no usable match"}
+    return result
 
-    mi, reward = _evaluate(result)
+
+def _project_candidate(state: AgentState, mask, result) -> Dict[str, Any]:
+    """match_at step 3 — score the recovered affine and project the SAM3
+    mask through it to WGS84 (paper §4.2 step 3)."""
+    from geoplanagent.tools.matching import compute_match_reward, mask_to_geojson_affine
+
+    mi = result.get("match_info") or {}
+    reward = compute_match_reward(match_info=mi, pdf_info=state.pdf_info)
 
     affine_H = result.get("affine_H")
     tile_info = result.get("tile_info")
@@ -462,8 +460,32 @@ def _match_single_page(state: AgentState, page: int, name: str,
         "affine_H": affine_H, "tile_info": tile_info,
         "match_info": mi, "geojson": geojson,
         "reward": reward.to_dict() if reward is not None else None,
-        "mask_frac": mask_frac,
     }
+
+
+def _match_single_page(state: AgentState, page: int, name: str,
+                        lat: float, lon: float, sigma_m: float,
+                        scale_ratio: Optional[int],
+                        matched_candidate: Optional[dict]) -> Dict[str, Any]:
+    """One match_at attempt = segment → search → project on a single page.
+    Returns a dict with affine_H / tile_info / match_info / geojson /
+    mask_frac / reward; or error."""
+    map_img, mask, err = _segment_boundary(state, page)
+    if err is not None:
+        return err
+    mask_frac = float(np.sum(mask > 0)) / float(mask.size)
+
+    result = _search_window(state, map_img, mask, name, lat, lon,
+                            sigma_m, scale_ratio)
+    if result.get("error"):
+        out = dict(result)
+        if out["error"] == "MINIMA returned no usable match":
+            out["mask_frac"] = mask_frac
+        return out
+
+    out = _project_candidate(state, mask, result)
+    out["mask_frac"] = mask_frac
+    return out
 
 
 # Polygon union helper
@@ -758,7 +780,7 @@ def submit_pdf_info(ctx: RunContext[AgentState], info: PDFInfo) -> dict:
     # Mirror prepare_worker_state's render loop. We can't import
     # prepare_worker_state here without a cycle, so the render code is
     # duplicated (small, stable).
-    from geoplanagent.io.pdf import render_map_page
+    from geoplanagent.tools.pdf import render_map_page
 
     map_pages = state.pdf_info.get("map_pages") or []
     rendered: list[int] = []
@@ -841,7 +863,7 @@ def lookup_district(
     state = ctx.deps
     _dedup_check(state, "lookup_district", {"district_name": district_name})
 
-    from geoplanagent.geo.boundary_line import lookup_district_boundary
+    from geoplanagent.tools.geocode import lookup_district_boundary
 
     # Support '|' alternates: try each variant in order until one works.
     variants = [v.strip() for v in district_name.split("|") if v.strip()]

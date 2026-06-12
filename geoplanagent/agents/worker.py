@@ -7,9 +7,9 @@ import os
 from dotenv import load_dotenv
 from pydantic_ai import Agent, ModelRetry, RunContext
 
-from geoplanagent.agent.prompts import FOLDED_SYSTEM_PROMPT, WORKER_SYSTEM_PROMPT
-from geoplanagent.agent.schemas import BoundaryOutcome
-from geoplanagent.agent.state import AgentState
+from geoplanagent.prompts import FOLDED_SYSTEM_PROMPT, WORKER_SYSTEM_PROMPT
+from geoplanagent.schemas import BoundaryOutcome
+from geoplanagent.utils import AgentState
 
 load_dotenv()
 

@@ -55,7 +55,7 @@ rot = json.load(open("training/eval/predictions/rotation_kfold_tta.json"))
 The 4-way TTA mode predicts on the image + its 90° / 180° / 270°
 rotated views, re-rotates each view's class-space predictions back
 into the original frame, and averages the logits. This exactly
-mirrors the inference-time TTA in `geoplanagent.io.rotation_classifier`
+mirrors the inference-time TTA in `geoplanagent.tools.pdf`
 (`predict_rotation_with_confidence` with `tta=True`).
 
 In our run TTA recovers 6 cases (mostly in fold 0), lifting overall

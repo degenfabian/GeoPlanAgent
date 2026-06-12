@@ -1,6 +1,6 @@
-"""Per-case mutable AgentState (the worker's deps) plus shared agent-runtime
-support: image/mask conversion helpers, dedup tracking, and the
-transient-HTTP retry wrapper for OpenRouter calls.
+"""Shared support for the whole package: the per-case AgentState blackboard,
+image/mask helpers, the transient-HTTP retry wrapper, OpenRouter model-alias
+resolution, geodesy/tile-pixel math, and k-fold case routing.
 """
 
 from __future__ import annotations
@@ -14,10 +14,13 @@ import cv2
 from pydantic_ai import BinaryContent, ModelRetry
 import re
 import time as _time
+from pydantic_ai.models.openrouter import OpenRouterModel
+import math
+from typing import Tuple
 
 
 if TYPE_CHECKING:
-    from geoplanagent.agent.schemas import BoundaryOutcome
+    from geoplanagent.schemas import BoundaryOutcome
 
 
 class AgentState:
@@ -43,7 +46,7 @@ class AgentState:
         # other tools shrinks the prompt + tool schema sent to the LLM.
         #
         # The other 5 tool wrappers + the factory pattern are RETAINED in
-        # geoplanagent.agent.locate_agent for paper-ablation reproducibility — the
+        # geoplanagent.agents.locate for paper-ablation reproducibility — the
         # ablation harness calls run_locate(disabled_tools=…) directly with
         # the LOO/min_N kits. Override via benchmark_runner's
         # --locate-disabled-tools to run those kits in production too.
@@ -130,7 +133,7 @@ def committed_primary_page(state: "AgentState") -> Optional[int]:
 
 
 if TYPE_CHECKING:
-    from geoplanagent.agent.state import AgentState
+    from geoplanagent.utils import AgentState
 
 
 def resize_for_api(img: np.ndarray, max_dim: int = 1024) -> np.ndarray:
@@ -183,7 +186,7 @@ def _draw_geojson_on_tiles(tile_bgr, geojson, tile_info):
     ty_min = tile_info.get("ty_min", 0)
     tile_size = tile_info.get("tile_size", 256)
 
-    from geoplanagent.geo.coords import latlon_to_global_tile_pixel
+    from geoplanagent.utils import latlon_to_global_tile_pixel
     for ring in coord_rings:
         pts = []
         for lon_c, lat_c in ring:
@@ -248,4 +251,138 @@ def _run_sync_with_retry(agent_obj, *args, max_retries: int = 2,
 
 # Deferred: worker_agent imports AgentState from this module, so this
 # re-export (used by worker_tools) must come after AgentState exists.
-from geoplanagent.agent.worker_agent import _agent  # noqa: E402, F401
+
+
+MODEL_ALIASES = {
+    "claude-opus": "anthropic/claude-opus-4.7",
+    "gpt-5.5-pro": "openai/gpt-5.5-pro",
+    "gemini-pro": "google/gemini-3.1-pro-preview",
+    "gemini-flash": "google/gemini-3-flash-preview",
+}
+
+
+def resolve_model_name(name: str) -> str:
+    """Map a short alias (gemini-flash, claude-opus, …) to a full
+    OpenRouter model identifier. Already-qualified IDs (containing "/")
+    or unknown aliases pass through unchanged."""
+    return MODEL_ALIASES.get(name, name)
+
+
+def resolve_model(name: str) -> OpenRouterModel:
+    """Convenience: resolve alias + construct OpenRouterModel."""
+    return OpenRouterModel(resolve_model_name(name))
+
+
+# Ground metres per zoom-0 tile pixel at the equator: 2π·6378137 / 256.
+WEB_MERCATOR_C: float = 156543.03
+
+# Spherical Earth (~0.3% off vs ellipsoid at UK scale).
+_EARTH_R_KM = 6371.0
+
+
+def haversine_km(lat1: float, lon1: float,
+                  lat2: float, lon2: float) -> float:
+    """Great-circle distance in km between two (lat, lon) points (haversine, R=6371 km)."""
+    phi1 = math.radians(lat1)
+    phi2 = math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlam = math.radians(lon2 - lon1)
+    a = (math.sin(dphi / 2) ** 2
+         + math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2) ** 2)
+    return 2.0 * _EARTH_R_KM * math.asin(min(1.0, math.sqrt(a)))
+
+
+def tile_mpp(lat: float, zoom: int) -> float:
+    """Ground metres per pixel for a Web-Mercator tile at (lat, zoom)."""
+    return WEB_MERCATOR_C * math.cos(math.radians(lat)) / (2 ** zoom)
+
+
+def compute_map_mpp(scale_ratio, dpi: int = 200):
+    """Ground metres per pixel for a 1:scale_ratio map rendered at dpi. None passes through."""
+    if scale_ratio is None:
+        return None
+    mm_per_px = 25.4 / dpi
+    return mm_per_px / 1000.0 * scale_ratio
+
+
+def best_zoom_for_scale(map_mpp, lat: float):
+    """OSM zoom in [15, 19] whose pixel scale most closely matches map_mpp at lat."""
+    if map_mpp is None:
+        return None
+    z = math.log2(WEB_MERCATOR_C * math.cos(math.radians(lat)) / map_mpp)
+    return max(15, min(19, round(z)))
+
+
+def latlon_to_global_tile_pixel(
+    lat: float, lon: float, zoom: int, tile_size: int = 256,
+) -> Tuple[float, float]:
+    """WGS84 → global Web-Mercator tile-pixel (px, py). Origin = top-left of zoom grid."""
+    n = 2 ** zoom
+    lat_rad = math.radians(lat)
+    px = (lon + 180.0) / 360.0 * n * tile_size
+    py = (1.0 - math.log(math.tan(lat_rad) + 1.0 / math.cos(lat_rad))
+          / math.pi) / 2.0 * n * tile_size
+    return px, py
+
+
+def osm_pixel_to_latlon(
+    px: float, py: float, zoom: int, tx_min: int, ty_min: int,
+    tile_size: int = 256,
+) -> Tuple[float, float]:
+    """Inverse of latlon_to_global_tile_pixel, offset by canvas origin (tx_min, ty_min)."""
+    n = 2 ** zoom
+    global_px = tx_min * tile_size + px
+    global_py = ty_min * tile_size + py
+    lon = global_px / (n * tile_size) * 360 - 180
+    lat = math.degrees(math.atan(math.sinh(
+        math.pi * (1 - 2 * global_py / (n * tile_size)))))
+    return lat, lon
+
+
+def latlon_to_tile_xy(lat: float, lon: float, zoom: int) -> Tuple[int, int]:
+    """WGS84 → integer (tx, ty) tile indices at zoom."""
+    n = 2 ** zoom
+    x = int((lon + 180.0) / 360.0 * n)
+    lat_rad = math.radians(lat)
+    y = int((1.0 - math.log(math.tan(lat_rad) + 1.0 / math.cos(lat_rad))
+            / math.pi) / 2.0 * n)
+    return x, y
+
+
+N_FOLDS = 5
+
+
+def normalise_case_name(case_name: str) -> str:
+    """Map a case name to the safe-filename form used in fold_assignment.json.
+
+    The dataset builder replaces ':' and '/' with '_', so e.g. the eval
+    folder '12:00114:ART4' is keyed as '12_00114_ART4'.
+    """
+    return (case_name or "").replace(":", "_").replace("/", "_")
+
+
+def resolve_fold(case_name: str, fold_assignment: dict,
+                 available_folds: set[int]) -> int:
+    """Return the fold whose checkpoint should serve `case_name`.
+
+    Lookup order: exact key, then the normalised safe-filename form, then
+    page-suffixed keys (multi-page cases are stored per page, e.g.
+    'A108P_p4', but the benchmark asks for 'A108P'). Cases outside the
+    training pool were never seen by any fold, so any checkpoint is fine;
+    we pick min(available_folds) for determinism.
+    """
+    norm = normalise_case_name(case_name)
+    fold = fold_assignment.get(case_name)
+    if fold is None:
+        fold = fold_assignment.get(norm)
+    if fold is None:
+        # Multi-page cases: pages of one document always share a fold
+        # (the split is grouped by case), so the first hit is enough.
+        prefix = norm + "_p"
+        for key, val in fold_assignment.items():
+            if key.startswith(prefix) and key[len(prefix):].isdigit():
+                fold = val
+                break
+    if fold is None or fold not in available_folds:
+        return min(available_folds)
+    return int(fold)

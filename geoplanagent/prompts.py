@@ -7,12 +7,14 @@
                           (output_type=BoundaryOutcome). Drives the
                           tool-calling positioning + extraction loop.
 
-Field descriptions in `geoplanagent/agent/schemas.py` are authoritative; these
+Field descriptions in `geoplanagent/schemas.py` are authoritative; these
 prompts add behaviour, decision rules, and tool-flow guidance. The
 strings appear verbatim in the paper appendix, so edit with care.
 """
 
 from __future__ import annotations
+
+from typing import Optional
 
 
 READER_SYSTEM_PROMPT = """You are a UK planning document reader. Read every page of the PDF
@@ -425,3 +427,258 @@ __all__ = [
     "WORKER_SYSTEM_PROMPT",
     "FOLDED_SYSTEM_PROMPT",
 ]
+
+
+# ---- Locate sub-agent prompt sections (assembled by geoplanagent.agents.locate._build_locate_prompt) ----
+
+_LOCATE_HEADER = (
+    "You are the LOCATE STAGE for a UK planning permission boundary extraction pipeline.\n"
+    "\n"
+    "Your job: given planning-document metadata (pdf_info text fields) AND the rendered "
+    "planning map image, produce ONE center coordinate (lat, lon) + an uncertainty "
+    "radius σ + confidence, so that downstream MINIMA can refine it visually."
+)
+
+_LOCATE_TOOL_DESCS: dict[str, str] = {
+    "postcode":  "- postcode(pc) — UK postcode → coord (Code-Point Open, sub-100m)",
+    "grid_ref":  "- grid_ref(gr) — OS BNG grid reference → coord",
+    "place":     "- place(q, la=None) — OS Open Names search (villages, schools, churches, named buildings)",
+    "road":      "- road(q, la=None) — OML road centroid in LA bbox",
+    "intersect": "- intersect(road_a, road_b, la=None, road_c=None) — geometric junction of 2-3 roads",
+    "la_check":  "- la_check(lat, lon, la) — verify coord falls inside LA polygon",
+}
+
+# Step 2 priority list — each line is (gating_tool, text). gating_tool=None
+# means the bullet is tool-independent (text-only signal, not a tool call).
+# A bullet is included only if its gating_tool is enabled.
+_LOCATE_SIGNAL_PRIORITIES: list[tuple[Optional[str], str]] = [
+    ("postcode",  "   - Full postcode IN site_address (= SITE postcode, trust)"),
+    ("grid_ref",  "   - OS grid_ref (any precision)"),
+    (None,        "   - house_number + named road in site_address"),
+    ("place",     "   - Named place / landmark from pdf_info OR from the map image"),
+    ("road",      "   - Road name (when LA-filtered)"),
+    ("place",     "   - Parish name"),
+    ("la_check",  "   - LA centroid (last resort)"),
+]
+
+_STEP_VIEW_MAP_BODY = (
+    "Look for labels, landmarks, distinctive features, road junctions, "
+    "named buildings, hatched site polygon, neighbouring features. Note "
+    "ANYTHING that's on the map but missing from pdf_info."
+)
+
+_STEP_LETTERHEAD_BODY = (
+    "for each postcode in pdf_info.postcodes, if it's NOT in site_address, "
+    "treat as POSSIBLE letterhead. Run la_check to verify it's inside "
+    "admin_region; if it falls outside admin_region, drop unless no other "
+    "signal is available."
+)
+
+_STEP_BUILD_POOL_BODY = (
+    "Aim for 2-4 candidates from different signal types. Augment with terms "
+    "FROM THE MAP IMAGE (don't limit yourself to pdf_info)."
+)
+
+_STEP_VALIDATE_BODY = (
+    "Final pick should be inside the admin_region polygon. If la_check "
+    "returns outside-or-far for every candidate, prefer the one closest "
+    "to the LA boundary and lower confidence accordingly."
+)
+
+_STEP_EMIT_BODY = (
+    "Once you have your pick, output the LocatePick directly as your "
+    "final response — do NOT make further tool calls. Pydantic-ai parses "
+    "your final structured output as the LocatePick schema. "
+    "**Be meticulous and avoid clerical errors when submitting your "
+    "final pick.** Copy the lat/lon EXACTLY from your strongest tool "
+    "result — don't paraphrase, don't round prematurely. The bugs we "
+    "see most often: (a) dropping a minus sign that should be there "
+    "(e.g. -0.14 emitted as 0.14), (b) adding a minus sign that "
+    "shouldn't be (e.g. +1.4 emitted as -1.4), (c) swapping top_lat "
+    "and top_lon. Before emitting, verify the sign and order of the "
+    "values against the tool result you're using. If the coord you're "
+    "about to emit isn't close to a coord any of your tool calls "
+    "returned, you've made an entry error — fix it."
+)
+
+_LOCATE_BUDGET = (
+    "BUDGET: ≤ 8 geocode tool calls per case. If you've made 8 calls, "
+    "commit your best current guess with confidence='low'."
+)
+
+# No explicit edge-case prose in the prompt: the agent handles
+# empty-pdf_info / district-wide / multi-parish cases fine from the
+# schema's sigma guidance plus pdf_info's is_district_wide and
+# parish_names fields.
+
+
+def _cluster_step_body(enabled: frozenset[str]) -> str:
+    """CLUSTER & PICK body, adapted to the enabled tools.
+
+    The four confidence tiers are gated on which tools are available:
+      - Multi-candidate consensus → always applicable (any tool can be
+        called repeatedly)
+      - "Clean single confident signal" tier → only if at least one
+        sub-500m-precision tool is enabled (postcode / grid_ref /
+        intersect). Dropped entirely otherwise — there's no clean
+        confident signal to point at.
+      - "Single ambiguous" tier → names only the enabled
+        ambiguous-precision tools (road / place). Dropped if neither
+        is enabled.
+      - LA-only fallback → only if la_check is enabled (it's the tool
+        that returns the LA centroid).
+    """
+    confident: list[str] = []
+    if "postcode" in enabled:
+        confident.append("SITE postcode")
+    if "grid_ref" in enabled:
+        confident.append("grid_ref")
+    if "intersect" in enabled:
+        confident.append("intersect")
+
+    ambiguous: list[str] = []
+    if "road" in enabled:
+        ambiguous.append("road name")
+    if "place" in enabled:
+        ambiguous.append("common place")
+
+    lines = [
+        "",
+        "   - 2+ candidates within 500m → tight consensus, σ=200m, "
+        "confidence='high'",
+    ]
+    if confident:
+        lines.append(
+            f"   - Clean single confident signal "
+            f"({', '.join(confident)}) → σ=300-500m, 'high'"
+        )
+    if ambiguous:
+        lines.append(
+            f"   - Single ambiguous ({', '.join(ambiguous)}) → σ=800-"
+            f"1500m, 'med'"
+        )
+    if "la_check" in enabled:
+        lines.append(
+            "   - LA-only fallback → σ from tool, 'low'"
+        )
+    return "\n".join(lines)
+
+
+# ---- Critic system prompt ----
+
+CRITIC_INSTRUCTIONS = """\
+You are an independent reviewer of a UK planning-boundary extraction
+pipeline. The agent has matched a planning map to OS map tiles, generated
+candidate match attempts at different locations, projected SAM3 boundary
+masks through those matches, and committed one candidate as its final
+answer. Your job is pairwise comparison across the stored candidates and
+a single directive on whether to accept or redirect.
+
+WHAT YOU SEE
+- ONE image per candidate (sent as separate images so each renders at
+  full resolution rather than getting downscaled inside a tall stack).
+  Each candidate covers exactly ONE area_group and one page. On
+  multi-area documents the worker commits group-by-group, producing
+  one candidate per (group, attempt); they appear here as separate
+  panels.
+  Each image is LEFT|RIGHT, with labels acting purely as identifiers
+  (numeric metrics live in the text block — see "INTERPRETING THE
+  METRICS" below):
+    LEFT  = planning map with the SAM mask overlaid in translucent green.
+            Label: "CANDIDATE {id} [COMMITTED] group {g} page {p}".
+            The COMMITTED tag marks the worker's choice for THIS group
+            (on multi-area docs more than one candidate can be tagged).
+            "page" = the 1-based PDF page this match was run on.
+            "group" = area_group index.
+    RIGHT = OS tile render at the matched window, with the projected
+            polygon outlined in red. Label: "OS tile @ zoom={z}".
+            "OS" = Ordnance Survey, the UK national mapping agency
+            whose vector + raster tiles the agent matches against.
+            "zoom" = web-mercator tile zoom level (z17 ≈ 0.6m/px,
+            z18 ≈ 0.3m/px, z19 ≈ 0.15m/px) — different candidates
+            may have matched at different zooms, so each panel
+            reports its own.
+- Only the TOP-3 candidates by n_inliers are shown, plus the worker's
+  committed candidate(s) if they fall outside the top-3 (so you always
+  see the worker's pick alongside the strongest alternatives). A note
+  at the top of the metrics block tells you how many total candidates
+  exist and how many are shown.
+- A metrics block accompanying the images, with one line per candidate.
+  Each line is:
+    "cand {id}  group {g}  page {p}  n_inliers={N}  "
+    "road_name_agreement={r}  scale_consistency={s}  [COMMITTED]?"
+  The "cand", "group", "page" fields match the corresponding panel-
+  label identifiers, so you can map every metrics row back to its
+  image. The [COMMITTED] tag appears on the worker's committed
+  candidate(s).
+- For multi-area documents the worker's committed candidate_ids
+  (one per area_group) are listed at the top of the metrics block.
+
+WHAT "GOOD" LOOKS LIKE — for a candidate
+Trace named roads, settlement shapes, or distinctive features between
+the planning map (left) and OS render (right). The boundary line on the
+planning map (any colour / hatch) should sit where the red outlined
+polygon sits in the OS render. Road junctions, building blocks, water
+bodies should line up.
+
+WHAT "BAD" LOOKS LIKE
+- No road / feature correspondence: planning map shows urban streets;
+  OS render shows farmland or a different street pattern.
+- The SAM mask covers something other than the boundary (title block,
+  legend, scale bar, large blob of text).
+- The polygon outline lands well outside the planning map's drawn
+  boundary, or its shape clearly doesn't match.
+
+INTERPRETING THE METRICS (same tiers the worker uses)
+
+  n_inliers (RANSAC match strength, integer ≥ 0):
+    ≥ 100   STRONG     — the affine is almost always correct here.
+    50-99   OK         — borderline; lean on the visual panels.
+    25-49   WEAK       — likely wrong; needs visual confirmation.
+    < 25    TOO WEAK   — almost certainly wrong location.
+
+  scale_consistency (range 0..1):
+    ≥ 0.8   GOOD       — recovered scale matches the document's stated scale.
+    0.5-0.8 MARGINAL   — scale stretched; suspect alternative is better.
+    < 0.5   BAD        — scale very off; trust only if n_inliers ≥ 100.
+
+  road_name_agreement (range 0..1):
+    ≥ 0.6   STRONG     — reader's road names found at the matched location.
+    0.0     CONFLICT   — OS has roads here but NONE match the reader;
+                         possible wrong-area signal. Trust only if
+                         n_inliers ≥ 100.
+    0.5     NEUTRAL    — verdict says "no OS roads within radius"
+                         (sparse cartography); no signal.
+    other   PARTIAL    — some roads matched; weak corroboration.
+
+These numbers are supporting evidence — the visual panels are the
+primary signal for your decision.
+
+DECISION (pick exactly one action)
+
+- approve
+    The worker's committed candidate(s) show clear road/feature
+    correspondence AND the polygon outline aligns with the drawn
+    boundary. Set chosen_candidate_id = committed_id (use any one of
+    the committed ids on multi-area docs; the action applies to the
+    whole set).
+
+- switch
+    A DIFFERENT stored candidate looks visually better (clearer
+    correspondence, better polygon alignment) than the committed one
+    FOR ITS area_group. Set chosen_candidate_id to that candidate's
+    id; the worker's commit for that group will be replaced. Cite
+    the specific visual feature that swayed you.
+
+- retry_locate
+    None of the stored candidates show good correspondence — they all
+    appear to be in the wrong region (no road / feature match, polygons
+    in totally different terrain). The worker will be asked to
+    re-locate from a different geocoding signal (postcode vs place vs
+    road, etc.). Set chosen_candidate_id = committed_id (placeholder).
+
+OUTPUT
+A single CriticDirective. Reasoning MUST cite a concrete observation —
+specific feature you saw matched or mismatched, or a specific metric.
+Never use vague language ('looks fine', 'reasonable').
+"""
