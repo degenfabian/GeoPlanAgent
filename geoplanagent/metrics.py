@@ -1,4 +1,4 @@
-"""Scoring of predicted boundaries against ground truth (the metrics.json numbers)."""
+"""Scoring of predicted boundaries against ground truth."""
 
 import json
 from typing import Dict, Any, Optional
@@ -9,7 +9,6 @@ import matplotlib.patches as mpatches
 import geopandas as gpd
 import contextily as ctx
 from shapely.ops import unary_union
-
 
 
 def load_geojson(geojson_path: str) -> Optional[Dict[str, Any]]:
@@ -32,8 +31,6 @@ def validate_geojson_format(geojson_data: Dict[str, Any]) -> tuple[bool, str]:
     return True, ""
 
 
-
-
 def geojson_to_shape(geojson_data: Dict[str, Any]) -> Optional[Polygon | MultiPolygon]:
     is_valid, error_msg = validate_geojson_format(geojson_data)
     if not is_valid:
@@ -52,6 +49,7 @@ def calculate_positioning_error_m(pred_geojson, gt_geojson):
     """Haversine distance in metres between the two polygon centroids
     (centroids taken in WGS84; None when either geometry is unusable)."""
     from geoplanagent.utils import haversine_km
+
     try:
         pred_shape = geojson_to_shape(pred_geojson)
         gt_shape = geojson_to_shape(gt_geojson)
@@ -114,21 +112,19 @@ def calculate_spatial_metrics(
         iou = intersection_area / union_area if union_area > 0 else 0.0
         precision = intersection_area / pred_area if pred_area > 0 else 0.0
         recall = intersection_area / gt_area if gt_area > 0 else 0.0
-        f1 = (
-            2 * (precision * recall) / (precision + recall)
-            if (precision + recall) > 0
-            else 0.0
-        )
+        f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
 
-        metrics.update({
-            "iou": float(iou),
-            "precision": float(precision),
-            "recall": float(recall),
-            "f1_score": float(f1),
-            "positioning_error_m": calculate_positioning_error_m(
-                predicted_geojson, ground_truth_geojson
-            ),
-        })
+        metrics.update(
+            {
+                "iou": float(iou),
+                "precision": float(precision),
+                "recall": float(recall),
+                "f1_score": float(f1),
+                "positioning_error_m": calculate_positioning_error_m(
+                    predicted_geojson, ground_truth_geojson
+                ),
+            }
+        )
 
     except Exception as e:
         metrics["validation_error"] = f"Calculation error: {e}"
