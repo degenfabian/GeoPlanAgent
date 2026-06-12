@@ -32,6 +32,12 @@ def validate_geojson_format(geojson_data: Dict[str, Any]) -> tuple[bool, str]:
 
 
 def geojson_to_shape(geojson_data: Dict[str, Any]) -> Optional[Polygon | MultiPolygon]:
+    """GeoJSON Feature -> shapely geometry, repairing invalid polygons.
+
+    Raises ValueError on anything outside the benchmark's output contract
+    (a Feature with Polygon/MultiPolygon geometry) or on conversion
+    errors; returns None only when repair fails.
+    """
     is_valid, error_msg = validate_geojson_format(geojson_data)
     if not is_valid:
         raise ValueError(f"Invalid GeoJSON format: {error_msg}")
@@ -39,6 +45,12 @@ def geojson_to_shape(geojson_data: Dict[str, Any]) -> Optional[Polygon | MultiPo
     try:
         s = shape(geojson_data["geometry"])
         if not s.is_valid:
+            # buffer(0) makes GEOS rebuild the geometry, resolving the
+            # self-intersections and duplicate vertices that mask-traced
+            # polygons produce. Known edge: a bowtie ring loses a lobe to
+            # winding rules (shapely.make_valid would keep both) — kept
+            # because the published numbers used this repair and it
+            # applies to GT and prediction alike.
             s = s.buffer(0)
         return s if s.is_valid else None
     except Exception as e:
