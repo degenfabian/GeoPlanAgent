@@ -34,7 +34,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-import json
 import sys
 import time
 import traceback
@@ -49,10 +48,10 @@ from pydantic_ai import Agent, BinaryContent  # noqa: E402
 from pydantic_ai.usage import UsageLimits  # noqa: E402
 
 from ablations._shared import (  # noqa: E402
-    CSV_FIELDNAMES, gt_part_centroids, nearest_part_err_km,
+    CSV_FIELDNAMES, add_subset_args, gt_part_centroids,
+    nearest_part_err_km, print_err_km_summary, write_trajectory,
 )
 from geoplanagent.utils import resolve_model  # noqa: E402
-from geoplanagent.run import extract_message_log_from_msgs  # noqa: E402
 from geoplanagent.tools.pdf import resolve_case_pdf  # noqa: E402
 from geoplanagent.metrics import load_geojson  # noqa: E402
 
@@ -298,30 +297,12 @@ def evaluate(args: argparse.Namespace) -> int:
             # response; total_tool_calls will typically be 1 (the
             # synthetic final_result tool pydantic-ai uses to emit
             # structured output).
-            try:
-                trajectory, traj_stats = extract_message_log_from_msgs(msgs)
-                traj_payload = {
-                    "case": case,
-                    "config": {
-                        "approach": "vlm_direct",
-                        "vlm_model": args.vlm_model,
-                        "temperature": args.temperature,
-                    },
-                    "pick": pick.model_dump(),
-                    "err_km": err,
-                    "gt_centroids": [
-                        {"lat": lat, "lon": lon} for lat, lon in centroids
-                    ],
-                    "trajectory_stats": traj_stats,
-                    "trajectory": trajectory,
-                }
-                fs_case = case.replace("/", "_").replace(":", "_")
-                (traj_dir / f"{fs_case}.json").write_text(
-                    json.dumps(traj_payload, indent=2, default=str)
-                )
-            except Exception as _e:
-                print(f"  WARN: trajectory dump failed: {_e!s:.80}",
-                      flush=True)
+            write_trajectory(
+                traj_dir, case,
+                {"approach": "vlm_direct",
+                 "vlm_model": args.vlm_model,
+                 "temperature": args.temperature},
+                pick, err, centroids, msgs)
 
             if err is not None:
                 print(f"  -> ok | err={err:.2f} km | ({pick.lat:.5f}, "
@@ -335,18 +316,7 @@ def evaluate(args: argparse.Namespace) -> int:
           flush=True)
     print(f"Wrote {out_csv.relative_to(REPO_ROOT)}", flush=True)
 
-    if out_csv.exists():
-        with open(out_csv) as f:
-            rows = list(csv.DictReader(f))
-        errs = [float(r["err_km"]) for r in rows
-                if r.get("err_km") and r["err_km"]]
-        if errs:
-            errs.sort()
-            mean = sum(errs) / len(errs)
-            median = errs[len(errs) // 2]
-            print(f"err_km: n={len(errs)}  mean={mean:.2f} km  "
-                  f"median={median:.2f} km  min={errs[0]:.2f}  "
-                  f"max={errs[-1]:.2f}", flush=True)
+    print_err_km_summary(out_csv)
     return 0
 
 
@@ -378,18 +348,7 @@ def main() -> int:
         help=f"Output root. A per-model subdir is created under it. "
              f"Default: {DEFAULT_OUT_ROOT.relative_to(REPO_ROOT)}",
     )
-    parser.add_argument(
-        "--only-cases", default=None,
-        help="Comma-separated case names; evaluate only these.",
-    )
-    parser.add_argument(
-        "--max-cases", type=int, default=None,
-        help="Smoke limit — evaluate only the first N cases.",
-    )
-    parser.add_argument(
-        "--resume", action="store_true",
-        help="Skip cases already in the output CSV.",
-    )
+    add_subset_args(parser)
     parser.add_argument(
         "--dump-prompt", action="store_true",
         help=f"Write the VLM-direct prompt to "

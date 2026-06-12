@@ -638,8 +638,8 @@ _locate_agent = make_locate_agent()
 # Why JPEG re-encode beats PNG-downscale here:
 #   - Preserves resolution → text labels stay legible
 #   - Only fires on 3 cases (1.4%) — the truly-oversized A2/A1 scans
-#   - JPEG-90 quality is fine for label-reading (already validated by
-#     Fabian's segmentation-ablation experience)
+#   - JPEG-90 quality is fine for label-reading (already validated in
+#     the segmentation ablation)
 #
 # Other cases stay PNG. We don't switch to JPEG globally because some
 # sparse maps (e.g. Ar4.5: 2 MB PNG, 6.3 MB JPEG-90) GROW under JPEG —
@@ -681,9 +681,6 @@ def _shrink_image_if_oversized(img_bytes: bytes) -> bytes:
         return img_bytes
 
 
-# Backwards-compat alias for existing call sites.
-_downscale_image_if_oversized = _shrink_image_if_oversized
-
 
 def _image_media_type(img_bytes: bytes) -> str:
     """Detect PNG vs JPEG from the magic bytes."""
@@ -694,21 +691,7 @@ def _image_media_type(img_bytes: bytes) -> str:
     return "image/png"   # default — pydantic-ai expects something
 
 
-_TRANSIENT_HTTP_MARKERS = (
-    "status_code: 400",   # Provider sometimes returns 400 for rate-limit /
-                          # quota / oversize-request issues.
-    "status_code: 413",   # Payload too large (oversized image).
-    "status_code: 429",   # Rate limited.
-    "status_code: 500",   # Provider internal error.
-    "status_code: 502",   # Bad gateway.
-    "status_code: 503",   # Service unavailable.
-    "status_code: 504",   # Gateway timeout.
-)
-
-
-def _is_transient_error(e: Exception) -> bool:
-    s = str(e).lower()
-    return any(m in s for m in (x.lower() for x in _TRANSIENT_HTTP_MARKERS))
+from geoplanagent.utils import is_transient_http_error as _is_transient_error  # noqa: E402
 
 
 # Entry point

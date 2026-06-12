@@ -223,6 +223,26 @@ def _is_retryable_http_error(exc: Exception) -> bool:
     return int(m.group(1)) in _RETRYABLE_STATUS
 
 
+_TRANSIENT_HTTP_MARKERS = (
+    "status_code: 400",   # Provider sometimes returns 400 for rate-limit /
+                          # quota / oversize-request issues.
+    "status_code: 413",   # Payload too large (oversized image).
+    "status_code: 429",   # Rate limited.
+    "status_code: 500",   # Provider internal error.
+    "status_code: 502",   # Bad gateway.
+    "status_code: 503",   # Service unavailable.
+    "status_code: 504",   # Gateway timeout.
+)
+
+
+def is_transient_http_error(e: Exception) -> bool:
+    """Substring variant of _is_retryable_http_error for raw transport
+    exceptions that aren't wrapped in ModelHTTPError (used by the locate
+    sub-agent's own retry loop)."""
+    s = str(e).lower()
+    return any(m in s for m in (x.lower() for x in _TRANSIENT_HTTP_MARKERS))
+
+
 def _run_sync_with_retry(agent_obj, *args, max_retries: int = 2,
                           backoff_s: float = 5.0, label: str = "agent",
                           **kwargs):
@@ -248,9 +268,6 @@ def _run_sync_with_retry(agent_obj, *args, max_retries: int = 2,
         raise last_exc
     raise RuntimeError(f"{label}: retry loop fell through without error")
 
-
-# Deferred: worker_agent imports AgentState from this module, so this
-# re-export (used by worker_tools) must come after AgentState exists.
 
 
 MODEL_ALIASES = {

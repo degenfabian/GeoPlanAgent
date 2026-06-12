@@ -60,12 +60,12 @@ sys.path.insert(0, str(REPO_ROOT))
 import cv2  # noqa: E402
 
 from ablations._shared import (  # noqa: E402
-    CSV_FIELDNAMES, gt_part_centroids, nearest_part_err_km,
+    CSV_FIELDNAMES, add_subset_args, gt_part_centroids,
+    nearest_part_err_km, print_err_km_summary, write_trajectory,
 )
 from geoplanagent.agents.locate import (  # noqa: E402
     _LOCATE_TOOL_NAMES, _build_locate_prompt, run_locate,
 )
-from geoplanagent.run import extract_message_log_from_msgs  # noqa: E402
 from geoplanagent.tools.pdf import resolve_case_pdf  # noqa: E402
 from geoplanagent.tools.pdf import render_map_page  # noqa: E402
 from geoplanagent.metrics import load_geojson  # noqa: E402
@@ -344,33 +344,11 @@ def evaluate(args: argparse.Namespace) -> int:
             # content (e.g. the map PNG sent on the first user message)
             # is summarised by extract_message_log_from_msgs, so the
             # JSON stays small (~10-30 KB per case).
-            try:
-                trajectory, traj_stats = extract_message_log_from_msgs(msgs)
-                traj_payload = {
-                    "case": case,
-                    "config": {
-                        "disabled_tools": sorted(disabled),
-                        "locate_model": args.locate_model,
-                    },
-                    "pick": pick.model_dump(),
-                    "err_km": err,
-                    "gt_centroids": [
-                        {"lat": lat, "lon": lon} for lat, lon in centroids
-                    ],
-                    "trajectory_stats": traj_stats,
-                    "trajectory": trajectory,
-                }
-                # Filesystem safety: a few case names contain ':' which
-                # is illegal on some filesystems. Replace with '_'.
-                fs_case = case.replace("/", "_").replace(":", "_")
-                (traj_dir / f"{fs_case}.json").write_text(
-                    json.dumps(traj_payload, indent=2, default=str)
-                )
-            except Exception as _e:
-                # Don't fail the whole case if trajectory serialisation
-                # hiccups — the CSV row is already written. Note it so
-                # we can debug post-hoc.
-                print(f"  WARN: trajectory dump failed: {_e!s:.80}")
+            write_trajectory(
+                traj_dir, case,
+                {"disabled_tools": sorted(disabled),
+                 "locate_model": args.locate_model},
+                pick, err, centroids, msgs)
 
             if err is not None:
                 print(f"  -> ok | err={err:.2f} km | conf={pick.confidence} "
@@ -382,19 +360,7 @@ def evaluate(args: argparse.Namespace) -> int:
     print(f"\nDone in {elapsed/60:.1f} min. n_ok={n_ok}, n_err={n_err}.")
     print(f"Wrote {out_csv.relative_to(REPO_ROOT)}")
 
-    # Quick aggregate stats (mean + median err_km).
-    if out_csv.exists():
-        with open(out_csv) as f:
-            rows = list(csv.DictReader(f))
-        errs = [float(r["err_km"]) for r in rows
-                if r.get("err_km") and r["err_km"]]
-        if errs:
-            errs.sort()
-            mean = sum(errs) / len(errs)
-            median = errs[len(errs) // 2]
-            print(f"err_km: n={len(errs)}  mean={mean:.2f} km  "
-                  f"median={median:.2f} km  min={errs[0]:.2f}  "
-                  f"max={errs[-1]:.2f}")
+    print_err_km_summary(out_csv)
     return 0
 
 
@@ -441,18 +407,7 @@ def main() -> int:
     )
     parser.add_argument("--dpi", type=int, default=200,
                         help="PDF rendering DPI. Default: 200 (matches production).")
-    parser.add_argument(
-        "--only-cases", default=None,
-        help="Comma-separated case names; evaluate only these.",
-    )
-    parser.add_argument(
-        "--max-cases", type=int, default=None,
-        help="Smoke limit — evaluate only the first N cases.",
-    )
-    parser.add_argument(
-        "--resume", action="store_true",
-        help="Skip cases already in the output CSV.",
-    )
+    add_subset_args(parser)
     parser.add_argument(
         "--dump-prompts", action="store_true",
         help=f"Write all 7 prompt variants to "
