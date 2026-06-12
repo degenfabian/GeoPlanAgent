@@ -1,7 +1,6 @@
 """Scoring of predicted boundaries against ground truth (the metrics.json numbers)."""
 
 import json
-import logging
 from typing import Dict, Any, Optional
 from pathlib import Path
 from shapely.geometry import shape, Polygon, MultiPolygon
@@ -11,8 +10,6 @@ import geopandas as gpd
 import contextily as ctx
 from shapely.ops import unary_union
 
-
-log = logging.getLogger(__name__)
 
 
 def load_geojson(geojson_path: str) -> Optional[Dict[str, Any]]:

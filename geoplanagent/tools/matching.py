@@ -20,7 +20,6 @@ from geoplanagent.utils import (
     osm_pixel_to_latlon,
     tile_mpp as _tile_mpp_at,
 )
-import logging
 from typing import Optional
 import re
 from dataclasses import dataclass, field
@@ -510,8 +509,6 @@ def sliding_window_position(
     return best_result
 
 
-log = logging.getLogger(__name__)
-
 
 def composite_window_score(vanilla_metric: float,
                            quadrant_coverage: int) -> float:
@@ -548,10 +545,9 @@ def quadrant_coverage_from_inlier_points(
             + int(((arr[:, 0] < cx) & (arr[:, 1] >= cy)).any())
             + int(((arr[:, 0] >= cx) & (arr[:, 1] >= cy)).any())
         )
-    except Exception:
-        log.warning("quadrant coverage failed for %d pts, shape %s; "
-                    "treating as full coverage", len(inlier_pts_map), rot_shape,
-                    exc_info=True)
+    except Exception as e:
+        print(f"  warn: quadrant coverage failed for {len(inlier_pts_map)} pts, "
+              f"shape {rot_shape} ({e!s:.80}); treating as full coverage")
         return 4
 
 
