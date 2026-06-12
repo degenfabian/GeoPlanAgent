@@ -41,20 +41,21 @@ def geojson_to_shape(geojson_data: Dict[str, Any]) -> Polygon | MultiPolygon:
     if not is_valid:
         raise ValueError(f"Invalid GeoJSON format: {error_msg}")
 
+    # Only the shapely calls live in the try: their exceptions get
+    # translated to the contract's ValueError. Our own checks come after.
     try:
         s = shape(geojson_data["geometry"])
         if not s.is_valid:
-            # buffer(0) makes GEOS rebuild the geometry, 
+            # buffer(0) makes GEOS rebuild the geometry,
             s = s.buffer(0)
-        if not s.is_valid:
-            raise ValueError("geometry invalid even after buffer(0) repair")
-        if s.is_empty:
-            raise ValueError("geometry is empty")
-        return s
-    except ValueError:
-        raise
     except Exception as e:
-        raise ValueError(f"Error converting GeoJSON to shape: {e}")
+        raise ValueError(f"Error converting GeoJSON to shape: {e}") from e
+
+    if not s.is_valid:
+        raise ValueError("geometry invalid even after buffer(0) repair")
+    if s.is_empty:
+        raise ValueError("geometry is empty")
+    return s
 
 
 def calculate_positioning_error_m(pred_geojson, gt_geojson):
