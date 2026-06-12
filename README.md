@@ -64,7 +64,7 @@ GeoMapAgent_autonomous/
 │   ├── prompts.py             # every system prompt
 │   ├── schemas.py             # pydantic contracts (LLM-visible)
 │   ├── utils.py               # AgentState, model aliases, retry, geodesy, folds
-│   └── metrics.py             # IoU/F1/centroid scoring + viz
+│   └── metrics.py             # IoU/centroid scoring + viz
 │
 ├── ablations/                 # Paper ablation scripts (see ablations/README.md)
 ├── training/                  # SAM3 LoRA + rotation classifier (see training/README.md)
@@ -269,7 +269,7 @@ Max 2 rejection iterations per case by default.
 results/<output-dir>/<model>/<case>/
 ├── predicted.geojson                   # Final boundary (Feature, Polygon | MultiPolygon)
 ├── predicted_worker_first.geojson      # (with --enable-critic) pre-critic snapshot
-├── metrics.json                        # IoU, precision, recall, F1, positioning_error_m,
+├── metrics.json                        # IoU, precision, recall, positioning_error_m,
 │                                       # match_info, agent_stats, processing_time,
 │                                       # worker_first_{iou,metrics} when critic ran
 ├── message_log.json                    # Full worker conversation trace (binary parts summarised)

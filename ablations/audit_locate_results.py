@@ -21,6 +21,7 @@ Writes per-config rerun lists to
 Usage (from repo root):
     uv run python ablations/audit_locate_results.py
 """
+
 from __future__ import annotations
 
 import csv
@@ -31,7 +32,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from geoplanagent.utils import haversine_km   # noqa: E402
+from geoplanagent.utils import haversine_km  # noqa: E402
 
 EVAL_ROOT = REPO_ROOT / "ablations" / "locate_only_eval"
 
@@ -84,8 +85,8 @@ def audit_config(cfg_dir: Path) -> dict:
     if not csv_path.exists():
         return {"config": cfg_dir.name, "skipped": "no CSV"}
 
-    bucket_a: list[dict] = []   # emergency fallbacks
-    bucket_b: list[dict] = []   # L2-catchable
+    bucket_a: list[dict] = []  # emergency fallbacks
+    bucket_b: list[dict] = []  # L2-catchable
 
     with open(csv_path) as f:
         rows = list(csv.DictReader(f))
@@ -119,17 +120,17 @@ def audit_config(cfg_dir: Path) -> dict:
             pick_lon = float(r["picked_lon"])
         except (KeyError, ValueError, TypeError):
             continue
-        min_drift = min(
-            haversine_km(pick_lat, pick_lon, c_lat, c_lon)
-            for c_lat, c_lon in coords
-        )
+        min_drift = min(haversine_km(pick_lat, pick_lon, c_lat, c_lon) for c_lat, c_lon in coords)
         if min_drift > L2_THRESHOLD_KM:
-            bucket_b.append({
-                "case": case, "err_km": err,
-                "min_drift_km": f"{min_drift:.2f}",
-                "n_tool_coords": len(coords),
-                "pick": f"({pick_lat:.4f}, {pick_lon:.4f})",
-            })
+            bucket_b.append(
+                {
+                    "case": case,
+                    "err_km": err,
+                    "min_drift_km": f"{min_drift:.2f}",
+                    "n_tool_coords": len(coords),
+                    "pick": f"({pick_lat:.4f}, {pick_lon:.4f})",
+                }
+            )
 
     return {
         "config": cfg_dir.name,
@@ -156,11 +157,15 @@ def main() -> int:
 
     md = ["# Locate LOO post-hoc audit — cases to rerun after fixes\n"]
     md.append("Two buckets per config:\n")
-    md.append("- **A**: ``picked_source`` contains ``emergency_la_centroid`` "
-              "(HTTP error fell back to LA centroid). Fix: HTTP retry + "
-              "image downscale.\n")
-    md.append("- **B**: pick is > "
-              f"{L2_THRESHOLD_KM} km from EVERY coord any tool returned. Fix: L2 cross-check validator.\n\n")
+    md.append(
+        "- **A**: ``picked_source`` contains ``emergency_la_centroid`` "
+        "(HTTP error fell back to LA centroid). Fix: HTTP retry + "
+        "image downscale.\n"
+    )
+    md.append(
+        "- **B**: pick is > "
+        f"{L2_THRESHOLD_KM} km from EVERY coord any tool returned. Fix: L2 cross-check validator.\n\n"
+    )
     md.append("| Config | A (HTTP) | B (sign-flip) | Total to rerun |\n")
     md.append("|---|---:|---:|---:|\n")
 
@@ -195,13 +200,17 @@ def main() -> int:
             print(f"    ... + {a - 5} more")
         print(f"  Bucket B (L2-catchable):     {b:3d} cases")
         for x in r["bucket_b"][:5]:
-            print(f"    {x['case']:<42} err={x['err_km']} "
-                  f"min_drift_to_any_tool={x['min_drift_km']}km "
-                  f"pick={x['pick']} n_tool_coords={x['n_tool_coords']}")
+            print(
+                f"    {x['case']:<42} err={x['err_km']} "
+                f"min_drift_to_any_tool={x['min_drift_km']}km "
+                f"pick={x['pick']} n_tool_coords={x['n_tool_coords']}"
+            )
         if b > 5:
             print(f"    ... + {b - 5} more")
-        print(f"  Union to rerun:              {len(rerun_list):3d} cases "
-              f"→ {rerun_file.relative_to(REPO_ROOT)}")
+        print(
+            f"  Union to rerun:              {len(rerun_list):3d} cases "
+            f"→ {rerun_file.relative_to(REPO_ROOT)}"
+        )
         print()
 
     md.append(f"| **TOTAL** | **{total_a}** | **{total_b}** | **{rerun_total}** |\n")

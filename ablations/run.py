@@ -24,6 +24,7 @@ Subcommands and the paper rows they produce:
 The exact invocation behind every published row is listed in
 ablations/README.md.
 """
+
 import runpy
 import sys
 from pathlib import Path
@@ -49,8 +50,7 @@ def main() -> int:
         return 0
     cmd = sys.argv.pop(1)
     if cmd not in COMMANDS:
-        print(f"Unknown subcommand '{cmd}'. "
-              f"Choose from: {' '.join(COMMANDS)}", file=sys.stderr)
+        print(f"Unknown subcommand '{cmd}'. Choose from: {' '.join(COMMANDS)}", file=sys.stderr)
         return 2
     if cmd == "collapsed-reader":
         sys.argv.insert(1, "--no-reader")

@@ -20,4 +20,4 @@ auto-rotation → worker tool loop → optional critic.
 | [`prompts.py`](prompts.py) | Every system prompt and prompt section (LLM-visible) |
 | [`schemas.py`](schemas.py) | Pydantic contracts; field descriptions are LLM-visible |
 | [`utils.py`](utils.py) | `AgentState`, model aliases, HTTP retry, geodesy/tile math, k-fold routing |
-| [`metrics.py`](metrics.py) | IoU / F1 / centroid metrics + predicted-vs-GT visualisation |
+| [`metrics.py`](metrics.py) | IoU / precision / recall / centroid metrics + predicted-vs-GT visualisation |

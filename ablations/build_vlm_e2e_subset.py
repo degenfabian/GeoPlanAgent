@@ -9,7 +9,7 @@ and writes:
 
     ablations/vlm_e2e_pdf_to_geojson/
         subset_40.json                     # 40 case folders + stratum + GT path
-        subset_40_pipeline_baseline.json   # same 40 with existing benchmark IoU/F1
+        subset_40_pipeline_baseline.json   # same 40 with existing benchmark IoU
         subset_40_summary.md               # stratum counts + pipeline mean per stratum
 
 Deterministic: seed=42, sorted folder list before sampling. Running twice
@@ -23,6 +23,7 @@ Usage (from repo root):
     uv run python ablations/build_vlm_e2e_subset.py --n 40 --seed 42
     uv run python ablations/build_vlm_e2e_subset.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -47,10 +48,10 @@ DEFAULT_EVAL_DIR = REPO_ROOT / "evaluation_data"
 # cases by their child IDs; the benchmark stores them under a shorter merged
 # name. Without this rename the join drops 5 cases.
 MERGED_RENAME = {
-    "12_A_B_C_merged":   "12_merged",
-    "A4D5A1_A2_merged":  "A4D5A_merged",
-    "A4D6A2_A3_merged":  "A4D6A_merged",
-    "A4D8A1_A2_merged":  "A4D8A_merged",
+    "12_A_B_C_merged": "12_merged",
+    "A4D5A1_A2_merged": "A4D5A_merged",
+    "A4D6A2_A3_merged": "A4D6A_merged",
+    "A4D8A1_A2_merged": "A4D8A_merged",
     "Ar4.1_4.7a_merged": "Ar4.1_7a_merged",
 }
 
@@ -66,26 +67,20 @@ def load_labels(xlsx_path: Path, include_ambiguous: bool = False) -> pd.DataFram
     for col in ("Document Quality", "Shape Complexity", "Shape Matches correctly"):
         df[col] = df[col].astype(str).str.strip().str.lower()
     df["Boundary Shape"] = df["Boundary Shape"].astype(str).str.strip()
-    df["folder"] = df["folder"].astype(str).str.strip().map(
-        lambda f: MERGED_RENAME.get(f, f)
-    )
+    df["folder"] = df["folder"].astype(str).str.strip().map(lambda f: MERGED_RENAME.get(f, f))
     if include_ambiguous:
-        df["stratum"] = (
-            df["Document Quality"] + "_x_" + df["Shape Complexity"]
-        )
+        df["stratum"] = df["Document Quality"] + "_x_" + df["Shape Complexity"]
         return df
     clean = df[
         (df["Shape Matches correctly"] == "yes")
         | (df["Shape Matches correctly"].str.startswith("yes - across"))
     ].copy()
-    clean["stratum"] = (
-        clean["Document Quality"] + "_x_" + clean["Shape Complexity"]
-    )
+    clean["stratum"] = clean["Document Quality"] + "_x_" + clean["Shape Complexity"]
     return clean
 
 
 def load_benchmark_per_case(summary_path: Path) -> dict:
-    """folder → {iou, precision, recall, f1_score, positioning_error_m}."""
+    """folder → {iou, precision, recall, positioning_error_m}."""
     summary = json.loads(summary_path.read_text())
     out = {}
     for r in summary["per_case"]:
@@ -93,14 +88,12 @@ def load_benchmark_per_case(summary_path: Path) -> dict:
             "iou": r.get("iou"),
             "precision": r.get("precision"),
             "recall": r.get("recall"),
-            "f1_score": r.get("f1_score"),
             "positioning_error_m": r.get("positioning_error_m"),
         }
     return out
 
 
-def allocate_strata(strata_counts: dict[str, int], n_total: int,
-                    floor: int = 2) -> dict[str, int]:
+def allocate_strata(strata_counts: dict[str, int], n_total: int, floor: int = 2) -> dict[str, int]:
     """Proportional allocation across strata with a per-stratum floor.
 
     Strategy: first guarantee ``floor`` per stratum (capped at its population
@@ -111,16 +104,14 @@ def allocate_strata(strata_counts: dict[str, int], n_total: int,
     pop = {s: int(c) for s, c in strata_counts.items()}
     pop_total = sum(pop.values())
     if n_total > pop_total:
-        raise ValueError(
-            f"asked for {n_total} cases but only {pop_total} clean candidates")
+        raise ValueError(f"asked for {n_total} cases but only {pop_total} clean candidates")
 
     # Floor allocation.
     alloc = {s: min(floor, p) for s, p in pop.items()}
     used = sum(alloc.values())
     remaining = n_total - used
     if remaining < 0:
-        raise ValueError(
-            f"floor={floor} across {len(pop)} strata exceeds n_total={n_total}")
+        raise ValueError(f"floor={floor} across {len(pop)} strata exceeds n_total={n_total}")
 
     # Proportional fill on remaining capacity.
     remaining_cap = {s: pop[s] - alloc[s] for s in pop}
@@ -154,12 +145,12 @@ def allocate_strata(strata_counts: dict[str, int], n_total: int,
     if sum(alloc.values()) != n_total:
         raise RuntimeError(
             f"allocation failed: got {sum(alloc.values())}, want {n_total} "
-            f"(alloc={alloc}, pop={pop})")
+            f"(alloc={alloc}, pop={pop})"
+        )
     return alloc
 
 
-def sample_subset(clean: pd.DataFrame, alloc: dict[str, int],
-                  seed: int) -> pd.DataFrame:
+def sample_subset(clean: pd.DataFrame, alloc: dict[str, int], seed: int) -> pd.DataFrame:
     """Pull ``alloc[s]`` rows from each stratum. Deterministic: sort by
     folder name first, then sample with ``random.Random(seed)``."""
     rng = random.Random(seed)
@@ -167,8 +158,7 @@ def sample_subset(clean: pd.DataFrame, alloc: dict[str, int],
     for stratum, k in sorted(alloc.items()):
         pool = sorted(clean[clean["stratum"] == stratum]["folder"].tolist())
         if k > len(pool):
-            raise ValueError(
-                f"stratum {stratum}: asked for {k} but only {len(pool)} in pool")
+            raise ValueError(f"stratum {stratum}: asked for {k} but only {len(pool)} in pool")
         picked.extend(rng.sample(pool, k))
     return clean[clean["folder"].isin(picked)].copy()
 
@@ -182,9 +172,15 @@ def resolve_gt_geojson(eval_dir: Path, folder: str) -> Path | None:
     return gjs[0] if gjs else None
 
 
-def write_outputs(subset: pd.DataFrame, bench_per_case: dict, out_dir: Path,
-                  eval_dir: Path, seed: int, n_total: int,
-                  alloc: dict[str, int]) -> None:
+def write_outputs(
+    subset: pd.DataFrame,
+    bench_per_case: dict,
+    out_dir: Path,
+    eval_dir: Path,
+    seed: int,
+    n_total: int,
+    alloc: dict[str, int],
+) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     subset_records = []
@@ -198,9 +194,7 @@ def write_outputs(subset: pd.DataFrame, bench_per_case: dict, out_dir: Path,
             "document_quality": row["Document Quality"],
             "shape_complexity": row["Shape Complexity"],
             "boundary_shape": row["Boundary Shape"],
-            "gt_geojson_relpath": (
-                str(gt_path.relative_to(REPO_ROOT)) if gt_path else None
-            ),
+            "gt_geojson_relpath": (str(gt_path.relative_to(REPO_ROOT)) if gt_path else None),
         }
         subset_records.append(rec)
         bench = bench_per_case.get(folder, {})
@@ -208,7 +202,6 @@ def write_outputs(subset: pd.DataFrame, bench_per_case: dict, out_dir: Path,
             "iou": bench.get("iou"),
             "precision": bench.get("precision"),
             "recall": bench.get("recall"),
-            "f1_score": bench.get("f1_score"),
             "positioning_error_m": bench.get("positioning_error_m"),
         }
 
@@ -226,17 +219,21 @@ def write_outputs(subset: pd.DataFrame, bench_per_case: dict, out_dir: Path,
         },
         "cases": subset_records,
     }
-    (out_dir / f"subset_{n_total}.json").write_text(
-        json.dumps(subset_json, indent=2, default=str))
+    (out_dir / f"subset_{n_total}.json").write_text(json.dumps(subset_json, indent=2, default=str))
 
     (out_dir / f"subset_{n_total}_pipeline_baseline.json").write_text(
-        json.dumps({
-            "config": {
-                "source": "results/benchmark_v_post_refactor/gemini-flash/summary.json",
-                "n_total": n_total,
+        json.dumps(
+            {
+                "config": {
+                    "source": "results/benchmark_v_post_refactor/gemini-flash/summary.json",
+                    "n_total": n_total,
+                },
+                "per_case": pipeline_baseline,
             },
-            "per_case": pipeline_baseline,
-        }, indent=2, default=str))
+            indent=2,
+            default=str,
+        )
+    )
 
     # Markdown summary so we can eyeball without parsing JSON.
     lines = [
@@ -265,13 +262,11 @@ def write_outputs(subset: pd.DataFrame, bench_per_case: dict, out_dir: Path,
         pipe_mean = sum(ious) / len(ious) if ious else float("nan")
         lines.append(f"| {s} | n/a | {n_alloc} | {pipe_mean:.3f} |")
 
-    pipeline_ious = [v["iou"] for v in pipeline_baseline.values()
-                     if v["iou"] is not None]
+    pipeline_ious = [v["iou"] for v in pipeline_baseline.values() if v["iou"] is not None]
     overall = sum(pipeline_ious) / len(pipeline_ious) if pipeline_ious else float("nan")
     lines += [
         "",
-        f"**Overall pipeline mean IoU on the {len(pipeline_ious)} subset cases: "
-        f"{overall:.3f}**",
+        f"**Overall pipeline mean IoU on the {len(pipeline_ious)} subset cases: {overall:.3f}**",
         "",
         "## Cases (alphabetical)",
         "",
@@ -287,32 +282,51 @@ def main() -> int:
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    ap.add_argument("--xlsx", default=str(DEFAULT_XLSX),
-                    help=f"Excel path. Default: {DEFAULT_XLSX.relative_to(REPO_ROOT)}")
-    ap.add_argument("--benchmark-summary", default=str(DEFAULT_BENCHMARK_SUMMARY),
-                    help="Path to the benchmark summary.json for the pipeline "
-                         "baseline column.")
-    ap.add_argument("--eval-dir", default=str(DEFAULT_EVAL_DIR),
-                    help="evaluation_data root; used to resolve GT geojson paths.")
-    ap.add_argument("--out-dir", default=str(DEFAULT_OUT_DIR),
-                    help=f"Output dir. Default: {DEFAULT_OUT_DIR.relative_to(REPO_ROOT)}")
+    ap.add_argument(
+        "--xlsx",
+        default=str(DEFAULT_XLSX),
+        help=f"Excel path. Default: {DEFAULT_XLSX.relative_to(REPO_ROOT)}",
+    )
+    ap.add_argument(
+        "--benchmark-summary",
+        default=str(DEFAULT_BENCHMARK_SUMMARY),
+        help="Path to the benchmark summary.json for the pipeline baseline column.",
+    )
+    ap.add_argument(
+        "--eval-dir",
+        default=str(DEFAULT_EVAL_DIR),
+        help="evaluation_data root; used to resolve GT geojson paths.",
+    )
+    ap.add_argument(
+        "--out-dir",
+        default=str(DEFAULT_OUT_DIR),
+        help=f"Output dir. Default: {DEFAULT_OUT_DIR.relative_to(REPO_ROOT)}",
+    )
     ap.add_argument("--n", type=int, default=40, help="Subset size. Default: 40.")
     ap.add_argument("--seed", type=int, default=42, help="RNG seed. Default: 42.")
-    ap.add_argument("--floor", type=int, default=2,
-                    help="Minimum cases per stratum. Default: 2.")
-    ap.add_argument("--dry-run", action="store_true",
-                    help="Print the allocation + sampled case list; write no files.")
-    ap.add_argument("--all", action="store_true",
-                    help="Output every clean case (no stratified sampling). "
-                         "By default this is the 200 clean cases (filtered to "
-                         "'yes' / 'yes - across'). Combine with "
-                         "--include-ambiguous to include all 208.")
-    ap.add_argument("--include-ambiguous", action="store_true",
-                    help="When set with --all, include the 8 cases with "
-                         "ambiguous/broken GT ('yes - almost', 'almost', "
-                         "'yes - shape not outlined in pdf') for a full-208 "
-                         "subset. The 8 cases will score against problematic "
-                         "GT — caveat to disclose downstream.")
+    ap.add_argument("--floor", type=int, default=2, help="Minimum cases per stratum. Default: 2.")
+    ap.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print the allocation + sampled case list; write no files.",
+    )
+    ap.add_argument(
+        "--all",
+        action="store_true",
+        help="Output every clean case (no stratified sampling). "
+        "By default this is the 200 clean cases (filtered to "
+        "'yes' / 'yes - across'). Combine with "
+        "--include-ambiguous to include all 208.",
+    )
+    ap.add_argument(
+        "--include-ambiguous",
+        action="store_true",
+        help="When set with --all, include the 8 cases with "
+        "ambiguous/broken GT ('yes - almost', 'almost', "
+        "'yes - shape not outlined in pdf') for a full-208 "
+        "subset. The 8 cases will score against problematic "
+        "GT — caveat to disclose downstream.",
+    )
     args = ap.parse_args()
 
     xlsx = Path(args.xlsx)
@@ -331,8 +345,10 @@ def main() -> int:
 
     missing = sorted(set(clean["folder"]) - set(bench_per_case))
     if missing:
-        print(f"WARNING: {len(missing)} label folders not in benchmark — "
-              f"cannot fetch pipeline baseline for these:")
+        print(
+            f"WARNING: {len(missing)} label folders not in benchmark — "
+            f"cannot fetch pipeline baseline for these:"
+        )
         for f in missing:
             print(f"  {f!r}")
 
@@ -348,8 +364,7 @@ def main() -> int:
     if args.all:
         full_alloc = dict(strata_counts)  # for the summary table header
         print()
-        print(f"--all: writing every clean case (n={len(clean)}); "
-              f"skipping stratified sampling.")
+        print(f"--all: writing every clean case (n={len(clean)}); skipping stratified sampling.")
         if args.dry_run:
             for _, r in clean.sort_values("folder").iterrows():
                 bench = bench_per_case.get(r["folder"], {})
@@ -358,8 +373,15 @@ def main() -> int:
                 print(f"  [{r['stratum']:18s}] {r['folder']:40s}  pipeline IoU={iou_s}")
             print("\n(dry-run; no files written)")
             return 0
-        write_outputs(clean, bench_per_case, out_dir, eval_dir,
-                      seed=args.seed, n_total=len(clean), alloc=full_alloc)
+        write_outputs(
+            clean,
+            bench_per_case,
+            out_dir,
+            eval_dir,
+            seed=args.seed,
+            n_total=len(clean),
+            alloc=full_alloc,
+        )
         print()
         print("Wrote:")
         print(f"  {out_dir.relative_to(REPO_ROOT)}/subset_{len(clean)}.json")
@@ -389,8 +411,9 @@ def main() -> int:
         print("\n(dry-run; no files written)")
         return 0
 
-    write_outputs(subset, bench_per_case, out_dir, eval_dir,
-                  seed=args.seed, n_total=args.n, alloc=alloc)
+    write_outputs(
+        subset, bench_per_case, out_dir, eval_dir, seed=args.seed, n_total=args.n, alloc=alloc
+    )
     print()
     print("Wrote:")
     print(f"  {out_dir.relative_to(REPO_ROOT)}/subset_{args.n}.json")

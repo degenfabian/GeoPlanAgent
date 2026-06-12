@@ -29,6 +29,7 @@ Usage (from repo root):
     uv run python ablations/locate_vlm_direct.py --vlm-model gemini-pro
     uv run python ablations/locate_vlm_direct.py --resume
 """
+
 from __future__ import annotations
 
 import argparse
@@ -47,8 +48,12 @@ from pydantic_ai import Agent, BinaryContent  # noqa: E402
 from pydantic_ai.usage import UsageLimits  # noqa: E402
 
 from ablations._shared import (  # noqa: E402
-    CSV_FIELDNAMES, add_subset_args, gt_part_centroids,
-    nearest_part_err_km, print_err_km_summary, write_trajectory,
+    CSV_FIELDNAMES,
+    add_subset_args,
+    gt_part_centroids,
+    nearest_part_err_km,
+    print_err_km_summary,
+    write_trajectory,
 )
 from geoplanagent.utils import resolve_model  # noqa: E402
 from geoplanagent.tools.pdf import resolve_case_pdf  # noqa: E402
@@ -107,15 +112,16 @@ class VlmGeocodePick(BaseModel):
     """Single-shot VLM-direct geocode output. Mirrors the locate
     sub-agent's LocatePick on the fields that downstream scoring needs;
     omits sigma_m / confidence (no tools available)."""
+
     lat: float = Field(
-        description="WGS84 latitude of the application site. UK range "
-                    "roughly 49.8 to 60.9.",
-        ge=-90, le=90,
+        description="WGS84 latitude of the application site. UK range roughly 49.8 to 60.9.",
+        ge=-90,
+        le=90,
     )
     lon: float = Field(
-        description="WGS84 longitude of the application site. UK range "
-                    "roughly -8.2 to 1.9.",
-        ge=-180, le=180,
+        description="WGS84 longitude of the application site. UK range roughly -8.2 to 1.9.",
+        ge=-180,
+        le=180,
     )
     reasoning: str = Field(
         description="One sentence explaining the evidence used.",
@@ -149,9 +155,11 @@ def _model_label(model_name: str) -> str:
 def dump_prompt(out_path: Path) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(VLM_DIRECT_PROMPT)
-    print(f"Wrote prompt to {out_path.relative_to(REPO_ROOT)} "
-          f"({len(VLM_DIRECT_PROMPT)} chars, "
-          f"{VLM_DIRECT_PROMPT.count(chr(10)) + 1} lines)")
+    print(
+        f"Wrote prompt to {out_path.relative_to(REPO_ROOT)} "
+        f"({len(VLM_DIRECT_PROMPT)} chars, "
+        f"{VLM_DIRECT_PROMPT.count(chr(10)) + 1} lines)"
+    )
 
 
 # Main eval
@@ -170,8 +178,7 @@ def evaluate(args: argparse.Namespace) -> int:
     print(f"VLM model:     {args.vlm_model}", flush=True)
     print(f"Temperature:   {args.temperature}", flush=True)
     print(f"Output CSV:    {out_csv.relative_to(REPO_ROOT)}", flush=True)
-    print(f"Trajectories:  {traj_dir.relative_to(REPO_ROOT)}/<case>.json",
-          flush=True)
+    print(f"Trajectories:  {traj_dir.relative_to(REPO_ROOT)}/<case>.json", flush=True)
 
     eval_root = Path(args.eval_dir)
     all_cases = sorted(p.name for p in eval_root.iterdir() if p.is_dir())
@@ -181,8 +188,7 @@ def evaluate(args: argparse.Namespace) -> int:
         cases = [c for c in all_cases if c in wanted]
         not_found = wanted - set(cases)
         if not_found:
-            print(f"WARNING: --only-cases not in eval dir: "
-                  f"{sorted(not_found)}", flush=True)
+            print(f"WARNING: --only-cases not in eval dir: {sorted(not_found)}", flush=True)
     else:
         cases = all_cases
     if args.max_cases:
@@ -194,8 +200,7 @@ def evaluate(args: argparse.Namespace) -> int:
             for row in csv.DictReader(f):
                 already_done.add(row["case"])
         if already_done:
-            print(f"--resume:      {len(already_done)} cases already in CSV",
-                  flush=True)
+            print(f"--resume:      {len(already_done)} cases already in CSV", flush=True)
 
     # Same column schema as locate_only_eval (imported from _shared) so
     # the aggregation step can union all CSVs cleanly. Fields VLM-direct
@@ -236,7 +241,8 @@ def evaluate(args: argparse.Namespace) -> int:
 
             if pdf_path is None:
                 row["error"] = "no PDF"
-                writer.writerow(row); f.flush()
+                writer.writerow(row)
+                f.flush()
                 n_err += 1
                 print("  -> SKIP (no PDF)", flush=True)
                 continue
@@ -245,13 +251,13 @@ def evaluate(args: argparse.Namespace) -> int:
                 pdf_bytes = pdf_path.read_bytes()
             except Exception as e:
                 row["error"] = f"PDF read failed: {e!s:.140}"
-                writer.writerow(row); f.flush()
+                writer.writerow(row)
+                f.flush()
                 n_err += 1
                 print(f"  -> SKIP (PDF read failed: {e!s:.80})", flush=True)
                 continue
 
-            print(f"  -> sending {pdf_path.name} ({len(pdf_bytes)//1024} KB)",
-                  flush=True)
+            print(f"  -> sending {pdf_path.name} ({len(pdf_bytes) // 1024} KB)", flush=True)
 
             try:
                 result = _vlm_agent.run_sync(
@@ -273,19 +279,23 @@ def evaluate(args: argparse.Namespace) -> int:
             except Exception as e:
                 traceback.print_exc()
                 row["error"] = f"vlm geocode raised: {e!s:.140}"
-                writer.writerow(row); f.flush()
+                writer.writerow(row)
+                f.flush()
                 n_err += 1
                 print(f"  -> ERROR ({e!s:.80})", flush=True)
                 continue
 
             err = nearest_part_err_km(pick.lat, pick.lon, centroids)
-            row.update({
-                "err_km": (f"{err:.3f}" if err is not None else ""),
-                "picked_lat": f"{pick.lat:.6f}",
-                "picked_lon": f"{pick.lon:.6f}",
-                "evidence": pick.reasoning[:240],
-            })
-            writer.writerow(row); f.flush()
+            row.update(
+                {
+                    "err_km": (f"{err:.3f}" if err is not None else ""),
+                    "picked_lat": f"{pick.lat:.6f}",
+                    "picked_lon": f"{pick.lon:.6f}",
+                    "evidence": pick.reasoning[:240],
+                }
+            )
+            writer.writerow(row)
+            f.flush()
             n_ok += 1
 
             # Per-case trajectory JSON — same shape as locate harness so
@@ -295,22 +305,26 @@ def evaluate(args: argparse.Namespace) -> int:
             # synthetic final_result tool pydantic-ai uses to emit
             # structured output).
             write_trajectory(
-                traj_dir, case,
-                {"approach": "vlm_direct",
-                 "vlm_model": args.vlm_model,
-                 "temperature": args.temperature},
-                pick, err, centroids, msgs)
+                traj_dir,
+                case,
+                {
+                    "approach": "vlm_direct",
+                    "vlm_model": args.vlm_model,
+                    "temperature": args.temperature,
+                },
+                pick,
+                err,
+                centroids,
+                msgs,
+            )
 
             if err is not None:
-                print(f"  -> ok | err={err:.2f} km | ({pick.lat:.5f}, "
-                      f"{pick.lon:.5f})", flush=True)
+                print(f"  -> ok | err={err:.2f} km | ({pick.lat:.5f}, {pick.lon:.5f})", flush=True)
             else:
-                print(f"  -> ok (no GT centroids) | ({pick.lat:.5f}, "
-                      f"{pick.lon:.5f})", flush=True)
+                print(f"  -> ok (no GT centroids) | ({pick.lat:.5f}, {pick.lon:.5f})", flush=True)
 
     elapsed = time.time() - t0
-    print(f"\nDone in {elapsed/60:.1f} min. n_ok={n_ok}, n_err={n_err}.",
-          flush=True)
+    print(f"\nDone in {elapsed / 60:.1f} min. n_ok={n_ok}, n_err={n_err}.", flush=True)
     print(f"Wrote {out_csv.relative_to(REPO_ROOT)}", flush=True)
 
     print_err_km_summary(out_csv)
@@ -326,31 +340,35 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "--eval-dir", default=str(DEFAULT_EVAL_DIR),
-        help=f"Eval data root. Default: "
-             f"{DEFAULT_EVAL_DIR.relative_to(REPO_ROOT)}",
+        "--eval-dir",
+        default=str(DEFAULT_EVAL_DIR),
+        help=f"Eval data root. Default: {DEFAULT_EVAL_DIR.relative_to(REPO_ROOT)}",
     )
     parser.add_argument(
-        "--vlm-model", default=DEFAULT_VLM_MODEL,
-        help=f"Model alias or OpenRouter identifier. Default: "
-             f"{DEFAULT_VLM_MODEL}",
+        "--vlm-model",
+        default=DEFAULT_VLM_MODEL,
+        help=f"Model alias or OpenRouter identifier. Default: {DEFAULT_VLM_MODEL}",
     )
     parser.add_argument(
-        "--temperature", type=float, default=0.0,
+        "--temperature",
+        type=float,
+        default=0.0,
         help="Sampling temperature. Default 0. Bump to 1 if the model "
-             "loops on temp 0 (some Gemini-3 thinking models do).",
+        "loops on temp 0 (some Gemini-3 thinking models do).",
     )
     parser.add_argument(
-        "--out-root", default=str(DEFAULT_OUT_ROOT),
+        "--out-root",
+        default=str(DEFAULT_OUT_ROOT),
         help=f"Output root. A per-model subdir is created under it. "
-             f"Default: {DEFAULT_OUT_ROOT.relative_to(REPO_ROOT)}",
+        f"Default: {DEFAULT_OUT_ROOT.relative_to(REPO_ROOT)}",
     )
     add_subset_args(parser)
     parser.add_argument(
-        "--dump-prompt", action="store_true",
+        "--dump-prompt",
+        action="store_true",
         help=f"Write the VLM-direct prompt to "
-             f"{DEFAULT_PROMPT_DUMP.relative_to(REPO_ROOT)} and exit. "
-             f"No LLM calls.",
+        f"{DEFAULT_PROMPT_DUMP.relative_to(REPO_ROOT)} and exit. "
+        f"No LLM calls.",
     )
     args = parser.parse_args()
 

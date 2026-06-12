@@ -12,7 +12,7 @@ from shapely.ops import unary_union
 from geoplanagent.utils import haversine_km
 
 
-def load_geojson(geojson_path: str) -> Optional[Dict[str, Any]]:
+def load_geojson(geojson_path: str) -> Dict[str, Any]:
     return json.loads(Path(geojson_path).read_text())
 
 
@@ -30,46 +30,40 @@ def validate_geojson_format(geojson_data: Dict[str, Any]) -> tuple[bool, str]:
 
 
 def geojson_to_shape(geojson_data: Dict[str, Any]) -> Polygon | MultiPolygon:
-    """GeoJSON Feature -> valid shapely geometry, repairing invalid polygons.
+    """
+    Converts a GeoJSON to a shapely geometry, repairing invalid polygons.
 
-    Raises ValueError on anything outside the benchmark's output contract
-    (a Feature with Polygon/MultiPolygon geometry), on conversion errors,
-    and when the geometry is empty or irreparably invalid — so a returned
-    shape is always a valid, non-empty boundary.
+    Raises ValueError on:
+    - Anything outside the benchmark's expected output format (a Feature with Polygon/MultiPolygon geometry)
+    - Conversion errors
+    - When the geometry is empty or irreparably invalid
     """
     is_valid, error_msg = validate_geojson_format(geojson_data)
     if not is_valid:
         raise ValueError(f"Invalid GeoJSON format: {error_msg}")
 
-    # Only the shapely calls live in the try: their exceptions get
-    # translated to the contract's ValueError. Our own checks come after.
     try:
-        s = shape(geojson_data["geometry"])
-        if not s.is_valid:
+        geom = shape(geojson_data["geometry"])
+        if not geom.is_valid:
             # Zero-width buffer: the standard shapely repair for
             # self-intersecting polygons, which mask tracing produces.
-            s = s.buffer(0)
+            geom = geom.buffer(0)
     except Exception as e:
         raise ValueError(f"Error converting GeoJSON to shape: {e}") from e
 
-    if not s.is_valid:
+    if not geom.is_valid:
         raise ValueError("geometry invalid even after buffer(0) repair")
-    if s.is_empty:
+    if geom.is_empty:
         raise ValueError("geometry is empty")
-    return s
+    return geom
 
 
 def calculate_spatial_metrics(
     ground_truth_geojson: Dict[str, Any], predicted_geojson: Dict[str, Any]
 ) -> Dict[str, Any]:
-    """Per-case scores stored in metrics.json: iou, precision, recall,
-    f1_score (+ validity flags), with positioning_error_m added below.
-
-    Overlap is computed with shapely on raw WGS84 coordinates. Planar
-    degrees distort areas, but the distortion is locally affine and hits
-    numerator and denominator alike, so the IoU/precision/recall ratios
-    are unaffected (verified <2e-4 against EPSG:27700). Invalid polygons
-    are repaired with buffer(0) in geojson_to_shape.
+    """
+    Calculates the spatial metrics: IoU, precision, recall,
+    and positioning error in metres.
     """
     metrics = {
         "valid_ground_truth": False,
@@ -78,7 +72,6 @@ def calculate_spatial_metrics(
         "iou": 0.0,
         "precision": 0.0,
         "recall": 0.0,
-        "f1_score": 0.0,
     }
 
     try:
@@ -104,14 +97,12 @@ def calculate_spatial_metrics(
         iou = intersection_area / union_area if union_area > 0 else 0.0
         precision = intersection_area / pred_area if pred_area > 0 else 0.0
         recall = intersection_area / gt_area if gt_area > 0 else 0.0
-        f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
 
         metrics.update(
             {
                 "iou": float(iou),
                 "precision": float(precision),
                 "recall": float(recall),
-                "f1_score": float(f1),
                 # Centroid distance in metres (haversine, WGS84 centroids).
                 "positioning_error_m": haversine_km(
                     gt_shape.centroid.y, gt_shape.centroid.x,

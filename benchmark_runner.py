@@ -32,6 +32,7 @@ DUPLICATE_SL_NOS = {9, 68, 83, 232, 253}
 
 # Model Loading
 
+
 def load_models():
     """Load SAM3 fine-tuned model and MINIMA matcher."""
     from geoplanagent.tools.segment import load_sam3_ft
@@ -45,6 +46,7 @@ def load_models():
 
 # Visualization
 
+
 def save_visualizations(result_dir, predicted_geojson, gt_geojson):
     """Save per-case visualizations."""
     result_dir = Path(result_dir)
@@ -53,6 +55,7 @@ def save_visualizations(result_dir, predicted_geojson, gt_geojson):
         viz_path = result_dir / "viz_comparison.png"
         try:
             from geoplanagent.metrics import visualize_comparison
+
             visualize_comparison(
                 predicted_geojson=predicted_geojson,
                 ground_truth_geojson=gt_geojson,
@@ -65,15 +68,16 @@ def save_visualizations(result_dir, predicted_geojson, gt_geojson):
             try:
                 stub = np.full((400, 800, 3), 240, dtype=np.uint8)
                 msg = f"viz_comparison failed: {type(e).__name__}: {str(e)[:120]}"
-                cv2.putText(stub, msg, (20, 200),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 200), 1,
-                            cv2.LINE_AA)
+                cv2.putText(
+                    stub, msg, (20, 200), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 200), 1, cv2.LINE_AA
+                )
                 cv2.imwrite(str(viz_path), stub)
             except Exception:
                 pass
 
 
 # Main Runner
+
 
 def _load_dataset(dataset_path, eval_dir, only_cases, start_from, max_cases):
     """Build the case list: Excel rows that exist under eval_dir, plus
@@ -84,8 +88,9 @@ def _load_dataset(dataset_path, eval_dir, only_cases, start_from, max_cases):
 
     # Filter to cases that exist in eval_dir
     eval_path = Path(eval_dir)
-    dataset = dataset[dataset["Unique ID (Folder_Name)"].apply(
-        lambda f: (eval_path / str(f)).exists())]
+    dataset = dataset[
+        dataset["Unique ID (Folder_Name)"].apply(lambda f: (eval_path / str(f)).exists())
+    ]
     n_exists = len(dataset)
 
     # Inject *_merged folders that exist on disk but aren't in the Excel.
@@ -93,34 +98,41 @@ def _load_dataset(dataset_path, eval_dir, only_cases, start_from, max_cases):
     excel_folders = set(dataset["Unique ID (Folder_Name)"].astype(str))
     merged_extras = []
     for sub in sorted(eval_path.iterdir()):
-        if not sub.is_dir() or not sub.name.endswith("_merged"): continue
-        if sub.name in excel_folders: continue
+        if not sub.is_dir() or not sub.name.endswith("_merged"):
+            continue
+        if sub.name in excel_folders:
+            continue
         gj = sub / f"{sub.name}.geojson"
-        if not gj.exists(): continue
-        merged_extras.append({
-            "Sl no": 9000 + len(merged_extras) + 1,
-            "Unique ID (Folder_Name)": sub.name,
-            "geojson ID (for sanity check)": gj.name,
-        })
+        if not gj.exists():
+            continue
+        merged_extras.append(
+            {
+                "Sl no": 9000 + len(merged_extras) + 1,
+                "Unique ID (Folder_Name)": sub.name,
+                "geojson ID (for sanity check)": gj.name,
+            }
+        )
     if merged_extras:
-        dataset = pd.concat([dataset, pd.DataFrame(merged_extras)],
-                              ignore_index=True)
-        print(f"Injected {len(merged_extras)} *_merged cases not in Excel: "
-              f"{[e['Unique ID (Folder_Name)'] for e in merged_extras]}")
+        dataset = pd.concat([dataset, pd.DataFrame(merged_extras)], ignore_index=True)
+        print(
+            f"Injected {len(merged_extras)} *_merged cases not in Excel: "
+            f"{[e['Unique ID (Folder_Name)'] for e in merged_extras]}"
+        )
 
     # Drop physically-removed duplicates. There is no training-case
     # exclusion: k-fold SAM3 routes each case to its held-out fold's
     # adapter at inference, so cases that appear in the training pool
     # are still scored leak-free.
     dataset = dataset[~dataset["Sl no"].isin(DUPLICATE_SL_NOS)]
-    print(f"Dataset: {len(dataset)} cases "
-          f"({n_total} in Excel, {n_total - n_exists} missing from disk, "
-          f"{len(DUPLICATE_SL_NOS)} duplicates dropped)")
+    print(
+        f"Dataset: {len(dataset)} cases "
+        f"({n_total} in Excel, {n_total - n_exists} missing from disk, "
+        f"{len(DUPLICATE_SL_NOS)} duplicates dropped)"
+    )
 
     # Filter to specific cases if requested
     if only_cases:
-        dataset = dataset[dataset["Unique ID (Folder_Name)"].apply(
-            lambda f: str(f) in only_cases)]
+        dataset = dataset[dataset["Unique ID (Folder_Name)"].apply(lambda f: str(f) in only_cases)]
         print(f"Filtered to {len(dataset)} specific cases: {only_cases}")
     else:
         dataset = dataset.iloc[start_from:]
@@ -130,10 +142,25 @@ def _load_dataset(dataset_path, eval_dir, only_cases, start_from, max_cases):
     return dataset
 
 
-def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
-              all_results, *, model_name, dpi, max_iterations, force,
-              enable_critic, critic_max_iters, locate_model,
-              locate_disabled_tools, folded):
+def _run_case(
+    row,
+    case_idx,
+    n_cases,
+    eval_path,
+    output_path,
+    models_state,
+    all_results,
+    *,
+    model_name,
+    dpi,
+    max_iterations,
+    force,
+    enable_critic,
+    critic_max_iters,
+    locate_model,
+    locate_disabled_tools,
+    folded,
+):
     """Run one case (or load it from cache), appending its summary row to
     ``all_results``. Returns True only on a fatal error that should stop
     the whole benchmark (invalid model ID)."""
@@ -144,19 +171,16 @@ def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
     # The xlsx cells were authored on POSIX; PurePosixPath always uses
     # '/' regardless of host OS, so the basename extraction works the
     # same on Windows or Linux.
-    geojson_file = PurePosixPath(
-        str(row["geojson ID (for sanity check)"])).name
+    geojson_file = PurePosixPath(str(row["geojson ID (for sanity check)"])).name
 
     print(f"\n{'─' * 70}")
-    print(f"[{case_idx+1}/{n_cases}] Sl {sl_no}: {folder_name}")
+    print(f"[{case_idx + 1}/{n_cases}] Sl {sl_no}: {folder_name}")
 
     folder_path = eval_path / folder_name
     pdf_path = resolve_case_pdf(folder_path)
     if pdf_path is None:
         print("  SKIP: no PDF")
-        all_results.append({
-            "folder": folder_name, "sl_no": sl_no, "error": "no PDF"
-        })
+        all_results.append({"folder": folder_name, "sl_no": sl_no, "error": "no PDF"})
         return False
     gt_files = list(folder_path.glob(geojson_file))
     if not gt_files:
@@ -175,20 +199,23 @@ def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
         # critic and no-critic results. district_lookup cases are
         # mode-agnostic: the critic never runs on them, so their cached
         # entry has no worker_first_iou in either mode and stays valid.
-        cached_had_critic = ("worker_first_iou" in prev)
-        is_district = ((prev.get("agent_stats") or {})
-                       .get("outcome_status") == "district_lookup")
+        cached_had_critic = "worker_first_iou" in prev
+        is_district = (prev.get("agent_stats") or {}).get("outcome_status") == "district_lookup"
         if cached_had_critic != enable_critic and not is_district:
-            print(f"  [cache mode mismatch — re-running] "
-                  f"cached_had_critic={cached_had_critic} "
-                  f"current={enable_critic}")
+            print(
+                f"  [cache mode mismatch — re-running] "
+                f"cached_had_critic={cached_had_critic} "
+                f"current={enable_critic}"
+            )
         else:
             print(f"  [cached] IoU={prev.get('iou', 0):.3f}")
-            all_results.append({
-                "folder": folder_name, "sl_no": sl_no,
-                **{k: v for k, v in prev.items()
-                   if k not in ("sl_no",)}
-            })
+            all_results.append(
+                {
+                    "folder": folder_name,
+                    "sl_no": sl_no,
+                    **{k: v for k, v in prev.items() if k not in ("sl_no",)},
+                }
+            )
             return False
 
     # ── Run the agent ──
@@ -220,25 +247,35 @@ def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
                 return True
             # Still save what we can from failed cases
             case_dir.mkdir(parents=True, exist_ok=True)
-            (case_dir / "metrics.json").write_text(json.dumps({
-                "sl_no": sl_no, "error": err,
-                "processing_time": dt,
-                "agent_stats": result.get("agent_stats", {}),
-            }, indent=2, default=str))
+            (case_dir / "metrics.json").write_text(
+                json.dumps(
+                    {
+                        "sl_no": sl_no,
+                        "error": err,
+                        "processing_time": dt,
+                        "agent_stats": result.get("agent_stats", {}),
+                    },
+                    indent=2,
+                    default=str,
+                )
+            )
             msg_log = result.get("message_log", [])
             if msg_log:
                 (case_dir / "message_log.json").write_text(
-                    json.dumps(msg_log, indent=2, default=str))
+                    json.dumps(msg_log, indent=2, default=str)
+                )
             # Save partial geojson if any
             partial_gj = result.get("geojson")
             if partial_gj:
-                (case_dir / "predicted.geojson").write_text(
-                    json.dumps(partial_gj, indent=2))
-            all_results.append({
-                "folder": folder_name, "sl_no": sl_no,
-                "error": err,
-                "processing_time": dt,
-            })
+                (case_dir / "predicted.geojson").write_text(json.dumps(partial_gj, indent=2))
+            all_results.append(
+                {
+                    "folder": folder_name,
+                    "sl_no": sl_no,
+                    "error": err,
+                    "processing_time": dt,
+                }
+            )
             return False
 
         geojson = result.get("geojson")
@@ -259,19 +296,22 @@ def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
         worker_first_metrics = None
         worker_first_gj = result.get("worker_first_geojson")
         if worker_first_gj is not None and gt_geojson:
-            worker_first_metrics = calculate_spatial_metrics(
-                gt_geojson, worker_first_gj)
+            worker_first_metrics = calculate_spatial_metrics(gt_geojson, worker_first_gj)
             worker_first_iou = worker_first_metrics.get("iou")
 
         if worker_first_iou is not None:
             delta = (iou or 0) - (worker_first_iou or 0)
-            print(f"  IoU={iou:.3f} (critic) vs {worker_first_iou:.3f} "
-                  f"(worker_first) Δ={delta:+.3f}  "
-                  f"inliers={mi.get('n_inliers', 0)}  t={dt:.1f}s  "
-                  f"reason={result.get('agent_reason', '')[:60]}")
+            print(
+                f"  IoU={iou:.3f} (critic) vs {worker_first_iou:.3f} "
+                f"(worker_first) Δ={delta:+.3f}  "
+                f"inliers={mi.get('n_inliers', 0)}  t={dt:.1f}s  "
+                f"reason={result.get('agent_reason', '')[:60]}"
+            )
         else:
-            print(f"  IoU={iou:.3f}  inliers={mi.get('n_inliers', 0)}  "
-                  f"t={dt:.1f}s  reason={result.get('agent_reason', '')[:60]}")
+            print(
+                f"  IoU={iou:.3f}  inliers={mi.get('n_inliers', 0)}  "
+                f"t={dt:.1f}s  reason={result.get('agent_reason', '')[:60]}"
+            )
 
         # Save results — cache everything for offline analysis.
         # CRITICAL invariant: append to ``all_results`` immediately
@@ -284,9 +324,7 @@ def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
         # different headline numbers.
         case_dir.mkdir(parents=True, exist_ok=True)
         if geojson:
-            (case_dir / "predicted.geojson").write_text(
-                json.dumps(geojson, indent=2)
-            )
+            (case_dir / "predicted.geojson").write_text(json.dumps(geojson, indent=2))
 
         # Core metrics (used for cache-hit detection on re-runs)
         metrics_payload = {
@@ -303,8 +341,7 @@ def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
         if worker_first_metrics is not None:
             metrics_payload["worker_first_iou"] = worker_first_iou
             metrics_payload["worker_first_metrics"] = worker_first_metrics
-        (case_dir / "metrics.json").write_text(
-            json.dumps(metrics_payload, indent=2, default=str))
+        (case_dir / "metrics.json").write_text(json.dumps(metrics_payload, indent=2, default=str))
 
         # Record the result before any optional side-effect writes
         # that could raise and wrongly tag this case as a crash;
@@ -315,10 +352,13 @@ def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
         # is sparse for fresh runs and complete for cached runs,
         # which breaks downstream analyses that read e.g.
         # ``worker_first_iou`` from per_case.
-        all_results.append({
-            "folder": folder_name, "sl_no": sl_no,
-            **{k: v for k, v in metrics_payload.items() if k != "sl_no"},
-        })
+        all_results.append(
+            {
+                "folder": folder_name,
+                "sl_no": sl_no,
+                **{k: v for k, v in metrics_payload.items() if k != "sl_no"},
+            }
+        )
 
         # Optional side-effect writes. Each is wrapped in its own
         # try/except so one failed write (e.g. an unwritable mask
@@ -331,43 +371,57 @@ def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
                 print(f"  warn: {label} failed: {str(_e)[:120]}")
 
         if worker_first_gj is not None:
-            _safe("write predicted_worker_first.geojson", lambda:
-                (case_dir / "predicted_worker_first.geojson").write_text(
-                    json.dumps(worker_first_gj, indent=2)))
+            _safe(
+                "write predicted_worker_first.geojson",
+                lambda: (case_dir / "predicted_worker_first.geojson").write_text(
+                    json.dumps(worker_first_gj, indent=2)
+                ),
+            )
 
         msg_log = result.get("message_log", [])
         if msg_log:
-            _safe("write message_log.json", lambda:
-                (case_dir / "message_log.json").write_text(
-                    json.dumps(msg_log, indent=2, default=str)))
+            _safe(
+                "write message_log.json",
+                lambda: (case_dir / "message_log.json").write_text(
+                    json.dumps(msg_log, indent=2, default=str)
+                ),
+            )
 
         pdf_info = result.get("agent_stats", {}).get("pdf_info")
         if pdf_info:
-            _safe("write pdf_info.json", lambda:
-                (case_dir / "pdf_info.json").write_text(
-                    json.dumps(pdf_info, indent=2, default=str)))
+            _safe(
+                "write pdf_info.json",
+                lambda: (case_dir / "pdf_info.json").write_text(
+                    json.dumps(pdf_info, indent=2, default=str)
+                ),
+            )
 
         mask = result.get("mask")
         if mask is not None:
-            _safe("write boundary_mask.png", lambda:
-                cv2.imwrite(str(case_dir / "boundary_mask.png"), mask))
+            _safe(
+                "write boundary_mask.png",
+                lambda: cv2.imwrite(str(case_dir / "boundary_mask.png"), mask),
+            )
 
         affine_H = result.get("affine_H")
         if affine_H is not None:
-            _safe("write affine_H.npy", lambda:
-                np.save(str(case_dir / "affine_H.npy"), affine_H))
+            _safe("write affine_H.npy", lambda: np.save(str(case_dir / "affine_H.npy"), affine_H))
 
         tile_meta = result.get("tile_info_meta", {})
         if tile_meta:
-            _safe("write tile_info.json", lambda:
-                (case_dir / "tile_info.json").write_text(
-                    json.dumps(tile_meta, indent=2, default=str)))
+            _safe(
+                "write tile_info.json",
+                lambda: (case_dir / "tile_info.json").write_text(
+                    json.dumps(tile_meta, indent=2, default=str)
+                ),
+            )
 
         selected_overlay = result.get("selected_overlay")
         if selected_overlay is not None:
-            _safe("write selected_boundary.png", lambda:
-                cv2.imwrite(str(case_dir / "selected_boundary.png"),
-                              selected_overlay))
+            _safe(
+                "write selected_boundary.png",
+                lambda: cv2.imwrite(str(case_dir / "selected_boundary.png"), selected_overlay),
+            )
 
         # Visualization (with timeout on POSIX). The agent cleans up
         # map_img before returning, so only comparison viz runs here.
@@ -378,8 +432,9 @@ def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
         has_alarm = hasattr(signal, "SIGALRM")
         old_handler = None
         if has_alarm:
-            old_handler = signal.signal(signal.SIGALRM,
-                lambda s, f: (_ for _ in ()).throw(TimeoutError))
+            old_handler = signal.signal(
+                signal.SIGALRM, lambda s, f: (_ for _ in ()).throw(TimeoutError)
+            )
             signal.alarm(60)
         try:
             save_visualizations(case_dir, geojson, gt_geojson)
@@ -394,21 +449,27 @@ def _run_case(row, case_idx, n_cases, eval_path, output_path, models_state,
 
     except Exception as e:
         traceback.print_exc()
-        all_results.append({
-            "folder": folder_name, "sl_no": sl_no, "error": str(e)
-        })
+        all_results.append({"folder": folder_name, "sl_no": sl_no, "error": str(e)})
     return False
 
 
-def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
-                  dpi=200, max_iterations=12,
-                  dataset_path="evaluation_data/0_planning_dataset_list.xlsx",
-                  eval_dir="evaluation_data",
-                  only_cases=None, force=False,
-                  enable_critic=False, critic_max_iters=2,
-                  locate_model="google/gemini-3-flash-preview",
-                  locate_disabled_tools=PRODUCTION_LOCATE_DISABLED_TOOLS,
-                  folded=False):
+def run_benchmark(
+    model_name,
+    output_dir,
+    max_cases=None,
+    start_from=0,
+    dpi=200,
+    max_iterations=12,
+    dataset_path="evaluation_data/0_planning_dataset_list.xlsx",
+    eval_dir="evaluation_data",
+    only_cases=None,
+    force=False,
+    enable_critic=False,
+    critic_max_iters=2,
+    locate_model="google/gemini-3-flash-preview",
+    locate_disabled_tools=PRODUCTION_LOCATE_DISABLED_TOOLS,
+    folded=False,
+):
     """Run benchmark using the unified tool-calling agent.
 
     Args:
@@ -422,8 +483,7 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
         locate_model: Model for the locate sub-agent (independent of
             model_name). Default google/gemini-3-flash-preview.
     """
-    dataset = _load_dataset(dataset_path, eval_dir, only_cases, start_from,
-                            max_cases)
+    dataset = _load_dataset(dataset_path, eval_dir, only_cases, start_from, max_cases)
     print(f"Running: {len(dataset)} cases\n")
 
     models_state = load_models()
@@ -434,15 +494,25 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
 
     for case_idx, (_, row) in enumerate(dataset.iterrows()):
         fatal = _run_case(
-            row, case_idx, len(dataset), eval_path, output_path,
-            models_state, all_results,
-            model_name=model_name, dpi=dpi, max_iterations=max_iterations,
-            force=force, enable_critic=enable_critic,
-            critic_max_iters=critic_max_iters, locate_model=locate_model,
-            locate_disabled_tools=locate_disabled_tools, folded=folded)
+            row,
+            case_idx,
+            len(dataset),
+            eval_path,
+            output_path,
+            models_state,
+            all_results,
+            model_name=model_name,
+            dpi=dpi,
+            max_iterations=max_iterations,
+            force=force,
+            enable_critic=enable_critic,
+            critic_max_iters=critic_max_iters,
+            locate_model=locate_model,
+            locate_disabled_tools=locate_disabled_tools,
+            folded=folded,
+        )
         if fatal:
             break
-
 
     # Summary
     print(f"\n{'=' * 70}")
@@ -455,16 +525,16 @@ def run_benchmark(model_name, output_dir, max_cases=None, start_from=0,
     summary_path.write_text(json.dumps(summary, indent=2, default=str))
 
     s = summary
-    print(f"\n  {s['polygons_produced']} polygons / {s['no_polygon']} no-polygon / "
-          f"{s['crashed']} crashed   (total {s['total']})")
+    print(
+        f"\n  {s['polygons_produced']} polygons / {s['no_polygon']} no-polygon / "
+        f"{s['crashed']} crashed   (total {s['total']})"
+    )
     if s.get("metrics") and s["metrics"].get("iou"):
         m = s["metrics"]["iou"]
-        print(f"  IoU (failures=0):    mean={m['mean']:.3f}  "
-              f"median={m['median']:.3f}")
+        print(f"  IoU (failures=0):    mean={m['mean']:.3f}  median={m['median']:.3f}")
     if s.get("metrics_successful_only") and s["metrics_successful_only"].get("iou"):
         m2 = s["metrics_successful_only"]["iou"]
-        print(f"  IoU (polygon-only):  mean={m2['mean']:.3f}  "
-              f"median={m2['median']:.3f}")
+        print(f"  IoU (polygon-only):  mean={m2['mean']:.3f}  median={m2['median']:.3f}")
 
 
 def _compute_summary(results):
@@ -480,8 +550,9 @@ def _compute_summary(results):
     """
     crashes = [r for r in results if "error" in r]
     non_crashed = [r for r in results if "error" not in r]
-    honest = [(r["iou"] if r.get("iou") is not None else 0.0)
-              for r in non_crashed] + [0.0] * len(crashes)
+    honest = [(r["iou"] if r.get("iou") is not None else 0.0) for r in non_crashed] + [0.0] * len(
+        crashes
+    )
     no_polygon = [r for r in non_crashed if r.get("iou") is None]
     polygons = [r for r in non_crashed if r.get("iou") is not None]
 
@@ -494,6 +565,7 @@ def _compute_summary(results):
     }
 
     if honest:
+
         def _stats(values):
             arr = np.array(values)
             return {
@@ -510,12 +582,14 @@ def _compute_summary(results):
         if polygons:
             summary["metrics_successful_only"] = {
                 "iou": _stats([r["iou"] for r in polygons]),
-                "f1_score": _stats([r["f1_score"] for r in polygons]),
                 "precision": _stats([r["precision"] for r in polygons]),
                 "recall": _stats([r["recall"] for r in polygons]),
             }
-            pos_errs = [r["positioning_error_m"] for r in polygons
-                         if r.get("positioning_error_m") is not None]
+            pos_errs = [
+                r["positioning_error_m"]
+                for r in polygons
+                if r.get("positioning_error_m") is not None
+            ]
             if pos_errs:
                 summary["metrics_successful_only"]["positioning_error_m"] = _stats(pos_errs)
 
@@ -528,54 +602,68 @@ def _compute_summary(results):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Benchmark planning document GeoJSON extraction"
+    parser = argparse.ArgumentParser(description="Benchmark planning document GeoJSON extraction")
+    parser.add_argument(
+        "--model",
+        default="gemini-flash",
+        help="OpenRouter model identifier (reader + worker). "
+        "Default matches the paper configuration.",
     )
-    parser.add_argument("--model", default="gemini-flash",
-                        help="OpenRouter model identifier (reader + worker). "
-                             "Default matches the paper configuration.")
     parser.add_argument(
-        "--locate-model", default="google/gemini-3-flash-preview",
+        "--locate-model",
+        default="google/gemini-3-flash-preview",
         help="Model alias or OpenRouter identifier for the locate "
-             "sub-agent (independent of --model). Default: "
-             "google/gemini-3-flash-preview.")
+        "sub-agent (independent of --model). Default: "
+        "google/gemini-3-flash-preview.",
+    )
     parser.add_argument(
-        "--locate-disabled-tools", default=None,
+        "--locate-disabled-tools",
+        default=None,
         help="Comma-separated locate-agent tools to disable for the "
-             "locate sub-agent (e.g. 'la_check' or "
-             "'postcode,grid_ref,road,intersect,la_check' for min_1_tool, "
-             "or '' for the full 6-tool kit). Default (flag not passed) = "
-             "production place-only kit. Vocabulary: postcode, grid_ref, "
-             "place, road, intersect, la_check.")
+        "locate sub-agent (e.g. 'la_check' or "
+        "'postcode,grid_ref,road,intersect,la_check' for min_1_tool, "
+        "or '' for the full 6-tool kit). Default (flag not passed) = "
+        "production place-only kit. Vocabulary: postcode, grid_ref, "
+        "place, road, intersect, la_check.",
+    )
     parser.add_argument("--max-cases", type=int, default=None)
     parser.add_argument("--start-from", type=int, default=0)
     parser.add_argument("--dpi", type=int, default=200)
-    parser.add_argument("--max-iterations", type=int, default=12,
-                        help="Max agent turns per case")
+    parser.add_argument("--max-iterations", type=int, default=12, help="Max agent turns per case")
     parser.add_argument("--output-dir", default="results/benchmark")
-    parser.add_argument("--cases", nargs="+", default=None,
-                        help="Only run these specific case folder names")
-    parser.add_argument("--force", action="store_true",
-                        help="Re-run even if cached results exist")
-    parser.add_argument("--enable-critic", action="store_true",
-                        help="Run an independent LLM critic after the worker "
-                             "submits. The critic compares all stored "
-                             "match candidates (pairwise) and may direct the "
-                             "worker to switch candidates or re-locate. The "
-                             "worker's first-commit polygon is also captured "
-                             "(snapshot) so metrics.json carries paired "
-                             "no-critic and with-critic IoUs from one run.")
-    parser.add_argument("--critic-max-iters", type=int, default=2,
-                        help="Max critic-rejection iterations per case "
-                             "before forcing accept. Ignored without "
-                             "--enable-critic.")
-    parser.add_argument("--no-reader", action="store_true",
-                        help="Folded ablation: skip the dedicated reader "
-                             "phase. The worker receives the PDF binary "
-                             "and must call submit_pdf_info as its first "
-                             "tool call to populate PDFInfo before "
-                             "positioning. Suggested --output-dir: "
-                             "ablations/no_reader/.")
+    parser.add_argument(
+        "--cases", nargs="+", default=None, help="Only run these specific case folder names"
+    )
+    parser.add_argument("--force", action="store_true", help="Re-run even if cached results exist")
+    parser.add_argument(
+        "--enable-critic",
+        action="store_true",
+        help="Run an independent LLM critic after the worker "
+        "submits. The critic compares all stored "
+        "match candidates (pairwise) and may direct the "
+        "worker to switch candidates or re-locate. The "
+        "worker's first-commit polygon is also captured "
+        "(snapshot) so metrics.json carries paired "
+        "no-critic and with-critic IoUs from one run.",
+    )
+    parser.add_argument(
+        "--critic-max-iters",
+        type=int,
+        default=2,
+        help="Max critic-rejection iterations per case "
+        "before forcing accept. Ignored without "
+        "--enable-critic.",
+    )
+    parser.add_argument(
+        "--no-reader",
+        action="store_true",
+        help="Folded ablation: skip the dedicated reader "
+        "phase. The worker receives the PDF binary "
+        "and must call submit_pdf_info as its first "
+        "tool call to populate PDFInfo before "
+        "positioning. Suggested --output-dir: "
+        "ablations/no_reader/.",
+    )
     args = parser.parse_args()
 
     # Flag not passed → fall through to run_benchmark's production default
@@ -597,16 +685,17 @@ if __name__ == "__main__":
     )
     if args.locate_disabled_tools is not None:
         _KNOWN_LOCATE_TOOLS = frozenset(
-            {"postcode", "grid_ref", "place", "road", "intersect", "la_check"})
+            {"postcode", "grid_ref", "place", "road", "intersect", "la_check"}
+        )
         disabled_set = frozenset(
-            t.strip() for t in args.locate_disabled_tools.split(",")
-            if t.strip()
+            t.strip() for t in args.locate_disabled_tools.split(",") if t.strip()
         )
         unknown = disabled_set - _KNOWN_LOCATE_TOOLS
         if unknown:
             parser.error(
                 f"--locate-disabled-tools: unknown tool(s) {sorted(unknown)}. "
-                f"Known: {sorted(_KNOWN_LOCATE_TOOLS)}")
+                f"Known: {sorted(_KNOWN_LOCATE_TOOLS)}"
+            )
         run_kwargs["locate_disabled_tools"] = disabled_set
 
     run_benchmark(**run_kwargs)

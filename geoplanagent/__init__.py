@@ -14,5 +14,5 @@ worker tool loop → optional critic).
   prompts.py  — every system prompt and prompt section.
   schemas.py  — the pydantic contracts (LLM-visible field docs).
   utils.py    — AgentState, model aliases, retry, geodesy, fold routing.
-  metrics.py  — IoU/F1/centroid scoring + comparison visualisation.
+  metrics.py  — IoU/precision/recall/centroid scoring + comparison visualisation.
 """

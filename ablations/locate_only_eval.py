@@ -43,6 +43,7 @@ Usage (from repo root):
   # Specific case(s)
   uv run python ablations/locate_only_eval.py --only-cases A4D4A1
 """
+
 from __future__ import annotations
 
 import argparse
@@ -60,20 +61,24 @@ sys.path.insert(0, str(REPO_ROOT))
 import cv2  # noqa: E402
 
 from ablations._shared import (  # noqa: E402
-    CSV_FIELDNAMES, add_subset_args, gt_part_centroids,
-    nearest_part_err_km, print_err_km_summary, write_trajectory,
+    CSV_FIELDNAMES,
+    add_subset_args,
+    gt_part_centroids,
+    nearest_part_err_km,
+    print_err_km_summary,
+    write_trajectory,
 )
 from geoplanagent.agents.locate import (  # noqa: E402
-    _LOCATE_TOOL_NAMES, _build_locate_prompt, run_locate,
+    _LOCATE_TOOL_NAMES,
+    _build_locate_prompt,
+    run_locate,
 )
 from geoplanagent.tools.pdf import resolve_case_pdf  # noqa: E402
 from geoplanagent.tools.pdf import render_map_page  # noqa: E402
 from geoplanagent.metrics import load_geojson  # noqa: E402
 
 
-DEFAULT_CACHE = (
-    REPO_ROOT / "ablations" / "cached_pdf_info_for_locate_ablations.json"
-)
+DEFAULT_CACHE = REPO_ROOT / "ablations" / "cached_pdf_info_for_locate_ablations.json"
 DEFAULT_EVAL_DIR = REPO_ROOT / "evaluation_data"
 DEFAULT_LOCATE_MODEL = "gemini-flash"
 DEFAULT_PROMPTS_DIR = REPO_ROOT / "ablations" / "prompts"
@@ -124,10 +129,7 @@ def dump_prompts(out_dir: Path) -> None:
     """
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    configs = (
-        [frozenset()]
-        + [frozenset({t}) for t in sorted(_LOCATE_TOOL_NAMES)]
-    )
+    configs = [frozenset()] + [frozenset({t}) for t in sorted(_LOCATE_TOOL_NAMES)]
 
     written: list[tuple[str, Path, int, int]] = []
     full_prompt: Optional[str] = None
@@ -140,9 +142,7 @@ def dump_prompts(out_dir: Path) -> None:
             full_prompt = prompt
         path = out_dir / f"locate_prompt_{label}.md"
         path.write_text(prompt)
-        written.append(
-            (label, path, len(prompt), prompt.count("\n") + 1)
-        )
+        written.append((label, path, len(prompt), prompt.count("\n") + 1))
 
     # Diff view: for each LOO variant, lines removed vs full.
     full_lines = set((full_prompt or "").splitlines())
@@ -183,8 +183,7 @@ def dump_prompts(out_dir: Path) -> None:
     diff_path = out_dir / "locate_prompt_diffs.md"
     diff_path.write_text("\n".join(diff_lines))
 
-    print(f"Wrote {len(written)} prompt variants to "
-          f"{out_dir.relative_to(REPO_ROOT)}/")
+    print(f"Wrote {len(written)} prompt variants to {out_dir.relative_to(REPO_ROOT)}/")
     for label, path, n_chars, n_lines in written:
         print(f"  {label:<14} {path.name:<32} ({n_chars} chars, {n_lines} lines)")
     print(f"  + diff view:  {diff_path.relative_to(REPO_ROOT)}")
@@ -216,8 +215,7 @@ def evaluate(args: argparse.Namespace) -> int:
         print(f"ERROR: cache not found: {cache_path}", file=sys.stderr)
         return 1
     cache = json.loads(cache_path.read_text())
-    print(f"Cache:         {len(cache)} entries from "
-          f"{cache_path.relative_to(REPO_ROOT)}")
+    print(f"Cache:         {len(cache)} entries from {cache_path.relative_to(REPO_ROOT)}")
 
     cases = sorted(cache.keys())
     if args.only_cases:
@@ -225,8 +223,7 @@ def evaluate(args: argparse.Namespace) -> int:
         cases = [c for c in cases if c in wanted]
         missing_subset = wanted - set(cases)
         if missing_subset:
-            print(f"WARNING: --only-cases not in cache: "
-                  f"{sorted(missing_subset)}")
+            print(f"WARNING: --only-cases not in cache: {sorted(missing_subset)}")
     if args.max_cases:
         cases = cases[: args.max_cases]
 
@@ -275,7 +272,8 @@ def evaluate(args: argparse.Namespace) -> int:
 
             if pdf_path is None:
                 row["error"] = "no PDF"
-                writer.writerow(row); f.flush()
+                writer.writerow(row)
+                f.flush()
                 n_err += 1
                 print("  -> SKIP (no PDF)")
                 continue
@@ -283,26 +281,32 @@ def evaluate(args: argparse.Namespace) -> int:
             map_pages = pi.get("map_pages") or []
             if not map_pages:
                 row["error"] = "no map_pages in pdf_info"
-                writer.writerow(row); f.flush()
+                writer.writerow(row)
+                f.flush()
                 n_err += 1
                 print("  -> SKIP (no map_pages)")
                 continue
 
             try:
                 rendered = render_map_page(
-                    str(pdf_path), int(map_pages[0]),
-                    dpi=args.dpi, verbose=False, case_name=case,
+                    str(pdf_path),
+                    int(map_pages[0]),
+                    dpi=args.dpi,
+                    verbose=False,
+                    case_name=case,
                 )
             except Exception as e:
                 row["error"] = f"render failed: {e!s:.140}"
-                writer.writerow(row); f.flush()
+                writer.writerow(row)
+                f.flush()
                 n_err += 1
                 print(f"  -> SKIP (render failed: {e!s:.80})")
                 continue
 
             if rendered is None:
                 row["error"] = "render returned None"
-                writer.writerow(row); f.flush()
+                writer.writerow(row)
+                f.flush()
                 n_err += 1
                 print("  -> SKIP (render returned None)")
                 continue
@@ -321,22 +325,26 @@ def evaluate(args: argparse.Namespace) -> int:
             except Exception as e:
                 traceback.print_exc()
                 row["error"] = f"run_locate raised: {e!s:.140}"
-                writer.writerow(row); f.flush()
+                writer.writerow(row)
+                f.flush()
                 n_err += 1
                 print(f"  -> ERROR (run_locate raised: {e!s:.80})")
                 continue
 
             err = nearest_part_err_km(pick.top_lat, pick.top_lon, centroids)
-            row.update({
-                "err_km": (f"{err:.3f}" if err is not None else ""),
-                "picked_lat": f"{pick.top_lat:.6f}",
-                "picked_lon": f"{pick.top_lon:.6f}",
-                "picked_source": pick.picked_source[:120],
-                "confidence": pick.confidence,
-                "sigma_m": pick.sigma_m,
-                "evidence": pick.evidence[:240],
-            })
-            writer.writerow(row); f.flush()
+            row.update(
+                {
+                    "err_km": (f"{err:.3f}" if err is not None else ""),
+                    "picked_lat": f"{pick.top_lat:.6f}",
+                    "picked_lon": f"{pick.top_lon:.6f}",
+                    "picked_source": pick.picked_source[:120],
+                    "confidence": pick.confidence,
+                    "sigma_m": pick.sigma_m,
+                    "evidence": pick.evidence[:240],
+                }
+            )
+            writer.writerow(row)
+            f.flush()
             n_ok += 1
 
             # Trajectory dump — per-case JSON capturing the full pick
@@ -345,19 +353,25 @@ def evaluate(args: argparse.Namespace) -> int:
             # is summarised by extract_message_log_from_msgs, so the
             # JSON stays small (~10-30 KB per case).
             write_trajectory(
-                traj_dir, case,
-                {"disabled_tools": sorted(disabled),
-                 "locate_model": args.locate_model},
-                pick, err, centroids, msgs)
+                traj_dir,
+                case,
+                {"disabled_tools": sorted(disabled), "locate_model": args.locate_model},
+                pick,
+                err,
+                centroids,
+                msgs,
+            )
 
             if err is not None:
-                print(f"  -> ok | err={err:.2f} km | conf={pick.confidence} "
-                      f"| src={pick.picked_source[:50]}")
+                print(
+                    f"  -> ok | err={err:.2f} km | conf={pick.confidence} "
+                    f"| src={pick.picked_source[:50]}"
+                )
             else:
                 print(f"  -> ok (no GT centroids) | conf={pick.confidence}")
 
     elapsed = time.time() - t0
-    print(f"\nDone in {elapsed/60:.1f} min. n_ok={n_ok}, n_err={n_err}.")
+    print(f"\nDone in {elapsed / 60:.1f} min. n_ok={n_ok}, n_err={n_err}.")
     print(f"Wrote {out_csv.relative_to(REPO_ROOT)}")
 
     print_err_km_summary(out_csv)
@@ -373,46 +387,52 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "--cache", default=str(DEFAULT_CACHE),
-        help=f"Cached pdf_info JSON. Default: "
-             f"{DEFAULT_CACHE.relative_to(REPO_ROOT)}",
+        "--cache",
+        default=str(DEFAULT_CACHE),
+        help=f"Cached pdf_info JSON. Default: {DEFAULT_CACHE.relative_to(REPO_ROOT)}",
     )
     parser.add_argument(
-        "--eval-dir", default=str(DEFAULT_EVAL_DIR),
-        help=f"Eval data root. Default: "
-             f"{DEFAULT_EVAL_DIR.relative_to(REPO_ROOT)}",
+        "--eval-dir",
+        default=str(DEFAULT_EVAL_DIR),
+        help=f"Eval data root. Default: {DEFAULT_EVAL_DIR.relative_to(REPO_ROOT)}",
     )
     parser.add_argument(
-        "--locate-model", default=DEFAULT_LOCATE_MODEL,
+        "--locate-model",
+        default=DEFAULT_LOCATE_MODEL,
         help=f"Model alias or OpenRouter identifier for the locate "
-             f"sub-agent. Default: {DEFAULT_LOCATE_MODEL}.",
+        f"sub-agent. Default: {DEFAULT_LOCATE_MODEL}.",
     )
     parser.add_argument(
-        "--disabled-tools", default=None,
+        "--disabled-tools",
+        default=None,
         help="Comma-separated locate tool names to disable. Valid: "
-             "postcode, grid_ref, place, road, intersect, la_check. "
-             "Empty / omitted = full baseline.",
+        "postcode, grid_ref, place, road, intersect, la_check. "
+        "Empty / omitted = full baseline.",
     )
     parser.add_argument(
-        "--config-label", default=None,
+        "--config-label",
+        default=None,
         help="Override the auto-derived output dir name. Default: "
-             "'full' / 'no_<tool>' / 'no_<tool1>_<tool2>'. Set this "
-             "(e.g. 'min_1_tool') when running multi-tool subsets so "
-             "the output path is human-readable.",
+        "'full' / 'no_<tool>' / 'no_<tool1>_<tool2>'. Set this "
+        "(e.g. 'min_1_tool') when running multi-tool subsets so "
+        "the output path is human-readable.",
     )
     parser.add_argument(
-        "--out-root", default=str(DEFAULT_OUT_ROOT),
+        "--out-root",
+        default=str(DEFAULT_OUT_ROOT),
         help=f"Output root (a per-config subdir is created). "
-             f"Default: {DEFAULT_OUT_ROOT.relative_to(REPO_ROOT)}",
+        f"Default: {DEFAULT_OUT_ROOT.relative_to(REPO_ROOT)}",
     )
-    parser.add_argument("--dpi", type=int, default=200,
-                        help="PDF rendering DPI. Default: 200 (matches production).")
+    parser.add_argument(
+        "--dpi", type=int, default=200, help="PDF rendering DPI. Default: 200 (matches production)."
+    )
     add_subset_args(parser)
     parser.add_argument(
-        "--dump-prompts", action="store_true",
+        "--dump-prompts",
+        action="store_true",
         help=f"Write all 7 prompt variants to "
-             f"{DEFAULT_PROMPTS_DIR.relative_to(REPO_ROOT)}/ and exit. "
-             f"No LLM calls, no eval.",
+        f"{DEFAULT_PROMPTS_DIR.relative_to(REPO_ROOT)}/ and exit. "
+        f"No LLM calls, no eval.",
     )
     args = parser.parse_args()
 

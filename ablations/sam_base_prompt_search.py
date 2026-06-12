@@ -20,6 +20,7 @@ Usage:
     uv run python ablations/sam_base_prompt_search.py \\
         --prompts "planning boundary" "site boundary"
 """
+
 from __future__ import annotations
 
 import argparse
@@ -53,7 +54,7 @@ from ablations.vlm_segmentation import (  # noqa: E402
 
 # Pre-registered candidate prompts (5). See module docstring.
 DEFAULT_PROMPTS: List[str] = [
-    "planning boundary",        # LoRA-trained anchor
+    "planning boundary",  # LoRA-trained anchor
     "article 4 site boundary",  # UK-specific phrasing
     "highlighted marked area",
     "site boundary",
@@ -76,8 +77,10 @@ def _load_sam3_base() -> Tuple[object, object, object]:
         print("  WARNING: HF_TOKEN not set; download may fail if model is gated.")
 
     device = torch.device(
-        "mps" if torch.backends.mps.is_available()
-        else "cuda" if torch.cuda.is_available()
+        "mps"
+        if torch.backends.mps.is_available()
+        else "cuda"
+        if torch.cuda.is_available()
         else "cpu"
     )
     processor = Sam3Processor.from_pretrained("facebook/sam3", token=hf_token)
@@ -118,10 +121,17 @@ def run_prompt(
         mask_path = dataset_dir / "boundary_masks" / fname
 
         if not img_path.exists() or not mask_path.exists():
-            print(f"  [{i+1:>3}/{len(manifest)}] SKIP {case[:30]:<30}  missing files")
-            rows.append({"case": case, "fold": fold, "filename": fname,
-                         "iou": None, "call_seconds": "",
-                         "error": "missing files"})
+            print(f"  [{i + 1:>3}/{len(manifest)}] SKIP {case[:30]:<30}  missing files")
+            rows.append(
+                {
+                    "case": case,
+                    "fold": fold,
+                    "filename": fname,
+                    "iou": None,
+                    "call_seconds": "",
+                    "error": "missing files",
+                }
+            )
             continue
 
         gt_bin = (np.asarray(Image.open(mask_path).convert("L")) > 127).astype(np.uint8)
@@ -132,11 +142,17 @@ def run_prompt(
                 cached = np.asarray(Image.open(cached_path).convert("L"))
                 iou = _iou_from_mask(cached, gt_bin)
                 if iou is not None:
-                    print(f"  [{i+1:>3}/{len(manifest)}] CACHED {case[:30]:<30}  "
-                          f"IoU={iou:.4f}")
-                    rows.append({"case": case, "fold": fold, "filename": fname,
-                                 "iou": iou, "call_seconds": "",
-                                 "error": ""})
+                    print(f"  [{i + 1:>3}/{len(manifest)}] CACHED {case[:30]:<30}  IoU={iou:.4f}")
+                    rows.append(
+                        {
+                            "case": case,
+                            "fold": fold,
+                            "filename": fname,
+                            "iou": iou,
+                            "call_seconds": "",
+                            "error": "",
+                        }
+                    )
                     continue
             except Exception:
                 pass  # fall through to fresh inference
@@ -147,42 +163,77 @@ def run_prompt(
         try:
             with contextlib.redirect_stdout(io.StringIO()):
                 mask = extract_boundary_sam3_semantic(
-                    str(img_path), processor, model, device,
-                    query=prompt, bbox=None,
+                    str(img_path),
+                    processor,
+                    model,
+                    device,
+                    query=prompt,
+                    bbox=None,
                 )
         except Exception as e:
-            print(f"  [{i+1:>3}/{len(manifest)}] FAIL  {case[:30]:<30}  "
-                  f"{type(e).__name__}: {str(e)[:60]}")
-            rows.append({"case": case, "fold": fold, "filename": fname,
-                         "iou": None, "call_seconds": "",
-                         "error": f"{type(e).__name__}: {str(e)[:200]}"})
+            print(
+                f"  [{i + 1:>3}/{len(manifest)}] FAIL  {case[:30]:<30}  "
+                f"{type(e).__name__}: {str(e)[:60]}"
+            )
+            rows.append(
+                {
+                    "case": case,
+                    "fold": fold,
+                    "filename": fname,
+                    "iou": None,
+                    "call_seconds": "",
+                    "error": f"{type(e).__name__}: {str(e)[:200]}",
+                }
+            )
             continue
         dt = time.time() - t0
 
         if mask is None:
-            print(f"  [{i+1:>3}/{len(manifest)}] FAIL  {case[:30]:<30}  no mask returned")
-            rows.append({"case": case, "fold": fold, "filename": fname,
-                         "iou": None, "call_seconds": round(dt, 2),
-                         "error": "no mask returned"})
+            print(f"  [{i + 1:>3}/{len(manifest)}] FAIL  {case[:30]:<30}  no mask returned")
+            rows.append(
+                {
+                    "case": case,
+                    "fold": fold,
+                    "filename": fname,
+                    "iou": None,
+                    "call_seconds": round(dt, 2),
+                    "error": "no mask returned",
+                }
+            )
             continue
 
         iou = _iou_from_mask(mask, gt_bin)
         if iou is None:
             pred_shape = (mask > 127).astype(np.uint8).shape
-            print(f"  [{i+1:>3}/{len(manifest)}] WARN  {case[:30]:<30}  "
-                  f"shape pred {pred_shape} != gt {gt_bin.shape}")
-            rows.append({"case": case, "fold": fold, "filename": fname,
-                         "iou": None, "call_seconds": round(dt, 2),
-                         "error": f"shape mismatch pred {pred_shape}"})
+            print(
+                f"  [{i + 1:>3}/{len(manifest)}] WARN  {case[:30]:<30}  "
+                f"shape pred {pred_shape} != gt {gt_bin.shape}"
+            )
+            rows.append(
+                {
+                    "case": case,
+                    "fold": fold,
+                    "filename": fname,
+                    "iou": None,
+                    "call_seconds": round(dt, 2),
+                    "error": f"shape mismatch pred {pred_shape}",
+                }
+            )
             continue
 
         Image.fromarray(mask).save(cached_path)
         mark = "PASS" if iou >= 0.8 else "OK  " if iou >= 0.5 else "WEAK"
-        print(f"  [{i+1:>3}/{len(manifest)}] {mark}  {case[:30]:<30}  "
-              f"IoU={iou:.4f}  ({dt:.1f}s)")
-        rows.append({"case": case, "fold": fold, "filename": fname,
-                     "iou": iou, "call_seconds": round(dt, 2),
-                     "error": ""})
+        print(f"  [{i + 1:>3}/{len(manifest)}] {mark}  {case[:30]:<30}  IoU={iou:.4f}  ({dt:.1f}s)")
+        rows.append(
+            {
+                "case": case,
+                "fold": fold,
+                "filename": fname,
+                "iou": iou,
+                "call_seconds": round(dt, 2),
+                "error": "",
+            }
+        )
     return rows
 
 
@@ -192,36 +243,54 @@ def _write_per_prompt(prompt: str, rows: List[Dict], prompt_dir: Path) -> Tuple[
         w = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
         w.writerow(["case", "fold", "filename", "iou", "call_seconds", "error"])
         for r in rows:
-            w.writerow([r.get("case"), r.get("fold"), r.get("filename"),
-                        r.get("iou", ""), r.get("call_seconds", ""),
-                        (r.get("error") or "")[:200]])
+            w.writerow(
+                [
+                    r.get("case"),
+                    r.get("fold"),
+                    r.get("filename"),
+                    r.get("iou", ""),
+                    r.get("call_seconds", ""),
+                    (r.get("error") or "")[:200],
+                ]
+            )
 
     valid = [r["iou"] for r in rows if r.get("iou") is not None]
     fails = sum(1 for r in rows if r.get("iou") is None)
     s = summarise(prompt, valid)
-    (prompt_dir / "summary.json").write_text(json.dumps({
-        "prompt": prompt,
-        "n_cases": len(rows),
-        "n_failures": fails,
-        "summary": s,
-    }, indent=2))
+    (prompt_dir / "summary.json").write_text(
+        json.dumps(
+            {
+                "prompt": prompt,
+                "n_cases": len(rows),
+                "n_failures": fails,
+                "summary": s,
+            },
+            indent=2,
+        )
+    )
     return s, fails
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--prompts", nargs="+", default=DEFAULT_PROMPTS,
-                    help="Override the candidate prompt list")
-    ap.add_argument("--out-dir", default="results/ablation_sam_base",
-                    help="Per-prompt outputs land in <out>/<prompt_slug>/")
-    ap.add_argument("--max-cases", type=int, default=None,
-                    help="Cap on cases (smoke testing)")
-    ap.add_argument("--resume", action="store_true",
-                    help="Skip cases whose pred_mask already exists; "
-                         "compute IoU from disk")
+    ap.add_argument(
+        "--prompts", nargs="+", default=DEFAULT_PROMPTS, help="Override the candidate prompt list"
+    )
+    ap.add_argument(
+        "--out-dir",
+        default="results/ablation_sam_base",
+        help="Per-prompt outputs land in <out>/<prompt_slug>/",
+    )
+    ap.add_argument("--max-cases", type=int, default=None, help="Cap on cases (smoke testing)")
+    ap.add_argument(
+        "--resume",
+        action="store_true",
+        help="Skip cases whose pred_mask already exists; compute IoU from disk",
+    )
     args = ap.parse_args()
 
     from ablations._shared import load_annotation_manifest
+
     dataset_dir = REPO / "training" / "dataset"
     manifest = load_annotation_manifest(REPO)
     if args.max_cases is not None:
@@ -242,12 +311,13 @@ def main() -> int:
     t_start = time.time()
 
     for pi, prompt in enumerate(args.prompts, 1):
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print(f"[Prompt {pi}/{len(args.prompts)}]  {prompt!r}")
-        print('='*70)
+        print("=" * 70)
         prompt_dir = out_dir / _slug(prompt)
-        rows = run_prompt(prompt, manifest, dataset_dir, prompt_dir,
-                          processor, model, device, resume=args.resume)
+        rows = run_prompt(
+            prompt, manifest, dataset_dir, prompt_dir, processor, model, device, resume=args.resume
+        )
         s, fails = _write_per_prompt(prompt, rows, prompt_dir)
         print_summary(s)
         print(f"failures: {fails}/{len(rows)}")
@@ -257,31 +327,36 @@ def main() -> int:
     elapsed = time.time() - t_start
 
     # Cross-prompt comparison (sorted by mean IoU descending)
-    print(f"\n{'='*70}")
-    print(f"COMPARISON  (elapsed {elapsed/60:.1f} min)")
-    print('='*70)
-    ranked = sorted(all_summaries.items(),
-                    key=lambda kv: -(kv[1].get("mean", -1)))
+    print(f"\n{'=' * 70}")
+    print(f"COMPARISON  (elapsed {elapsed / 60:.1f} min)")
+    print("=" * 70)
+    ranked = sorted(all_summaries.items(), key=lambda kv: -(kv[1].get("mean", -1)))
     for i, (p, s) in enumerate(ranked):
         marker = "  ← winner" if i == 0 else ""
         if s.get("n", 0) == 0:
             print(f"  {p!r:<40}  (no valid cases)")
             continue
-        print(f"  {p!r:<40}  mean={s['mean']:.4f}  "
-              f"median={s['median']:.4f}  "
-              f">=0.5={s['ge_0.50']*100:5.1f}%  "
-              f">=0.8={s['ge_0.80']*100:5.1f}%  "
-              f"fails={all_fails[p]}{marker}")
+        print(
+            f"  {p!r:<40}  mean={s['mean']:.4f}  "
+            f"median={s['median']:.4f}  "
+            f">=0.5={s['ge_0.50'] * 100:5.1f}%  "
+            f">=0.8={s['ge_0.80'] * 100:5.1f}%  "
+            f"fails={all_fails[p]}{marker}"
+        )
 
-    (out_dir / "_compare.json").write_text(json.dumps({
-        "prompts_ranked": [
-            {"prompt": p, "summary": s, "n_failures": all_fails[p]}
-            for p, s in ranked
-        ],
-        "winner": ranked[0][0] if ranked else None,
-        "n_cases": len(manifest),
-        "elapsed_seconds": round(elapsed, 1),
-    }, indent=2))
+    (out_dir / "_compare.json").write_text(
+        json.dumps(
+            {
+                "prompts_ranked": [
+                    {"prompt": p, "summary": s, "n_failures": all_fails[p]} for p, s in ranked
+                ],
+                "winner": ranked[0][0] if ranked else None,
+                "n_cases": len(manifest),
+                "elapsed_seconds": round(elapsed, 1),
+            },
+            indent=2,
+        )
+    )
 
     print(f"\nWinner: {ranked[0][0]!r}" if ranked else "No prompts run")
     print(f"All outputs under: {out_dir}")

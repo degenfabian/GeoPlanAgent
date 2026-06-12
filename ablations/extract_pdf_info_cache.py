@@ -21,6 +21,7 @@ Outputs (relative to repo root):
 Usage (from repo root):
     uv run python ablations/extract_pdf_info_cache.py
 """
+
 from __future__ import annotations
 
 import argparse
@@ -44,17 +45,20 @@ OUT_MISSING = REPO_ROOT / "ablations" / "locate_ablation_missing_cases.txt"
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--src", default=str(DEFAULT_SRC),
+        "--src",
+        default=str(DEFAULT_SRC),
         help=f"Benchmark run dir (default: {DEFAULT_SRC.relative_to(REPO_ROOT)})",
     )
     parser.add_argument(
-        "--model-subdir", default=DEFAULT_MODEL_SUBDIR,
+        "--model-subdir",
+        default=DEFAULT_MODEL_SUBDIR,
         help=f"Subdirectory under --src (default: {DEFAULT_MODEL_SUBDIR})",
     )
     parser.add_argument(
-        "--eval-dir", default=str(DEFAULT_EVAL_DIR),
+        "--eval-dir",
+        default=str(DEFAULT_EVAL_DIR),
         help=f"Eval data root (canonical case list = its subfolders). "
-             f"Default: {DEFAULT_EVAL_DIR.relative_to(REPO_ROOT)}",
+        f"Default: {DEFAULT_EVAL_DIR.relative_to(REPO_ROOT)}",
     )
     args = parser.parse_args()
 
@@ -68,9 +72,7 @@ def main() -> int:
         print(f"ERROR: eval dir not found: {eval_root}", file=sys.stderr)
         return 1
 
-    expected_cases = sorted(
-        p.name for p in eval_root.iterdir() if p.is_dir()
-    )
+    expected_cases = sorted(p.name for p in eval_root.iterdir() if p.is_dir())
     print(
         f"Expected: {len(expected_cases)} cases "
         f"(case folders under {eval_root.relative_to(REPO_ROOT)})"
@@ -92,9 +94,7 @@ def main() -> int:
         # Reader emits "error" on Phase 1 failure; the body is essentially
         # empty in that case so it isn't useful for the locate stage.
         if pi.get("error"):
-            missing.append(
-                (case, f"reader error: {str(pi.get('error', ''))[:120]}")
-            )
+            missing.append((case, f"reader error: {str(pi.get('error', ''))[:120]}"))
             continue
         # Sanity: must have non-empty map_pages, otherwise the locate
         # harness has nothing to render as the primary page.
@@ -110,15 +110,13 @@ def main() -> int:
     if src_root.is_dir():
         expected_set = set(expected_cases)
         for sub in src_root.iterdir():
-            if (sub.is_dir() and sub.name not in expected_set
-                    and (sub / "pdf_info.json").exists()):
+            if sub.is_dir() and sub.name not in expected_set and (sub / "pdf_info.json").exists():
                 skipped_other.append(sub.name)
     skipped_other.sort()
 
     OUT_CACHE.parent.mkdir(parents=True, exist_ok=True)
     OUT_CACHE.write_text(json.dumps(cache, indent=2, default=str))
-    print(f"Wrote cache:   {OUT_CACHE.relative_to(REPO_ROOT)} "
-          f"({len(cache)} cases)")
+    print(f"Wrote cache:   {OUT_CACHE.relative_to(REPO_ROOT)} ({len(cache)} cases)")
 
     lines: list[str] = [
         "# Locate-ablation pdf_info cache — missing / unusable cases",

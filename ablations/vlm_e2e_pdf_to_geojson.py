@@ -33,6 +33,7 @@ Usage (from repo root):
     uv run python ablations/vlm_e2e_pdf_to_geojson.py --vlm-model gemini-pro --temperature 1.0
     uv run python ablations/vlm_e2e_pdf_to_geojson.py --resume
 """
+
 from __future__ import annotations
 
 import argparse
@@ -64,9 +65,7 @@ DEFAULT_SUBSET = REPO_ROOT / "ablations" / "vlm_e2e_pdf_to_geojson" / "subset_40
 DEFAULT_EVAL_DIR = REPO_ROOT / "evaluation_data"
 DEFAULT_VLM_MODEL = "gemini-flash"
 DEFAULT_OUT_ROOT = REPO_ROOT / "ablations" / "vlm_e2e_pdf_to_geojson"
-DEFAULT_PROMPT_DUMP = (
-    REPO_ROOT / "ablations" / "prompts" / "vlm_e2e_pdf_to_geojson_prompt.md"
-)
+DEFAULT_PROMPT_DUMP = REPO_ROOT / "ablations" / "prompts" / "vlm_e2e_pdf_to_geojson_prompt.md"
 
 
 # Output schema
@@ -76,6 +75,7 @@ DEFAULT_PROMPT_DUMP = (
 # "schema failure" metric. We do NOT post-process loose decomposed
 # coordinate lists into a Feature; that would mask exactly the failure
 # mode the ablation is trying to measure.
+
 
 class GeoJSONPolygon(BaseModel):
     type: Literal["Polygon"]
@@ -120,6 +120,7 @@ class GeoJSONFeature(BaseModel):
     system prompt as guidance, not as required output fields — keeping
     the schema surface minimal lowers the schema-failure rate and
     avoids the "you confused the model" reviewer critique."""
+
     type: Literal["Feature"]
     properties: dict = Field(
         default_factory=dict,
@@ -226,6 +227,7 @@ interpretation."""
 
 # Pydantic-ai agent
 
+
 def build_agent(temperature: Optional[float], resolved_model: str) -> Agent:
     # NativeOutput uses the provider's native JSON-schema response mode.
     # Gemini supports it. Anthropic (Claude) does not — it raises
@@ -294,8 +296,7 @@ def latlon_inversion_warning(feature: GeoJSONFeature) -> Optional[str]:
     lon, lat = v
     # If the first coord is in UK-lat range and second is in UK-lon
     # range, the model probably swapped them.
-    if (UK_LAT_RANGE[0] <= lon <= UK_LAT_RANGE[1]
-            and UK_LON_RANGE[0] <= lat <= UK_LON_RANGE[1]):
+    if UK_LAT_RANGE[0] <= lon <= UK_LAT_RANGE[1] and UK_LON_RANGE[0] <= lat <= UK_LON_RANGE[1]:
         return f"first vertex ({lon:.4f}, {lat:.4f}) looks like (lat, lon)"
     return None
 
@@ -317,28 +318,42 @@ def _model_label(model_name: str) -> str:
 
 # Prompt dump (no LLM calls)
 
+
 def dump_prompt(out_path: Path) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(VLM_E2E_PROMPT)
-    print(f"Wrote prompt to {out_path.relative_to(REPO_ROOT)} "
-          f"({len(VLM_E2E_PROMPT)} chars, "
-          f"{VLM_E2E_PROMPT.count(chr(10)) + 1} lines)")
+    print(
+        f"Wrote prompt to {out_path.relative_to(REPO_ROOT)} "
+        f"({len(VLM_E2E_PROMPT)} chars, "
+        f"{VLM_E2E_PROMPT.count(chr(10)) + 1} lines)"
+    )
 
 
 # CSV / per-case schema
 
 CSV_FIELDNAMES = [
-    "case", "stratum",
-    "iou", "precision", "recall", "f1_score", "positioning_error_m",
-    "valid_pred", "schema_failure", "validation_error",
-    "n_polygons", "is_multipolygon_pred", "is_multipolygon_gt",
+    "case",
+    "stratum",
+    "iou",
+    "precision",
+    "recall",
+    "positioning_error_m",
+    "valid_pred",
+    "schema_failure",
+    "validation_error",
+    "n_polygons",
+    "is_multipolygon_pred",
+    "is_multipolygon_gt",
     "latlon_swap_warning",
-    "call_seconds", "vlm_request_tokens", "vlm_response_tokens",
+    "call_seconds",
+    "vlm_request_tokens",
+    "vlm_response_tokens",
     "error",
 ]
 
 
 # Main eval
+
 
 def load_subset(subset_path: Path) -> list[dict]:
     """Load subset_N.json → list of {folder, stratum, …}."""
@@ -372,10 +387,8 @@ def evaluate(args: argparse.Namespace) -> int:
     print(f"VLM model:     {args.vlm_model}", flush=True)
     print(f"Temperature:   {args.temperature}", flush=True)
     print(f"Output CSV:    {out_csv.relative_to(REPO_ROOT)}", flush=True)
-    print(f"Pred geojson:  {pred_dir.relative_to(REPO_ROOT)}/<case>.geojson",
-          flush=True)
-    print(f"Trajectories:  {traj_dir.relative_to(REPO_ROOT)}/<case>.json",
-          flush=True)
+    print(f"Pred geojson:  {pred_dir.relative_to(REPO_ROOT)}/<case>.geojson", flush=True)
+    print(f"Trajectories:  {traj_dir.relative_to(REPO_ROOT)}/<case>.json", flush=True)
 
     eval_root = Path(args.eval_dir)
 
@@ -385,8 +398,7 @@ def evaluate(args: argparse.Namespace) -> int:
         cases_meta = [c for c in cases_meta if c["folder"] in wanted]
         not_found = wanted - {c["folder"] for c in cases_meta}
         if not_found:
-            print(f"WARNING: --only-cases not in subset: "
-                  f"{sorted(not_found)}", flush=True)
+            print(f"WARNING: --only-cases not in subset: {sorted(not_found)}", flush=True)
     if args.max_cases:
         cases_meta = cases_meta[: args.max_cases]
 
@@ -396,8 +408,7 @@ def evaluate(args: argparse.Namespace) -> int:
             for row in csv.DictReader(f):
                 already_done.add(row["case"])
         if already_done:
-            print(f"--resume:      {len(already_done)} cases already in CSV",
-                  flush=True)
+            print(f"--resume:      {len(already_done)} cases already in CSV", flush=True)
 
     csv_mode = "a" if (args.resume and already_done) else "w"
     resolved = resolve_model_name(args.vlm_model)
@@ -416,8 +427,7 @@ def evaluate(args: argparse.Namespace) -> int:
             if case in already_done:
                 continue
 
-            print(f"\n[{i}/{len(cases_meta)}] {case}  [{meta['stratum']}]",
-                  flush=True)
+            print(f"\n[{i}/{len(cases_meta)}] {case}  [{meta['stratum']}]", flush=True)
 
             case_dir = eval_root / case
             pdf_path = resolve_case_pdf(case_dir)
@@ -428,19 +438,19 @@ def evaluate(args: argparse.Namespace) -> int:
             row = {fn: "" for fn in CSV_FIELDNAMES}
             row["case"] = case
             row["stratum"] = meta["stratum"]
-            row["is_multipolygon_gt"] = (
-                gt_is_multipolygon(gt_geojson) if gt_geojson else ""
-            )
+            row["is_multipolygon_gt"] = gt_is_multipolygon(gt_geojson) if gt_geojson else ""
 
             if pdf_path is None:
                 row["error"] = "no PDF"
-                writer.writerow(row); f.flush()
+                writer.writerow(row)
+                f.flush()
                 n_err += 1
                 print("  -> SKIP (no PDF)", flush=True)
                 continue
             if gt_geojson is None:
                 row["error"] = "no GT geojson"
-                writer.writerow(row); f.flush()
+                writer.writerow(row)
+                f.flush()
                 n_err += 1
                 print("  -> SKIP (no GT)", flush=True)
                 continue
@@ -449,13 +459,13 @@ def evaluate(args: argparse.Namespace) -> int:
                 pdf_bytes = pdf_path.read_bytes()
             except Exception as e:
                 row["error"] = f"PDF read failed: {e!s:.140}"
-                writer.writerow(row); f.flush()
+                writer.writerow(row)
+                f.flush()
                 n_err += 1
                 print(f"  -> SKIP (PDF read failed: {e!s:.80})", flush=True)
                 continue
 
-            print(f"  -> sending {pdf_path.name} ({len(pdf_bytes)//1024} KB)",
-                  flush=True)
+            print(f"  -> sending {pdf_path.name} ({len(pdf_bytes) // 1024} KB)", flush=True)
             t_call = time.time()
             feature: Optional[GeoJSONFeature] = None
             msgs: list = []
@@ -500,9 +510,7 @@ def evaluate(args: argparse.Namespace) -> int:
                 while cur is not None and id(cur) not in seen:
                     seen.add(id(cur))
                     cause_chain.append(f"{type(cur).__name__}: {cur!s}")
-                    cur = getattr(cur, "__cause__", None) or getattr(
-                        cur, "__context__", None
-                    )
+                    cur = getattr(cur, "__cause__", None) or getattr(cur, "__context__", None)
                 full_error = " | ".join(cause_chain)
                 row["error"] = f"vlm raised: {full_error[:1200]}"
                 # If a ValidationError is in the chain, also drop it
@@ -514,15 +522,14 @@ def evaluate(args: argparse.Namespace) -> int:
                         break
                 n_err += 1
                 print(f"  -> ERROR ({full_error[:200]})", flush=True)
-                writer.writerow(row); f.flush()
+                writer.writerow(row)
+                f.flush()
                 continue
 
             row["call_seconds"] = f"{time.time() - t_call:.2f}"
             if usage is not None:
                 row["vlm_request_tokens"] = (
-                    getattr(usage, "input_tokens", None)
-                    or getattr(usage, "request_tokens", 0)
-                    or 0
+                    getattr(usage, "input_tokens", None) or getattr(usage, "request_tokens", 0) or 0
                 )
                 row["vlm_response_tokens"] = (
                     getattr(usage, "output_tokens", None)
@@ -531,14 +538,14 @@ def evaluate(args: argparse.Namespace) -> int:
                 )
 
             if schema_failure:
-                writer.writerow(row); f.flush()
+                writer.writerow(row)
+                f.flush()
                 continue
 
             assert feature is not None
             pred_dict = feature.model_dump()
             row["n_polygons"] = count_polygons(feature)
-            row["is_multipolygon_pred"] = isinstance(
-                feature.geometry, GeoJSONMultiPolygon)
+            row["is_multipolygon_pred"] = isinstance(feature.geometry, GeoJSONMultiPolygon)
             warn = latlon_inversion_warning(feature)
             if warn:
                 row["latlon_swap_warning"] = warn
@@ -547,31 +554,27 @@ def evaluate(args: argparse.Namespace) -> int:
             # Scoring — same metric as benchmark_runner.
             metrics = calculate_spatial_metrics(gt_geojson, pred_dict)
             row["valid_pred"] = bool(metrics.get("valid_prediction"))
-            row["iou"] = (f"{metrics['iou']:.6f}"
-                          if metrics.get("valid_prediction") else "")
-            row["precision"] = (f"{metrics['precision']:.6f}"
-                                if metrics.get("valid_prediction") else "")
-            row["recall"] = (f"{metrics['recall']:.6f}"
-                             if metrics.get("valid_prediction") else "")
-            row["f1_score"] = (f"{metrics['f1_score']:.6f}"
-                               if metrics.get("valid_prediction") else "")
-            pos_err = metrics.get("positioning_error_m")
-            row["positioning_error_m"] = (
-                f"{pos_err:.2f}" if pos_err is not None else ""
+            row["iou"] = f"{metrics['iou']:.6f}" if metrics.get("valid_prediction") else ""
+            row["precision"] = (
+                f"{metrics['precision']:.6f}" if metrics.get("valid_prediction") else ""
             )
+            row["recall"] = f"{metrics['recall']:.6f}" if metrics.get("valid_prediction") else ""
+            pos_err = metrics.get("positioning_error_m")
+            row["positioning_error_m"] = f"{pos_err:.2f}" if pos_err is not None else ""
             if metrics.get("validation_error"):
                 row["validation_error"] = str(metrics["validation_error"])[:200]
 
-            writer.writerow(row); f.flush()
+            writer.writerow(row)
+            f.flush()
             n_ok += 1
 
             # Per-case pred geojson (for visual inspection).
             try:
-                (pred_dir / f"{case.replace('/', '_').replace(':', '_')}.geojson"
-                 ).write_text(json.dumps(pred_dict, indent=2))
+                (pred_dir / f"{case.replace('/', '_').replace(':', '_')}.geojson").write_text(
+                    json.dumps(pred_dict, indent=2)
+                )
             except Exception as _e:
-                print(f"  WARN: pred geojson dump failed: {_e!s:.80}",
-                      flush=True)
+                print(f"  WARN: pred geojson dump failed: {_e!s:.80}", flush=True)
 
             # Per-case trajectory (same shape as locate ablations).
             try:
@@ -584,28 +587,28 @@ def evaluate(args: argparse.Namespace) -> int:
                         "vlm_model": args.vlm_model,
                         "temperature": args.temperature,
                     },
-                    "metrics": {
-                        k: v for k, v in metrics.items()
-                        if k != "validation_error" or v
-                    },
+                    "metrics": {k: v for k, v in metrics.items() if k != "validation_error" or v},
                     "trajectory_stats": traj_stats,
                     "trajectory": trajectory,
                 }
-                (traj_dir / f"{case.replace('/', '_').replace(':', '_')}.json"
-                 ).write_text(json.dumps(traj_payload, indent=2, default=str))
+                (traj_dir / f"{case.replace('/', '_').replace(':', '_')}.json").write_text(
+                    json.dumps(traj_payload, indent=2, default=str)
+                )
             except Exception as _e:
-                print(f"  WARN: trajectory dump failed: {_e!s:.80}",
-                      flush=True)
+                print(f"  WARN: trajectory dump failed: {_e!s:.80}", flush=True)
 
             iou_val = metrics.get("iou", 0) if metrics.get("valid_prediction") else None
             iou_s = f"{iou_val:.3f}" if iou_val is not None else "invalid"
-            print(f"  -> ok | IoU={iou_s} | polys={row['n_polygons']} | "
-                  f"{row['call_seconds']}s", flush=True)
+            print(
+                f"  -> ok | IoU={iou_s} | polys={row['n_polygons']} | {row['call_seconds']}s",
+                flush=True,
+            )
 
     elapsed = time.time() - t0
-    print(f"\nDone in {elapsed/60:.1f} min. "
-          f"n_ok={n_ok}, schema_fail={n_schema_fail}, err={n_err}.",
-          flush=True)
+    print(
+        f"\nDone in {elapsed / 60:.1f} min. n_ok={n_ok}, schema_fail={n_schema_fail}, err={n_err}.",
+        flush=True,
+    )
     print(f"Wrote {out_csv.relative_to(REPO_ROOT)}", flush=True)
 
     # Aggregate summary.json (idempotent end-of-run rewrite).
@@ -616,13 +619,13 @@ def evaluate(args: argparse.Namespace) -> int:
     return 0
 
 
-def write_summary(rows: list[dict], out_dir: Path,
-                  args: argparse.Namespace, elapsed: float) -> None:
+def write_summary(
+    rows: list[dict], out_dir: Path, args: argparse.Namespace, elapsed: float
+) -> None:
     ious = [float(r["iou"]) for r in rows if r.get("iou")]
     n = len(rows)
     n_valid = sum(1 for r in rows if str(r.get("valid_pred", "")).lower() == "true")
-    n_schema_fail = sum(1 for r in rows
-                        if str(r.get("schema_failure", "")).lower() == "true")
+    n_schema_fail = sum(1 for r in rows if str(r.get("schema_failure", "")).lower() == "true")
     n_err = sum(1 for r in rows if r.get("error"))
 
     def stats(xs: list[float]) -> dict:
@@ -672,17 +675,23 @@ def write_summary(rows: list[dict], out_dir: Path,
 
     s = summary["iou_honest"]
     if s.get("n"):
-        print(f"  honest IoU: n={s['n']}  mean={s['mean']:.3f}  "
-              f"median={s['median']:.3f}  "
-              f">=0.5={s['ge_0.50']*100:.1f}%  "
-              f">=0.8={s['ge_0.80']*100:.1f}%", flush=True)
-    print(f"  valid_rate={summary['totals']['valid_rate']*100:.1f}%  "
-          f"schema_fail_rate="
-          f"{summary['totals']['schema_failure_rate']*100:.1f}%",
-          flush=True)
+        print(
+            f"  honest IoU: n={s['n']}  mean={s['mean']:.3f}  "
+            f"median={s['median']:.3f}  "
+            f">=0.5={s['ge_0.50'] * 100:.1f}%  "
+            f">=0.8={s['ge_0.80'] * 100:.1f}%",
+            flush=True,
+        )
+    print(
+        f"  valid_rate={summary['totals']['valid_rate'] * 100:.1f}%  "
+        f"schema_fail_rate="
+        f"{summary['totals']['schema_failure_rate'] * 100:.1f}%",
+        flush=True,
+    )
 
 
 # CLI
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(
@@ -690,51 +699,60 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "--subset", default=str(DEFAULT_SUBSET),
-        help=f"Path to subset_N.json. Default: "
-             f"{DEFAULT_SUBSET.relative_to(REPO_ROOT)}",
+        "--subset",
+        default=str(DEFAULT_SUBSET),
+        help=f"Path to subset_N.json. Default: {DEFAULT_SUBSET.relative_to(REPO_ROOT)}",
     )
     parser.add_argument(
-        "--eval-dir", default=str(DEFAULT_EVAL_DIR),
-        help=f"Eval data root. Default: "
-             f"{DEFAULT_EVAL_DIR.relative_to(REPO_ROOT)}",
+        "--eval-dir",
+        default=str(DEFAULT_EVAL_DIR),
+        help=f"Eval data root. Default: {DEFAULT_EVAL_DIR.relative_to(REPO_ROOT)}",
     )
     parser.add_argument(
-        "--vlm-model", default=DEFAULT_VLM_MODEL,
+        "--vlm-model",
+        default=DEFAULT_VLM_MODEL,
         help=f"Model alias or OpenRouter identifier. Default: "
-             f"{DEFAULT_VLM_MODEL}. For the paper baseline use "
-             f"--vlm-model gemini-pro --temperature 1.0.",
+        f"{DEFAULT_VLM_MODEL}. For the paper baseline use "
+        f"--vlm-model gemini-pro --temperature 1.0.",
     )
     parser.add_argument(
-        "--temperature", type=float, default=None,
+        "--temperature",
+        type=float,
+        default=None,
         help="Sampling temperature. If unset, lets each provider use "
-             "its documented default (avoids the 'temperature ignored' "
-             "warning on OpenAI reasoning models). Pass --temperature "
-             "1.0 explicitly for Gemini, where temp=0 triggered an "
-             "arithmetic-progression looping bug in pilots.",
+        "its documented default (avoids the 'temperature ignored' "
+        "warning on OpenAI reasoning models). Pass --temperature "
+        "1.0 explicitly for Gemini, where temp=0 triggered an "
+        "arithmetic-progression looping bug in pilots.",
     )
     parser.add_argument(
-        "--out-root", default=str(DEFAULT_OUT_ROOT),
+        "--out-root",
+        default=str(DEFAULT_OUT_ROOT),
         help=f"Output root; a per-model subdir is created under it. "
-             f"Default: {DEFAULT_OUT_ROOT.relative_to(REPO_ROOT)}",
+        f"Default: {DEFAULT_OUT_ROOT.relative_to(REPO_ROOT)}",
     )
     parser.add_argument(
-        "--only-cases", default=None,
+        "--only-cases",
+        default=None,
         help="Comma-separated case folders; evaluate only these.",
     )
     parser.add_argument(
-        "--max-cases", type=int, default=None,
+        "--max-cases",
+        type=int,
+        default=None,
         help="Smoke limit — evaluate only the first N cases of the subset.",
     )
     parser.add_argument(
-        "--resume", action="store_true",
+        "--resume",
+        action="store_true",
         help="Skip cases already in the output CSV.",
     )
     parser.add_argument(
-        "--dump-prompt", action="store_true",
+        "--dump-prompt",
+        action="store_true",
         help=f"Write the VLM-E2E prompt to "
-             f"{DEFAULT_PROMPT_DUMP.relative_to(REPO_ROOT)} and exit. "
-             f"No LLM calls.",
+        f"{DEFAULT_PROMPT_DUMP.relative_to(REPO_ROOT)} and exit. "
+        f"No LLM calls.",
     )
     args = parser.parse_args()
 

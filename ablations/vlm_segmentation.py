@@ -21,6 +21,7 @@ Quick prompt iteration on 3 cases:
 Full run (all manifest cases, all folds):
     uv run python ablations/vlm_segmentation.py --model gemini-flash
 """
+
 from __future__ import annotations
 import argparse
 import io
@@ -44,9 +45,11 @@ from geoplanagent.utils import resolve_model
 
 # Output schema (enforced by pydantic-ai)
 
+
 class Polygon(BaseModel):
     """One boundary polygon: ordered (y, x) integer vertices in [0, 1000] —
     Gemini-native bounding-box / segmentation coordinate convention."""
+
     vertices: List[List[int]] = Field(
         description=(
             "Ordered list of (y, x) integer vertices defining the polygon. "
@@ -59,6 +62,7 @@ class Polygon(BaseModel):
 
 class VlmSegmentation(BaseModel):
     """Boundary segmentation output: 0+ polygons (MultiPolygon allowed)."""
+
     polygons: List[Polygon] = Field(
         description=(
             "One or more boundary polygons. Output one polygon per "
@@ -72,7 +76,7 @@ class VlmSegmentation(BaseModel):
             "One-sentence description of what you traced and the style "
             "of the boundary (e.g. 'red solid outline around the field "
             "north of the farmhouse')."
-        )
+        ),
     )
 
 
@@ -116,6 +120,7 @@ WHAT TO IGNORE
 
 # Pydantic-ai agent
 
+
 def build_agent(instructions: str, temperature: float = 0.0) -> Agent:
     return Agent(
         "test",  # model is overridden per-call
@@ -151,6 +156,7 @@ def build_agent(instructions: str, temperature: float = 0.0) -> Agent:
 
 # Rasterization + IoU
 
+
 def rasterize_polygons(polys: List[Polygon], width: int, height: int) -> np.ndarray:
     """Render (y, x) [0, 1000] polygons to a binary HxW mask (uint8 0/1).
 
@@ -167,8 +173,7 @@ def rasterize_polygons(polys: List[Polygon], width: int, height: int) -> np.ndar
         if len(poly.vertices) < 3:
             continue
         try:
-            pix = [(float(v[1]) * sx, float(v[0]) * sy)
-                   for v in poly.vertices]
+            pix = [(float(v[1]) * sx, float(v[0]) * sy) for v in poly.vertices]
             draw.polygon(pix, fill=255)
         except Exception:
             continue
@@ -185,6 +190,7 @@ def iou_score(pred: np.ndarray, gt: np.ndarray) -> float:
 
 
 # Aggregation (mirrors training/eval/eval_sam_kfold.py:summarise)
+
 
 def summarise(name: str, xs: List[float]) -> dict:
     n = len(xs)
@@ -203,8 +209,7 @@ def summarise(name: str, xs: List[float]) -> dict:
     }
 
 
-def _write_outputs(rows: List[dict], out_dir, args, elapsed: float,
-                   note: str = "") -> None:
+def _write_outputs(rows: List[dict], out_dir, args, elapsed: float, note: str = "") -> None:
     """Idempotent rewrite of results.csv + summary.json from in-memory rows.
 
     Safe to call repeatedly mid-loop: rewrites both files in full each time
@@ -222,93 +227,143 @@ def _write_outputs(rows: List[dict], out_dir, args, elapsed: float,
         for r in rows:
             f.write(
                 f"{r['case']},{r.get('fold')},{r['filename']},"
-                f"{r.get('iou','') if r.get('iou') is not None else ''},"
-                f"{r.get('n_polygons','')},"
-                f"{r.get('call_seconds','')},"
-                f"\"{(r.get('error') or '').replace(chr(34),chr(39))[:100]}\","
-                f"\"{(r.get('notes') or '').replace(chr(34),chr(39))[:120]}\"\n"
+                f"{r.get('iou', '') if r.get('iou') is not None else ''},"
+                f"{r.get('n_polygons', '')},"
+                f"{r.get('call_seconds', '')},"
+                f'"{(r.get("error") or "").replace(chr(34), chr(39))[:100]}",'
+                f'"{(r.get("notes") or "").replace(chr(34), chr(39))[:120]}"\n'
             )
     json_path = out_dir / "summary.json"
-    json_path.write_text(json.dumps({
-        "model": args.model,
-        "prompt_file": args.prompt_file,
-        "temperature": getattr(args, "temperature", 0.0),
-        "n_cases": len(rows),
-        "n_failures": fails,
-        "elapsed_seconds": round(elapsed, 1),
-        "summary": summary_all,
-        "checkpoint_note": note,
-    }, indent=2))
+    json_path.write_text(
+        json.dumps(
+            {
+                "model": args.model,
+                "prompt_file": args.prompt_file,
+                "temperature": getattr(args, "temperature", 0.0),
+                "n_cases": len(rows),
+                "n_failures": fails,
+                "elapsed_seconds": round(elapsed, 1),
+                "summary": summary_all,
+                "checkpoint_note": note,
+            },
+            indent=2,
+        )
+    )
     if note and note != "final":
-        print(f"  [save] {note}: {len(rows)} rows, {fails} failures, "
-              f"mean IoU {summary_all.get('mean', 0):.4f} → {csv_path.name}")
+        print(
+            f"  [save] {note}: {len(rows)} rows, {fails} failures, "
+            f"mean IoU {summary_all.get('mean', 0):.4f} → {csv_path.name}"
+        )
     else:
         print(f"\nWrote:\n  {csv_path}\n  {json_path}")
 
 
 def print_summary(s: dict) -> None:
     print(f"\n{s['name']} (N={s['n']})")
-    if s['n'] == 0:
+    if s["n"] == 0:
         print("  (no cases)")
         return
     print(f"  mean   = {s['mean']:.4f}")
     print(f"  median = {s['median']:.4f}")
-    print(f"  >=0.50 = {s['ge_0.50']*100:.1f}%")
-    print(f"  >=0.70 = {s['ge_0.70']*100:.1f}%")
-    print(f"  >=0.80 = {s['ge_0.80']*100:.1f}%   <-- vs MHCLG 90%")
-    print(f"  >=0.90 = {s['ge_0.90']*100:.1f}%")
+    print(f"  >=0.50 = {s['ge_0.50'] * 100:.1f}%")
+    print(f"  >=0.70 = {s['ge_0.70'] * 100:.1f}%")
+    print(f"  >=0.80 = {s['ge_0.80'] * 100:.1f}%   <-- vs MHCLG 90%")
+    print(f"  >=0.90 = {s['ge_0.90'] * 100:.1f}%")
 
 
 # Main eval loop
 
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default="gemini-flash",
-                    help="OpenRouter alias (gemini-flash, gemini-pro, …) or full ID")
-    ap.add_argument("--max-cases", type=int, default=None,
-                    help="Cap on number of cases (for quick iteration)")
-    ap.add_argument("--fold", type=int, default=None,
-                    help="Only evaluate cases assigned to this fold (per "
-                         "manifest). Useful to A/B against "
-                         "training/eval/eval_sam_kfold.py's per-fold output.")
+    ap.add_argument(
+        "--model",
+        default="gemini-flash",
+        help="OpenRouter alias (gemini-flash, gemini-pro, …) or full ID",
+    )
+    ap.add_argument(
+        "--max-cases", type=int, default=None, help="Cap on number of cases (for quick iteration)"
+    )
+    ap.add_argument(
+        "--fold",
+        type=int,
+        default=None,
+        help="Only evaluate cases assigned to this fold (per "
+        "manifest). Useful to A/B against "
+        "training/eval/eval_sam_kfold.py's per-fold output.",
+    )
     ap.add_argument("--out-dir", default="results/ablation_vlm_seg")
-    ap.add_argument("--cases", nargs="+", default=None,
-                    help="Only run these specific case identifiers (matches "
-                         "manifest['case']). Useful for re-running failed cases.")
-    ap.add_argument("--max-image-dim", type=int, default=None,
-                    help="If set, resize input map so its longest side is at "
-                         "most this many pixels (preserves aspect). Helps with "
-                         "413 errors on very large maps. Recommended: 2048.")
-    ap.add_argument("--jpeg-quality", type=int, default=None,
-                    help="If set, re-encode the input image as JPEG at this "
-                         "quality (1-100) before sending. Cuts request payload "
-                         "without resizing — useful for cases that hit 413 "
-                         "errors on large PNGs. Recommended: 95.")
-    ap.add_argument("--throttle-s", type=float, default=1.0,
-                    help="Seconds to sleep between API calls (rate-limit safety)")
-    ap.add_argument("--temperature", type=float, default=0.0,
-                    help="Sampling temperature (default: 0.0). Google's Gemini "
-                         "3 docs warn thinking models (e.g. gemini-pro) may "
-                         "loop at temperature <1.0; pass --temperature 1.0 to "
-                         "test that mitigation. Non-deterministic at >0.")
-    ap.add_argument("--save-every", type=int, default=5,
-                    help="Rewrite results.csv + summary.json every N cases (in "
-                         "addition to the end-of-run write). Ensures Ctrl-C "
-                         "never loses already-paid-for work. Default: 5.")
-    ap.add_argument("--resume", action="store_true",
-                    help="Skip cases whose pred_mask already exists in "
-                         "out_dir/pred_masks; compute IoU from disk and "
-                         "include in results.csv. Use to continue an "
-                         "aborted run without re-paying for completed cases.")
-    ap.add_argument("--prompt-file", type=str, default=None,
-                    help="Path to a text file with a custom prompt (override "
-                         "the built-in default — useful for prompt A/B).")
-    ap.add_argument("--dry-run", action="store_true",
-                    help="Print what would be sent to the model for the first "
-                         "case; do not call the API.")
+    ap.add_argument(
+        "--cases",
+        nargs="+",
+        default=None,
+        help="Only run these specific case identifiers (matches "
+        "manifest['case']). Useful for re-running failed cases.",
+    )
+    ap.add_argument(
+        "--max-image-dim",
+        type=int,
+        default=None,
+        help="If set, resize input map so its longest side is at "
+        "most this many pixels (preserves aspect). Helps with "
+        "413 errors on very large maps. Recommended: 2048.",
+    )
+    ap.add_argument(
+        "--jpeg-quality",
+        type=int,
+        default=None,
+        help="If set, re-encode the input image as JPEG at this "
+        "quality (1-100) before sending. Cuts request payload "
+        "without resizing — useful for cases that hit 413 "
+        "errors on large PNGs. Recommended: 95.",
+    )
+    ap.add_argument(
+        "--throttle-s",
+        type=float,
+        default=1.0,
+        help="Seconds to sleep between API calls (rate-limit safety)",
+    )
+    ap.add_argument(
+        "--temperature",
+        type=float,
+        default=0.0,
+        help="Sampling temperature (default: 0.0). Google's Gemini "
+        "3 docs warn thinking models (e.g. gemini-pro) may "
+        "loop at temperature <1.0; pass --temperature 1.0 to "
+        "test that mitigation. Non-deterministic at >0.",
+    )
+    ap.add_argument(
+        "--save-every",
+        type=int,
+        default=5,
+        help="Rewrite results.csv + summary.json every N cases (in "
+        "addition to the end-of-run write). Ensures Ctrl-C "
+        "never loses already-paid-for work. Default: 5.",
+    )
+    ap.add_argument(
+        "--resume",
+        action="store_true",
+        help="Skip cases whose pred_mask already exists in "
+        "out_dir/pred_masks; compute IoU from disk and "
+        "include in results.csv. Use to continue an "
+        "aborted run without re-paying for completed cases.",
+    )
+    ap.add_argument(
+        "--prompt-file",
+        type=str,
+        default=None,
+        help="Path to a text file with a custom prompt (override "
+        "the built-in default — useful for prompt A/B).",
+    )
+    ap.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print what would be sent to the model for the first case; do not call the API.",
+    )
     args = ap.parse_args()
 
     from ablations._shared import load_annotation_manifest
+
     dataset_dir = REPO / "training" / "dataset"
     manifest = load_annotation_manifest(REPO)
 
@@ -321,7 +376,7 @@ def main() -> None:
     if args.fold is not None:
         manifest = [r for r in manifest if r.get("fold") == args.fold]
     if args.max_cases:
-        manifest = manifest[:args.max_cases]
+        manifest = manifest[: args.max_cases]
 
     print(f"manifest: {len(manifest)} cases  (fold={args.fold})")
 
@@ -349,15 +404,15 @@ def main() -> None:
         print(f"  case:   {e['case']}")
         print(f"  image:  {img_path}  ({img.width}x{img.height})")
         print(f"  prompt (first 600 chars):\n{instructions[:600]}")
-        print("\nUser message: 'Locate the drawn site boundary and "
-              "output it per the schema.'")
+        print("\nUser message: 'Locate the drawn site boundary and output it per the schema.'")
         return
 
     # Build agent
     agent = build_agent(instructions, temperature=args.temperature)
     model = resolve_model(args.model)
-    print(f"agent: model={args.model}  temperature={args.temperature}  "
-          f"save_every={args.save_every}")
+    print(
+        f"agent: model={args.model}  temperature={args.temperature}  save_every={args.save_every}"
+    )
 
     rows = []
     t0 = time.time()
@@ -370,10 +425,18 @@ def main() -> None:
         mask_path = dataset_dir / "boundary_masks" / fname
 
         if not img_path.exists() or not mask_path.exists():
-            print(f"  [{i+1:>3}/{len(manifest)}] SKIP {case}: missing files")
-            rows.append({"case": case, "fold": fold, "filename": fname,
-                         "iou": None, "n_polygons": 0,
-                         "error": "missing files", "notes": ""})
+            print(f"  [{i + 1:>3}/{len(manifest)}] SKIP {case}: missing files")
+            rows.append(
+                {
+                    "case": case,
+                    "fold": fold,
+                    "filename": fname,
+                    "iou": None,
+                    "n_polygons": 0,
+                    "error": "missing files",
+                    "notes": "",
+                }
+            )
             continue
 
         # --resume: if a pred_mask already exists on disk, skip the API
@@ -383,22 +446,38 @@ def main() -> None:
             cached_pred = preds_dir / fname
             if cached_pred.exists():
                 try:
-                    pred_arr = (np.asarray(Image.open(cached_pred).convert("L")) > 127).astype(np.uint8)
+                    pred_arr = (np.asarray(Image.open(cached_pred).convert("L")) > 127).astype(
+                        np.uint8
+                    )
                     gt_arr = (np.asarray(Image.open(mask_path).convert("L")) > 127).astype(np.uint8)
                     if pred_arr.shape == gt_arr.shape:
                         cached_iou = iou_score(pred_arr, gt_arr)
-                        print(f"  [{i+1:>3}/{len(manifest)}] CACHED {case[:30]:<30}  IoU={cached_iou:.4f}")
-                        rows.append({"case": case, "fold": fold, "filename": fname,
-                                     "iou": cached_iou, "n_polygons": 1,
-                                     "call_seconds": "", "error": "",
-                                     "notes": "resumed from existing pred_mask"})
+                        print(
+                            f"  [{i + 1:>3}/{len(manifest)}] CACHED {case[:30]:<30}  IoU={cached_iou:.4f}"
+                        )
+                        rows.append(
+                            {
+                                "case": case,
+                                "fold": fold,
+                                "filename": fname,
+                                "iou": cached_iou,
+                                "n_polygons": 1,
+                                "call_seconds": "",
+                                "error": "",
+                                "notes": "resumed from existing pred_mask",
+                            }
+                        )
                         continue
                     else:
-                        print(f"  [{i+1:>3}/{len(manifest)}] cached mask shape "
-                              f"{pred_arr.shape} != gt {gt_arr.shape}; re-running")
+                        print(
+                            f"  [{i + 1:>3}/{len(manifest)}] cached mask shape "
+                            f"{pred_arr.shape} != gt {gt_arr.shape}; re-running"
+                        )
                 except Exception as e:
-                    print(f"  [{i+1:>3}/{len(manifest)}] failed to read cached "
-                          f"mask ({e!s:.60}); re-running")
+                    print(
+                        f"  [{i + 1:>3}/{len(manifest)}] failed to read cached "
+                        f"mask ({e!s:.60}); re-running"
+                    )
 
         img = Image.open(img_path).convert("RGB")
         orig_w, orig_h = img.width, img.height
@@ -438,8 +517,10 @@ def main() -> None:
         if gt_bin.shape != (orig_h, orig_w):
             # GT and original map should be at identical resolution per
             # the fine-tune training contract; flag loudly if they aren't.
-            print(f"  [{i+1:>3}] WARN {case}: gt shape {gt_bin.shape} "
-                  f"!= original image (h,w)=({orig_h},{orig_w})")
+            print(
+                f"  [{i + 1:>3}] WARN {case}: gt shape {gt_bin.shape} "
+                f"!= original image (h,w)=({orig_h},{orig_w})"
+            )
 
         # Call the VLM
         t_call = time.time()
@@ -459,25 +540,42 @@ def main() -> None:
             # [0, 1000] — the model may have ignored the convention and
             # emitted pixel coords or normalised floats instead.
             n_oor = sum(
-                1 for poly in polys for v in poly.vertices
+                1
+                for poly in polys
+                for v in poly.vertices
                 if not (0 <= v[0] <= 1000 and 0 <= v[1] <= 1000)
             )
             if n_oor > 0:
                 example = next(
-                    (v for poly in polys for v in poly.vertices
-                     if not (0 <= v[0] <= 1000 and 0 <= v[1] <= 1000)),
+                    (
+                        v
+                        for poly in polys
+                        for v in poly.vertices
+                        if not (0 <= v[0] <= 1000 and 0 <= v[1] <= 1000)
+                    ),
                     None,
                 )
-                print(f"  [{i+1:>3}] WARN {case}: {n_oor} vertices out of "
-                      f"[0, 1000] (e.g. {example}). Model may have ignored "
-                      f"the (y, x) ∈ [0, 1000] convention.")
+                print(
+                    f"  [{i + 1:>3}] WARN {case}: {n_oor} vertices out of "
+                    f"[0, 1000] (e.g. {example}). Model may have ignored "
+                    f"the (y, x) ∈ [0, 1000] convention."
+                )
         except Exception as e:
-            print(f"  [{i+1:>3}/{len(manifest)}] FAIL {case[:30]}  "
-                  f"{type(e).__name__}: {str(e)[:80]}")
-            rows.append({"case": case, "fold": fold, "filename": fname,
-                         "iou": None, "n_polygons": 0,
-                         "error": f"{type(e).__name__}: {str(e)[:200]}",
-                         "notes": ""})
+            print(
+                f"  [{i + 1:>3}/{len(manifest)}] FAIL {case[:30]}  "
+                f"{type(e).__name__}: {str(e)[:80]}"
+            )
+            rows.append(
+                {
+                    "case": case,
+                    "fold": fold,
+                    "filename": fname,
+                    "iou": None,
+                    "n_polygons": 0,
+                    "error": f"{type(e).__name__}: {str(e)[:200]}",
+                    "notes": "",
+                }
+            )
             time.sleep(args.throttle_s)
             continue
 
@@ -490,23 +588,37 @@ def main() -> None:
         score = iou_score(pred, gt_bin)
 
         # Save pred mask for inspection
-        Image.fromarray((pred * 255).astype(np.uint8)).save(
-            preds_dir / f"{fname}")
+        Image.fromarray((pred * 255).astype(np.uint8)).save(preds_dir / f"{fname}")
 
-        rows.append({"case": case, "fold": fold, "filename": fname,
-                     "iou": score, "n_polygons": len(polys),
-                     "error": None, "notes": notes[:160],
-                     "call_seconds": round(dt_call, 2)})
+        rows.append(
+            {
+                "case": case,
+                "fold": fold,
+                "filename": fname,
+                "iou": score,
+                "n_polygons": len(polys),
+                "error": None,
+                "notes": notes[:160],
+                "call_seconds": round(dt_call, 2),
+            }
+        )
 
         mark = "PASS" if score >= 0.8 else "OK  " if score >= 0.5 else "WEAK"
-        print(f"  [{i+1:>3}/{len(manifest)}] {mark} {case[:30]:30s}  "
-              f"IoU={score:.4f}  polys={len(polys)}  "
-              f"({dt_call:.1f}s)")
+        print(
+            f"  [{i + 1:>3}/{len(manifest)}] {mark} {case[:30]:30s}  "
+            f"IoU={score:.4f}  polys={len(polys)}  "
+            f"({dt_call:.1f}s)"
+        )
 
         # Periodic save so a Ctrl-C never loses already-paid-for work.
         if args.save_every > 0 and (i + 1) % args.save_every == 0:
-            _write_outputs(rows, out_dir, args, time.time() - t0,
-                           note=f"checkpoint after case {i + 1}/{len(manifest)}")
+            _write_outputs(
+                rows,
+                out_dir,
+                args,
+                time.time() - t0,
+                note=f"checkpoint after case {i + 1}/{len(manifest)}",
+            )
 
         time.sleep(args.throttle_s)
 
