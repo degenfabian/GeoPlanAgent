@@ -9,20 +9,15 @@ import matplotlib.patches as mpatches
 import geopandas as gpd
 import contextily as ctx
 from shapely.ops import unary_union
+from geoplanagent.utils import haversine_km
 
 
 def load_geojson(geojson_path: str) -> Optional[Dict[str, Any]]:
-    """Parsed GeoJSON dict, or None when the file does not exist."""
-    path = Path(geojson_path)
-    if not path.exists():
-        return None
-    with open(path, "r") as f:
-        return json.load(f)
+    return json.loads(Path(geojson_path).read_text())
 
 
 def validate_geojson_format(geojson_data: Dict[str, Any]) -> tuple[bool, str]:
-    """(ok, reason) check of the benchmark output contract: a GeoJSON
-    Feature whose geometry is Polygon or MultiPolygon."""
+    """Checks the GeoJSON format is valid i.e. a Feature with Polygon or MultiPolygon geometry."""
     if geojson_data.get("type") != "Feature":
         return False, f"Expected 'Feature', got '{geojson_data.get('type')}'"
     geometry = geojson_data.get("geometry")
@@ -34,12 +29,12 @@ def validate_geojson_format(geojson_data: Dict[str, Any]) -> tuple[bool, str]:
     return True, ""
 
 
-def geojson_to_shape(geojson_data: Dict[str, Any]) -> Optional[Polygon | MultiPolygon]:
-    """GeoJSON Feature -> shapely geometry, repairing invalid polygons.
+def geojson_to_shape(geojson_data: Dict[str, Any]) -> Polygon | MultiPolygon:
+    """GeoJSON Feature -> valid shapely geometry, repairing invalid polygons.
 
     Raises ValueError on anything outside the benchmark's output contract
-    (a Feature with Polygon/MultiPolygon geometry) or on conversion
-    errors; returns None only when repair fails.
+    (a Feature with Polygon/MultiPolygon geometry), on conversion errors,
+    and when even repair cannot produce a valid geometry.
     """
     is_valid, error_msg = validate_geojson_format(geojson_data)
     if not is_valid:
@@ -48,28 +43,23 @@ def geojson_to_shape(geojson_data: Dict[str, Any]) -> Optional[Polygon | MultiPo
     try:
         s = shape(geojson_data["geometry"])
         if not s.is_valid:
-            # buffer(0) makes GEOS rebuild the geometry, resolving the
-            # self-intersections and duplicate vertices that mask-traced
-            # polygons produce. Known edge: a bowtie ring loses a lobe to
-            # winding rules (shapely.make_valid would keep both) — kept
-            # because the published numbers used this repair and it
-            # applies to GT and prediction alike.
+            # buffer(0) makes GEOS rebuild the geometry, 
             s = s.buffer(0)
-        return s if s.is_valid else None
+        if not s.is_valid:
+            raise ValueError("geometry invalid even after buffer(0) repair")
+        return s
+    except ValueError:
+        raise
     except Exception as e:
         raise ValueError(f"Error converting GeoJSON to shape: {e}")
 
 
 def calculate_positioning_error_m(pred_geojson, gt_geojson):
-    """Haversine distance in metres between the two polygon centroids
-    (centroids taken in WGS84; None when either geometry is unusable)."""
-    from geoplanagent.utils import haversine_km
+    """Haversine distance in metres between the two polygon centroids"""
 
     try:
         pred_shape = geojson_to_shape(pred_geojson)
         gt_shape = geojson_to_shape(gt_geojson)
-        if pred_shape is None or gt_shape is None:
-            return None
         if pred_shape.is_empty or gt_shape.is_empty:
             return None
         pc, gc = pred_shape.centroid, gt_shape.centroid
@@ -102,20 +92,16 @@ def calculate_spatial_metrics(
 
     try:
         gt_shape = geojson_to_shape(ground_truth_geojson)
-        metrics["valid_ground_truth"] = gt_shape is not None and gt_shape.is_valid
+        metrics["valid_ground_truth"] = True
     except ValueError as e:
         metrics["validation_error"] = f"Ground truth error: {e}"
         return metrics
 
     try:
         pred_shape = geojson_to_shape(predicted_geojson)
-        metrics["valid_prediction"] = pred_shape is not None and pred_shape.is_valid
+        metrics["valid_prediction"] = True
     except ValueError as e:
         metrics["validation_error"] = f"Prediction error: {e}"
-        return metrics
-
-    if not metrics["valid_ground_truth"] or not metrics["valid_prediction"]:
-        metrics["validation_error"] = "Invalid geometry"
         return metrics
 
     try:

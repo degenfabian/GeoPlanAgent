@@ -1,4 +1,5 @@
 """GT-centroid extraction + nearest-part scoring; shared by locate ablations."""
+
 from __future__ import annotations
 
 from typing import Optional
@@ -37,9 +38,12 @@ def gt_part_centroids(gt_geojson: dict) -> list[tuple[float, float]]:
     nearest to.
 
     Returns an empty list when the geojson can't be parsed or the
-    geometry can't be repaired (``geojson_to_shape`` returns None).
+    geometry can't be repaired (``geojson_to_shape`` raises).
     """
-    shape = geojson_to_shape(gt_geojson)
+    try:
+        shape = geojson_to_shape(gt_geojson)
+    except ValueError:
+        shape = None
     if shape is None:
         return []
     polys = list(shape.geoms) if hasattr(shape, "geoms") else [shape]
@@ -58,30 +62,30 @@ def nearest_part_err_km(
     """
     if not centroids:
         return None
-    return min(
-        haversine_km(pick_lat, pick_lon, c_lat, c_lon)
-        for c_lat, c_lon in centroids
-    )
+    return min(haversine_km(pick_lat, pick_lon, c_lat, c_lon) for c_lat, c_lon in centroids)
 
 
 def add_subset_args(parser) -> None:
     """The case-subset flags every harness shares."""
     parser.add_argument(
-        "--only-cases", default=None,
+        "--only-cases",
+        default=None,
         help="Comma-separated case names; evaluate only these.",
     )
     parser.add_argument(
-        "--max-cases", type=int, default=None,
+        "--max-cases",
+        type=int,
+        default=None,
         help="Smoke limit — evaluate only the first N cases.",
     )
     parser.add_argument(
-        "--resume", action="store_true",
+        "--resume",
+        action="store_true",
         help="Skip cases already in the output CSV.",
     )
 
 
-def write_trajectory(traj_dir, case: str, config: dict, pick, err_km,
-                     centroids, msgs) -> None:
+def write_trajectory(traj_dir, case: str, config: dict, pick, err_km, centroids, msgs) -> None:
     """Persist one locate trajectory JSON.
 
     Never fails the case — the CSV row is already written; a
@@ -90,6 +94,7 @@ def write_trajectory(traj_dir, case: str, config: dict, pick, err_km,
     """
     import json
     from geoplanagent.run import extract_message_log_from_msgs
+
     try:
         trajectory, traj_stats = extract_message_log_from_msgs(msgs)
         payload = {
@@ -97,16 +102,12 @@ def write_trajectory(traj_dir, case: str, config: dict, pick, err_km,
             "config": config,
             "pick": pick.model_dump(),
             "err_km": err_km,
-            "gt_centroids": [
-                {"lat": lat, "lon": lon} for lat, lon in centroids
-            ],
+            "gt_centroids": [{"lat": lat, "lon": lon} for lat, lon in centroids],
             "trajectory_stats": traj_stats,
             "trajectory": trajectory,
         }
         fs_case = case.replace("/", "_").replace(":", "_")
-        (traj_dir / f"{fs_case}.json").write_text(
-            json.dumps(payload, indent=2, default=str)
-        )
+        (traj_dir / f"{fs_case}.json").write_text(json.dumps(payload, indent=2, default=str))
     except Exception as _e:
         print(f"  WARN: trajectory dump failed: {_e!s:.80}", flush=True)
 
@@ -114,18 +115,21 @@ def write_trajectory(traj_dir, case: str, config: dict, pick, err_km,
 def print_err_km_summary(out_csv) -> None:
     """Mean/median err_km aggregate printed at the end of a locate run."""
     import csv
+
     if not out_csv.exists():
         return
     with open(out_csv) as f:
         rows = list(csv.DictReader(f))
-    errs = sorted(float(r["err_km"]) for r in rows
-                  if r.get("err_km"))
+    errs = sorted(float(r["err_km"]) for r in rows if r.get("err_km"))
     if errs:
         mean = sum(errs) / len(errs)
         median = errs[len(errs) // 2]
-        print(f"err_km: n={len(errs)}  mean={mean:.2f} km  "
-              f"median={median:.2f} km  min={errs[0]:.2f}  "
-              f"max={errs[-1]:.2f}", flush=True)
+        print(
+            f"err_km: n={len(errs)}  mean={mean:.2f} km  "
+            f"median={median:.2f} km  min={errs[0]:.2f}  "
+            f"max={errs[-1]:.2f}",
+            flush=True,
+        )
 
 
 def load_annotation_manifest(repo_root):
@@ -133,16 +137,21 @@ def load_annotation_manifest(repo_root):
     fold_assignment.json (never persisted — it would only drift)."""
     import json
     import sys
+
     dataset_dir = repo_root / "training" / "dataset"
     fold_assignment_path = dataset_dir / "fold_assignment.json"
     if not fold_assignment_path.exists():
-        sys.exit(f"fold_assignment.json not found: {fold_assignment_path}. "
-                 f"Run training/build_sam3_training_set.py first.")
+        sys.exit(
+            f"fold_assignment.json not found: {fold_assignment_path}. "
+            f"Run training/build_sam3_training_set.py first."
+        )
     from training.train_sam3_kfold import _build_manifest_from_disk
+
     fold_map = json.loads(fold_assignment_path.read_text())
     manifest = _build_manifest_from_disk(dataset_dir, fold_map)
     if not manifest:
-        sys.exit(f"manifest is empty — no .png files found in "
-                 f"{dataset_dir / 'maps'} matching fold_assignment.json")
+        sys.exit(
+            f"manifest is empty — no .png files found in "
+            f"{dataset_dir / 'maps'} matching fold_assignment.json"
+        )
     return manifest
-
