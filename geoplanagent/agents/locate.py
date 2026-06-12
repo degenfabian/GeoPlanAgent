@@ -5,6 +5,7 @@ la_check). ``make_locate_agent(disabled_tools)`` is a cached factory:
 production passes the place-only disabled set from AgentState; the
 empty-set default serves the full-tool ablation config.
 """
+
 from __future__ import annotations
 import json
 import math
@@ -30,23 +31,28 @@ REPO = Path(__file__).resolve().parent.parent.parent
 
 # Output schema
 
+
 class LocatePick(BaseModel):
     """Final locate output: one center coord + uncertainty + provenance."""
+
     top_lat: float = Field(
         description="Final picked latitude (WGS84). UK range: 49.5 to 61.0.",
-        ge=49.5, le=61.0,
+        ge=49.5,
+        le=61.0,
     )
     top_lon: float = Field(
         description="Final picked longitude (WGS84). UK range: -9.0 to 2.0.",
-        ge=-9.0, le=2.0,
+        ge=-9.0,
+        le=2.0,
     )
     sigma_m: int = Field(
         description="Search radius in meters reflecting uncertainty. "
-                    "200 = tight (multi-source agreement). "
-                    "300-500 = clean single signal (SITE postcode, grid_ref). "
-                    "800-1500 = single ambiguous signal (road, place name). "
-                    "2500+ = wide (LA centroid only, or empty pdf_info).",
-        ge=100, le=50000,
+        "200 = tight (multi-source agreement). "
+        "300-500 = clean single signal (SITE postcode, grid_ref). "
+        "800-1500 = single ambiguous signal (road, place name). "
+        "2500+ = wide (LA centroid only, or empty pdf_info).",
+        ge=100,
+        le=50000,
     )
     confidence: str = Field(
         description="One of: 'high', 'med', 'low'.",
@@ -54,12 +60,12 @@ class LocatePick(BaseModel):
     )
     picked_source: str = Field(
         description="Short label of the winning signal "
-                    "(e.g. 'postcode:AL1 3JE', 'intersect:Manor x Linden', "
-                    "'place:Weybourne', 'la_centroid').",
+        "(e.g. 'postcode:AL1 3JE', 'intersect:Manor x Linden', "
+        "'place:Weybourne', 'la_centroid').",
     )
     evidence: str = Field(
         description="1-2 sentence explanation of WHY this pick. "
-                    "Mention letterhead/LA-consistency checks done.",
+        "Mention letterhead/LA-consistency checks done.",
     )
 
 
@@ -78,13 +84,17 @@ def postcode(pc: str) -> dict:
     """
     try:
         from geoplanagent.tools.geocode import lookup_postcode
+
         h = lookup_postcode(pc)
         if not h:
-            return {"success": False,
-                    "error": f"Postcode '{pc}' not found in Code-Point Open"}
-        return {"success": True, "postcode": pc,
-                "lat": h["lat"], "lon": h["lon"],
-                "admin_district": h.get("admin_district")}
+            return {"success": False, "error": f"Postcode '{pc}' not found in Code-Point Open"}
+        return {
+            "success": True,
+            "postcode": pc,
+            "lat": h["lat"],
+            "lon": h["lon"],
+            "admin_district": h.get("admin_district"),
+        }
     except Exception as e:
         return {"success": False, "error": str(e)[:160]}
 
@@ -102,8 +112,10 @@ def grid_ref(gr: str) -> dict:
     """
     try:
         from geoplanagent.tools.geocode import (
-            os_grid_ref_to_latlon, parse_easting_northing,
+            os_grid_ref_to_latlon,
+            parse_easting_northing,
         )
+
         # Try the pure-numeric easting/northing format first — the
         # docstring promises support for it (e.g. "485700 148600") and
         # the reader can emit raw E/N strings extracted from "528942 E
@@ -111,10 +123,8 @@ def grid_ref(gr: str) -> dict:
         # two-letter prefix so it returns None on those.
         pt = parse_easting_northing(gr) or os_grid_ref_to_latlon(gr)
         if not pt:
-            return {"success": False,
-                    "error": f"Could not parse grid_ref '{gr}'"}
-        return {"success": True, "grid_ref": gr,
-                "lat": pt[0], "lon": pt[1]}
+            return {"success": False, "error": f"Could not parse grid_ref '{gr}'"}
+        return {"success": True, "grid_ref": gr, "lat": pt[0], "lon": pt[1]}
     except Exception as e:
         return {"success": False, "error": str(e)[:160]}
 
@@ -137,6 +147,7 @@ def place(query: str, la: Optional[str] = None, limit: int = 5) -> dict:
     """
     try:
         from geoplanagent.tools.geocode import search as os_search
+
         hits = os_search(query, max_results=limit * 3, context=la) or []
         hits = hits[:limit]
         out = []
@@ -149,19 +160,19 @@ def place(query: str, la: Optional[str] = None, limit: int = 5) -> dict:
             # return lon=None to the LLM.
             lat_v = h.get("lat") if "lat" in h else h.get("LATITUDE")
             lon_v = h.get("lon") if "lon" in h else h.get("LONGITUDE")
-            out.append({
-                "name": h.get("name") or h.get("NAME1"),
-                "type": (h.get("local_type") or h.get("LOCAL_TYPE")
-                          or h.get("TYPE") or h.get("type")),
-                "lat": lat_v,
-                "lon": lon_v,
-                "admin_district": (h.get("admin_district")
-                                    or h.get("DISTRICT_BOROUGH")),
-                "county": (h.get("county") or h.get("COUNTY_UNITARY")
-                            or h.get("REGION")),
-            })
-        return {"success": True, "query": query, "la_filter": la,
-                "n_hits": len(out), "hits": out}
+            out.append(
+                {
+                    "name": h.get("name") or h.get("NAME1"),
+                    "type": (
+                        h.get("local_type") or h.get("LOCAL_TYPE") or h.get("TYPE") or h.get("type")
+                    ),
+                    "lat": lat_v,
+                    "lon": lon_v,
+                    "admin_district": (h.get("admin_district") or h.get("DISTRICT_BOROUGH")),
+                    "county": (h.get("county") or h.get("COUNTY_UNITARY") or h.get("REGION")),
+                }
+            )
+        return {"success": True, "query": query, "la_filter": la, "n_hits": len(out), "hits": out}
     except Exception as e:
         return {"success": False, "error": str(e)[:160]}
 
@@ -180,6 +191,7 @@ def road(query: str, la: Optional[str] = None, limit: int = 5) -> dict:
     """
     try:
         from pyproj import Transformer
+
         idx_p = REPO / "geoplanagent" / "oml_road_index.json"
         if not idx_p.exists():
             return {"success": False, "error": "OML road index missing"}
@@ -187,6 +199,7 @@ def road(query: str, la: Optional[str] = None, limit: int = 5) -> dict:
         q_key = query.lower().strip()
         instances = idx.get(q_key, []) + idx.get(q_key + " road", [])
         from geoplanagent.tools.geocode import resolve_la
+
         la_poly = None
         if la:
             try:
@@ -195,6 +208,7 @@ def road(query: str, la: Optional[str] = None, limit: int = 5) -> dict:
                 la_poly = None
         rev = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True)
         from shapely.geometry import Point
+
         out = []
         for inst in instances:
             try:
@@ -206,17 +220,21 @@ def road(query: str, la: Optional[str] = None, limit: int = 5) -> dict:
             if la_poly is not None:
                 if not la_poly.contains(Point(lon, lat)):
                     continue
-            out.append({"name": inst.get("name"), "lat": lat, "lon": lon,
-                        "in_la": la})
-            if len(out) >= limit: break
-        return {"success": True, "query": query, "la_filter": la,
-                "n_hits": len(out), "hits": out}
+            out.append({"name": inst.get("name"), "lat": lat, "lon": lon, "in_la": la})
+            if len(out) >= limit:
+                break
+        return {"success": True, "query": query, "la_filter": la, "n_hits": len(out), "hits": out}
     except Exception as e:
         return {"success": False, "error": str(e)[:160]}
 
 
-def intersect(road_a: str, road_b: str, la: Optional[str] = None,
-              road_c: Optional[str] = None, limit: int = 10) -> dict:
+def intersect(
+    road_a: str,
+    road_b: str,
+    la: Optional[str] = None,
+    road_c: Optional[str] = None,
+    limit: int = 10,
+) -> dict:
     """Find geometric intersection point(s) of 2-3 named road LineStrings.
 
     Uses OML road geometry (offline) to compute where the named roads cross.
@@ -233,6 +251,7 @@ def intersect(road_a: str, road_b: str, la: Optional[str] = None,
         from pyproj import Transformer
         from shapely.geometry import LineString
         from geoplanagent.tools.geocode import resolve_la
+
         geom_p = REPO / "geoplanagent" / "oml_road_geom_subset.json"
         if not geom_p.exists():
             return {"success": False, "error": "OML road geom missing"}
@@ -247,19 +266,24 @@ def intersect(road_a: str, road_b: str, la: Optional[str] = None,
                     mn_lon, mn_lat, mx_lon, mx_lat = la_poly.bounds
                     x1, y1 = fwd.transform(mn_lon, mn_lat)
                     x2, y2 = fwd.transform(mx_lon, mx_lat)
-                    la_bbox_bng = (min(x1, x2), min(y1, y2),
-                                    max(x1, x2), max(y1, y2))
-            except Exception: pass
+                    la_bbox_bng = (min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2))
+            except Exception:
+                pass
 
         def get_instances(rd):
             key = rd.lower().strip()
             instances = geom.get(key, []) + geom.get(key + " road", [])
             if la_bbox_bng:
-                instances = [h for h in instances
-                             if not (h.get("maxx", 0) < la_bbox_bng[0]
-                                      or h.get("minx", 0) > la_bbox_bng[2]
-                                      or h.get("maxy", 0) < la_bbox_bng[1]
-                                      or h.get("miny", 0) > la_bbox_bng[3])]
+                instances = [
+                    h
+                    for h in instances
+                    if not (
+                        h.get("maxx", 0) < la_bbox_bng[0]
+                        or h.get("minx", 0) > la_bbox_bng[2]
+                        or h.get("maxy", 0) < la_bbox_bng[1]
+                        or h.get("miny", 0) > la_bbox_bng[3]
+                    )
+                ]
             return instances
 
         roads = [road_a, road_b] + ([road_c] if road_c else [])
@@ -270,13 +294,14 @@ def intersect(road_a: str, road_b: str, la: Optional[str] = None,
             for inst in insts:
                 pts = inst.get("points") or []
                 if len(pts) >= 2:
-                    try: lines.append(LineString(pts))
-                    except Exception: continue
+                    try:
+                        lines.append(LineString(pts))
+                    except Exception:
+                        continue
             road_lines.append((rd, lines))
         missing = [rd for rd, lines in road_lines if not lines]
         if missing:
-            return {"success": False,
-                    "error": f"No road geometry in {la or 'UK'} for: {missing}"}
+            return {"success": False, "error": f"No road geometry in {la or 'UK'} for: {missing}"}
         intersections = []
         seen = set()
         for i in range(len(road_lines)):
@@ -285,9 +310,12 @@ def intersect(road_a: str, road_b: str, la: Optional[str] = None,
                 rd_b, lines_b = road_lines[j]
                 for line_a in lines_a:
                     for line_b in lines_b:
-                        try: inter = line_a.intersection(line_b)
-                        except Exception: continue
-                        if inter.is_empty: continue
+                        try:
+                            inter = line_a.intersection(line_b)
+                        except Exception:
+                            continue
+                        if inter.is_empty:
+                            continue
                         pts = []
                         if inter.geom_type == "Point":
                             pts.append((inter.x, inter.y))
@@ -298,16 +326,24 @@ def intersect(road_a: str, road_b: str, la: Optional[str] = None,
                             pts.append((c.x, c.y))
                         for x, y in pts:
                             key = (round(x, 1), round(y, 1))
-                            if key in seen: continue
+                            if key in seen:
+                                continue
                             seen.add(key)
                             lon, lat = rev.transform(x, y)
-                            intersections.append({
-                                "lat": round(lat, 6), "lon": round(lon, 6),
-                                "roads": [rd_a, rd_b],
-                            })
-        return {"success": True, "roads": roads, "la_filter": la,
-                "n_intersections": len(intersections),
-                "intersections": intersections[:limit]}
+                            intersections.append(
+                                {
+                                    "lat": round(lat, 6),
+                                    "lon": round(lon, 6),
+                                    "roads": [rd_a, rd_b],
+                                }
+                            )
+        return {
+            "success": True,
+            "roads": roads,
+            "la_filter": la,
+            "n_intersections": len(intersections),
+            "intersections": intersections[:limit],
+        }
     except Exception as e:
         return {"success": False, "error": str(e)[:160]}
 
@@ -326,10 +362,10 @@ def la_check(lat: float, lon: float, la: str) -> dict:
     try:
         from geoplanagent.tools.geocode import resolve_la
         from shapely.geometry import Point
+
         poly = resolve_la(la)
         if poly is None:
-            return {"success": False,
-                    "error": f"No polygon for LA '{la}'"}
+            return {"success": False, "error": f"No polygon for LA '{la}'"}
         p = Point(lon, lat)
         inside = poly.contains(p)
         if inside:
@@ -344,14 +380,20 @@ def la_check(lat: float, lon: float, la: str) -> dict:
             # handles the cos(lat) factor correctly regardless of
             # bearing.
             from shapely.ops import nearest_points
+
             _, q = nearest_points(p, poly.boundary)
             d_km = haversine_km(lat, lon, q.y, q.x)
         centroid = poly.centroid
-        return {"success": True, "lat": lat, "lon": lon, "la": la,
-                "inside_la": inside,
-                "distance_km_approx": round(d_km, 2),
-                "la_centroid_lat": centroid.y,
-                "la_centroid_lon": centroid.x}
+        return {
+            "success": True,
+            "lat": lat,
+            "lon": lon,
+            "la": la,
+            "inside_la": inside,
+            "distance_km_approx": round(d_km, 2),
+            "la_centroid_lat": centroid.y,
+            "la_centroid_lon": centroid.x,
+        }
     except Exception as e:
         return {"success": False, "error": str(e)[:160]}
 
@@ -359,12 +401,12 @@ def la_check(lat: float, lon: float, la: str) -> dict:
 # Tool registry: advertised name -> implementation. pydantic-ai derives
 # the tool name from ``__name__``.
 _TOOL_IMPLS: dict[str, callable] = {
-    "postcode":  postcode,
-    "grid_ref":  grid_ref,
-    "place":     place,
-    "road":      road,
+    "postcode": postcode,
+    "grid_ref": grid_ref,
+    "place": place,
+    "road": road,
     "intersect": intersect,
-    "la_check":  la_check,
+    "la_check": la_check,
 }
 
 _LOCATE_TOOL_NAMES: frozenset[str] = frozenset(_TOOL_IMPLS.keys())
@@ -428,9 +470,7 @@ def _build_locate_prompt(disabled: frozenset[str] = frozenset()) -> str:
     parts: list[str] = []
     parts.append(_LOCATE_HEADER)
     parts.append("")
-    parts.append(
-        f"You have {n} offline geocoder tool{'s' if n != 1 else ''}:"
-    )
+    parts.append(f"You have {n} offline geocoder tool{'s' if n != 1 else ''}:")
     for t in enabled_tools_ordered:
         parts.append(_LOCATE_TOOL_DESCS[t])
     parts.append("")
@@ -445,13 +485,11 @@ def _build_locate_prompt(disabled: frozenset[str] = frozenset()) -> str:
 
     # Step: SCAN pdf_info — priority list filtered by enabled tools.
     priority_lines = [
-        line for gating_tool, line in _LOCATE_SIGNAL_PRIORITIES
+        line
+        for gating_tool, line in _LOCATE_SIGNAL_PRIORITIES
         if gating_tool is None or gating_tool in enabled_set
     ]
-    scan_body = (
-        "Priority of signals (most specific first):\n"
-        + "\n".join(priority_lines)
-    )
+    scan_body = "Priority of signals (most specific first):\n" + "\n".join(priority_lines)
     steps.append(("**SCAN pdf_info.**", scan_body))
 
     # LETTERHEAD CHECK requires BOTH postcode and la_check.
@@ -485,9 +523,7 @@ def _build_locate_prompt(disabled: frozenset[str] = frozenset()) -> str:
 
 def make_locate_agent(disabled_tools=None) -> Agent:
     """Locate sub-agent with ``disabled_tools`` removed from tools + prompt. Cached."""
-    return _make_locate_agent_cached(
-        frozenset(disabled_tools) if disabled_tools else frozenset()
-    )
+    return _make_locate_agent_cached(frozenset(disabled_tools) if disabled_tools else frozenset())
 
 
 @lru_cache(maxsize=16)
@@ -550,34 +586,43 @@ def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
                 # Single-coord returns (postcode, grid_ref, la_check)
                 if "lat" in content and "lon" in content:
                     try:
-                        distances.append(haversine_km(
-                            pick.top_lat, pick.top_lon,
-                            float(content["lat"]), float(content["lon"])))
+                        distances.append(
+                            haversine_km(
+                                pick.top_lat,
+                                pick.top_lon,
+                                float(content["lat"]),
+                                float(content["lon"]),
+                            )
+                        )
                     except (ValueError, TypeError):
                         pass
                 # Multi-hit returns (place, road)
-                for h in (content.get("hits") or []):
+                for h in content.get("hits") or []:
                     if not isinstance(h, dict):
                         continue
                     try:
-                        distances.append(haversine_km(
-                            pick.top_lat, pick.top_lon,
-                            float(h["lat"]), float(h["lon"])))
+                        distances.append(
+                            haversine_km(
+                                pick.top_lat, pick.top_lon, float(h["lat"]), float(h["lon"])
+                            )
+                        )
                     except (KeyError, ValueError, TypeError):
                         pass
                 # intersect returns
-                for h in (content.get("intersections") or []):
+                for h in content.get("intersections") or []:
                     if not isinstance(h, dict):
                         continue
                     try:
-                        distances.append(haversine_km(
-                            pick.top_lat, pick.top_lon,
-                            float(h["lat"]), float(h["lon"])))
+                        distances.append(
+                            haversine_km(
+                                pick.top_lat, pick.top_lon, float(h["lat"]), float(h["lon"])
+                            )
+                        )
                     except (KeyError, ValueError, TypeError):
                         pass
 
         if not distances:
-            return pick   # nothing to validate against; accept as-is
+            return pick  # nothing to validate against; accept as-is
 
         min_d = min(distances)
         if min_d > L2_THRESHOLD_KM:
@@ -630,12 +675,12 @@ def _shrink_image_if_oversized(img_bytes: bytes) -> bytes:
     try:
         import cv2
         import numpy as np
+
         arr = np.frombuffer(img_bytes, dtype=np.uint8)
         img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
         if img is None:
             return img_bytes
-        _, buf = cv2.imencode(".jpg", img,
-                              [cv2.IMWRITE_JPEG_QUALITY, _JPEG_FALLBACK_QUALITY])
+        _, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, _JPEG_FALLBACK_QUALITY])
         jpeg_bytes = buf.tobytes()
         if len(jpeg_bytes) <= _MAX_IMAGE_BYTES:
             return jpeg_bytes
@@ -648,14 +693,13 @@ def _shrink_image_if_oversized(img_bytes: bytes) -> bytes:
         return img_bytes
 
 
-
 def _image_media_type(img_bytes: bytes) -> str:
     """Detect PNG vs JPEG from the magic bytes."""
     if len(img_bytes) >= 3 and img_bytes[:3] == b"\xff\xd8\xff":
         return "image/jpeg"
     if len(img_bytes) >= 4 and img_bytes[:4] == b"\x89PNG":
         return "image/png"
-    return "image/png"   # default — pydantic-ai expects something
+    return "image/png"  # default — pydantic-ai expects something
 
 
 from geoplanagent.utils import is_transient_http_error as _is_transient_error  # noqa: E402
@@ -663,13 +707,18 @@ from geoplanagent.utils import is_transient_http_error as _is_transient_error  #
 
 # Entry point
 
+
 def _emergency_la_centroid_pick(pdf_info: dict, reason: str) -> LocatePick:
     """Fallback LocatePick at the LA centroid when the agent loop fails."""
-    admin = (pdf_info.get("admin_region")
-             or pdf_info.get("likely_town_or_city")
-             or pdf_info.get("district_name") or "").strip()
+    admin = (
+        pdf_info.get("admin_region")
+        or pdf_info.get("likely_town_or_city")
+        or pdf_info.get("district_name")
+        or ""
+    ).strip()
     try:
         from geoplanagent.tools.geocode import resolve_la
+
         poly = resolve_la(admin) if admin else None
     except Exception:
         poly = None
@@ -683,14 +732,18 @@ def _emergency_la_centroid_pick(pdf_info: dict, reason: str) -> LocatePick:
         radius_m = int(max(dx_m, dy_m) / 2)
         sigma = max(2000, min(radius_m, 50_000))
         return LocatePick(
-            top_lat=float(c.y), top_lon=float(c.x),
-            sigma_m=sigma, confidence="low",
+            top_lat=float(c.y),
+            top_lon=float(c.x),
+            sigma_m=sigma,
+            confidence="low",
             picked_source=f"emergency_la_centroid:{admin[:30]}",
             evidence=f"LA centroid fallback ({reason[:80]})",
         )
     return LocatePick(
-        top_lat=54.0, top_lon=-2.0,
-        sigma_m=50_000, confidence="low",
+        top_lat=54.0,
+        top_lon=-2.0,
+        sigma_m=50_000,
+        confidence="low",
         picked_source="emergency_uk_centroid",
         evidence=f"UK centroid fallback (no admin_region; {reason[:60]})",
     )
@@ -727,8 +780,7 @@ def run_locate(
         # Continuation: pdf_info already in history; just append feedback.
         # extra_terms are spliced here since pdf_info isn't re-sent.
         ctx = (match_context or "").strip()
-        new_terms = [t.strip() for t in (extra_terms or [])
-                     if isinstance(t, str) and t.strip()]
+        new_terms = [t.strip() for t in (extra_terms or []) if isinstance(t, str) and t.strip()]
         extra_block = ""
         if new_terms:
             extra_block = (
@@ -738,8 +790,7 @@ def run_locate(
                 "you should try): " + ", ".join(new_terms)
             )
         if ctx or extra_block:
-            ctx_block = (f"PRIOR MATCH FEEDBACK:\n{ctx[:1200]}\n\n"
-                         if ctx else "")
+            ctx_block = f"PRIOR MATCH FEEDBACK:\n{ctx[:1200]}\n\n" if ctx else ""
             user_parts: List[object] = [
                 "Re-pick based on prior-match feedback (you already have "
                 "pdf_info + map image in this conversation):\n\n"
@@ -768,8 +819,7 @@ def run_locate(
             "likely_town": pdf_info.get("likely_town_or_city"),
             "parish_names": (pdf_info.get("parish_names") or [])[:5],
             "adjacency_hints": (pdf_info.get("adjacency_hints") or [])[:5],
-            "house_number_road_pairs": (
-                pdf_info.get("house_number_road_pairs") or [])[:3],
+            "house_number_road_pairs": (pdf_info.get("house_number_road_pairs") or [])[:3],
             "visible_map_labels": (pdf_info.get("visible_map_labels") or [])[:15],
             "is_district_wide": pdf_info.get("is_district_wide", False),
         }
@@ -790,8 +840,7 @@ def run_locate(
             "final LocatePick. Budget: 8 geocode calls max.",
         ]
         if map_img_bytes:
-            user_parts.insert(
-                0, BinaryContent(data=map_img_bytes, media_type="image/png"))
+            user_parts.insert(0, BinaryContent(data=map_img_bytes, media_type="image/png"))
 
     # Pre-shrink oversized map images so we don't hit HTTP 413 on the
     # first attempt. Catches A3/A2/A0 planning maps rendered at 200 DPI.
@@ -805,22 +854,20 @@ def run_locate(
             new_media_type = _image_media_type(map_img_bytes)
             for i, p in enumerate(user_parts):
                 if isinstance(p, BinaryContent):
-                    user_parts[i] = BinaryContent(
-                        data=map_img_bytes, media_type=new_media_type)
+                    user_parts[i] = BinaryContent(data=map_img_bytes, media_type=new_media_type)
                     break
 
     admin = pdf_info.get("admin_region") or "?"
     pcs = pdf_info.get("postcodes") or []
     grs = pdf_info.get("grid_refs") or []
-    history_tag = (f"prior_msgs={len(prior_messages)}" if prior_messages
-                   else "first_call")
-    disabled_tag = (f", disabled={sorted(disabled_tools)}"
-                    if disabled_tools else "")
-    img_tag = (f", img={len(map_img_bytes)//1024}KB"
-               if map_img_bytes is not None else "")
-    print(f"  [locate] start: admin_region={admin!r}, postcodes={pcs[:2]}, "
-          f"grid_refs={grs[:2]}, match_context={'yes' if match_context else 'no'}, "
-          f"{history_tag}{disabled_tag}{img_tag}")
+    history_tag = f"prior_msgs={len(prior_messages)}" if prior_messages else "first_call"
+    disabled_tag = f", disabled={sorted(disabled_tools)}" if disabled_tools else ""
+    img_tag = f", img={len(map_img_bytes) // 1024}KB" if map_img_bytes is not None else ""
+    print(
+        f"  [locate] start: admin_region={admin!r}, postcodes={pcs[:2]}, "
+        f"grid_refs={grs[:2]}, match_context={'yes' if match_context else 'no'}, "
+        f"{history_tag}{disabled_tag}{img_tag}"
+    )
 
     # Run the agent with up to one retry on transient HTTP errors. The
     # default OpenRouter exception → caught and falls back to emergency,
@@ -840,9 +887,11 @@ def run_locate(
         except Exception as e:
             last_exc = e
             if attempt < MAX_RETRIES and _is_transient_error(e):
-                wait = 2 ** attempt
-                print(f"  [locate] transient error (attempt {attempt+1}/"
-                      f"{MAX_RETRIES+1}): {e!s:.140} — retrying in {wait}s")
+                wait = 2**attempt
+                print(
+                    f"  [locate] transient error (attempt {attempt + 1}/"
+                    f"{MAX_RETRIES + 1}): {e!s:.140} — retrying in {wait}s"
+                )
                 time.sleep(wait)
                 continue
             break
@@ -850,23 +899,27 @@ def run_locate(
     if result is None:
         e = last_exc if last_exc is not None else RuntimeError("unknown locate failure")
         print(f"  [locate] FAILED: {e!s:.200}")
-        pick = _emergency_la_centroid_pick(
-            pdf_info, reason=f"agent failed: {e!s:.60}")
+        pick = _emergency_la_centroid_pick(pdf_info, reason=f"agent failed: {e!s:.60}")
         # Record a zero-token entry so the audit script can still count
         # the invocation attempt (and so n_calls is accurate).
         if usage_sink is not None:
-            usage_sink.append({
-                "request_tokens": 0, "response_tokens": 0,
-                "generation_id": None,
-                "error": f"{type(e).__name__}: {e!s:.120}",
-            })
+            usage_sink.append(
+                {
+                    "request_tokens": 0,
+                    "response_tokens": 0,
+                    "generation_id": None,
+                    "error": f"{type(e).__name__}: {e!s:.120}",
+                }
+            )
         return pick, (prior_messages or [])
 
     _print_locate_trajectory(result)
     pick = result.output
-    print(f"  [locate] picked: {pick.picked_source[:50]} → "
-          f"({pick.top_lat:.5f}, {pick.top_lon:.5f}) σ={pick.sigma_m}m "
-          f"conf={pick.confidence}")
+    print(
+        f"  [locate] picked: {pick.picked_source[:50]} → "
+        f"({pick.top_lat:.5f}, {pick.top_lon:.5f}) σ={pick.sigma_m}m "
+        f"conf={pick.confidence}"
+    )
     print(f"  [locate] evidence: {pick.evidence[:200]}")
 
     try:
@@ -882,11 +935,13 @@ def run_locate(
             resp_tok = getattr(usage, "response_tokens", None) or 0
         except Exception:
             req_tok, resp_tok = 0, 0
-        usage_sink.append({
-            "request_tokens": int(req_tok),
-            "response_tokens": int(resp_tok),
-            "generation_id": _extract_generation_id(result),
-        })
+        usage_sink.append(
+            {
+                "request_tokens": int(req_tok),
+                "response_tokens": int(resp_tok),
+                "generation_id": _extract_generation_id(result),
+            }
+        )
 
     return pick, all_msgs
 
@@ -905,8 +960,7 @@ def _extract_generation_id(result) -> Optional[str]:
     except Exception:
         return None
     for msg in reversed(msgs):
-        for attr in ("vendor_id", "provider_response_id",
-                     "model_response_id", "response_id"):
+        for attr in ("vendor_id", "provider_response_id", "model_response_id", "response_id"):
             v = getattr(msg, attr, None)
             if isinstance(v, str) and v:
                 return v
@@ -969,7 +1023,7 @@ def _fmt_args(args: dict) -> str:
 def _fmt_tool_return(content) -> str:
     if isinstance(content, dict):
         if not content.get("success", True):
-            return f"error: {str(content.get('error',''))[:80]}"
+            return f"error: {str(content.get('error', ''))[:80]}"
         # Highlight high-value fields per tool
         out = []
         for k in ("postcode", "grid_ref", "query", "roads", "la"):
@@ -982,8 +1036,9 @@ def _fmt_tool_return(content) -> str:
         if "n_intersections" in content:
             out.append(f"n_intersections={content['n_intersections']}")
         if "inside_la" in content:
-            out.append(f"inside_la={content['inside_la']} "
-                       f"d={content.get('distance_km_approx', '?')}km")
+            out.append(
+                f"inside_la={content['inside_la']} d={content.get('distance_km_approx', '?')}km"
+            )
         return "  ".join(out) if out else str(content)[:100]
     if isinstance(content, str):
         return content[:120]

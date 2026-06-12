@@ -20,29 +20,59 @@ DATA_DIR = ROOT / "os_opendata" / "open_names" / "csv" / "Data"
 _OSGB_TO_WGS84 = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True)
 
 _HEADER = [
-    "ID", "NAMES_URI", "NAME1", "NAME1_LANG", "NAME2", "NAME2_LANG",
-    "TYPE", "LOCAL_TYPE", "GEOMETRY_X", "GEOMETRY_Y",
-    "MOST_DETAIL_VIEW_RES", "LEAST_DETAIL_VIEW_RES",
-    "MBR_XMIN", "MBR_YMIN", "MBR_XMAX", "MBR_YMAX",
-    "POSTCODE_DISTRICT", "POSTCODE_DISTRICT_URI",
-    "POPULATED_PLACE", "POPULATED_PLACE_URI", "POPULATED_PLACE_TYPE",
-    "DISTRICT_BOROUGH", "DISTRICT_BOROUGH_URI", "DISTRICT_BOROUGH_TYPE",
-    "COUNTY_UNITARY", "COUNTY_UNITARY_URI", "COUNTY_UNITARY_TYPE",
-    "REGION", "REGION_URI", "COUNTRY", "COUNTRY_URI",
-    "RELATED_SPATIAL_OBJECT", "SAME_AS_DBPEDIA", "SAME_AS_GEONAMES",
+    "ID",
+    "NAMES_URI",
+    "NAME1",
+    "NAME1_LANG",
+    "NAME2",
+    "NAME2_LANG",
+    "TYPE",
+    "LOCAL_TYPE",
+    "GEOMETRY_X",
+    "GEOMETRY_Y",
+    "MOST_DETAIL_VIEW_RES",
+    "LEAST_DETAIL_VIEW_RES",
+    "MBR_XMIN",
+    "MBR_YMIN",
+    "MBR_XMAX",
+    "MBR_YMAX",
+    "POSTCODE_DISTRICT",
+    "POSTCODE_DISTRICT_URI",
+    "POPULATED_PLACE",
+    "POPULATED_PLACE_URI",
+    "POPULATED_PLACE_TYPE",
+    "DISTRICT_BOROUGH",
+    "DISTRICT_BOROUGH_URI",
+    "DISTRICT_BOROUGH_TYPE",
+    "COUNTY_UNITARY",
+    "COUNTY_UNITARY_URI",
+    "COUNTY_UNITARY_TYPE",
+    "REGION",
+    "REGION_URI",
+    "COUNTRY",
+    "COUNTRY_URI",
+    "RELATED_SPATIAL_OBJECT",
+    "SAME_AS_DBPEDIA",
+    "SAME_AS_GEONAMES",
 ]
 
-_KEEP_COLS = ["NAME1", "LOCAL_TYPE",
-              "GEOMETRY_X", "GEOMETRY_Y",
-              "DISTRICT_BOROUGH", "COUNTY_UNITARY", "COUNTRY",
-              # POPULATED_PLACE is the village/hamlet-level context
-              # column (filled on ~16% of rows). The context filter
-              # in ``search()`` iterates over POPULATED_PLACE, but
-              # without it in _KEEP_COLS the column was silently
-              # missing → the village-level disambiguation branch was
-              # a no-op (e.g. ``place("Manor Road", la="Cullivoe")``
-              # could not match by Cullivoe).
-              "POPULATED_PLACE"]
+_KEEP_COLS = [
+    "NAME1",
+    "LOCAL_TYPE",
+    "GEOMETRY_X",
+    "GEOMETRY_Y",
+    "DISTRICT_BOROUGH",
+    "COUNTY_UNITARY",
+    "COUNTRY",
+    # POPULATED_PLACE is the village/hamlet-level context
+    # column (filled on ~16% of rows). The context filter
+    # in ``search()`` iterates over POPULATED_PLACE, but
+    # without it in _KEEP_COLS the column was silently
+    # missing → the village-level disambiguation branch was
+    # a no-op (e.g. ``place("Manor Road", la="Cullivoe")``
+    # could not match by Cullivoe).
+    "POPULATED_PLACE",
+]
 
 
 _TABLE: Optional[pd.DataFrame] = None
@@ -67,9 +97,14 @@ def _load() -> pd.DataFrame:
     parts = []
     for f in files:
         try:
-            df = pd.read_csv(f, names=_HEADER, header=None,
-                                  usecols=_KEEP_COLS, encoding="utf-8",
-                                  on_bad_lines="skip")
+            df = pd.read_csv(
+                f,
+                names=_HEADER,
+                header=None,
+                usecols=_KEEP_COLS,
+                encoding="utf-8",
+                on_bad_lines="skip",
+            )
             parts.append(df)
         except Exception:
             continue
@@ -82,7 +117,8 @@ def _load() -> pd.DataFrame:
 
 def _safe_str(v) -> str:
     """Coerce CSV-loaded values to str; pd reads empty fields as NaN floats."""
-    if v is None: return ""
+    if v is None:
+        return ""
     if isinstance(v, float) and (v != v):  # NaN
         return ""
     return str(v).strip()
@@ -92,23 +128,32 @@ def _row_to_hit(row: pd.Series) -> Dict:
     name = _safe_str(row.get("NAME1"))
     bo = _safe_str(row.get("DISTRICT_BOROUGH"))
     co = _safe_str(row.get("COUNTY_UNITARY"))
-    lon, lat = _OSGB_TO_WGS84.transform(float(row["GEOMETRY_X"]),
-                                        float(row["GEOMETRY_Y"]))
+    lon, lat = _OSGB_TO_WGS84.transform(float(row["GEOMETRY_X"]), float(row["GEOMETRY_Y"]))
     lt = row.get("LOCAL_TYPE", "") or ""
     # The locate-agent's ``place`` tool reads ``name``, ``type``,
     # ``admin_district`` and ``county`` under exactly these keys.
     return {
         "name": name or None,
         "type": lt,
-        "lat": float(lat), "lon": float(lon),
+        "lat": float(lat),
+        "lon": float(lon),
         "admin_district": bo or None,
         "county": co or None,
     }
 
 
 _QUALIFIER_SUFFIXES = (
-    " village", " town", " city", " hamlet", " road", " street",
-    " lane", " avenue", " way", " borough", " district",
+    " village",
+    " town",
+    " city",
+    " hamlet",
+    " road",
+    " street",
+    " lane",
+    " avenue",
+    " way",
+    " borough",
+    " district",
 )
 
 
@@ -118,12 +163,11 @@ def _normalize_query(q: str) -> List[str]:
     cands = [base]
     for suf in _QUALIFIER_SUFFIXES:
         if base.endswith(suf) and len(base) > len(suf) + 2:
-            cands.append(base[:-len(suf)].strip())
+            cands.append(base[: -len(suf)].strip())
     return cands
 
 
-def search(query: str, max_results: int = 10,
-           context: Optional[str] = None) -> List[Dict]:
+def search(query: str, max_results: int = 10, context: Optional[str] = None) -> List[Dict]:
     """Return up to `max_results` hits ranked by exact > prefix > fuzzy.
 
     Args:
@@ -148,7 +192,7 @@ def search(query: str, max_results: int = 10,
         ctx = context.strip().lower()
         for suf in (" district", " borough", " unitary", " county", " council"):
             if ctx.endswith(suf):
-                ctx = ctx[:-len(suf)].strip()
+                ctx = ctx[: -len(suf)].strip()
         ctx_tokens = [t.strip() for t in ctx.replace(",", " ").split() if len(t.strip()) > 2]
         if ctx_tokens:
             mask = pd.Series(False, index=rows_pool.index)
@@ -171,14 +215,16 @@ def search(query: str, max_results: int = 10,
         exact = rows_pool.index[pool_name_lc == q].tolist()
         for i in exact:
             if i not in seen_idx:
-                idxs.append(int(i)); seen_idx.add(i)
+                idxs.append(int(i))
+                seen_idx.add(i)
         if len(idxs) >= max_results:
             break
         # 2. Prefix match within filtered pool
         prefix = rows_pool.index[pool_name_lc.str.startswith(q, na=False)].tolist()
         for i in prefix:
             if i not in seen_idx:
-                idxs.append(int(i)); seen_idx.add(i)
+                idxs.append(int(i))
+                seen_idx.add(i)
         if len(idxs) >= max_results:
             break
 
@@ -186,16 +232,20 @@ def search(query: str, max_results: int = 10,
     if not idxs:
         try:
             from rapidfuzz import process, fuzz
+
             pool_names = pool_name_lc.unique().tolist()
             for q in qcands:
-                cands = process.extract(q, pool_names, scorer=fuzz.WRatio,
-                                          limit=max_results, score_cutoff=85)
+                cands = process.extract(
+                    q, pool_names, scorer=fuzz.WRatio, limit=max_results, score_cutoff=85
+                )
                 for cn, score, _ in cands:
                     matches = rows_pool.index[pool_name_lc == cn].tolist()
                     for i in matches:
                         if i not in seen_idx:
-                            idxs.append(int(i)); seen_idx.add(i)
-                if idxs: break
+                            idxs.append(int(i))
+                            seen_idx.add(i)
+                if idxs:
+                    break
         except Exception:
             pass
 
@@ -209,9 +259,11 @@ def search(query: str, max_results: int = 10,
     seen_keys = set()
     hits = []
     for _, row in rows.head(max_results * 3).iterrows():
-        key = (_safe_str(row.get("NAME1")).lower(),
-               round(float(row["GEOMETRY_X"]) / 100),
-               round(float(row["GEOMETRY_Y"]) / 100))
+        key = (
+            _safe_str(row.get("NAME1")).lower(),
+            round(float(row["GEOMETRY_X"]) / 100),
+            round(float(row["GEOMETRY_Y"]) / 100),
+        )
         if key in seen_keys:
             continue
         seen_keys.add(key)
@@ -222,8 +274,7 @@ def search(query: str, max_results: int = 10,
 
 
 CSV_DIR = ROOT / "os_opendata" / "code_point_open" / "csv" / "Data" / "CSV"
-_CODELIST_XLSX = (ROOT / "os_opendata" / "code_point_open" / "csv" / "Doc"
-                  / "Codelist.xlsx")
+_CODELIST_XLSX = ROOT / "os_opendata" / "code_point_open" / "csv" / "Doc" / "Codelist.xlsx"
 
 # area_lower -> {full_postcode -> (E, N, district_code)} where
 # district_code is the GSS code (e.g. 'E07000240') for the resolving
@@ -239,22 +290,27 @@ _DISTRICT_NAMES: Optional[Dict[str, str]] = None
 
 def _normalize_postcode(pc: str) -> str:
     """Standardize postcode to e.g. 'AL1 3JE' (one space between out + in)."""
-    if not pc: return ""
+    if not pc:
+        return ""
     s = pc.strip().upper().replace(" ", "")
-    if len(s) < 5: return s  # invalid
+    if len(s) < 5:
+        return s  # invalid
     # Last 3 chars are inward, rest is outward
     return f"{s[:-3]} {s[-3:]}"
 
 
 def _area_for_postcode(pc_norm: str) -> str:
     """Return the lowercase area code (a-z, e.g. 'al' for AL1, 'b' for B1)."""
-    if not pc_norm: return ""
+    if not pc_norm:
+        return ""
     s = pc_norm.replace(" ", "")
     # Area is the leading letters (1-2)
     a = ""
     for ch in s:
-        if ch.isalpha(): a += ch.lower()
-        else: break
+        if ch.isalpha():
+            a += ch.lower()
+        else:
+            break
     return a
 
 
@@ -264,7 +320,8 @@ def _load_area(area: str) -> Dict[str, tuple]:
     district_code is parts[8] (the GSS Admin_District_Code, e.g.
     'E07000240'). Empty string when missing. ``lookup_postcode``
     resolves it to a human-readable name via ``_load_district_names``."""
-    if area in _CACHE: return _CACHE[area]
+    if area in _CACHE:
+        return _CACHE[area]
     f = CSV_DIR / f"{area}.csv"
     if not f.exists():
         _CACHE[area] = {}
@@ -273,10 +330,12 @@ def _load_area(area: str) -> Dict[str, tuple]:
     with open(f) as fh:
         for line in fh:
             parts = line.rstrip().split(",")
-            if len(parts) < 4: continue
+            if len(parts) < 4:
+                continue
             pc = parts[0].strip('"')
             try:
-                e = int(parts[2]); n = int(parts[3])
+                e = int(parts[2])
+                n = int(parts[3])
             except (ValueError, IndexError):
                 continue
             # Skip "no position available" postcodes — OS encodes these
@@ -320,8 +379,7 @@ def _load_district_names() -> Dict[str, str]:
         names: Dict[str, str] = {}
         for sheet in ("DIS", "LBO", "MTD", "UTA"):
             try:
-                df = pd.read_excel(_CODELIST_XLSX, sheet_name=sheet,
-                                    header=None, dtype=str)
+                df = pd.read_excel(_CODELIST_XLSX, sheet_name=sheet, header=None, dtype=str)
             except Exception:
                 continue
             for _, row in df.iterrows():
@@ -338,17 +396,21 @@ def _load_district_names() -> Dict[str, str]:
 def lookup_postcode(postcode: str) -> Optional[Dict]:
     """Lookup a full UK postcode (e.g. 'AL1 3JE'). Returns None if not found."""
     pc_norm = _normalize_postcode(postcode)
-    if not pc_norm: return None
+    if not pc_norm:
+        return None
     area = _area_for_postcode(pc_norm)
-    if not area: return None
+    if not area:
+        return None
     area_dict = _load_area(area)
     coords = area_dict.get(pc_norm)
-    if coords is None: return None
+    if coords is None:
+        return None
     e, n, dcode = coords
     lon, lat = _OSGB_TO_WGS84.transform(e, n)
     district_name = _load_district_names().get(dcode) if dcode else None
     return {
-        "lat": float(lat), "lon": float(lon),
+        "lat": float(lat),
+        "lon": float(lon),
         "admin_district": district_name,
     }
 
@@ -359,10 +421,12 @@ def lookup_postcode(postcode: str) -> Optional[Dict]:
 # Standard formula: each letter is 0-24 (A-Z skipping I).
 _OS_GRID_LETTERS = {}
 for _c1 in range(26):
-    if _c1 == 8: continue  # skip I
+    if _c1 == 8:
+        continue  # skip I
     _l1 = _c1 - (1 if _c1 > 8 else 0)  # 0-24 index
     for _c2 in range(26):
-        if _c2 == 8: continue
+        if _c2 == 8:
+            continue
         _l2 = _c2 - (1 if _c2 > 8 else 0)
         e = ((_l1 - 2) % 5) * 5 + (_l2 % 5)
         n = 19 - 5 * (_l1 // 5) - (_l2 // 5)
@@ -472,6 +536,7 @@ def os_grid_ref_to_latlon(grid_ref: str) -> Optional[Tuple[float, float]]:
         if len(d) >= 5:
             return d
         return d + "5" + "0" * (5 - len(d) - 1)
+
     east_digits = _centroid_pad(east_digits)
     north_digits = _centroid_pad(north_digits)
 
@@ -505,18 +570,33 @@ def _normalize_la_name(s: str) -> str:
     out = str(s).lower().strip().replace(".", "")
     out = re.sub(r"\s*\(b\)$", "", out)
     out = re.sub(r"\s*\((?:district|borough|county|unitary|metro)\)$", "", out)
-    for suffix in (" district council", " borough council", " city council",
-                    " county council", " metropolitan borough council",
-                    " london borough council",
-                    " district", " borough", " london boro", " london borough",
-                    " metropolitan borough", " unitary", " unitary authority",
-                    " council"):
+    for suffix in (
+        " district council",
+        " borough council",
+        " city council",
+        " county council",
+        " metropolitan borough council",
+        " london borough council",
+        " district",
+        " borough",
+        " london boro",
+        " london borough",
+        " metropolitan borough",
+        " unitary",
+        " unitary authority",
+        " council",
+    ):
         if out.endswith(suffix):
-            out = out[:-len(suffix)].strip()
-    for prefix in ("city of ", "london borough of ", "borough of ",
-                    "the london borough of ", "royal borough of "):
+            out = out[: -len(suffix)].strip()
+    for prefix in (
+        "city of ",
+        "london borough of ",
+        "borough of ",
+        "the london borough of ",
+        "royal borough of ",
+    ):
         if out.startswith(prefix):
-            out = out[len(prefix):].strip()
+            out = out[len(prefix) :].strip()
     return out
 
 
@@ -533,7 +613,7 @@ def _add_la_variants(out: Dict[str, Any], name: str, geom):
             out[bare] = geom
     for suffix in (" district", " borough", " london boro", " county"):
         if nm.endswith(suffix):
-            short = nm[:-len(suffix)].strip()
+            short = nm[: -len(suffix)].strip()
             if short and short not in out:
                 out[short] = geom
 
@@ -548,6 +628,7 @@ def _load_la_polygons() -> Dict[str, Any]:
         return _LA_POLYGONS
     try:
         import geopandas as gpd
+
         out: Dict[str, Any] = {}
 
         # Case-insensitive shapefile lookup — Linux is case-sensitive and the
@@ -563,12 +644,15 @@ def _load_la_polygons() -> Dict[str, Any]:
             zp = bdir / "bdline_essh.zip"
             if zp.exists():
                 import zipfile
+
                 with zipfile.ZipFile(zp) as z:
                     for member in z.namelist():
                         ml = member.lower()
-                        if ("county_region" in ml
-                                or "ceremonial-counties" in ml
-                                or "district_borough_unitary" in ml):
+                        if (
+                            "county_region" in ml
+                            or "ceremonial-counties" in ml
+                            or "district_borough_unitary" in ml
+                        ):
                             try:
                                 z.extract(member, str(bdir))
                             except Exception:
@@ -606,6 +690,11 @@ def _load_la_polygons() -> Dict[str, Any]:
 
 
 def resolve_la(query: str):
+    """Resolve a UK admin-area name to its OS BoundaryLine polygon.
+
+    Tries exact match, then suffix/prefix-normalised forms ("Borough of",
+    "... District Council", ...), then the longest substring match;
+    None when nothing resolves."""
     q = (query or "").strip().lower()
     if not q:
         return None
@@ -669,8 +758,7 @@ def lookup_district_boundary(
     elif not isinstance(poly, MultiPolygon):
         return {
             "success": False,
-            "error": f"Unexpected geometry type from BoundaryLine lookup: "
-                     f"{type(poly).__name__}",
+            "error": f"Unexpected geometry type from BoundaryLine lookup: {type(poly).__name__}",
         }
 
     return {
@@ -690,6 +778,7 @@ def lookup_district_boundary(
 if __name__ == "__main__":
     import sys
     import time
+
     if len(sys.argv) < 2:
         print("usage: python -m geoplanagent.tools.geocode <query|postcode> [context]")
         sys.exit(1)
@@ -699,18 +788,19 @@ if __name__ == "__main__":
         # Postcode-looking arg → Code-Point Open
         h = lookup_postcode(joined)
         if h:
-            print(f"{joined} -> ({h['lat']:.6f}, {h['lon']:.6f})  "
-                  f"district={h['admin_district']}")
+            print(f"{joined} -> ({h['lat']:.6f}, {h['lon']:.6f})  district={h['admin_district']}")
         else:
             print(f"{joined} -> not found")
-        print(f"(load + lookup: {time.time()-t0:.2f}s)")
+        print(f"(load + lookup: {time.time() - t0:.2f}s)")
     else:
         df = _load()
-        print(f"Loaded {len(df):,} rows in {time.time()-t0:.1f}s")
+        print(f"Loaded {len(df):,} rows in {time.time() - t0:.1f}s")
         q = sys.argv[1]
         ctx = sys.argv[2] if len(sys.argv) > 2 else None
         print(f"Query: {q!r}  context={ctx!r}")
         for h in search(q, max_results=5, context=ctx):
-            print(f"  {(h['name'] or ''):40s} {h['type']:25s} "
-                  f"({h['lat']:.5f}, {h['lon']:.5f})  "
-                  f"{h['admin_district'] or h['county'] or ''}")
+            print(
+                f"  {(h['name'] or ''):40s} {h['type']:25s} "
+                f"({h['lat']:.5f}, {h['lon']:.5f})  "
+                f"{h['admin_district'] or h['county'] or ''}"
+            )

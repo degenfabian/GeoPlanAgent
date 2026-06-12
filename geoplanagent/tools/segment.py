@@ -53,23 +53,28 @@ def _load_kfold(kfold_dir, hf_token, device):
         # LoRA), which tanks inference accuracy. Surface that loudly so
         # a half-populated k-fold dir doesn't look like a clean run.
         adapter_dirs = [
-            d for d in kfold_dir.glob("fold_*")
+            d
+            for d in kfold_dir.glob("fold_*")
             if (d / "adapter_config.json").exists() or (d / "best.pt").exists()
         ]
         if adapter_dirs:
-            print(f"  sam3 loader: WARNING — {fa_path} missing but "
-                  f"{len(adapter_dirs)} adapter dir(s) present "
-                  f"({[d.name for d in adapter_dirs]}). Falling back to "
-                  f"base SAM3 with NO LoRA — accuracy will drop. Restore "
-                  f"fold_assignment.json to use the trained adapters.")
+            print(
+                f"  sam3 loader: WARNING — {fa_path} missing but "
+                f"{len(adapter_dirs)} adapter dir(s) present "
+                f"({[d.name for d in adapter_dirs]}). Falling back to "
+                f"base SAM3 with NO LoRA — accuracy will drop. Restore "
+                f"fold_assignment.json to use the trained adapters."
+            )
         return None  # signal caller to use legacy path
 
     fold_assignment = {}
     try:
         fold_assignment = json.loads(fa_path.read_text())
     except Exception as e:
-        print(f"  sam3 loader: WARNING — failed to parse {fa_path.name} "
-              f"({e!r}); k-fold routing falls back to min(available_folds)")
+        print(
+            f"  sam3 loader: WARNING — failed to parse {fa_path.name} "
+            f"({e!r}); k-fold routing falls back to min(available_folds)"
+        )
 
     # Find which folds actually have a usable adapter on disk.
     available = []
@@ -111,24 +116,20 @@ def _load_kfold(kfold_dir, hf_token, device):
         """
         out = {}
         for k, v in sd.items():
-            new_k = (k
-                     .replace(".lora_A.default.", f".lora_A.{fold_key}.")
-                     .replace(".lora_B.default.", f".lora_B.{fold_key}.")
-                     .replace(".lora_embedding_A.default.",
-                              f".lora_embedding_A.{fold_key}.")
-                     .replace(".lora_embedding_B.default.",
-                              f".lora_embedding_B.{fold_key}.")
-                     .replace("modules_to_save.default.",
-                              f"modules_to_save.{fold_key}."))
+            new_k = (
+                k.replace(".lora_A.default.", f".lora_A.{fold_key}.")
+                .replace(".lora_B.default.", f".lora_B.{fold_key}.")
+                .replace(".lora_embedding_A.default.", f".lora_embedding_A.{fold_key}.")
+                .replace(".lora_embedding_B.default.", f".lora_embedding_B.{fold_key}.")
+                .replace("modules_to_save.default.", f"modules_to_save.{fold_key}.")
+            )
             out[new_k] = v
         return out
 
     def _load_raw_into(model, ckpt_state, fold_key: str, label: str):
         """Rename keys, load, and verify enough weights matched."""
         renamed = _rename_default_to_fold(ckpt_state, fold_key)
-        before = {n: p.detach().clone()
-                  for n, p in model.named_parameters()
-                  if fold_key in n}
+        before = {n: p.detach().clone() for n, p in model.named_parameters() if fold_key in n}
         result = model.load_state_dict(renamed, strict=False)
         # Sanity-check: count how many of OUR expected fold_key weights
         # actually changed value after load. If 0, the load silently failed.
@@ -137,42 +138,44 @@ def _load_kfold(kfold_dir, hf_token, device):
             if fold_key in n and n in before:
                 if not torch.equal(before[n].to(p.device), p):
                     changed += 1
-        print(f"    {label}: {changed} fold-specific weights updated, "
-              f"{len(result.missing_keys)} missing, "
-              f"{len(result.unexpected_keys)} unexpected")
+        print(
+            f"    {label}: {changed} fold-specific weights updated, "
+            f"{len(result.missing_keys)} missing, "
+            f"{len(result.unexpected_keys)} unexpected"
+        )
         if changed == 0:
             raise RuntimeError(
                 f"{label}: state_dict load updated zero {fold_key} weights — "
                 f"adapter name mismatch or empty checkpoint? "
                 f"Missing example: {result.missing_keys[:1]}, "
-                f"unexpected example: {result.unexpected_keys[:1]}")
+                f"unexpected example: {result.unexpected_keys[:1]}"
+            )
 
     # Take the first available fold to construct the PeftModel; the
     # remaining ones load via .load_adapter(name=...).
     first_k, first_src, first_kind = available[0]
     if first_kind == "peft":
-        model = PeftModel.from_pretrained(base, str(first_src),
-                                            adapter_name=f"fold_{first_k}")
+        model = PeftModel.from_pretrained(base, str(first_src), adapter_name=f"fold_{first_k}")
     else:
         # Raw best.pt: load state_dict into a freshly-configured PeftModel.
         ckpt = torch.load(first_src, map_location="cpu", weights_only=False)
         from peft import LoraConfig, get_peft_model
+
         cfg = ckpt.get("config", {})
         rank = cfg.get("rank", 16)
         # modules_to_save MUST be set for PEFT to construct the wrapped
         # paths the checkpoint saved its trained head weights to.
         lora_cfg = LoraConfig(
-            r=rank, lora_alpha=rank * 2,
-            target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
-                              "fc1", "fc2"],
-            lora_dropout=0.05, bias="none",
-            modules_to_save=["mask_embedder", "presence_head",
-                              "semantic_projection"],
+            r=rank,
+            lora_alpha=rank * 2,
+            target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "fc1", "fc2"],
+            lora_dropout=0.05,
+            bias="none",
+            modules_to_save=["mask_embedder", "presence_head", "semantic_projection"],
         )
         fold_key = f"fold_{first_k}"
         model = get_peft_model(base, lora_cfg, adapter_name=fold_key)
-        _load_raw_into(model, ckpt["state_dict"], fold_key,
-                       f"fold {first_k} (raw)")
+        _load_raw_into(model, ckpt["state_dict"], fold_key, f"fold {first_k} (raw)")
 
     # Add the remaining adapters under their own names.
     for k, src, kind in available[1:]:
@@ -183,18 +186,18 @@ def _load_kfold(kfold_dir, hf_token, device):
             cfg = ckpt.get("config", {})
             rank = cfg.get("rank", 16)
             from peft import LoraConfig
+
             lora_cfg = LoraConfig(
-                r=rank, lora_alpha=rank * 2,
-                target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
-                                  "fc1", "fc2"],
-                lora_dropout=0.05, bias="none",
-                modules_to_save=["mask_embedder", "presence_head",
-                                  "semantic_projection"],
+                r=rank,
+                lora_alpha=rank * 2,
+                target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "fc1", "fc2"],
+                lora_dropout=0.05,
+                bias="none",
+                modules_to_save=["mask_embedder", "presence_head", "semantic_projection"],
             )
             fold_key = f"fold_{k}"
             model.add_adapter(fold_key, lora_cfg)
-            _load_raw_into(model, ckpt["state_dict"], fold_key,
-                           f"fold {k} (raw)")
+            _load_raw_into(model, ckpt["state_dict"], fold_key, f"fold {k} (raw)")
 
     model = model.to(device).eval()
     available_folds = {k for k, _, _ in available}
@@ -256,30 +259,39 @@ def load_sam3_ft():
 
     hf_token = os.environ.get("HF_TOKEN")
     if not hf_token:
-        print("  WARNING: HF_TOKEN not set. SAM3 download may fail if model "
-              "is gated. Set: export HF_TOKEN=hf_xxx")
+        print(
+            "  WARNING: HF_TOKEN not set. SAM3 download may fail if model "
+            "is gated. Set: export HF_TOKEN=hf_xxx"
+        )
 
-    device = torch.device("mps" if torch.backends.mps.is_available()
-                          else "cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device(
+        "mps"
+        if torch.backends.mps.is_available()
+        else "cuda"
+        if torch.cuda.is_available()
+        else "cpu"
+    )
 
     out = _load_kfold(DEFAULT_KFOLD_DIR, hf_token, device)
     if out is not None:
         return out
 
-    print(f"  WARNING: k-fold dir ({DEFAULT_KFOLD_DIR}) missing. "
-          f"Falling back to base SAM3 (no LoRA).")
+    print(
+        f"  WARNING: k-fold dir ({DEFAULT_KFOLD_DIR}) missing. Falling back to base SAM3 (no LoRA)."
+    )
     processor = Sam3Processor.from_pretrained("facebook/sam3", token=hf_token)
     model = Sam3Model.from_pretrained("facebook/sam3", token=hf_token)
     model = model.to(device).eval()
     print(f"SAM3 (base, no LoRA) loaded on {device}")
-    return {"processor": processor, "model": model, "device": device,
-            "kind": "base"}
+    return {"processor": processor, "model": model, "device": device, "kind": "base"}
 
 
 # Semantic segmentation
 
-def extract_boundary_sam3_semantic(map_crop_path, processor, model, device,
-                                   query="planning boundary", bbox=None):
+
+def extract_boundary_sam3_semantic(
+    map_crop_path, processor, model, device, query="planning boundary", bbox=None
+):
     """Extract boundary using semantic segmentation mode.
 
     Uses post_process_semantic_segmentation() for a single best mask.
@@ -297,6 +309,7 @@ def extract_boundary_sam3_semantic(map_crop_path, processor, model, device,
         Binary mask (0/255 uint8) or None if extraction failed.
     """
     from PIL import Image
+
     image = Image.open(map_crop_path).convert("RGB")
     w, h = image.size
 
@@ -309,14 +322,17 @@ def extract_boundary_sam3_semantic(map_crop_path, processor, model, device,
         words = query.split()
         if len(words) > 6:
             truncated = " ".join(words[:6])
-            print(f"  SAM3 query truncated: {query!r} → {truncated!r} "
-                  f"(was {len(words)} words, CLIP limit ≈32 tokens)")
+            print(
+                f"  SAM3 query truncated: {query!r} → {truncated!r} "
+                f"(was {len(words)} words, CLIP limit ≈32 tokens)"
+            )
             query = truncated
 
     if bbox is not None:
         x1, y1, x2, y2 = bbox
         inputs = processor(
-            images=image, text=query,
+            images=image,
+            text=query,
             input_boxes=[[[float(x1), float(y1), float(x2), float(y2)]]],
             input_boxes_labels=[[1]],
             return_tensors="pt",
@@ -324,8 +340,7 @@ def extract_boundary_sam3_semantic(map_crop_path, processor, model, device,
     else:
         inputs = processor(images=image, text=query, return_tensors="pt")
 
-    inputs = {k: v.to(device) if isinstance(v, torch.Tensor) else v
-              for k, v in inputs.items()}
+    inputs = {k: v.to(device) if isinstance(v, torch.Tensor) else v for k, v in inputs.items()}
     with torch.no_grad():
         outputs = model(**inputs)
     masks = processor.post_process_semantic_segmentation(outputs, target_sizes=[(h, w)])

@@ -28,9 +28,10 @@ TILE_CACHE_DIR = BASE / "cache" / "os_opendata_tiles"
 
 # Coordinate transforms
 
+
 def _tile_to_bounds_3857(zoom, tx, ty):
     """Convert tile coordinates to bounds in EPSG:3857 (Web Mercator meters)."""
-    n = 2 ** zoom
+    n = 2**zoom
     # World extent in EPSG:3857
     origin = 20037508.342789244
     tile_extent = 2 * origin / n
@@ -66,9 +67,8 @@ def _read_layer(layer_name, bounds_27700):
 def _transform_3857_to_27700(x_min, y_min, x_max, y_max):
     """Convert EPSG:3857 bounds to EPSG:27700 (British National Grid)."""
     import pyproj
-    transformer = pyproj.Transformer.from_crs(
-        "EPSG:3857", "EPSG:27700", always_xy=True
-    )
+
+    transformer = pyproj.Transformer.from_crs("EPSG:3857", "EPSG:27700", always_xy=True)
     # Transform corners
     x1, y1 = transformer.transform(x_min, y_min)
     x2, y2 = transformer.transform(x_max, y_max)
@@ -81,22 +81,22 @@ def _transform_3857_to_27700(x_min, y_min, x_max, y_max):
 
 # UK planning map style colors (BGR for cv2)
 STYLE = {
-    "background":   (232, 240, 245),   # light cream/buff
-    "building":     (179, 179, 255),   # salmon/pink fill
+    "background": (232, 240, 245),  # light cream/buff
+    "building": (179, 179, 255),  # salmon/pink fill
     "building_outline": (100, 100, 100),
-    "road_fill":    (255, 255, 255),   # white
-    "road_casing":  (160, 160, 160),   # gray
-    "motorway":     (180, 200, 255),   # light orange-pink
-    "a_road":       (200, 220, 255),   # light salmon
-    "water":        (255, 217, 179),   # light blue
-    "woodland":     (192, 230, 200),   # light green
-    "greenspace":   (216, 240, 224),   # very light green
-    "rail":         (120, 120, 120),   # dark gray
+    "road_fill": (255, 255, 255),  # white
+    "road_casing": (160, 160, 160),  # gray
+    "motorway": (180, 200, 255),  # light orange-pink
+    "a_road": (200, 220, 255),  # light salmon
+    "water": (255, 217, 179),  # light blue
+    "woodland": (192, 230, 200),  # light green
+    "greenspace": (216, 240, 224),  # very light green
+    "rail": (120, 120, 120),  # dark gray
 }
 
 # Road widths by type (pixels at z17)
 ROAD_WIDTHS_Z17 = {
-    "Motorway": (6, 8),       # (fill, casing)
+    "Motorway": (6, 8),  # (fill, casing)
     "A Road": (4, 6),
     "B Road": (3, 5),
     "Minor Road": (2, 3),
@@ -129,8 +129,7 @@ def _draw_polygon(canvas, pixel_geom, fill_color, outline=None, outline_width=1)
             continue
         cv2.fillPoly(canvas, [exterior], fill_color)
         if outline is not None:
-            cv2.polylines(canvas, [exterior], True, outline, outline_width,
-                         lineType=cv2.LINE_AA)
+            cv2.polylines(canvas, [exterior], True, outline, outline_width, lineType=cv2.LINE_AA)
         # Draw holes
         for interior in poly.interiors:
             hole = np.array(interior.coords, dtype=np.int32)
@@ -182,10 +181,10 @@ def _render_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y):
 
     # Compute full bounds in 3857 for the entire grid
     bounds_3857 = (
-        _tile_to_bounds_3857(zoom, tx_min, ty_min)[0],          # x_min (left edge)
+        _tile_to_bounds_3857(zoom, tx_min, ty_min)[0],  # x_min (left edge)
         _tile_to_bounds_3857(zoom, tx_min, ty_min + n_tiles_y - 1)[1],  # y_min (bottom edge)
         _tile_to_bounds_3857(zoom, tx_min + n_tiles_x - 1, ty_min)[2],  # x_max (right edge)
-        _tile_to_bounds_3857(zoom, tx_min, ty_min)[3],          # y_max (top edge)
+        _tile_to_bounds_3857(zoom, tx_min, ty_min)[3],  # y_max (top edge)
     )
     bounds_27700 = _transform_3857_to_27700(*bounds_3857)
 
@@ -199,6 +198,7 @@ def _render_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y):
 
     import pyproj
     from shapely.ops import transform as shapely_transform
+
     transformer_to_3857 = pyproj.Transformer.from_crs("EPSG:27700", "EPSG:3857", always_xy=True)
 
     def _geom_to_pixels(geom):
@@ -207,6 +207,7 @@ def _render_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y):
             px = (mx - x_min_3857) / x_extent * canvas_w
             py = (1 - (my - y_min_3857) / y_extent) * canvas_h
             return px, py
+
         return shapely_transform(_to_px, geom)
 
     # ── Layer 1: Greenspaces
@@ -238,8 +239,13 @@ def _render_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y):
     gdf = _read_layer("local_buildings", bounds_27700)
     if gdf is not None:
         for _, row in gdf.iterrows():
-            _draw_polygon(canvas, _geom_to_pixels(row.geometry), STYLE["building"],
-                         outline=STYLE["building_outline"], outline_width=1)
+            _draw_polygon(
+                canvas,
+                _geom_to_pixels(row.geometry),
+                STYLE["building"],
+                outline=STYLE["building_outline"],
+                outline_width=1,
+            )
 
     # ── Layer 6: Roads (all three layers combined)
     road_gdfs = []
@@ -256,9 +262,15 @@ def _render_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y):
 
     if road_gdfs:
         all_roads = pd.concat(road_gdfs, ignore_index=True)
-        road_order = {"Motorway": 0, "A Road": 1, "B Road": 2,
-                      "Minor Road": 3, "Local Street": 4,
-                      "Alley": 5, "Pedestrianised Street": 5}
+        road_order = {
+            "Motorway": 0,
+            "A Road": 1,
+            "B Road": 2,
+            "Minor Road": 3,
+            "Local Street": 4,
+            "Alley": 5,
+            "Pedestrianised Street": 5,
+        }
         all_roads["_order"] = all_roads["type"].map(lambda t: road_order.get(t, 4))
         all_roads = all_roads.sort_values("_order", ascending=False)
 
@@ -300,6 +312,7 @@ def _grid_cache_path(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y):
 def fetch_os_opendata_grid(lat, lon, zoom, n_tiles_x, n_tiles_y):
     """Bulk-render a tile grid from OS OpenData; returns dict with image, zoom, tx_min, ty_min, nx, ny, tile_size."""
     from geoplanagent.utils import latlon_to_tile_xy
+
     cx, cy = latlon_to_tile_xy(lat, lon, zoom)
     half_x = n_tiles_x // 2
     half_y = n_tiles_y // 2
@@ -316,13 +329,18 @@ def fetch_os_opendata_grid(lat, lon, zoom, n_tiles_x, n_tiles_y):
             canvas = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             print(f"  OS OpenData: loaded cached grid z{zoom} ({n_tiles_x}x{n_tiles_y})")
             return {
-                "image": canvas, "zoom": zoom,
-                "tx_min": tx_min, "ty_min": ty_min,
-                "nx": n_tiles_x, "ny": n_tiles_y, "tile_size": tile_size,
+                "image": canvas,
+                "zoom": zoom,
+                "tx_min": tx_min,
+                "ty_min": ty_min,
+                "nx": n_tiles_x,
+                "ny": n_tiles_y,
+                "tile_size": tile_size,
             }
 
     # Bulk render
     import time
+
     t0 = time.time()
     canvas = _render_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y)
     elapsed = time.time() - t0
@@ -333,7 +351,11 @@ def fetch_os_opendata_grid(lat, lon, zoom, n_tiles_x, n_tiles_y):
     cv2.imwrite(str(cache_path), cv2.cvtColor(canvas, cv2.COLOR_RGB2BGR))
 
     return {
-        "image": canvas, "zoom": zoom,
-        "tx_min": tx_min, "ty_min": ty_min,
-        "nx": n_tiles_x, "ny": n_tiles_y, "tile_size": tile_size,
+        "image": canvas,
+        "zoom": zoom,
+        "tx_min": tx_min,
+        "ty_min": ty_min,
+        "nx": n_tiles_x,
+        "ny": n_tiles_y,
+        "tile_size": tile_size,
     }

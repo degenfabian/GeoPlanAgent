@@ -34,21 +34,22 @@ def _strip_old_images(messages):
     for i, msg in enumerate(messages):
         if i >= cutoff:
             continue
-        parts = getattr(msg, 'parts', None)
+        parts = getattr(msg, "parts", None)
         if not parts:
             continue
         for part in parts:
-            content = getattr(part, 'content', None)
+            content = getattr(part, "content", None)
             if not isinstance(content, list):
                 continue
+
             def _is_strippable(it) -> bool:
-                if not (hasattr(it, 'media_type') and hasattr(it, 'data')):
+                if not (hasattr(it, "media_type") and hasattr(it, "data")):
                     return False
-                mt = getattr(it, 'media_type', '') or ''
+                mt = getattr(it, "media_type", "") or ""
                 # PDFs also get stripped — in folded_mode the PDF lives in
                 # the first user turn and is no longer needed once
                 # submit_pdf_info has populated state.pdf_info.
-                return mt.startswith('image/') or mt == 'application/pdf'
+                return mt.startswith("image/") or mt == "application/pdf"
 
             has_binary = any(_is_strippable(it) for it in content)
             if not has_binary:
@@ -56,8 +57,9 @@ def _strip_old_images(messages):
             new_content = list(content)
             for j, item in enumerate(new_content):
                 if _is_strippable(item):
-                    kind = ("PDF" if getattr(item, 'media_type', '') ==
-                            'application/pdf' else "image")
+                    kind = (
+                        "PDF" if getattr(item, "media_type", "") == "application/pdf" else "image"
+                    )
                     new_content[j] = (
                         f"[{kind} omitted from older history; "
                         f"was {item.media_type}, {len(item.data)} bytes]"
@@ -106,7 +108,7 @@ async def validate_boundary_outcome(
 
     # Folded mode: refuse to finalise until submit_pdf_info has populated
     # state.pdf_info. Standard pipeline already has pdf_info from Phase 1.
-    if getattr(state, 'folded_mode', False) and not state.pdf_info:
+    if getattr(state, "folded_mode", False) and not state.pdf_info:
         raise ModelRetry(
             "Cannot submit BoundaryOutcome yet — you have not called "
             "submit_pdf_info. The PDF binary is attached to your first "
@@ -140,6 +142,8 @@ async def validate_boundary_outcome(
 
 @_agent.system_prompt
 def build_system_prompt(ctx: RunContext[AgentState]) -> str:
-    if getattr(ctx.deps, 'folded_mode', False):
+    """Pick the worker's system prompt: folded variant when the run
+    skips the dedicated reader phase (--no-reader), standard otherwise."""
+    if getattr(ctx.deps, "folded_mode", False):
         return FOLDED_SYSTEM_PROMPT
     return WORKER_SYSTEM_PROMPT

@@ -27,12 +27,11 @@ def render_pdf_page(pdf_path, page_index, dpi=200):
     """
     try:
         import fitz
+
         doc = fitz.open(pdf_path)
         try:
             if page_index < 0 or page_index >= len(doc):
-                raise IndexError(
-                    f"page_index {page_index} out of range "
-                    f"(PDF has {len(doc)} pages)")
+                raise IndexError(f"page_index {page_index} out of range (PDF has {len(doc)} pages)")
             page = doc[page_index]
             # Force the full MediaBox to be rendered. By default PyMuPDF
             # honours the page's CropBox, which on some PDFs is set a few
@@ -53,8 +52,7 @@ def render_pdf_page(pdf_path, page_index, dpi=200):
             except ValueError:
                 pass
             pix = page.get_pixmap(dpi=dpi)
-            img = np.frombuffer(pix.samples, dtype=np.uint8).reshape(
-                pix.height, pix.width, pix.n)
+            img = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width, pix.n)
         finally:
             doc.close()
         if img.shape[2] == 4:
@@ -62,8 +60,10 @@ def render_pdf_page(pdf_path, page_index, dpi=200):
         return cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     except ImportError:
         pages = convert_from_path(
-            pdf_path, dpi=dpi,
-            first_page=page_index + 1, last_page=page_index + 1,
+            pdf_path,
+            dpi=dpi,
+            first_page=page_index + 1,
+            last_page=page_index + 1,
         )
         if not pages:
             return None
@@ -138,8 +138,7 @@ def resolve_case_pdf(folder_path: Path) -> Optional[Path]:
     pdf_files = list(folder_path.glob("*.pdf"))
     if not pdf_files:
         return None
-    map_pdfs = [p for p in pdf_files
-                if any(tok in p.name.lower() for tok in _MAP_TOKENS)]
+    map_pdfs = [p for p in pdf_files if any(tok in p.name.lower() for tok in _MAP_TOKENS)]
     return map_pdfs[0] if map_pdfs else pdf_files[0]
 
 
@@ -171,11 +170,11 @@ _kfold_state: dict | None = None
 class _RotationClassifier(torch.nn.Module):
     """Match the trainer's wrapper exactly so state_dict keys load
     cleanly. Trainer saves under `backbone.*`; bare ResNet50 wouldn't."""
+
     def __init__(self, n_classes: int = 4):
         super().__init__()
         self.backbone = tv_models.resnet50(weights=None)
-        self.backbone.fc = torch.nn.Linear(
-            self.backbone.fc.in_features, n_classes)
+        self.backbone.fc = torch.nn.Linear(self.backbone.fc.in_features, n_classes)
 
     def forward(self, x):
         return self.backbone(x)
@@ -183,17 +182,23 @@ class _RotationClassifier(torch.nn.Module):
 
 def _device() -> torch.device:
     return torch.device(
-        "mps" if torch.backends.mps.is_available()
-        else "cuda" if torch.cuda.is_available() else "cpu")
+        "mps"
+        if torch.backends.mps.is_available()
+        else "cuda"
+        if torch.cuda.is_available()
+        else "cpu"
+    )
 
 
 def _make_transform(img_size: int):
-    return T.Compose([
-        T.ToPILImage(),
-        T.Resize((img_size, img_size), antialias=True),
-        T.ToTensor(),
-        T.Normalize(_IMAGENET_MEAN, _IMAGENET_STD),
-    ])
+    return T.Compose(
+        [
+            T.ToPILImage(),
+            T.Resize((img_size, img_size), antialias=True),
+            T.ToTensor(),
+            T.Normalize(_IMAGENET_MEAN, _IMAGENET_STD),
+        ]
+    )
 
 
 def _load_state() -> dict:
@@ -209,7 +214,8 @@ def _load_state() -> dict:
         if not _CKPT_PATH.exists():
             raise FileNotFoundError(
                 f"rotation classifier checkpoint not found at {_CKPT_PATH}. "
-                f"Train it via training/train_rotation_classifier.py.")
+                f"Train it via training/train_rotation_classifier.py."
+            )
         ckpt = torch.load(_CKPT_PATH, map_location="cpu", weights_only=False)
         cfg = ckpt.get("config") or {}
         img_size = int(cfg.get("img_size", 768))
@@ -277,11 +283,13 @@ def _load_kfold_state() -> Optional[dict]:
         img_size = max(set(sizes), key=sizes.count)
         mismatched = {f: s for f, s in per_fold_img_size.items() if s != img_size}
         if mismatched:
-            print(f"  rotation_classifier: WARNING — fold img_size mismatch "
-                  f"(folds with non-default img_size: {mismatched}). Using "
-                  f"img_size={img_size} for all folds; mismatched folds may "
-                  f"see degraded accuracy because their training resolution "
-                  f"differs from the inference transform.")
+            print(
+                f"  rotation_classifier: WARNING — fold img_size mismatch "
+                f"(folds with non-default img_size: {mismatched}). Using "
+                f"img_size={img_size} for all folds; mismatched folds may "
+                f"see degraded accuracy because their training resolution "
+                f"differs from the inference transform."
+            )
 
         _kfold_state = {
             "models": models,
@@ -292,12 +300,12 @@ def _load_kfold_state() -> Optional[dict]:
             "kind": "kfold",
             "available_folds": set(models.keys()),
         }
-        print(f"  rotation_classifier: loaded {len(models)} k-fold adapter(s) "
-              f"from {_KFOLD_DIR.name}/ "
-              f"({len(fa)} cases routed via fold_assignment.json)")
+        print(
+            f"  rotation_classifier: loaded {len(models)} k-fold adapter(s) "
+            f"from {_KFOLD_DIR.name}/ "
+            f"({len(fa)} cases routed via fold_assignment.json)"
+        )
         return _kfold_state
-
-
 
 
 def _model_for_case(case_name: Optional[str]) -> tuple[torch.nn.Module, dict]:
@@ -305,8 +313,7 @@ def _model_for_case(case_name: Optional[str]) -> tuple[torch.nn.Module, dict]:
     if case_name is not None:
         kf = _load_kfold_state()
         if kf is not None:
-            fold = _resolve_fold(case_name, kf["fold_assignment"],
-                                  kf["available_folds"])
+            fold = _resolve_fold(case_name, kf["fold_assignment"], kf["available_folds"])
             return kf["models"][fold], kf
     # Legacy path
     st = _load_state()
@@ -340,8 +347,7 @@ def predict_rotation_with_confidence(
     transform = state["transform"]
     fold = None
     if state["kind"] == "kfold" and case_name is not None:
-        fold = _resolve_fold(case_name, state["fold_assignment"],
-                              state["available_folds"])
+        fold = _resolve_fold(case_name, state["fold_assignment"], state["available_folds"])
 
     base = _preprocess(map_bgr, transform).unsqueeze(0).to(device)  # (1, 3, H, W)
 
@@ -350,8 +356,7 @@ def predict_rotation_with_confidence(
 
     ensemble = torch.zeros(1, 4, device=device)
     for k_cw in (0, 1, 2, 3):
-        x = base if k_cw == 0 else torch.rot90(base, aug_torch_k[k_cw],
-                                                 dims=(-2, -1))
+        x = base if k_cw == 0 else torch.rot90(base, aug_torch_k[k_cw], dims=(-2, -1))
         logits = model(x)
         probs = F.softmax(logits, dim=-1)
         # Convert back to original frame: rotated-frame class C' on an
@@ -397,20 +402,21 @@ def auto_rotate(
     if rot == 0:
         if verbose:
             if info["abstained_low_confidence"]:
-                print(f"  rotation_classifier: abstained "
-                      f"(conf={info['confidence']:.2f} < "
-                      f"{_DEFAULT_CONFIDENCE_THRESHOLD:.2f}); "
-                      f"raw_class={info['raw_class']} -> "
-                      f"{_CLASS_TO_DEGREES[info['raw_class']]}°. "
-                      f"Leaving map unrotated.")
+                print(
+                    f"  rotation_classifier: abstained "
+                    f"(conf={info['confidence']:.2f} < "
+                    f"{_DEFAULT_CONFIDENCE_THRESHOLD:.2f}); "
+                    f"raw_class={info['raw_class']} -> "
+                    f"{_CLASS_TO_DEGREES[info['raw_class']]}°. "
+                    f"Leaving map unrotated."
+                )
             else:
-                print(f"  rotation_classifier: 0° (already upright, "
-                      f"conf={info['confidence']:.2f})")
+                print(f"  rotation_classifier: 0° (already upright, conf={info['confidence']:.2f})")
         return map_bgr, info
     rotated = cv2.rotate(map_bgr, _CV2_ROTATE_CODES[rot])
     if verbose:
-        fold_str = (f" fold={info['fold']}" if info.get("fold") is not None
-                    else "")
-        print(f"  rotation_classifier: rotating {rot}° CW "
-              f"(conf={info['confidence']:.2f}{fold_str})")
+        fold_str = f" fold={info['fold']}" if info.get("fold") is not None else ""
+        print(
+            f"  rotation_classifier: rotating {rot}° CW (conf={info['confidence']:.2f}{fold_str})"
+        )
     return rotated, info

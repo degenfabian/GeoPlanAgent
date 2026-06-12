@@ -12,6 +12,7 @@ from shapely.ops import unary_union
 
 
 def load_geojson(geojson_path: str) -> Optional[Dict[str, Any]]:
+    """Parsed GeoJSON dict, or None when the file does not exist."""
     path = Path(geojson_path)
     if not path.exists():
         return None
@@ -20,6 +21,8 @@ def load_geojson(geojson_path: str) -> Optional[Dict[str, Any]]:
 
 
 def validate_geojson_format(geojson_data: Dict[str, Any]) -> tuple[bool, str]:
+    """(ok, reason) check of the benchmark output contract: a GeoJSON
+    Feature whose geometry is Polygon or MultiPolygon."""
     if geojson_data.get("type") != "Feature":
         return False, f"Expected 'Feature', got '{geojson_data.get('type')}'"
     geometry = geojson_data.get("geometry")

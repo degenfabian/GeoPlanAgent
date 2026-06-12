@@ -27,6 +27,7 @@ from geoplanagent.utils import (
 )
 from geoplanagent.agents.reader import _reader_agent
 from geoplanagent.agents.worker import _agent
+
 # Import registers the worker tools on the agent in definition order.
 from geoplanagent.tools import positioning as _positioning  # noqa: F401
 
@@ -69,9 +70,12 @@ def run_agent(
         # call (submit_pdf_info); start empty.
         pdf_info: Dict[str, Any] = {}
         state, user_parts = prepare_folded_state(
-            pdf_path=pdf_path, sam3=sam3,
+            pdf_path=pdf_path,
+            sam3=sam3,
             minima_matcher=models_state["minima"],
-            dpi=dpi, case_name=case_name, verbose=verbose,
+            dpi=dpi,
+            case_name=case_name,
+            verbose=verbose,
             locate_model=locate_model,
             locate_disabled_tools=locate_disabled_tools,
         )
@@ -83,9 +87,11 @@ def run_agent(
             try:
                 case_dir.mkdir(parents=True, exist_ok=True)
                 (case_dir / "pdf_info.json").write_text(
-                    json.dumps({k: v for k, v in pdf_info.items()
-                                if not k.startswith("_")},
-                               indent=2, default=str)
+                    json.dumps(
+                        {k: v for k, v in pdf_info.items() if not k.startswith("_")},
+                        indent=2,
+                        default=str,
+                    )
                 )
             except Exception as _e:
                 if verbose:
@@ -93,8 +99,13 @@ def run_agent(
 
         # Phase 2 setup: state + worker user_parts
         state, user_parts = prepare_worker_state(
-            pdf_path=pdf_path, sam3=sam3, minima_matcher=models_state["minima"],
-            pdf_info=pdf_info, dpi=dpi, case_name=case_name, verbose=verbose,
+            pdf_path=pdf_path,
+            sam3=sam3,
+            minima_matcher=models_state["minima"],
+            pdf_info=pdf_info,
+            dpi=dpi,
+            case_name=case_name,
+            verbose=verbose,
             locate_model=locate_model,
             locate_disabled_tools=locate_disabled_tools,
         )
@@ -106,8 +117,7 @@ def run_agent(
     result = None
     outcome: Optional[BoundaryOutcome] = None  # may stay None on exception path
     try:
-        result = invoke_worker(state, user_parts, model_name,
-                                     max_iterations, verbose)
+        result = invoke_worker(state, user_parts, model_name, max_iterations, verbose)
     except (UnexpectedModelBehavior, UsageLimitExceeded) as e:
         if verbose:
             print(f"  Agent loop ended: {type(e).__name__}: {str(e)}")
@@ -129,12 +139,14 @@ def run_agent(
     else:
         outcome = result.output
         state.last_output = outcome
-        state.accepted = (outcome.status in ("accepted", "district_lookup"))
+        state.accepted = outcome.status in ("accepted", "district_lookup")
         state.accept_reason = f"[{outcome.status}] {outcome.reasoning[:160]}"
         if verbose:
-            print(f"  Worker outcome: status={outcome.status} "
-                  f"inliers={outcome.final_n_inliers} "
-                  f"rotation_checked={outcome.rotation_checked}")
+            print(
+                f"  Worker outcome: status={outcome.status} "
+                f"inliers={outcome.final_n_inliers} "
+                f"rotation_checked={outcome.rotation_checked}"
+            )
 
     # Phase 3 (optional): critic loop
     # Snapshot the worker's first commit so critic-crash and critic-disabled
@@ -150,23 +162,25 @@ def run_agent(
     if can_run_critic:
         # Deep-copy: protect the snapshot from any future in-place mutation.
         import copy as _copy
-        worker_first_geojson_snapshot = _copy.deepcopy(
-            state.current_result.get("geojson"))
+
+        worker_first_geojson_snapshot = _copy.deepcopy(state.current_result.get("geojson"))
         try:
             from geoplanagent.agents.critic import run_critic_loop
+
             if verbose:
-                print(f"  Phase 3: running LLM critic loop "
-                      f"(max_iters={critic_max_iters})...")
+                print(f"  Phase 3: running LLM critic loop (max_iters={critic_max_iters})...")
             critic_result = run_critic_loop(
-                state, result, model_name=model_name,
-                max_iters=critic_max_iters, verbose=verbose,
+                state,
+                result,
+                model_name=model_name,
+                max_iters=critic_max_iters,
+                verbose=verbose,
             )
             if verbose:
                 n_rej = critic_result.get("n_rejections", 0)
                 its = critic_result.get("iterations") or [{}]
                 final_action = its[-1].get("action", "?")
-                print(f"  Phase 3 done: {n_rej} rejection(s), "
-                      f"final_decision={final_action}")
+                print(f"  Phase 3 done: {n_rej} rejection(s), final_decision={final_action}")
         except Exception as e:
             if verbose:
                 print(f"  Phase 3 critic failed: {type(e).__name__}: {e}")
@@ -177,9 +191,7 @@ def run_agent(
             }
 
     # Write critic-panel PNGs to disk for post-hoc debugging.
-    if (critic_result is not None
-            and "error" not in critic_result
-            and case_dir is not None):
+    if critic_result is not None and "error" not in critic_result and case_dir is not None:
         try:
             case_dir.mkdir(parents=True, exist_ok=True)
             for _i, _p in enumerate(critic_result.get("panels_by_iter") or []):
@@ -187,8 +199,7 @@ def run_agent(
                     continue
                 _path = case_dir / f"critic_panel_iter{_i}.png"
                 cv2.imwrite(str(_path), _p)
-            for _i, _cands in enumerate(
-                    critic_result.get("per_cand_panels_by_iter") or []):
+            for _i, _cands in enumerate(critic_result.get("per_cand_panels_by_iter") or []):
                 for _cid, _cp in _cands or []:
                     if _cp is None:
                         continue
@@ -209,19 +220,18 @@ def run_agent(
         if case_dir is not None and pdf_info:
             try:
                 case_dir.mkdir(parents=True, exist_ok=True)
-                (case_dir / "pdf_info.json").write_text(
-                    json.dumps(pdf_info, indent=2, default=str)
-                )
+                (case_dir / "pdf_info.json").write_text(json.dumps(pdf_info, indent=2, default=str))
             except Exception as _e:
                 if verbose:
-                    print(f"  Warning: failed to flush pdf_info.json "
-                          f"(folded): {_e}")
+                    print(f"  Warning: failed to flush pdf_info.json (folded): {_e}")
 
     if verbose:
         mi = state.current_result.get("match_info", {})
-        print(f"  Agent done: accepted={state.accepted}, "
-              f"inliers={mi.get('n_inliers', 0)}, "
-              f"reason={state.accept_reason[:100]}")
+        print(
+            f"  Agent done: accepted={state.accepted}, "
+            f"inliers={mi.get('n_inliers', 0)}, "
+            f"reason={state.accept_reason[:100]}"
+        )
 
     # If the critic triggered rehands, the post-critic result has the full
     # conversation including those sub-turns — use it for log extraction.
@@ -236,7 +246,8 @@ def run_agent(
     if log_source_result is not None:
         try:
             message_log, extracted_stats = extract_message_log_from_msgs(
-                log_source_result.all_messages())
+                log_source_result.all_messages()
+            )
         except Exception:
             pass
 
@@ -253,12 +264,15 @@ def run_agent(
         agent_stats["critic"] = {"error": critic_result.get("error")}
 
     return build_run_agent_return(
-        state, agent_stats, message_log,
+        state,
+        agent_stats,
+        message_log,
         critic_result=critic_result,
     )
 
 
 # Phase 1: read the PDF
+
 
 def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict:
     """Reader → PDFInfo dict (+ _reader_tokens). Empty dict + 'error' on failure."""
@@ -273,7 +287,7 @@ def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict
         result = _run_sync_with_retry(
             _reader_agent,
             [
-                BinaryContent(data=pdf_bytes, media_type='application/pdf'),
+                BinaryContent(data=pdf_bytes, media_type="application/pdf"),
                 "Read this UK planning PDF and populate the PDFInfo schema "
                 "with all geographic information you can find.",
             ],
@@ -285,11 +299,13 @@ def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict
         info = info_model.model_dump()
 
         if verbose:
-            print(f"  Phase 1: map_pages={info['map_pages']}, "
-                  f"postcodes={info['postcodes']}, "
-                  f"roads={len(info['road_names'])}, "
-                  f"scale={info['scale']}, "
-                  f"district={info['is_district_wide']}")
+            print(
+                f"  Phase 1: map_pages={info['map_pages']}, "
+                f"postcodes={info['postcodes']}, "
+                f"roads={len(info['road_names'])}, "
+                f"scale={info['scale']}, "
+                f"district={info['is_district_wide']}"
+            )
 
         usage = result.usage()
         info["_reader_tokens"] = {
@@ -307,6 +323,7 @@ def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict
 
 
 # Phase 2 setup: pre-render map pages, build worker user prompt
+
 
 def prepare_worker_state(
     pdf_path: str,
@@ -339,10 +356,11 @@ def prepare_worker_state(
 
     if map_pages:
         from geoplanagent.tools.pdf import render_map_page
+
         for page_1based in map_pages:
-            rendered = render_map_page(str(pdf_path), int(page_1based),
-                                         dpi=dpi, verbose=verbose,
-                                         case_name=case_name)
+            rendered = render_map_page(
+                str(pdf_path), int(page_1based), dpi=dpi, verbose=verbose, case_name=case_name
+            )
             if rendered is None:
                 continue
             page_img, rot_info = rendered
@@ -355,8 +373,8 @@ def prepare_worker_state(
             state.rendered_page_paths[int(page_1based)] = tmp_path
 
     summary_text = json.dumps(
-        {k: v for k, v in pdf_info.items() if not k.startswith("_")},
-        indent=2)
+        {k: v for k, v in pdf_info.items() if not k.startswith("_")}, indent=2
+    )
     roles_line = ""
     if map_page_details:
         roles = ", ".join(
@@ -374,9 +392,11 @@ def prepare_worker_state(
             f"`page` argument): {roles}\n"
         )
         by_group: dict[int, list[int]] = {}
-        page_to_group = {int(d["page"]): int(d.get("area_group", 0))
-                         for d in map_page_details
-                         if d.get("category") == "match"}
+        page_to_group = {
+            int(d["page"]): int(d.get("area_group", 0))
+            for d in map_page_details
+            if d.get("category") == "match"
+        }
         for p in map_pages:
             g = page_to_group.get(int(p))
             if g is None:
@@ -405,8 +425,7 @@ def prepare_worker_state(
         f"once per area_group; each commit_match unions its group's polygon "
         f"into the running final result."
     ]
-    primary_img = (state.rendered_pages.get(int(map_pages[0]))
-                   if map_pages else None)
+    primary_img = state.rendered_pages.get(int(map_pages[0])) if map_pages else None
     if primary_img is not None:
         user_parts.append(f"Map page {map_pages[0]}:")
         user_parts.append(_img_to_binary(primary_img))
@@ -414,6 +433,7 @@ def prepare_worker_state(
 
 
 # Folded ablation: no reader phase, worker fills PDFInfo itself
+
 
 def prepare_folded_state(
     pdf_path: str,
@@ -450,8 +470,7 @@ def prepare_folded_state(
 
     pdf_bytes = Path(pdf_path).read_bytes()
     if verbose:
-        print(f"  Folded mode: attaching PDF ({len(pdf_bytes) // 1024} KB), "
-              f"no reader phase.")
+        print(f"  Folded mode: attaching PDF ({len(pdf_bytes) // 1024} KB), no reader phase.")
 
     user_parts: list = [
         BinaryContent(data=pdf_bytes, media_type="application/pdf"),
@@ -467,9 +486,13 @@ def prepare_folded_state(
 
 # Phase 2: invoke the worker
 
+
 def invoke_worker(
-    state: AgentState, user_parts: list, model_name: str,
-    max_iterations: int, verbose: bool,
+    state: AgentState,
+    user_parts: list,
+    model_name: str,
+    max_iterations: int,
+    verbose: bool,
 ):
     """Run the worker tool loop. Returns the pydantic-ai result or raises."""
     model = resolve_model(model_name)
@@ -485,8 +508,10 @@ def invoke_worker(
 
 # Phase 2 error path: dump partial state
 
-def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
-                        case_dir: Optional[Path], verbose: bool) -> dict:
+
+def dump_partial_state(
+    state: AgentState, pdf_info: dict, exc: Exception, case_dir: Optional[Path], verbose: bool
+) -> dict:
     """Write partial_state.json for post-hoc debug on a mid-run worker error."""
     partial_stats = {
         "pdf_info": state.pdf_info,
@@ -497,20 +522,19 @@ def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
         "match_attempts_summary": {
             cid: {
                 "name": a.get("name"),
-                "lat": a.get("lat"), "lon": a.get("lon"),
+                "lat": a.get("lat"),
+                "lon": a.get("lon"),
                 "area_group": a.get("requested_group"),
                 "page": a.get("requested_page"),
                 "n_inliers": (
-                    ((a.get("per_group") or [{}])[0].get("match_info") or {})
-                    .get("n_inliers")
+                    ((a.get("per_group") or [{}])[0].get("match_info") or {}).get("n_inliers")
                 ),
             }
             for cid, a in (state.match_attempts or {}).items()
         },
         "position_calls": state.position_calls,
         "rotation_checked": state.rotation_checked,
-        "last_output": (state.last_output.model_dump()
-                        if state.last_output is not None else None),
+        "last_output": (state.last_output.model_dump() if state.last_output is not None else None),
     }
     if case_dir is not None:
         try:
@@ -525,6 +549,7 @@ def dump_partial_state(state: AgentState, pdf_info: dict, exc: Exception,
 
 
 # Cleanup
+
 
 def cleanup_temp_pages(state: AgentState) -> None:
     """Unlink every pre-rendered page tempfile."""
@@ -541,6 +566,7 @@ def cleanup_temp_pages(state: AgentState) -> None:
 
 # Message log + stats extraction
 
+
 def extract_message_log_from_msgs(messages: list) -> Tuple[list, dict]:
     """Return (message_log, stats) for a pydantic-ai message list.
 
@@ -552,41 +578,41 @@ def extract_message_log_from_msgs(messages: list) -> Tuple[list, dict]:
     turn_idx = 0
 
     for msg in messages:
-        role = getattr(msg, 'kind', type(msg).__name__)
-        parts = getattr(msg, 'parts', None)
+        role = getattr(msg, "kind", type(msg).__name__)
+        parts = getattr(msg, "parts", None)
         if not parts:
             turn_idx += 1
             continue
         for part in parts:
-            kind = getattr(part, 'kind', type(part).__name__)
+            kind = getattr(part, "kind", type(part).__name__)
             kind_lower = kind.lower()
             entry = {"turn": turn_idx, "role": role, "kind": kind}
 
-            if 'toolcall' in kind_lower:
-                name = getattr(part, 'tool_name', '?')
+            if "toolcall" in kind_lower:
+                name = getattr(part, "tool_name", "?")
                 tool_calls[name] = tool_calls.get(name, 0) + 1
                 entry["tool"] = name
-                entry["args"] = _coerce_args(getattr(part, 'args', None))
+                entry["args"] = _coerce_args(getattr(part, "args", None))
 
-            elif 'toolreturn' in kind_lower:
-                entry["tool"] = getattr(part, 'tool_name', '?')
-                entry["return"] = _coerce_return(getattr(part, 'content', None))
+            elif "toolreturn" in kind_lower:
+                entry["tool"] = getattr(part, "tool_name", "?")
+                entry["return"] = _coerce_return(getattr(part, "content", None))
 
-            elif 'retry' in kind_lower:
-                rc = getattr(part, 'content', None)
+            elif "retry" in kind_lower:
+                rc = getattr(part, "content", None)
                 entry["retry_content"] = str(rc)[:1000] if rc else ""
 
-            elif 'userprompt' in kind_lower:
-                c = getattr(part, 'content', None)
+            elif "userprompt" in kind_lower:
+                c = getattr(part, "content", None)
                 if isinstance(c, list):
-                    n_images = sum(1 for x in c if hasattr(x, 'media_type'))
+                    n_images = sum(1 for x in c if hasattr(x, "media_type"))
                     n_text = sum(1 for x in c if isinstance(x, str))
                     entry["user_summary"] = f"{n_text} text + {n_images} images"
                 elif isinstance(c, str):
                     entry["text"] = c[:500]
 
-            elif 'text' in kind_lower or 'thinking' in kind_lower:
-                entry["text"] = str(getattr(part, 'content', ''))[:2000]
+            elif "text" in kind_lower or "thinking" in kind_lower:
+                entry["text"] = str(getattr(part, "content", ""))[:2000]
 
             message_log.append(entry)
         turn_idx += 1
@@ -609,9 +635,10 @@ def _coerce_args(args: Any) -> Any:
     if args is None:
         return {}
     if isinstance(args, dict):
-        return {k: (v if not isinstance(v, (bytes, bytearray))
-                    else f"<bytes:{len(v)}>")
-                for k, v in args.items()}
+        return {
+            k: (v if not isinstance(v, (bytes, bytearray)) else f"<bytes:{len(v)}>")
+            for k, v in args.items()
+        }
     if isinstance(args, str):
         try:
             parsed = json.loads(args)
@@ -623,16 +650,19 @@ def _coerce_args(args: Any) -> Any:
 
 def _coerce_return(content: Any) -> Any:
     if isinstance(content, dict):
-        return {k: (v if not isinstance(v, (bytes, bytearray))
-                    else f"<bytes:{len(v)}>")
-                for k, v in content.items()}
+        return {
+            k: (v if not isinstance(v, (bytes, bytearray)) else f"<bytes:{len(v)}>")
+            for k, v in content.items()
+        }
     if isinstance(content, str):
         return content[:1000]
     return str(content)[:1000]
 
 
 def collect_agent_stats(
-    state: AgentState, pdf_info: dict, result: Any,
+    state: AgentState,
+    pdf_info: dict,
+    result: Any,
     message_log_extracted: Optional[dict] = None,
 ) -> dict:
     """Assemble the agent_stats dict that benchmark_runner persists."""
@@ -681,14 +711,14 @@ def collect_agent_stats(
             # Old cached metrics.json files that pre-date this patch will
             # have locate_* = 0, so their totals are reader + worker only
             # (matching the paper's $/doc computation).
-            agent_stats["total_tokens"] = (reader_total + worker_total
-                                            + locate_req + locate_resp)
+            agent_stats["total_tokens"] = reader_total + worker_total + locate_req + locate_resp
         except Exception:
             pass
     return agent_stats
 
 
 # Return-dict assembly
+
 
 def build_run_agent_return(
     state: AgentState,
@@ -720,8 +750,7 @@ def build_run_agent_return(
         "mask": primary_mask,
         "affine_H": state.current_result.get("affine_H"),
         "tile_info_meta": {
-            k: v for k, v in (state.current_result.get("tile_info") or {}).items()
-            if k != "image"
+            k: v for k, v in (state.current_result.get("tile_info") or {}).items() if k != "image"
         },
         "agent_accepted": state.accepted,
         "agent_reason": state.accept_reason,

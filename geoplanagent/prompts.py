@@ -374,8 +374,7 @@ def _build_folded_system_prompt() -> str:
         # PDFInfo fields (scale, road_names). In folded mode the agent
         # populated those itself; rename for clarity.
         (
-            "recovered scale matches the reader's\n"
-            "                            stated map scale.",
+            "recovered scale matches the reader's\n                            stated map scale.",
             "recovered scale matches PDFInfo.scale\n"
             "                            (the map scale you extracted in Phase 1).",
         ),
@@ -452,25 +451,25 @@ _LOCATE_HEADER = (
 )
 
 _LOCATE_TOOL_DESCS: dict[str, str] = {
-    "postcode":  "- postcode(pc) — UK postcode → coord (Code-Point Open, sub-100m)",
-    "grid_ref":  "- grid_ref(gr) — OS BNG grid reference → coord",
-    "place":     "- place(q, la=None) — OS Open Names search (villages, schools, churches, named buildings)",
-    "road":      "- road(q, la=None) — OML road centroid in LA bbox",
+    "postcode": "- postcode(pc) — UK postcode → coord (Code-Point Open, sub-100m)",
+    "grid_ref": "- grid_ref(gr) — OS BNG grid reference → coord",
+    "place": "- place(q, la=None) — OS Open Names search (villages, schools, churches, named buildings)",
+    "road": "- road(q, la=None) — OML road centroid in LA bbox",
     "intersect": "- intersect(road_a, road_b, la=None, road_c=None) — geometric junction of 2-3 roads",
-    "la_check":  "- la_check(lat, lon, la) — verify coord falls inside LA polygon",
+    "la_check": "- la_check(lat, lon, la) — verify coord falls inside LA polygon",
 }
 
 # Step 2 priority list — each line is (gating_tool, text). gating_tool=None
 # means the bullet is tool-independent (text-only signal, not a tool call).
 # A bullet is included only if its gating_tool is enabled.
 _LOCATE_SIGNAL_PRIORITIES: list[tuple[Optional[str], str]] = [
-    ("postcode",  "   - Full postcode IN site_address (= SITE postcode, trust)"),
-    ("grid_ref",  "   - OS grid_ref (any precision)"),
-    (None,        "   - house_number + named road in site_address"),
-    ("place",     "   - Named place / landmark from pdf_info OR from the map image"),
-    ("road",      "   - Road name (when LA-filtered)"),
-    ("place",     "   - Parish name"),
-    ("la_check",  "   - LA centroid (last resort)"),
+    ("postcode", "   - Full postcode IN site_address (= SITE postcode, trust)"),
+    ("grid_ref", "   - OS grid_ref (any precision)"),
+    (None, "   - house_number + named road in site_address"),
+    ("place", "   - Named place / landmark from pdf_info OR from the map image"),
+    ("road", "   - Road name (when LA-filtered)"),
+    ("place", "   - Parish name"),
+    ("la_check", "   - LA centroid (last resort)"),
 ]
 
 _STEP_VIEW_MAP_BODY = (
@@ -556,23 +555,16 @@ def _cluster_step_body(enabled: frozenset[str]) -> str:
 
     lines = [
         "",
-        "   - 2+ candidates within 500m → tight consensus, σ=200m, "
-        "confidence='high'",
+        "   - 2+ candidates within 500m → tight consensus, σ=200m, confidence='high'",
     ]
     if confident:
         lines.append(
-            f"   - Clean single confident signal "
-            f"({', '.join(confident)}) → σ=300-500m, 'high'"
+            f"   - Clean single confident signal ({', '.join(confident)}) → σ=300-500m, 'high'"
         )
     if ambiguous:
-        lines.append(
-            f"   - Single ambiguous ({', '.join(ambiguous)}) → σ=800-"
-            f"1500m, 'med'"
-        )
+        lines.append(f"   - Single ambiguous ({', '.join(ambiguous)}) → σ=800-1500m, 'med'")
     if "la_check" in enabled:
-        lines.append(
-            "   - LA-only fallback → σ from tool, 'low'"
-        )
+        lines.append("   - LA-only fallback → σ from tool, 'low'")
     return "\n".join(lines)
 
 

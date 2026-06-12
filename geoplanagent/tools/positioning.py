@@ -22,6 +22,7 @@ from geoplanagent.utils import AgentState, _dedup_check
 
 # propose_centers
 
+
 @_agent.tool
 def propose_centers(
     ctx: RunContext[AgentState],
@@ -91,6 +92,7 @@ def propose_centers(
     # invocation — including re-invocations made while the worker is
     # positioning a different area_group's page on multi-area docs.
     from geoplanagent.utils import primary_match_page
+
     primary_page = primary_match_page(state)
     map_img = state.rendered_pages.get(primary_page) if primary_page else None
     map_bytes = None
@@ -140,7 +142,7 @@ def propose_centers(
     state.locate_message_history = new_history
 
     conf = pick.confidence
-    specificity = (5 if conf == "high" else 3 if conf == "med" else 1)
+    specificity = 5 if conf == "high" else 3 if conf == "med" else 1
     cand = {
         "id": 0,
         "source": f"live_locate:{pick.picked_source[:40]}",
@@ -165,8 +167,7 @@ def propose_centers(
 # RANSAC already enforces that — if we got a geojson back, we trust it.
 
 
-def _axis_field(reward_dict: Optional[Dict[str, Any]], axis_name: str,
-                  field: str) -> Any:
+def _axis_field(reward_dict: Optional[Dict[str, Any]], axis_name: str, field: str) -> Any:
     """Safe extract of an axis's score/verdict from a reward.to_dict() dump.
     Returns None if the reward, axes table, or axis entry is missing."""
     if not reward_dict:
@@ -178,6 +179,7 @@ def _axis_field(reward_dict: Optional[Dict[str, Any]], axis_name: str,
 
 # Per-page render + segmentation helpers
 
+
 def _get_or_render_page(state: AgentState, page: int) -> Tuple[Optional[np.ndarray], Optional[str]]:
     """Return (map_img, map_crop_path) for `page`. Cache on first need."""
     cached = state.rendered_pages.get(page)
@@ -186,8 +188,10 @@ def _get_or_render_page(state: AgentState, page: int) -> Tuple[Optional[np.ndarr
         return cached, cached_path
 
     from geoplanagent.tools.pdf import render_map_page
-    rendered = render_map_page(state.pdf_path, page, dpi=state.dpi,
-                                  verbose=False, case_name=state.case_name)
+
+    rendered = render_map_page(
+        state.pdf_path, page, dpi=state.dpi, verbose=False, case_name=state.case_name
+    )
     if rendered is None:
         return None, None
     map_img, rot_info = rendered
@@ -201,17 +205,18 @@ def _get_or_render_page(state: AgentState, page: int) -> Tuple[Optional[np.ndarr
     return map_img, path
 
 
-def _get_or_compute_mask(state: AgentState, page: int,
-                          map_crop_path: str) -> Optional[np.ndarray]:
+def _get_or_compute_mask(state: AgentState, page: int, map_crop_path: str) -> Optional[np.ndarray]:
     """Return SAM3 mask for `page`. Compute + cache on first need."""
     cached = state.sam_masks_by_page.get(page)
     if cached is not None:
         return cached
-    from geoplanagent.tools.segment import (extract_boundary_sam3_semantic,
-                                        set_fold_for_case)
+    from geoplanagent.tools.segment import extract_boundary_sam3_semantic, set_fold_for_case
+
     set_fold_for_case(state.sam3_state, state.case_name)
     mask = extract_boundary_sam3_semantic(
-        map_crop_path, state.sam3_processor, state.sam3_model,
+        map_crop_path,
+        state.sam3_processor,
+        state.sam3_model,
         state.device,
     )
     if mask is not None:
@@ -228,8 +233,7 @@ def _resolve_area_group(state: AgentState, page: int) -> int:
     details = (state.pdf_info or {}).get("map_page_details") or []
     if not details:
         return 0  # legacy path with no metadata — treat as single group 0
-    by_page = {int(d["page"]): d for d in details
-               if d.get("category") == "match"}
+    by_page = {int(d["page"]): d for d in details if d.get("category") == "match"}
     meta = by_page.get(int(page))
     if meta is None:
         raise ModelRetry(
@@ -241,6 +245,7 @@ def _resolve_area_group(state: AgentState, page: int) -> int:
 
 
 # match_at
+
 
 @_agent.tool
 def match_at(
@@ -287,19 +292,26 @@ def match_at(
             "polygon, even if the best score is low."
         )
 
-    _dedup_check(state, "match_at", {
-        "page": int(page), "name": name,
-        "lat": round(float(lat), 5), "lon": round(float(lon), 5),
-        "sigma_m": sigma_m, "scale_ratio": scale_ratio,
-    })
+    _dedup_check(
+        state,
+        "match_at",
+        {
+            "page": int(page),
+            "name": name,
+            "lat": round(float(lat), 5),
+            "lon": round(float(lon), 5),
+            "sigma_m": sigma_m,
+            "scale_ratio": scale_ratio,
+        },
+    )
 
     # Reject invented coordinates.
     matched_candidate = None
     if state.proposed_centers:
         from geoplanagent.utils import haversine_km
+
         nearest = min(
-            (haversine_km(lat, lon, c["lat"], c["lon"]) * 1000.0, c)
-            for c in state.proposed_centers
+            (haversine_km(lat, lon, c["lat"], c["lon"]) * 1000.0, c) for c in state.proposed_centers
         )
         # 100 m tolerance: covers rounding noise on candidate lat/lons
         # (sub-metre postcode centroids round to ~10 m, place-name
@@ -308,8 +320,7 @@ def match_at(
         # commonly a hallucinated centre from the map image itself.
         if nearest[0] > 100.0:
             avail = ", ".join(
-                f"id={c['id']} ({c['source'][:30]})"
-                for c in state.proposed_centers[:8]
+                f"id={c['id']} ({c['source'][:30]})" for c in state.proposed_centers[:8]
             )
             raise ModelRetry(
                 f"match_at refuses fabricated coordinates "
@@ -331,6 +342,7 @@ def match_at(
         if not s:
             return None
         import re
+
         m = re.search(r"1\s*[:/]\s*([\d,]+)", str(s))
         if not m:
             return None
@@ -355,8 +367,9 @@ def match_at(
     area_group = _resolve_area_group(state, int(page))
 
     # Match the single requested page.
-    single = _match_single_page(state, int(page), name, float(lat), float(lon),
-                                  float(sigma_m), scale_ratio)
+    single = _match_single_page(
+        state, int(page), name, float(lat), float(lon), float(sigma_m), scale_ratio
+    )
     single["area_group"] = area_group
     single["page"] = int(page)
     valid = single.get("affine_H") is not None and not single.get("error")
@@ -371,7 +384,9 @@ def match_at(
     state._match_attempt_counter += 1
     state.match_attempts[cid] = {
         "candidate_id": cid,
-        "name": name, "lat": float(lat), "lon": float(lon),
+        "name": name,
+        "lat": float(lat),
+        "lon": float(lon),
         "per_group": [single],
         "geojson": geojson,
         "n_groups_committed": 1 if valid else 0,
@@ -385,18 +400,16 @@ def match_at(
         "area_group": area_group,
         "page": int(page),
         "n_inliers": n_inliers,
-        "road_name_agreement": _axis_field(
-            single.get("reward"), "road_name_agreement", "score"),
-        "road_name_verdict": _axis_field(
-            single.get("reward"), "road_name_agreement", "verdict"),
-        "scale_consistency": _axis_field(
-            single.get("reward"), "scale_consistency", "score"),
+        "road_name_agreement": _axis_field(single.get("reward"), "road_name_agreement", "score"),
+        "road_name_verdict": _axis_field(single.get("reward"), "road_name_agreement", "verdict"),
+        "scale_consistency": _axis_field(single.get("reward"), "scale_consistency", "score"),
         "budget_remaining": state.match_at_budget,
         "committed_groups": sorted(state.committed_groups.keys()),
     }
 
 
 # Per-page MINIMA driver (called once per group inside match_at)
+
 
 def _segment_boundary(state: AgentState, page: int):
     """match_at step 1 — render the page and segment the drawn boundary
@@ -411,9 +424,16 @@ def _segment_boundary(state: AgentState, page: int):
     return map_img, mask, None
 
 
-def _search_window(state: AgentState, map_img, mask, name: str,
-                   lat: float, lon: float, sigma_m: float,
-                   scale_ratio: Optional[int]) -> Dict[str, Any]:
+def _search_window(
+    state: AgentState,
+    map_img,
+    mask,
+    name: str,
+    lat: float,
+    lon: float,
+    sigma_m: float,
+    scale_ratio: Optional[int],
+) -> Dict[str, Any]:
     """match_at step 2 — sliding-window MINIMA search of the map against
     OS tiles around (lat, lon) (paper §4.2 step 1). Returns the matcher
     result, or a dict with only an "error" key."""
@@ -422,9 +442,12 @@ def _search_window(state: AgentState, map_img, mask, name: str,
     road_names = (state.pdf_info or {}).get("road_names") or []
     try:
         result = sliding_window_position(
-            matcher=state.minima_matcher, map_img=map_img,
-            sam3_mask=mask, centers=[(name, lat, lon, sigma_m)],
-            scale_ratio=scale_ratio, dpi=state.dpi,
+            matcher=state.minima_matcher,
+            map_img=map_img,
+            sam3_mask=mask,
+            centers=[(name, lat, lon, sigma_m)],
+            scale_ratio=scale_ratio,
+            dpi=state.dpi,
             road_names=road_names,
         )
     except Exception as e:
@@ -449,15 +472,23 @@ def _project_candidate(state: AgentState, mask, result) -> Dict[str, Any]:
         geojson = mask_to_geojson_affine(mask, affine_H, tile_info)
 
     return {
-        "affine_H": affine_H, "tile_info": tile_info,
-        "match_info": mi, "geojson": geojson,
+        "affine_H": affine_H,
+        "tile_info": tile_info,
+        "match_info": mi,
+        "geojson": geojson,
         "reward": reward.to_dict() if reward is not None else None,
     }
 
 
-def _match_single_page(state: AgentState, page: int, name: str,
-                        lat: float, lon: float, sigma_m: float,
-                        scale_ratio: Optional[int]) -> Dict[str, Any]:
+def _match_single_page(
+    state: AgentState,
+    page: int,
+    name: str,
+    lat: float,
+    lon: float,
+    sigma_m: float,
+    scale_ratio: Optional[int],
+) -> Dict[str, Any]:
     """One match_at attempt = segment → search → project on a single page.
     Returns a dict with affine_H / tile_info / match_info / geojson /
     reward; or error."""
@@ -465,8 +496,7 @@ def _match_single_page(state: AgentState, page: int, name: str,
     if err is not None:
         return err
 
-    result = _search_window(state, map_img, mask, name, lat, lon,
-                            sigma_m, scale_ratio)
+    result = _search_window(state, map_img, mask, name, lat, lon, sigma_m, scale_ratio)
     if result.get("error"):
         return result
 
@@ -474,6 +504,7 @@ def _match_single_page(state: AgentState, page: int, name: str,
 
 
 # Polygon union helper
+
 
 def _union_geojsons(geojsons: List[dict]) -> Optional[dict]:
     """shapely-union per-group GeoJSON Features → one combined Feature.
@@ -521,6 +552,7 @@ def _union_geojsons(geojsons: List[dict]) -> Optional[dict]:
 
 # commit_match
 
+
 def _recompute_current_result(state: AgentState) -> None:
     """Rebuild ``state.current_result`` from every entry in
     ``state.committed_groups``.
@@ -534,8 +566,7 @@ def _recompute_current_result(state: AgentState) -> None:
     For single-area docs (one entry in committed_groups) this matches
     the pre-refactor behavior exactly.
     """
-    cands = [state.match_attempts[cid]
-             for cid in state.committed_groups.values()]
+    cands = [state.match_attempts[cid] for cid in state.committed_groups.values()]
     if not cands:
         state.current_result = {}
         return
@@ -768,8 +799,11 @@ def submit_pdf_info(ctx: RunContext[AgentState], info: PDFInfo) -> dict:
     rendered: list[int] = []
     for page_1based in map_pages:
         result = render_map_page(
-            str(state.pdf_path), int(page_1based),
-            dpi=state.dpi, verbose=False, case_name=state.case_name,
+            str(state.pdf_path),
+            int(page_1based),
+            dpi=state.dpi,
+            verbose=False,
+            case_name=state.case_name,
         )
         if result is None:
             continue
@@ -807,6 +841,7 @@ def submit_pdf_info(ctx: RunContext[AgentState], info: PDFInfo) -> dict:
 
 
 # Tool: lookup_district
+
 
 @_agent.tool
 def lookup_district(
@@ -866,8 +901,10 @@ def lookup_district(
                 "success": True,
                 "matched_variant": variant,
                 "instruction": "District lookup succeeded. Submit your final "
-                               "result with status='district_lookup' and a "
-                               "brief reasoning.",
+                "result with status='district_lookup' and a "
+                "brief reasoning.",
             }
-    return {"success": False,
-            "error": f"None of the variants {variants} matched in OS BoundaryLine"}
+    return {
+        "success": False,
+        "error": f"None of the variants {variants} matched in OS BoundaryLine",
+    }
