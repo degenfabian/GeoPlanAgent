@@ -46,7 +46,8 @@ def geojson_to_shape(geojson_data: Dict[str, Any]) -> Polygon | MultiPolygon:
     try:
         s = shape(geojson_data["geometry"])
         if not s.is_valid:
-            # buffer(0) makes GEOS rebuild the geometry,
+            # Zero-width buffer: the standard shapely repair for
+            # self-intersecting polygons, which mask tracing produces.
             s = s.buffer(0)
     except Exception as e:
         raise ValueError(f"Error converting GeoJSON to shape: {e}") from e
