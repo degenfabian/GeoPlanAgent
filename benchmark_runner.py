@@ -22,7 +22,7 @@ import cv2
 from pathlib import Path, PurePosixPath
 from datetime import datetime
 
-from tools.io.eval_case import resolve_case_pdf
+from tools.io.pdf import resolve_case_pdf
 from tools.metrics.geojson import load_geojson, calculate_spatial_metrics
 
 # Duplicates removed from disk; filtered out of the dataset at load time.

@@ -1,32 +1,162 @@
-"""Match-stage worker tools: match_at + commit_match.
-
-Each match_at call matches ONE page (and therefore one area_group). The
-worker calls match_at + commit_match separately for each area_group of
-a multi-area document; commit_match incrementally unions the committed
-groups into state.current_result["geojson"].
-
-For the typical single-area document (99% of cases) this is just:
-  propose_centers → match_at(page=N) → commit_match → done.
-
-SAM3 masks are cached on state.sam_masks_by_page keyed by 1-based page
-number, so re-calling match_at on a page that's been segmented is fast
-(MINIMA only).
+"""The worker's tool surface, registered on the worker agent in definition order:
+propose_centers (locate sub-agent delegation), match_at + commit_match
+(MINIMA positioning + SAM3 segmentation + projection), submit_pdf_info
+(folded-ablation only, hidden otherwise), and lookup_district (OS
+BoundaryLine shortcut for district-wide documents).
 """
 
 from __future__ import annotations
 
-import tempfile
-from typing import Any, Dict, List, Optional, Tuple
-
+from typing import List, Optional
 import cv2
+from pydantic_ai import RunContext
+from tools.agent.state import _agent, AgentState
+import tempfile
+from typing import Any, Dict, Tuple
 import numpy as np
-from pydantic_ai import ModelRetry, RunContext
-
+from pydantic_ai import ModelRetry
 from tools.agent.state import (
-    _agent,
-    AgentState,
     _dedup_check,
 )
+from pydantic_ai.tools import ToolDefinition
+from tools.agent.schemas import PDFInfo
+
+
+# propose_centers
+
+@_agent.tool
+def propose_centers(
+    ctx: RunContext[AgentState],
+    extra_terms: Optional[List[str]] = None,
+    match_context: Optional[str] = None,
+) -> dict:
+    """Run the live LLM-locate sub-agent to pick ONE center for positioning.
+
+    Returns EXACTLY ONE candidate per call. To try a different anchor,
+    call propose_centers AGAIN — optionally with match_context="..."
+    feedback telling the sub-agent why the previous pick was wrong, so
+    it picks from a DIFFERENT signal type next time.
+
+    In production the sub-agent has one offline geocoder tool — place
+    (OS Open Names) — and views the rendered map image to compose 2-4
+    queries before returning one picked (lat, lon, sigma_m, confidence,
+    source). The five other geocoders implemented in
+    ``tools.agent.locate_agent`` (postcode, grid_ref, road, intersect,
+    la_check) are off by default; they remain available via the factory's
+    ``disabled_tools`` parameter for paper-ablation reproducibility.
+
+    If the sub-agent loop fails entirely (validation retries exhausted,
+    HTTP error, budget exceeded), run_locate emits an emergency
+    LA-centroid LocatePick — so propose_centers always returns one
+    candidate, never zero.
+
+    Args:
+        extra_terms: extra place-name strings to add to the locate sub-agent's
+            inputs (e.g. a landmark visible on the map that the reader missed).
+        match_context: feedback to give the locate sub-agent after a prior
+            poor match_at result. Describe what went wrong in plain English,
+            e.g. "Prior pick at (51.51, -2.63) gave only 12 inliers; OS tile
+            showed farmland but planning map shows dense urban streets, so
+            the LA centroid was probably wrong — try a road-based pick
+            instead." The sub-agent gets this in its user message and is
+            told to pick from a DIFFERENT signal type.
+
+    Returns:
+        {"success": True, "n_candidates": 1, "candidates": [{...}],
+         "engine": "live_llm_locate", "evidence": str}
+        — "candidates" is always a one-element list (this call returns
+        exactly one pick).
+    """
+    state = ctx.deps
+    if not state.pdf_info:
+        if getattr(state, "folded_mode", False):
+            return {
+                "success": False,
+                "error": (
+                    "PDFInfo missing — you must call submit_pdf_info first. "
+                    "Read the PDF binary attached to your first user "
+                    "message, populate the PDFInfo schema, and submit it "
+                    "before any positioning tool."
+                ),
+            }
+        return {"success": False, "error": "PDFInfo missing — reader hasn't run"}
+
+    from tools.agent.locate_agent import run_locate
+
+    # Model is configured at run_agent time via the CLI --locate-model
+    # flag, threaded through AgentState. Default in AgentState is
+    # google/gemini-3-flash-preview (matches the previous hardcode).
+    model_name = state.locate_model
+
+    # Locate sub-agent always sees the primary match page (the
+    # reader's top-ranked one). Single image is sufficient — locate
+    # picks one centre per worker run regardless of how many
+    # area_groups the document has.
+    from tools.agent.state import primary_match_page
+    primary_page = primary_match_page(state)
+    map_img = state.rendered_pages.get(primary_page) if primary_page else None
+    map_bytes = None
+    if map_img is not None:
+        try:
+            _, buf = cv2.imencode(".png", map_img)
+            map_bytes = buf.tobytes()
+        except Exception:
+            map_bytes = None
+
+    pdf_info = dict(state.pdf_info or {})
+    if extra_terms:
+        merged_places = list(pdf_info.get("place_names") or [])
+        merged_labels = list(pdf_info.get("visible_map_labels") or [])
+        for t in extra_terms:
+            if not isinstance(t, str) or not t.strip():
+                continue
+            t = t.strip()
+            if t not in merged_places:
+                merged_places.insert(0, t)
+            if t not in merged_labels:
+                merged_labels.insert(0, t)
+        pdf_info["place_names"] = merged_places
+        pdf_info["visible_map_labels"] = merged_labels
+
+    # ``extra_terms`` is also forwarded explicitly: on the first call,
+    # the merge above already surfaces them via the pdf_info JSON, but
+    # on a continuation call run_locate does NOT re-send pdf_info, so
+    # the new terms have to be spliced into the follow-up user message
+    # to actually reach the sub-agent.
+    pick, new_history = run_locate(
+        pdf_info=pdf_info,
+        map_img_bytes=map_bytes,
+        model_name=model_name,
+        match_context=match_context,
+        prior_messages=state.locate_message_history or None,
+        extra_terms=extra_terms,
+        disabled_tools=getattr(state, "locate_disabled_tools", frozenset()),
+        # Telemetry sink: one dict per invocation appended to state.locate_calls.
+        # Aggregated in runtime.collect_agent_stats so each metrics.json carries
+        # locate_request_tokens / locate_response_tokens / locate_n_calls /
+        # locate_generation_ids alongside the reader + worker stats.
+        usage_sink=state.locate_calls,
+    )
+    state.locate_message_history = new_history
+
+    conf = pick.confidence
+    specificity = (5 if conf == "high" else 3 if conf == "med" else 1)
+    cand = {
+        "id": 0,
+        "source": f"live_locate:{pick.picked_source[:40]}",
+        "lat": float(pick.top_lat),
+        "lon": float(pick.top_lon),
+        "sigma_m": float(pick.sigma_m),
+        "specificity": specificity,
+    }
+    state.proposed_centers = [cand]
+    return {
+        "success": True,
+        "n_candidates": 1,
+        "candidates": [cand],
+        "engine": "live_llm_locate",
+        "evidence": pick.evidence,
+    }
 
 
 # No inlier-count gate. A group "passes" iff MINIMA produced a valid
@@ -59,7 +189,7 @@ def _get_or_render_page(state: AgentState, page: int) -> Tuple[Optional[np.ndarr
     if cached is not None and cached_path is not None:
         return cached, cached_path
 
-    from tools.io.map_page import render_map_page
+    from tools.io.pdf import render_map_page
     rendered = render_map_page(state.pdf_path, page, dpi=state.dpi,
                                   verbose=False, case_name=state.case_name)
     if rendered is None:
@@ -289,7 +419,7 @@ def _match_single_page(state: AgentState, page: int, name: str,
     mask_frac = float(np.sum(mask > 0)) / float(mask.size)
 
     from tools.matching import sliding_window_position, mask_to_geojson_affine
-    from tools.metrics.reward import compute_match_reward
+    from tools.matching.reward import compute_match_reward
 
     road_names = (state.pdf_info or {}).get("road_names") or []
 
@@ -520,3 +650,220 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
         # still uncommitted on multi-area documents.
         "all_committed_groups": sorted(state.committed_groups.keys()),
     }
+
+
+async def _hide_unless_folded(
+    ctx: RunContext[AgentState], tool_def: ToolDefinition
+) -> ToolDefinition | None:
+    """Make submit_pdf_info invisible to the LLM unless folded_mode is set.
+
+    pydantic-ai calls this before each model request and uses the returned
+    ToolDefinition (or None) to decide what tools to expose. Returning None
+    in standard mode means the standard worker sees the same 4-tool surface
+    it had before the folded ablation was added — full bit-exact parity.
+    """
+    if getattr(ctx.deps, "folded_mode", False):
+        return tool_def
+    return None
+
+
+def _is_empty_pdfinfo(info: PDFInfo) -> bool:
+    """True iff every PDFInfo field is at its default — i.e. the agent
+    submitted essentially `PDFInfo()` without actually reading anything.
+
+    Used as a folded-mode "did you actually look at the PDF?" gate. A
+    legitimate UK planning doc always yields at least one non-default
+    field (an address, postcode, road name, place name, district name,
+    or map_page_details entry); an all-default submission is the
+    agent punting.
+    """
+    return (
+        not info.site_address
+        and not info.postcodes
+        and not info.grid_refs
+        and not info.scale
+        and not info.map_pages
+        and not info.map_page_details
+        and not info.road_names
+        and not info.place_names
+        and not info.is_district_wide
+        and not info.district_name
+        and not info.house_number_road_pairs
+        and not info.parish_names
+        and not info.admin_region
+        and not info.likely_town_or_city
+        and not info.visible_map_labels
+        and not info.adjacency_hints
+    )
+
+
+@_agent.tool(prepare=_hide_unless_folded)
+def submit_pdf_info(ctx: RunContext[AgentState], info: PDFInfo) -> dict:
+    """Initialise PDFInfo for this case. One-shot per case — this tool
+    populates the PDFInfo that the positioning tools (propose_centers,
+    match_at, commit_match, lookup_district) read from. It is the
+    required first action whenever PDFInfo is not yet populated.
+
+    The PDF binary is attached to your first user message. Read every
+    page, populate the PDFInfo schema (the full schema, including
+    field descriptions and validators, is sent to you as this tool's
+    parameter spec), and submit. The system validates against the
+    schema, stores the result on case state, and pre-renders the
+    map_pages you identified.
+
+    If PDFInfo is already populated for this case, this tool errors —
+    use the positioning tools directly. Submitting a PDFInfo with
+    every field at its default also errors (it means you did not
+    actually read the PDF).
+
+    Args:
+        info: PDFInfo instance with every applicable field populated by
+            reading the attached PDF. See the schema for field
+            semantics — postcodes, grid_refs, road_names, place_names,
+            map_page_details, etc. are all required to be filled when
+            present in the document.
+
+    Returns:
+        {"success": True, "map_pages_rendered": [page numbers],
+         "next_step": short instruction string}
+    """
+    state = ctx.deps
+    if state.pdf_info:
+        raise ModelRetry(
+            "PDFInfo is already populated for this case — do not call "
+            "submit_pdf_info again. Proceed with propose_centers → "
+            "match_at → commit_match."
+        )
+
+    # pydantic-ai has already validated `info` against the PDFInfo schema
+    # by the time we get here (typed parameter). The remaining gate is
+    # the "did you actually read the PDF?" check.
+    if _is_empty_pdfinfo(info):
+        raise ModelRetry(
+            "You submitted a PDFInfo with every field at its default — "
+            "no address, postcodes, road names, place names, district, "
+            "map_page_details, or anything else. That means you did not "
+            "actually read the PDF binary attached to your first user "
+            "message. Open the PDF, look at every page, and extract: "
+            "(a) map_page_details for EVERY page that contains map-like "
+            "content (category 'match' or 'discard'), (b) the site "
+            "address / road names / place names / postcodes visible in "
+            "the text and on the maps, (c) is_district_wide + "
+            "district_name if the document covers an entire borough. "
+            "Then call submit_pdf_info again with the populated PDFInfo."
+        )
+
+    state.pdf_info = info.model_dump()
+
+    # Mirror prepare_worker_state's render loop. We can't import
+    # prepare_worker_state here without a cycle, so the render code is
+    # duplicated (small, stable).
+    from tools.io.pdf import render_map_page
+
+    map_pages = state.pdf_info.get("map_pages") or []
+    rendered: list[int] = []
+    for page_1based in map_pages:
+        result = render_map_page(
+            str(state.pdf_path), int(page_1based),
+            dpi=state.dpi, verbose=False, case_name=state.case_name,
+        )
+        if result is None:
+            continue
+        page_img, rot_info = result
+        if rot_info.get("applied") and page_1based == map_pages[0]:
+            state.rotation_checked = True
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+            tmp_path = tmp.name
+        cv2.imwrite(tmp_path, page_img)
+        state.rendered_pages[int(page_1based)] = page_img
+        state.rendered_page_paths[int(page_1based)] = tmp_path
+        rendered.append(int(page_1based))
+
+    if not rendered:
+        return {
+            "success": True,
+            "map_pages_rendered": [],
+            "next_step": (
+                "No map_pages identified. If you took status='district_lookup' "
+                "path, call lookup_district(district_name=...). Otherwise "
+                "re-examine the PDF — at least one page must be category='match'."
+            ),
+        }
+
+    return {
+        "success": True,
+        "map_pages_rendered": rendered,
+        "next_step": (
+            f"Primary match page is {rendered[0]}. Now run "
+            f"propose_centers → match_at(page={rendered[0]}, ...) → "
+            f"commit_match → return BoundaryOutcome. The locate sub-agent "
+            f"reads the rendered map image directly from state."
+        ),
+    }
+
+
+# Tool: lookup_district
+
+@_agent.tool
+def lookup_district(
+    ctx: RunContext[AgentState],
+    district_name: str,
+) -> dict:
+    """Look up the boundary of a UK administrative district from
+    OS BoundaryLine (offline, OS Open Data).
+
+    Use whenever PDFInfo.is_district_wide=True, or when the document
+    explicitly covers an entire administrative area (borough, district,
+    ward, parish, named conservation area). On success, the district
+    polygon is committed to internal state and you should submit
+    BoundaryOutcome with status="district_lookup" next.
+
+    Naming conventions (be specific to avoid ambiguous matches; the
+    downstream resolver normalises "London Borough of X" → "X" and
+    strips trailing "District"/"Borough"/"Council"):
+      - "Camden, UK"
+      - "Royal Borough of Kensington and Chelsea, UK"
+      - "City of Westminster, UK"
+      - "Broadland District, Norfolk, UK"
+
+    Args:
+        district_name: UK admin name with "UK" suffix. May contain
+            "|"-separated alternates (e.g.
+            "City of Westminster, UK | Westminster, UK") — each is
+            tried in order until one resolves.
+
+    Returns:
+        {"success": true, "matched_variant": str, "instruction": str}
+            — district polygon committed to internal state; submit
+            BoundaryOutcome(status="district_lookup") next.
+        {"success": false, "error": str} — name not in OS BoundaryLine.
+    """
+    state = ctx.deps
+    _dedup_check(state, "lookup_district", {"district_name": district_name})
+
+    from tools.geo.boundary_line import lookup_district_boundary
+
+    # Support '|' alternates: try each variant in order until one works.
+    variants = [v.strip() for v in district_name.split("|") if v.strip()]
+    for variant in variants:
+        result = lookup_district_boundary(variant)
+        if result.get("success"):
+            geojson = result["geojson"]
+            # Normalize to MultiPolygon
+            geom = geojson.get("geometry", {})
+            if geom.get("type") == "Polygon":
+                geojson["geometry"] = {
+                    "type": "MultiPolygon",
+                    "coordinates": [geom["coordinates"]],
+                }
+            geojson["properties"]["source"] = "os_boundaryline_district_lookup"
+            state.current_result = {"geojson": geojson, "match_info": {}}
+            return {
+                "success": True,
+                "matched_variant": variant,
+                "instruction": "District lookup succeeded. Submit your final "
+                               "result with status='district_lookup' and a "
+                               "brief reasoning.",
+            }
+    return {"success": False,
+            "error": f"None of the variants {variants} matched in OS BoundaryLine"}

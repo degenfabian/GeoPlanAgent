@@ -64,8 +64,8 @@ GeoMapAgent_autonomous/
 │   ├── extraction/            # SAM3 + LoRA k-fold loader (single module)
 │   ├── geo/                   # Offline geocoders + BNG ↔ WGS84
 │   ├── io/                    # PDF render, OS tiles, rotation classifier
-│   ├── metrics/               # IoU/F1, MINIMA reward, viz
-│   ├── core/                  # Shared k-fold case→fold routing
+│   ├── metrics/               # IoU/F1 metrics + comparison viz
+│   ├── fold_routing.py        # Shared k-fold case→fold routing
 │   └── build_oml_road_index.py # One-shot OS OpenMap Local index builder
 │
 ├── ablations/                 # Paper ablation scripts (see ablations/README.md)
@@ -319,7 +319,7 @@ exactly in the critic prompt for cross-phase consistency):
 
 Tie-break order across candidates (within the same `area_group`):
 `n_inliers` → `scale_consistency` (closer to 1.0 wins) → `road_name_agreement`.
-Scoring formulas live in [`tools/metrics/reward.py`](tools/metrics/reward.py).
+Scoring formulas live in [`tools/matching/reward.py`](tools/matching/reward.py).
 
 ## Headline numbers (paper, Gemini 3 Flash)
 

@@ -22,9 +22,9 @@ DEFAULT_KFOLD_DIR = "models/sam3_lora"
 # Re-export fold-routing helpers under their historical private names
 # so external imports (`from tools.extraction.sam3 import N_FOLDS`,
 # `_normalise_case_name`) keep working. The canonical source lives in
-# tools.core.fold_routing; both SAM3 and the rotation classifier
+# tools.fold_routing; both SAM3 and the rotation classifier
 # delegate there.
-from tools.core.fold_routing import (
+from tools.fold_routing import (
     N_FOLDS,
     resolve_fold as _resolve_fold,
 )
@@ -221,7 +221,7 @@ def set_fold_for_case(sam_state, case_name):
     from training. No-op when the loaded model is the legacy single
     adapter or when ``case_name`` resolves to the currently-active fold.
 
-    Routing is delegated to :func:`tools.core.fold_routing.resolve_fold`:
+    Routing is delegated to :func:`tools.fold_routing.resolve_fold`:
     look up by case name, then by canonical underscore form, then fall
     back to ``min(available_folds)`` for cases the training pool didn't
     contain.

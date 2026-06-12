@@ -9,13 +9,8 @@ from typing import Any, Dict, Optional
 
 from tools.agent.schemas import BoundaryOutcome
 
-# Imports trigger @_agent.tool decorator side-effects; must come after worker_agent.
-from tools.agent.tools import (  # noqa: F401
-    locate as _locate_tool,
-    match as _match_tool,
-    submit as _submit_tool,
-    verify as _verify_tool,
-)
+# Import triggers the @_agent.tool decorator side-effects; must come after worker_agent.
+from tools.agent import worker_tools as _worker_tools  # noqa: F401
 
 from tools.agent import runtime as _rt
 

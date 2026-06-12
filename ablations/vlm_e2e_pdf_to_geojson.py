@@ -54,7 +54,7 @@ from pydantic_ai.usage import UsageLimits  # noqa: E402
 
 from tools.agent._model import resolve_model, resolve_model_name  # noqa: E402
 from tools.agent.runtime import extract_message_log_from_msgs  # noqa: E402
-from tools.io.eval_case import resolve_case_pdf  # noqa: E402
+from tools.io.pdf import resolve_case_pdf  # noqa: E402
 from tools.metrics.geojson import calculate_spatial_metrics, load_geojson  # noqa: E402
 
 load_dotenv()

@@ -1,26 +1,28 @@
-"""MINIMA sliding-window positioning on OS OpenData tiles.
-
-Production pipeline for georeferencing planning maps:
-  1. Filter geocoding centers (UK bbox, outlier removal, dedup)
-  2. Compute scale/zoom configs from scale_ratio + DPI
-  3. For each center x zoom x rotation:
-     - Resize map to match tile pixel scale
-     - Fetch OS OpenData tile grid
-     - Slide map across tile canvas
-     - Run MINIMA feature matching at each window
-     - Estimate affine via RANSAC (4-DOF similarity)
-     - Score: n_inliers, re-ranked by quadrant coverage
-  4. Best scoring match -> build affine -> convert mask to GeoJSON
+"""MINIMA model management, the sliding-window matcher, affine recovery and
+GeoJSON projection, plus the scale/sigma priors and the composite
+window-score reranker it ranks candidates with.
 """
+
+from __future__ import annotations
 
 import math
 import os
 import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
-
 import cv2
 import numpy as np
+from tools.geo.coords import (
+    best_zoom_for_scale,
+    compute_map_mpp,
+    latlon_to_global_tile_pixel,
+    osm_pixel_to_latlon,
+    tile_mpp as _tile_mpp_at,
+)
+from tools.matching.road_verify import _verify_candidates_with_road_names
+import logging
+from typing import Optional
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -119,19 +121,9 @@ def estimate_affine(mkpts0, mkpts1, mconf=None, reproj_thresh=10.0):
 
 # Scale and zoom utilities
 
-from tools.geo.coords import (
-    best_zoom_for_scale,
-    compute_map_mpp,
-    latlon_to_global_tile_pixel,
-    osm_pixel_to_latlon,
-    tile_mpp as _tile_mpp_at,
-)
 
 _latlon_to_global_tile_pixel = latlon_to_global_tile_pixel
 
-from tools.matching.source_priorities import (
-    effective_sigma,
-)
 
 def resize_map_to_match_zoom(map_img, map_mpp, zoom, lat):
     """Resize map so its pixel scale matches the tile pixel scale at given zoom.
@@ -218,7 +210,6 @@ def _build_scale_H(affine_H, wx, wy, sf):
 
 
 # Road-name verification helper (directional verifier remains ripped).
-from tools.matching.road_verify import _verify_candidates_with_road_names
 
 
 # Main entry point
@@ -464,12 +455,8 @@ def sliding_window_position(
     # Sort candidates best-first by raw metric
     ranked = sorted(top_candidates, key=lambda x: -x[0])
 
-    # Composite rescore: pick by V × Q/4 (see tools.matching.scoring.composite_window_score).
+    # Composite rescore: pick by V × Q/4 (composite_window_score, this module).
     if ranked:
-        from tools.matching.scoring import (
-            composite_window_score,
-            quadrant_coverage_from_inlier_points,
-        )
         rescored = []
         for metric, seq, cand in ranked:
             mi = cand.get("match_info") or {}
@@ -518,3 +505,87 @@ def sliding_window_position(
         best_result["candidates"] = out_candidates
 
     return best_result
+
+
+log = logging.getLogger(__name__)
+
+
+def composite_window_score(vanilla_metric: float,
+                           quadrant_coverage: int) -> float:
+    """RANSAC inlier count weighted by spatial spread of the inliers.
+
+    quadrant_coverage counts map quadrants with at least one inlier
+    (0..4), which penalises matches whose support sits in one corner.
+    """
+    if quadrant_coverage < 0:
+        quadrant_coverage = 4  # unknown coverage shouldn't penalise
+    return float(vanilla_metric) * (quadrant_coverage / 4.0)
+
+
+def quadrant_coverage_from_inlier_points(
+    inlier_pts_map, rot_shape: Tuple[int, int],
+) -> int:
+    """How many of the rotated map's 4 quadrants contain an inlier.
+
+    inlier_pts_map is the list of (x, y) points that
+    tools.matching.sliding_window_position stores in
+    match_info["_inlier_pts_map"]; rot_shape is the (h, w) of the rotated
+    map crop at match time.
+    """
+    if not inlier_pts_map or not rot_shape:
+        return 4
+    try:
+        import numpy as np
+        rh, rw = rot_shape
+        cx, cy = rw / 2.0, rh / 2.0
+        arr = np.asarray(inlier_pts_map)
+        return (
+            int(((arr[:, 0] < cx) & (arr[:, 1] < cy)).any())
+            + int(((arr[:, 0] >= cx) & (arr[:, 1] < cy)).any())
+            + int(((arr[:, 0] < cx) & (arr[:, 1] >= cy)).any())
+            + int(((arr[:, 0] >= cx) & (arr[:, 1] >= cy)).any())
+        )
+    except Exception:
+        log.warning("quadrant coverage failed for %d pts, shape %s; "
+                    "treating as full coverage", len(inlier_pts_map), rot_shape,
+                    exc_info=True)
+        return 4
+
+
+# Generic source-side σ floor used by ``effective_sigma`` when the
+# worker omits σ. The live locate sub-agent's picks always carry a σ
+# directly, so this only matters for the rare fallback path.
+_FALLBACK_SIGMA_M = 5000
+
+
+def sigma_from_scale(scale_ratio, page_mm=(297, 210)):
+    """Compute MAP-SCALE-DRIVEN search sigma (meters).
+
+    Lower bound on σ — the area MINIMA must search to fit the planning
+    map's visible extent against OS tiles.
+
+    Args:
+        scale_ratio: Map scale denominator (e.g., 2500 for 1:2500). None if unknown.
+        page_mm: Paper size (default A4 landscape).
+
+    Returns:
+        Sigma in metres = half-diagonal of the printed map's real-world extent.
+        For 1:1250 → 226m, 1:2500 → 454m, 1:10000 → 1815m, 1:25000 → 4540m.
+        If scale unknown, returns 2500m (a sensible default for site plans).
+    """
+    if scale_ratio is None:
+        return 2500
+    diag_mm = math.sqrt(page_mm[0] ** 2 + page_mm[1] ** 2)
+    half_diag_m = 0.5 * (diag_mm / 1000.0) * scale_ratio
+    return max(150, int(half_diag_m))  # tiny floor — only covers numerical safety
+
+
+def effective_sigma(scale_ratio: Optional[int]) -> int:
+    """Fallback MINIMA search sigma when the worker omits σ.
+
+    Returns ``max(_FALLBACK_SIGMA_M, sigma_from_scale(scale_ratio))`` —
+    conservative floor covering both candidate→GT drift and the map's
+    visible extent. Fires almost never in practice because the live
+    locate sub-agent always supplies σ on its picks.
+    """
+    return max(_FALLBACK_SIGMA_M, sigma_from_scale(scale_ratio))

@@ -205,7 +205,7 @@ def _load_kfold_state() -> Optional[dict]:
         return _kfold_state
 
 
-from tools.core.fold_routing import resolve_fold as _resolve_fold
+from tools.fold_routing import resolve_fold as _resolve_fold
 
 
 def _model_for_case(case_name: Optional[str]) -> tuple[torch.nn.Module, dict]:

@@ -473,7 +473,7 @@ def _run_critic_once(state: Any, model_name: str,
     new_history: Optional[list] = None
     t0 = time.time()
     try:
-        from tools.agent._retry import _run_sync_with_retry
+        from tools.agent.state import _run_sync_with_retry
         result = _run_sync_with_retry(
             agent, user_input, label="critic",
             message_history=message_history,
@@ -557,7 +557,7 @@ def _direct_switch_commit(state: Any,
     # this just replaces the one entry. For multi-area docs the
     # critic's switch affects only the group it picked; the other
     # groups stay committed to whatever the worker chose for them.
-    from tools.agent.tools.match import _recompute_current_result
+    from tools.agent.worker_tools import _recompute_current_result
     group_id = int(cand.get("requested_group", 0))
     state.committed_groups[group_id] = int(chosen_id)
     _recompute_current_result(state)
@@ -670,7 +670,7 @@ def _rehand_to_worker(state: Any,
         history = (worker_result.all_messages()
                    if worker_result is not None and
                    hasattr(worker_result, "all_messages") else None)
-        from tools.agent._retry import _run_sync_with_retry
+        from tools.agent.state import _run_sync_with_retry
         sub_result = _run_sync_with_retry(
             _agent, instruction, deps=state, message_history=history,
             label="critic-rehand",

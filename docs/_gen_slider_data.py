@@ -19,7 +19,7 @@ import cv2
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from tools.io.map_page import render_map_page  # noqa: E402
+from tools.io.pdf import render_map_page  # noqa: E402
 from tools.io.os_tiles import fetch_os_opendata_grid  # noqa: E402
 from tools.matching._core import (  # noqa: E402
     estimate_affine,

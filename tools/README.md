@@ -28,29 +28,28 @@ result = run_agent(pdf_path, models_state, model_name="gemini-flash")
 | [`geo/`](geo/) | Code-Point Open / OS Open Names / BNG ↔ WGS84 / grid ref parser | [`geo/README.md`](geo/README.md) |
 | [`io/`](io/) | PDF render, OS-tile composition, rotation classifier | — |
 | [`metrics/`](metrics/) | IoU / F1 / positioning error, MINIMA per-axis reward, viz | — |
-| [`core/`](core/) | Shared k-fold case→fold routing (SAM3 + rotation classifier) | — |
+| `fold_routing.py` | Shared k-fold case→fold routing (SAM3 + rotation classifier) | — |
 
 Top-level helpers:
 
 | File | Purpose |
 |---|---|
-| `matching/scoring.py` | `composite_window_score(vanilla_metric, quadrant_coverage)` — single source of truth for the sliding-window reranker (`V × Q/4`). |
 | `geo/boundary_line.py` | OS BoundaryLine LA-polygon resolver (`resolve_la`, `lookup_district_boundary`). Used by `lookup_district`, the locate sub-agent's `la_check`, and the emergency LA-centroid fallback. |
 | `build_oml_road_index.py` | One-off script to regenerate `oml_road_index.json` + `oml_road_geom_subset.json` from OS OpenMap Local zip files. Consumed by the locate sub-agent's `road` / `intersect` tools (off by default). |
 
 ## Worker tools
 
-Tool modules under `tools/agent/tools/` register against the shared
+The worker tools in `tools/agent/worker_tools.py` register against the shared
 `_agent` via `@_agent.tool` at import time. The surface seen by the
 worker:
 
 | Tool | Module | Visibility | Purpose |
 |---|---|---|---|
-| `propose_centers(extra_terms?, match_context?)` | [`agent/tools/locate.py`](agent/tools/locate.py) | always | Calls the locate sub-agent. Returns ONE picked centre per call (lat, lon, σ, confidence, source, evidence). |
-| `match_at(page, name, lat, lon, sigma_m?, scale_ratio?)` | [`agent/tools/match.py`](agent/tools/match.py) | always | Runs MINIMA + SAM3 on ONE page (= one `area_group`) at the supplied centre. Returns one candidate with `n_inliers`, `scale_consistency`, `road_name_agreement`, `area_group`, `page`, `candidate_id`, `budget_remaining`, `committed_groups`. |
-| `commit_match(candidate_id)` | [`agent/tools/match.py`](agent/tools/match.py) | always | Commits ONE candidate (one `area_group`). Each call unions its group's polygon into the running final result. Strict gate rejects commits with no valid affine. |
-| `lookup_district(district_name)` | [`agent/tools/verify.py`](agent/tools/verify.py) | always | OS BoundaryLine offline lookup for documents whose boundary IS an admin region. Accepts `\|`-separated alternates. On success the worker submits `status="district_lookup"`. |
-| `submit_pdf_info(info)` | [`agent/tools/submit.py`](agent/tools/submit.py) | folded only | Hidden via `prepare` callback unless `folded_mode=True` (i.e. `--no-reader` ablation). Required first tool call when shown; populates state.pdf_info from a PDFInfo schema instance. |
+| `propose_centers(extra_terms?, match_context?)` | [`agent/worker_tools.py`](agent/worker_tools.py) | always | Calls the locate sub-agent. Returns ONE picked centre per call (lat, lon, σ, confidence, source, evidence). |
+| `match_at(page, name, lat, lon, sigma_m?, scale_ratio?)` | [`agent/worker_tools.py`](agent/worker_tools.py) | always | Runs MINIMA + SAM3 on ONE page (= one `area_group`) at the supplied centre. Returns one candidate with `n_inliers`, `scale_consistency`, `road_name_agreement`, `area_group`, `page`, `candidate_id`, `budget_remaining`, `committed_groups`. |
+| `commit_match(candidate_id)` | [`agent/worker_tools.py`](agent/worker_tools.py) | always | Commits ONE candidate (one `area_group`). Each call unions its group's polygon into the running final result. Strict gate rejects commits with no valid affine. |
+| `lookup_district(district_name)` | [`agent/worker_tools.py`](agent/worker_tools.py) | always | OS BoundaryLine offline lookup for documents whose boundary IS an admin region. Accepts `\|`-separated alternates. On success the worker submits `status="district_lookup"`. |
+| `submit_pdf_info(info)` | [`agent/worker_tools.py`](agent/worker_tools.py) | folded only | Hidden via `prepare` callback unless `folded_mode=True` (i.e. `--no-reader` ablation). Required first tool call when shown; populates state.pdf_info from a PDFInfo schema instance. |
 
 ## Locate sub-agent (called from `propose_centers`)
 
@@ -100,9 +99,9 @@ and is told to pick from a DIFFERENT signal type.
 | `WINDOW_STRIDE_TARGET` | `tools/matching/_core.py` | 100 | Sliding-window stride target (px) |
 | `MAX_CANDIDATES` / `PER_BUCKET` | `tools/matching/_core.py` | 5 / 1 | Diversity-capped top-K within a single sliding-window pass |
 | `match_at_budget` | `tools/agent/state.py` | 5 | Cap on `match_at` calls per case |
-| `_FALLBACK_SIGMA_M` | `tools/matching/source_priorities.py` | 5000 | Sigma floor used when the worker omits σ (locate sub-agent always supplies one) |
+| `_FALLBACK_SIGMA_M` | `tools/matching/_core.py` | 5000 | Sigma floor used when the worker omits σ (locate sub-agent always supplies one) |
 | `_DEFAULT_CONFIDENCE_THRESHOLD` | `tools/io/rotation_classifier.py` | 0.50 | Rotation classifier abstains below this top-class probability |
-| `_SAM3_QUERY` | `tools/agent/tools/match.py` | `"planning boundary"` | The literal phrase the SAM3 LoRA was trained against; do not paraphrase |
+| `_SAM3_QUERY` | `tools/agent/worker_tools.py` | `"planning boundary"` | The literal phrase the SAM3 LoRA was trained against; do not paraphrase |
 
 ## Notes on what isn't here
 

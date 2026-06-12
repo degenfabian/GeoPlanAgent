@@ -53,7 +53,7 @@ from ablations._shared import (  # noqa: E402
 )
 from tools.agent._model import resolve_model  # noqa: E402
 from tools.agent.runtime import extract_message_log_from_msgs  # noqa: E402
-from tools.io.eval_case import resolve_case_pdf  # noqa: E402
+from tools.io.pdf import resolve_case_pdf  # noqa: E402
 from tools.metrics.geojson import load_geojson  # noqa: E402
 
 load_dotenv()

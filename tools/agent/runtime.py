@@ -1,4 +1,7 @@
-"""Phase helpers for run_agent: reader call, pre-render, worker invoke, stats."""
+"""Phase orchestration for one case: render + rotate the map pages, run the
+Phase-1 reader (defined at the bottom of this module), then drive the
+worker loop and the optional critic pass.
+"""
 
 from __future__ import annotations
 
@@ -7,18 +10,18 @@ import os
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
-
 import cv2
 from pydantic_ai import BinaryContent
 from pydantic_ai.usage import UsageLimits
-
-from tools.agent._helpers import _img_to_binary
+from tools.agent.state import _img_to_binary
 from tools.agent._model import resolve_model
-from tools.agent._retry import _run_sync_with_retry
-from tools.agent.reader_agent import _reader_agent
+from tools.agent.state import _run_sync_with_retry
 from tools.agent.worker_agent import _agent
 from tools.agent.schemas import PDFInfo
 from tools.agent.state import AgentState
+from dotenv import load_dotenv
+from pydantic_ai import Agent
+from tools.agent.prompts import READER_SYSTEM_PROMPT
 
 
 # Phase 1: read the PDF
@@ -105,7 +108,7 @@ def prepare_worker_state(
     map_page_details = pdf_info.get("map_page_details", []) or []
 
     if map_pages:
-        from tools.io.map_page import render_map_page
+        from tools.io.pdf import render_map_page
         for page_1based in map_pages:
             rendered = render_map_page(str(pdf_path), int(page_1based),
                                          dpi=dpi, verbose=verbose,
@@ -527,3 +530,21 @@ def build_run_agent_return(
         if wf is not None:
             out["worker_first_geojson"] = wf
     return out
+
+
+load_dotenv()
+
+# Production runs at temperature 0 for reproducibility; the
+# GEOMAP_TEMPERATURE env var lets the appendix ablation re-run at 1.0
+# without disturbing the cached benchmarks.
+_TEMPERATURE = float(os.environ.get("GEOMAP_TEMPERATURE", "0"))
+
+
+_reader_agent = Agent(
+    "test",  # placeholder, overridden at runtime via model= kwarg
+    output_type=PDFInfo,
+    retries=2,
+    output_retries=2,
+    model_settings={"temperature": _TEMPERATURE},
+    instructions=READER_SYSTEM_PROMPT,
+)

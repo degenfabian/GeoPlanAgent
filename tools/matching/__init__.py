@@ -23,7 +23,7 @@ from tools.matching._core import (
     # Sliding-window search (the master entry point)
     sliding_window_position,
 )
-from tools.matching.source_priorities import effective_sigma, sigma_from_scale
+from tools.matching._core import effective_sigma, sigma_from_scale
 
 # Road-name verification (re-exported from tools.matching.road_verify)
 from tools.matching.road_verify import (
