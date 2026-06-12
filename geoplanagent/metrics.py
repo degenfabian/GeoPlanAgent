@@ -1,17 +1,4 @@
-"""Scoring of predicted boundaries against ground truth.
-
-calculate_spatial_metrics() produces the per-case numbers stored in
-metrics.json (iou, precision, recall, f1_score, positioning_error_m):
-geometries are loaded from GeoJSON (load_geojson + geojson_to_shape,
-with buffer(0) repair of invalid polygons), overlap is computed with
-shapely on raw WGS84 coordinates (planar degrees — locally affine, so
-the IoU ratio is unaffected; verified <2e-4 vs projected), and centroid
-error is the haversine distance between polygon centroids in metres.
-
-visualize_comparison() renders the predicted-vs-GT overlay on an OSM
-basemap (geopandas + contextily) that the benchmark saves per case as
-viz_comparison.png.
-"""
+"""Scoring of predicted boundaries against ground truth (the metrics.json numbers)."""
 
 import json
 import logging
@@ -65,6 +52,8 @@ def geojson_to_shape(geojson_data: Dict[str, Any]) -> Optional[Polygon | MultiPo
 
 
 def calculate_positioning_error_m(pred_geojson, gt_geojson):
+    """Haversine distance in metres between the two polygon centroids
+    (centroids taken in WGS84; None when either geometry is unusable)."""
     from geoplanagent.utils import haversine_km
     try:
         pred_shape = geojson_to_shape(pred_geojson)
@@ -82,6 +71,15 @@ def calculate_positioning_error_m(pred_geojson, gt_geojson):
 def calculate_spatial_metrics(
     ground_truth_geojson: Dict[str, Any], predicted_geojson: Dict[str, Any]
 ) -> Dict[str, Any]:
+    """Per-case scores stored in metrics.json: iou, precision, recall,
+    f1_score (+ validity flags), with positioning_error_m added below.
+
+    Overlap is computed with shapely on raw WGS84 coordinates. Planar
+    degrees distort areas, but the distortion is locally affine and hits
+    numerator and denominator alike, so the IoU/precision/recall ratios
+    are unaffected (verified <2e-4 against EPSG:27700). Invalid polygons
+    are repaired with buffer(0) in geojson_to_shape.
+    """
     metrics = {
         "valid_ground_truth": False,
         "valid_prediction": False,
