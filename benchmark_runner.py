@@ -14,23 +14,13 @@ Usage:
 
 import time
 import json
-import signal
 import traceback
-import numpy as np
 import pandas as pd
-import cv2
 from pathlib import Path, PurePosixPath
-from typing import Any, Dict, Optional
 from datetime import datetime
 
 from geoplanagent.tools.pdf import resolve_case_pdf
 from geoplanagent.metrics import load_geojson, calculate_spatial_metrics, aggregate_stats
-import contextily as ctx
-import geopandas as gpd
-import matplotlib.patches as mpatches
-import matplotlib.pyplot as plt
-from shapely.geometry import shape
-from shapely.ops import unary_union
 from geoplanagent.utils import PRODUCTION_LOCATE_DISABLED_TOOLS
 
 # Duplicates removed from disk; filtered out of the dataset at load time.
@@ -49,114 +39,6 @@ def load_models():
     state["sam3_ft"] = load_sam3_ft()
     state["minima"] = load_minima()
     return state
-
-
-# Visualization
-
-
-
-
-# Fraction of the combined bounding box added on each side of the plot.
-_VIZ_PADDING = 1.5
-
-
-def visualize_comparison(
-    predicted_geojson: Dict[str, Any],
-    ground_truth_geojson: Optional[Dict[str, Any]] = None,
-    *,
-    output_path: str,
-) -> None:
-    """Render predicted (green) and optional GT (blue) on an OSM basemap; save PNG.
-
-    Raises on render failure so the caller's stub-image fallback can fire.
-    """
-    plt.close("all")
-
-    pred_geom = shape(predicted_geojson["geometry"])
-    pred_gdf = gpd.GeoDataFrame({"geometry": [pred_geom]}, crs="EPSG:4326")
-
-    gt_gdf = None
-    if ground_truth_geojson:
-        gt_geom = shape(ground_truth_geojson["geometry"])
-        gt_gdf = gpd.GeoDataFrame({"geometry": [gt_geom]}, crs="EPSG:4326")
-
-    all_shapes = [pred_geom]
-    if gt_gdf is not None:
-        all_shapes.append(gt_geom)
-    combined = unary_union(all_shapes)
-    combined_gdf = gpd.GeoDataFrame({"geometry": [combined]}, crs="EPSG:4326")
-
-    pred_merc = pred_gdf.to_crs(epsg=3857)
-    combined_merc = combined_gdf.to_crs(epsg=3857)
-    gt_merc = gt_gdf.to_crs(epsg=3857) if gt_gdf is not None else None
-
-    fig, ax = plt.subplots(figsize=(14, 12))
-
-    if gt_merc is not None:
-        gt_merc.plot(ax=ax, facecolor="blue", edgecolor="blue", alpha=0.15, linewidth=2)
-        gt_merc.boundary.plot(ax=ax, color="blue", linewidth=2.5)
-
-    pred_merc.plot(ax=ax, facecolor="green", edgecolor="green", alpha=0.15, linewidth=2)
-    pred_merc.boundary.plot(ax=ax, color="green", linewidth=2.5)
-
-    minx, miny, maxx, maxy = combined_merc.total_bounds
-    x_pad = (maxx - minx) * _VIZ_PADDING
-    y_pad = (maxy - miny) * _VIZ_PADDING
-    ax.set_xlim(minx - x_pad, maxx + x_pad)
-    ax.set_ylim(miny - y_pad, maxy + y_pad)
-
-    ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik)
-
-    legend_handles = [
-        mpatches.Patch(facecolor="green", edgecolor="green", alpha=0.4, label="Extracted"),
-    ]
-    if gt_merc is not None:
-        legend_handles.insert(
-            0, mpatches.Patch(facecolor="blue", edgecolor="blue", alpha=0.4, label="Ground Truth")
-        )
-    ax.legend(handles=legend_handles, loc="upper right", fontsize=12)
-
-    if gt_merc is not None:
-        ax.set_title("Extracted vs Ground Truth", fontsize=14, pad=10)
-    else:
-        ax.set_title("Extracted Boundary", fontsize=14, pad=10)
-
-    ax.set_axis_off()
-    plt.tight_layout()
-
-    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(output_path, format="png", dpi=150, bbox_inches="tight")
-    plt.close(fig)
-
-    print(f"Visualization saved: {output_path}")
-
-
-def save_visualizations(result_dir, predicted_geojson, gt_geojson):
-    """Save per-case visualizations."""
-    result_dir = Path(result_dir)
-
-    if predicted_geojson is not None:
-        viz_path = result_dir / "viz_comparison.png"
-        try:
-
-            visualize_comparison(
-                predicted_geojson=predicted_geojson,
-                ground_truth_geojson=gt_geojson,
-                output_path=str(viz_path),
-            )
-        except Exception as e:
-            # write a stub image so a failed viz is visible at review
-            # time instead of silently absent
-            print(f"  Viz failed: {e}")
-            try:
-                stub = np.full((400, 800, 3), 240, dtype=np.uint8)
-                msg = f"viz_comparison failed: {type(e).__name__}: {str(e)[:120]}"
-                cv2.putText(
-                    stub, msg, (20, 200), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 200), 1, cv2.LINE_AA
-                )
-                cv2.imwrite(str(viz_path), stub)
-            except Exception:
-                pass
 
 
 # Main Runner
@@ -396,15 +278,9 @@ def _run_case(
                 f"t={dt:.1f}s  reason={result.get('agent_reason', '')[:60]}"
             )
 
-        # Save results — cache everything for offline analysis.
-        # CRITICAL invariant: append to ``all_results`` immediately
-        # after writing metrics.json, BEFORE any side-effect writes
-        # (cv2.imwrite, np.save, save_visualizations, ...). Otherwise
-        # a failure in one of those calls causes the outer except
-        # block to record the case as a crash in this run's summary,
-        # while a subsequent cached re-run loads metrics.json and
-        # counts the case as a polygon — same on-disk data,
-        # different headline numbers.
+        # Persist the only two release artifacts: the predicted boundary
+        # and the scores/telemetry. Nothing else is written to disk —
+        # per-case visualisation is on-demand via scripts/visualize_case.py.
         case_dir.mkdir(parents=True, exist_ok=True)
         if geojson:
             (case_dir / "predicted.geojson").write_text(json.dumps(geojson, indent=2))
@@ -414,7 +290,6 @@ def _run_case(
             "sl_no": sl_no,
             "match_info": mi,
             "processing_time": dt,
-            "agent_reason": result.get("agent_reason"),
             "agent_stats": result.get("agent_stats", {}),
             **metrics,
         }
@@ -441,93 +316,6 @@ def _run_case(
                 **{k: v for k, v in metrics_payload.items() if k != "sl_no"},
             }
         )
-
-        # Optional side-effect writes. Each is wrapped in its own
-        # try/except so one failed write (e.g. an unwritable mask
-        # because cv2 hit a corrupted page, or a viz timeout) does
-        # NOT discard the IoU we already recorded above.
-        def _safe(label, fn):
-            try:
-                fn()
-            except Exception as _e:
-                print(f"  warn: {label} failed: {str(_e)[:120]}")
-
-        if worker_first_gj is not None:
-            _safe(
-                "write predicted_worker_first.geojson",
-                lambda: (case_dir / "predicted_worker_first.geojson").write_text(
-                    json.dumps(worker_first_gj, indent=2)
-                ),
-            )
-
-        msg_log = result.get("message_log", [])
-        if msg_log:
-            _safe(
-                "write message_log.json",
-                lambda: (case_dir / "message_log.json").write_text(
-                    json.dumps(msg_log, indent=2, default=str)
-                ),
-            )
-
-        pdf_info = result.get("agent_stats", {}).get("pdf_info")
-        if pdf_info:
-            _safe(
-                "write pdf_info.json",
-                lambda: (case_dir / "pdf_info.json").write_text(
-                    json.dumps(pdf_info, indent=2, default=str)
-                ),
-            )
-
-        mask = result.get("mask")
-        if mask is not None:
-            _safe(
-                "write boundary_mask.png",
-                lambda: cv2.imwrite(str(case_dir / "boundary_mask.png"), mask),
-            )
-
-        affine_H = result.get("affine_H")
-        if affine_H is not None:
-            _safe("write affine_H.npy", lambda: np.save(str(case_dir / "affine_H.npy"), affine_H))
-
-        tile_meta = result.get("tile_info_meta", {})
-        if tile_meta:
-            _safe(
-                "write tile_info.json",
-                lambda: (case_dir / "tile_info.json").write_text(
-                    json.dumps(tile_meta, indent=2, default=str)
-                ),
-            )
-
-        selected_overlay = result.get("selected_overlay")
-        if selected_overlay is not None:
-            _safe(
-                "write selected_boundary.png",
-                lambda: cv2.imwrite(str(case_dir / "selected_boundary.png"), selected_overlay),
-            )
-
-        # Visualization (with timeout on POSIX). The agent cleans up
-        # map_img before returning, so only comparison viz runs here.
-        # SIGALRM is Unix-only; on Windows we skip the timeout — viz
-        # is bounded by the typical work it does (comparison overlay
-        # on a 2k×2k canvas, single-digit seconds), so the lack of a
-        # hard cap is a small risk vs the cross-platform win.
-        has_alarm = hasattr(signal, "SIGALRM")
-        old_handler = None
-        if has_alarm:
-            old_handler = signal.signal(
-                signal.SIGALRM, lambda s, f: (_ for _ in ()).throw(TimeoutError)
-            )
-            signal.alarm(60)
-        try:
-            save_visualizations(case_dir, geojson, gt_geojson)
-        except TimeoutError:
-            print("  Viz timed out")
-        except Exception as _e:
-            print(f"  warn: viz failed: {str(_e)[:120]}")
-        finally:
-            if has_alarm:
-                signal.alarm(0)
-                signal.signal(signal.SIGALRM, old_handler)
 
     except Exception as e:
         traceback.print_exc()

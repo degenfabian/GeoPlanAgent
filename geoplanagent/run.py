@@ -39,18 +39,6 @@ def _public(pdf_info: dict) -> dict:
     return {k: v for k, v in pdf_info.items() if not k.startswith("_")}
 
 
-def _write_case_json(case_dir: Optional[Path], filename: str, payload: Any, verbose: bool) -> None:
-    """Write payload as indented JSON into case_dir; tolerate I/O failure (debug artifact)."""
-    if case_dir is None:
-        return
-    try:
-        case_dir.mkdir(parents=True, exist_ok=True)
-        (case_dir / filename).write_text(json.dumps(payload, indent=2, default=str))
-    except Exception as e:
-        if verbose:
-            print(f"  Warning: failed to write {filename}: {e}")
-
-
 def run_agent(
     pdf_path: str,
     models_state: dict,
@@ -101,9 +89,6 @@ def run_agent(
     else:
         pdf_info = read_pdf_phase(pdf_path, model_name, verbose=verbose)
 
-        # Flush pdf_info.json so it survives a Phase 2 crash.
-        _write_case_json(case_dir, "pdf_info.json", _public(pdf_info), verbose)
-
         # Phase 2 setup: state + worker user_parts
         state, user_parts = prepare_worker_state(
             pdf_path=pdf_path,
@@ -136,12 +121,11 @@ def run_agent(
         if verbose:
             print(f"  Agent error: {e}")
             traceback.print_exc()
-        partial_stats = dump_partial_state(state, e, case_dir, verbose)
         return {
             "success": False,
             "error": str(e),
             "geojson": state.current_result.get("geojson"),
-            "agent_stats": partial_stats,
+            "agent_stats": build_error_stats(state, e),
         }
     else:
         outcome = result.output
@@ -219,12 +203,10 @@ def run_agent(
     cleanup_temp_pages(state)
 
     # In folded mode pdf_info was populated by the worker's submit_pdf_info
-    # tool call rather than Phase 1. Pull it back from state so downstream
-    # stats + the on-disk pdf_info.json reflect what the worker submitted.
+    # tool call rather than Phase 1. Pull it back from state so the token
+    # telemetry reflects what the worker submitted.
     if folded:
         pdf_info = dict(state.pdf_info or {})
-        if pdf_info:
-            _write_case_json(case_dir, "pdf_info.json", pdf_info, verbose)
 
     if verbose:
         match_info = state.current_result.get("match_info", {})
@@ -507,12 +489,9 @@ def invoke_worker(
 # Phase 2 error path: dump partial state
 
 
-def dump_partial_state(
-    state: AgentState, exc: Exception, case_dir: Optional[Path], verbose: bool
-) -> dict:
-    """Write partial_state.json for post-hoc debug on a mid-run worker error."""
-    partial_stats = {
-        "pdf_info": state.pdf_info,
+def build_error_stats(state: AgentState, exc: Exception) -> dict:
+    """agent_stats record for a mid-run worker error (no pdf_info — that is personal data)."""
+    return {
         "error": str(exc),
         "error_type": type(exc).__name__,
         "current_match_info": state.current_result.get("match_info", {}),
@@ -533,8 +512,6 @@ def dump_partial_state(
         "rotation_checked": state.rotation_checked,
         "last_output": (state.last_output.model_dump() if state.last_output is not None else None),
     }
-    _write_case_json(case_dir, "partial_state.json", partial_stats, verbose)
-    return partial_stats
 
 
 # Cleanup
@@ -656,7 +633,6 @@ def collect_agent_stats(
     """Assemble the agent_stats dict that benchmark_runner persists."""
     agent_stats: dict = {
         "position_calls": state.position_calls,
-        "pdf_info": _public(pdf_info),
     }
     reader_tokens = pdf_info.get("_reader_tokens", {}) or {}
     if reader_tokens:
@@ -682,7 +658,6 @@ def collect_agent_stats(
     if state.last_output is not None:
         output = state.last_output
         agent_stats["outcome_status"] = output.status
-        agent_stats["outcome_reasoning"] = output.reasoning
         agent_stats["rotation_checked"] = output.rotation_checked
 
     if message_log_extracted:

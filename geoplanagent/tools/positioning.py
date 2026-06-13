@@ -377,8 +377,8 @@ def match_at(
 
     # Store the attempt. per_group is a 1-element list (kept for shape
     # parity with the rest of the pipeline — the critic,
-    # utils.committed_primary_page, and the crash-path
-    # partial_state.json all read per_group).
+    # utils.committed_primary_page, and build_error_stats all read
+    # per_group).
     candidate_id = state._match_attempt_counter
     state._match_attempt_counter += 1
     state.match_attempts[candidate_id] = {
