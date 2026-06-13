@@ -31,10 +31,10 @@ def _strip_old_images(messages):
         return messages
     cutoff = len(messages) - KEEP_RECENT
 
-    for i, msg in enumerate(messages):
-        if i >= cutoff:
+    for index, message in enumerate(messages):
+        if index >= cutoff:
             continue
-        parts = getattr(msg, "parts", None)
+        parts = getattr(message, "parts", None)
         if not parts:
             continue
         for part in parts:
@@ -42,25 +42,25 @@ def _strip_old_images(messages):
             if not isinstance(content, list):
                 continue
 
-            def _is_strippable(it) -> bool:
-                if not (hasattr(it, "media_type") and hasattr(it, "data")):
+            def _is_strippable(item) -> bool:
+                if not (hasattr(item, "media_type") and hasattr(item, "data")):
                     return False
-                mt = getattr(it, "media_type", "") or ""
+                media_type = getattr(item, "media_type", "") or ""
                 # PDFs also get stripped — in folded_mode the PDF lives in
                 # the first user turn and is no longer needed once
                 # submit_pdf_info has populated state.pdf_info.
-                return mt.startswith("image/") or mt == "application/pdf"
+                return media_type.startswith("image/") or media_type == "application/pdf"
 
-            has_binary = any(_is_strippable(it) for it in content)
+            has_binary = any(_is_strippable(item) for item in content)
             if not has_binary:
                 continue
             new_content = list(content)
-            for j, item in enumerate(new_content):
+            for content_index, item in enumerate(new_content):
                 if _is_strippable(item):
                     kind = (
                         "PDF" if getattr(item, "media_type", "") == "application/pdf" else "image"
                     )
-                    new_content[j] = (
+                    new_content[content_index] = (
                         f"[{kind} omitted from older history; "
                         f"was {item.media_type}, {len(item.data)} bytes]"
                     )
@@ -92,19 +92,19 @@ async def validate_boundary_outcome(
     state.last_output = out
 
     # Prefer the union total across area_groups; fall back to primary group's n_inliers.
-    cr = state.current_result or {}
-    mi = cr.get("match_info") or {}
-    final_inl = (
-        cr.get("total_inliers")
-        if cr.get("total_inliers") is not None
-        else (mi.get("n_inliers", 0) or 0)
+    current_result = state.current_result or {}
+    match_info = current_result.get("match_info") or {}
+    final_n_inliers = (
+        current_result.get("total_inliers")
+        if current_result.get("total_inliers") is not None
+        else (match_info.get("n_inliers", 0) or 0)
     )
-    final_inl = int(final_inl or 0)
+    final_n_inliers = int(final_n_inliers or 0)
 
     if out.rotation_checked != state.rotation_checked:
         out.rotation_checked = state.rotation_checked
-    if out.final_n_inliers != final_inl:
-        out.final_n_inliers = final_inl
+    if out.final_n_inliers != final_n_inliers:
+        out.final_n_inliers = final_n_inliers
 
     # Folded mode: refuse to finalise until submit_pdf_info has populated
     # state.pdf_info. Standard pipeline already has pdf_info from Phase 1.
@@ -128,7 +128,7 @@ async def validate_boundary_outcome(
 
     # status == "accepted" from here on.
 
-    if final_inl == 0 and state.current_result.get("geojson") is None:
+    if final_n_inliers == 0 and state.current_result.get("geojson") is None:
         raise ModelRetry(
             "Cannot accept: no successful match_at + commit_match has produced "
             "a result. Run positioning to completion (propose_centers → "

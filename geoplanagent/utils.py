@@ -1,22 +1,19 @@
-"""Shared support for the whole package: the per-case AgentState blackboard,
-image/mask helpers, the transient-HTTP retry wrapper, OpenRouter model-alias
-resolution, geodesy/tile-pixel math, and k-fold case routing.
-"""
+"""Package-wide shared state, image/retry/model helpers, geodesy, and k-fold routing."""
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
-import numpy as np
 import hashlib
 import json
-import cv2
-from pydantic_ai import BinaryContent, ModelRetry
-import re
-import time as _time
-from pydantic_ai.models.openrouter import OpenRouterModel
 import math
-from typing import Tuple
+import re
+import time
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
+
+import cv2
+import numpy as np
+from pydantic_ai import BinaryContent, ModelRetry
+from pydantic_ai.models.openrouter import OpenRouterModel
 
 
 if TYPE_CHECKING:
@@ -133,12 +130,12 @@ def primary_match_page(state: "AgentState") -> Optional[int]:
 
 def committed_primary_page(state: "AgentState") -> Optional[int]:
     """Page of the worker's committed primary group, else the default match page."""
-    cr = state.current_result or {}
-    per_group = cr.get("per_group") or []
+    current_result = state.current_result or {}
+    per_group = current_result.get("per_group") or []
     if per_group:
-        requested = cr.get("requested_group")
+        requested = current_result.get("requested_group")
         primary = next(
-            (g for g in per_group if g.get("area_group") == requested),
+            (group for group in per_group if group.get("area_group") == requested),
             per_group[0],
         )
         page = primary.get("page")
@@ -149,17 +146,17 @@ def committed_primary_page(state: "AgentState") -> Optional[int]:
 
 def resize_for_api(img: np.ndarray, max_dim: int = 1024) -> np.ndarray:
     """Resize image so largest dimension is max_dim."""
-    h, w = img.shape[:2]
-    if max(h, w) <= max_dim:
+    height, width = img.shape[:2]
+    if max(height, width) <= max_dim:
         return img
-    scale = max_dim / max(h, w)
-    return cv2.resize(img, (int(w * scale), int(h * scale)))
+    scale = max_dim / max(height, width)
+    return cv2.resize(img, (int(width * scale), int(height * scale)))
 
 
 def _img_to_binary(img: np.ndarray) -> BinaryContent:
     """Convert numpy BGR image to PydanticAI BinaryContent."""
-    _, buf = cv2.imencode(".png", resize_for_api(img))
-    return BinaryContent(data=buf.tobytes(), media_type="image/png")
+    _, encoded = cv2.imencode(".png", resize_for_api(img))
+    return BinaryContent(data=encoded.tobytes(), media_type="image/png")
 
 
 def _dedup_check(state: "AgentState", tool_name: str, args: dict) -> None:
@@ -193,11 +190,10 @@ def _is_retryable_http_error(exc: Exception) -> bool:
         return False
     if not isinstance(exc, ModelHTTPError):
         return False
-    s = str(exc)
-    m = re.search(r"status_code:\s*(\d+)", s)
-    if not m:
+    status_match = re.search(r"status_code:\s*(\d+)", str(exc))
+    if not status_match:
         return False
-    return int(m.group(1)) in _RETRYABLE_STATUS
+    return int(status_match.group(1)) in _RETRYABLE_STATUS
 
 
 # Substring forms of the same canonical status set, for raw transport
@@ -209,8 +205,8 @@ def is_transient_http_error(e: Exception) -> bool:
     """Substring variant of _is_retryable_http_error for raw transport
     exceptions that aren't wrapped in ModelHTTPError (used by the locate
     sub-agent's own retry loop)."""
-    s = str(e).lower()
-    return any(m in s for m in (x.lower() for x in _TRANSIENT_HTTP_MARKERS))
+    message = str(e).lower()
+    return any(marker.lower() in message for marker in _TRANSIENT_HTTP_MARKERS)
 
 
 def _run_sync_with_retry(
@@ -224,16 +220,16 @@ def _run_sync_with_retry(
     for attempt in range(max_retries + 1):
         try:
             return agent_obj.run_sync(*args, **kwargs)
-        except Exception as e:
-            if not _is_retryable_http_error(e) or attempt == max_retries:
+        except Exception as error:
+            if not _is_retryable_http_error(error) or attempt == max_retries:
                 raise
-            wait = backoff_s * (2**attempt)
+            wait_s = backoff_s * (2**attempt)
             print(
                 f"  {label}: transient HTTP error (attempt "
-                f"{attempt + 1}/{max_retries + 1}): {str(e)[:140]}"
-                f" — retrying in {wait:.0f}s"
+                f"{attempt + 1}/{max_retries + 1}): {str(error)[:140]}"
+                f" — retrying in {wait_s:.0f}s"
             )
-            _time.sleep(wait)
+            time.sleep(wait_s)
 
 
 MODEL_ALIASES = {
@@ -296,8 +292,8 @@ def best_zoom_for_scale(map_mpp, lat: float):
     """OSM zoom in [15, 19] whose pixel scale most closely matches map_mpp at lat."""
     if map_mpp is None:
         return None
-    z = math.log2(WEB_MERCATOR_C * math.cos(math.radians(lat)) / map_mpp)
-    return max(15, min(19, round(z)))
+    zoom = math.log2(WEB_MERCATOR_C * math.cos(math.radians(lat)) / map_mpp)
+    return max(15, min(19, round(zoom)))
 
 
 def osm_pixel_to_latlon(
@@ -347,17 +343,17 @@ def resolve_fold(case_name: str, fold_assignment: dict, available_folds: set[int
     training pool were never seen by any fold, so any checkpoint is fine;
     we pick min(available_folds) for determinism.
     """
-    norm = normalise_case_name(case_name)
+    normalised = normalise_case_name(case_name)
     fold = fold_assignment.get(case_name)
     if fold is None:
-        fold = fold_assignment.get(norm)
+        fold = fold_assignment.get(normalised)
     if fold is None:
         # Multi-page cases: pages of one document always share a fold
         # (the split is grouped by case), so the first hit is enough.
-        prefix = norm + "_p"
-        for key, val in fold_assignment.items():
+        prefix = normalised + "_p"
+        for key, fold_value in fold_assignment.items():
             if key.startswith(prefix) and key[len(prefix) :].isdigit():
-                fold = val
+                fold = fold_value
                 break
     if fold is None or fold not in available_folds:
         return min(available_folds)

@@ -19,7 +19,7 @@ import torchvision.transforms as T
 from geoplanagent.utils import resolve_fold as _resolve_fold
 
 
-def render_pdf_page(pdf_path, page_index, dpi=200):
+def render_pdf_page(pdf_path: str, page_index: int, dpi: int = 200) -> Optional[np.ndarray]:
     """Render a single PDF page as a numpy BGR image at full resolution.
 
     Uses PyMuPDF (fitz) for fast rendering. Falls back to pdf2image when
@@ -28,11 +28,13 @@ def render_pdf_page(pdf_path, page_index, dpi=200):
     try:
         import fitz
 
-        doc = fitz.open(pdf_path)
+        document = fitz.open(pdf_path)
         try:
-            if page_index < 0 or page_index >= len(doc):
-                raise IndexError(f"page_index {page_index} out of range (PDF has {len(doc)} pages)")
-            page = doc[page_index]
+            if page_index < 0 or page_index >= len(document):
+                raise IndexError(
+                    f"page_index {page_index} out of range (PDF has {len(document)} pages)"
+                )
+            page = document[page_index]
             # Force the full MediaBox to be rendered. By default PyMuPDF
             # honours the page's CropBox, which on some PDFs is set a few
             # points smaller than the MediaBox and silently clips real map
@@ -51,13 +53,15 @@ def render_pdf_page(pdf_path, page_index, dpi=200):
                 page.set_cropbox(page.mediabox)
             except ValueError:
                 pass
-            pix = page.get_pixmap(dpi=dpi)
-            img = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width, pix.n)
+            pixmap = page.get_pixmap(dpi=dpi)
+            rgb_image = np.frombuffer(pixmap.samples, dtype=np.uint8).reshape(
+                pixmap.height, pixmap.width, pixmap.n
+            )
         finally:
-            doc.close()
-        if img.shape[2] == 4:
-            return cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
-        return cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            document.close()
+        if rgb_image.shape[2] == 4:
+            return cv2.cvtColor(rgb_image, cv2.COLOR_RGBA2BGR)
+        return cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
     except ImportError:
         pages = convert_from_path(
             pdf_path,
@@ -94,27 +98,27 @@ def render_map_page(
         case_name: optional case identifier for k-fold rotation routing.
 
     Returns:
-        (img_bgr, rot_info) on success, or None if rendering failed
-        (e.g. page index out of range). rot_info is the dict returned by
-        auto_rotate — the caller can read rot_info["applied"] to know
+        (map_bgr, rotation_info) on success, or None if rendering failed
+        (e.g. page index out of range). rotation_info is the dict returned by
+        auto_rotate — the caller can read rotation_info["applied"] to know
         whether rotation was performed.
     """
-    page_idx = max(0, int(page_1based) - 1)
+    page_index = max(0, int(page_1based) - 1)
     try:
-        img = render_pdf_page(str(pdf_path), page_idx, dpi=dpi)
+        map_bgr = render_pdf_page(str(pdf_path), page_index, dpi=dpi)
     except IndexError:
         return None
-    if img is None:
+    if map_bgr is None:
         return None
 
-    rot_info: dict = {"applied": False}
+    rotation_info: dict = {"applied": False}
     try:
-        img, rot_info = auto_rotate(img, case_name=case_name, verbose=verbose)
-    except Exception as e:
+        map_bgr, rotation_info = auto_rotate(map_bgr, case_name=case_name, verbose=verbose)
+    except Exception as error:
         if verbose:
-            print(f"  rotation_classifier failed ({e!s:.80}); raw render")
+            print(f"  rotation_classifier failed ({error!s:.80}); raw render")
 
-    return img, rot_info
+    return map_bgr, rotation_info
 
 
 # Filename tokens that hint at a dedicated map/plan PDF (vs. notice or
@@ -138,7 +142,11 @@ def resolve_case_pdf(folder_path: Path) -> Optional[Path]:
     pdf_files = list(folder_path.glob("*.pdf"))
     if not pdf_files:
         return None
-    map_pdfs = [p for p in pdf_files if any(tok in p.name.lower() for tok in _MAP_TOKENS)]
+    map_pdfs = [
+        pdf_file
+        for pdf_file in pdf_files
+        if any(token in pdf_file.name.lower() for token in _MAP_TOKENS)
+    ]
     return map_pdfs[0] if map_pdfs else pdf_files[0]
 
 
@@ -190,7 +198,7 @@ def _device() -> torch.device:
     )
 
 
-def _make_transform(img_size: int):
+def _make_transform(img_size: int) -> T.Compose:
     return T.Compose(
         [
             T.ToPILImage(),
@@ -216,13 +224,13 @@ def _load_state() -> dict:
                 f"rotation classifier checkpoint not found at {_CKPT_PATH}. "
                 f"Train it via training/train_rotation_classifier.py."
             )
-        ckpt = torch.load(_CKPT_PATH, map_location="cpu", weights_only=False)
-        cfg = ckpt.get("config") or {}
-        img_size = int(cfg.get("img_size", 768))
+        checkpoint = torch.load(_CKPT_PATH, map_location="cpu", weights_only=False)
+        config = checkpoint.get("config") or {}
+        img_size = int(config.get("img_size", 768))
 
         device = _device()
-        model = _RotationClassifier(n_classes=int(cfg.get("n_classes", 4)))
-        model.load_state_dict(ckpt["state_dict"])
+        model = _RotationClassifier(n_classes=int(config.get("n_classes", 4)))
+        model.load_state_dict(checkpoint["state_dict"])
         model = model.to(device).eval()
 
         _state = {
@@ -247,11 +255,11 @@ def _load_kfold_state() -> Optional[dict]:
     with _state_lock:
         if _kfold_state is not None:
             return _kfold_state
-        fa_path = _KFOLD_DIR / "fold_assignment.json"
-        if not fa_path.exists():
+        fold_assignment_path = _KFOLD_DIR / "fold_assignment.json"
+        if not fold_assignment_path.exists():
             return None
         try:
-            fa = json.loads(fa_path.read_text())
+            fold_assignment = json.loads(fold_assignment_path.read_text())
         except Exception:
             return None
 
@@ -259,29 +267,31 @@ def _load_kfold_state() -> Optional[dict]:
         models: dict = {}
         # Per-fold img_size: detect inconsistency rather than silently using
         # whichever fold loaded last.
-        per_fold_img_size: dict[int, int] = {}
+        img_size_by_fold: dict[int, int] = {}
         for fold_dir in sorted(_KFOLD_DIR.glob("fold_*")):
-            ckpt_path = fold_dir / "best.pt"
-            if not ckpt_path.exists():
+            checkpoint_path = fold_dir / "best.pt"
+            if not checkpoint_path.exists():
                 continue
             try:
-                fold_k = int(fold_dir.name.split("_")[-1])
+                fold = int(fold_dir.name.split("_")[-1])
             except ValueError:
                 continue
-            ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
-            cfg = ckpt.get("config") or {}
-            per_fold_img_size[fold_k] = int(cfg.get("img_size", 768))
-            model = _RotationClassifier(n_classes=int(cfg.get("n_classes", 4)))
-            model.load_state_dict(ckpt["state_dict"])
+            checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+            config = checkpoint.get("config") or {}
+            img_size_by_fold[fold] = int(config.get("img_size", 768))
+            model = _RotationClassifier(n_classes=int(config.get("n_classes", 4)))
+            model.load_state_dict(checkpoint["state_dict"])
             model = model.to(device).eval()
-            models[fold_k] = model
+            models[fold] = model
         if not models:
             return None
 
         # Use the modal img_size; warn on mismatch.
-        sizes = list(per_fold_img_size.values())
-        img_size = max(set(sizes), key=sizes.count)
-        mismatched = {f: s for f, s in per_fold_img_size.items() if s != img_size}
+        fold_img_sizes = list(img_size_by_fold.values())
+        img_size = max(set(fold_img_sizes), key=fold_img_sizes.count)
+        mismatched = {
+            fold: size for fold, size in img_size_by_fold.items() if size != img_size
+        }
         if mismatched:
             print(
                 f"  rotation_classifier: WARNING — fold img_size mismatch "
@@ -296,14 +306,14 @@ def _load_kfold_state() -> Optional[dict]:
             "device": device,
             "img_size": img_size,
             "transform": _make_transform(img_size),
-            "fold_assignment": fa,
+            "fold_assignment": fold_assignment,
             "kind": "kfold",
             "available_folds": set(models.keys()),
         }
         print(
             f"  rotation_classifier: loaded {len(models)} k-fold adapter(s) "
             f"from {_KFOLD_DIR.name}/ "
-            f"({len(fa)} cases routed via fold_assignment.json)"
+            f"({len(fold_assignment)} cases routed via fold_assignment.json)"
         )
         return _kfold_state
 
@@ -311,13 +321,15 @@ def _load_kfold_state() -> Optional[dict]:
 def _model_for_case(case_name: Optional[str]) -> tuple[torch.nn.Module, dict]:
     """K-fold model for case_name, or the legacy single checkpoint."""
     if case_name is not None:
-        kf = _load_kfold_state()
-        if kf is not None:
-            fold = _resolve_fold(case_name, kf["fold_assignment"], kf["available_folds"])
-            return kf["models"][fold], kf
+        kfold_state = _load_kfold_state()
+        if kfold_state is not None:
+            fold = _resolve_fold(
+                case_name, kfold_state["fold_assignment"], kfold_state["available_folds"]
+            )
+            return kfold_state["models"][fold], kfold_state
     # Legacy path
-    st = _load_state()
-    return st["models"][None], st
+    legacy_state = _load_state()
+    return legacy_state["models"][None], legacy_state
 
 
 def _preprocess(map_bgr: np.ndarray, transform) -> torch.Tensor:
@@ -349,28 +361,32 @@ def predict_rotation_with_confidence(
     if state["kind"] == "kfold" and case_name is not None:
         fold = _resolve_fold(case_name, state["fold_assignment"], state["available_folds"])
 
-    base = _preprocess(map_bgr, transform).unsqueeze(0).to(device)  # (1, 3, H, W)
+    base_tensor = _preprocess(map_bgr, transform).unsqueeze(0).to(device)  # (1, 3, H, W)
 
     # CW → torch.rot90 (CCW) k-arg mapping.
-    aug_torch_k = {0: 0, 1: 3, 2: 2, 3: 1}
+    rot90_k_by_cw = {0: 0, 1: 3, 2: 2, 3: 1}
 
-    ensemble = torch.zeros(1, 4, device=device)
-    for k_cw in (0, 1, 2, 3):
-        x = base if k_cw == 0 else torch.rot90(base, aug_torch_k[k_cw], dims=(-2, -1))
-        logits = model(x)
+    ensemble_probs = torch.zeros(1, 4, device=device)
+    for cw_views in (0, 1, 2, 3):
+        view = (
+            base_tensor
+            if cw_views == 0
+            else torch.rot90(base_tensor, rot90_k_by_cw[cw_views], dims=(-2, -1))
+        )
+        logits = model(view)
         probs = F.softmax(logits, dim=-1)
         # Convert back to original frame: rotated-frame class C' on an
-        # input we rotated k_cw further CW corresponds to original class
-        # C = (C' + k_cw) mod 4. In torch.roll semantics
-        # (new[i] = old[(i - shifts) mod 4]), use shifts=k_cw.
-        if k_cw != 0:
-            probs = torch.roll(probs, shifts=k_cw, dims=-1)
-        ensemble = ensemble + probs
-    ensemble = ensemble / 4.0
+        # input we rotated cw_views further CW corresponds to original class
+        # C = (C' + cw_views) mod 4. In torch.roll semantics
+        # (new[i] = old[(i - shifts) mod 4]), use shifts=cw_views.
+        if cw_views != 0:
+            probs = torch.roll(probs, shifts=cw_views, dims=-1)
+        ensemble_probs = ensemble_probs + probs
+    ensemble_probs = ensemble_probs / 4.0
 
-    probs_np = ensemble.squeeze(0).cpu().numpy().astype(float)
-    top_class = int(np.argmax(probs_np))
-    confidence = float(probs_np[top_class])
+    probs = ensemble_probs.squeeze(0).cpu().numpy().astype(float)
+    top_class = int(np.argmax(probs))
+    confidence = float(probs[top_class])
 
     abstained = confidence < _DEFAULT_CONFIDENCE_THRESHOLD
     rotation = 0 if abstained else _CLASS_TO_DEGREES[top_class]
@@ -397,26 +413,32 @@ def auto_rotate(
     predict_rotation_with_confidence's return. Pass `case_name` to route
     the prediction through k-fold (excludes the case from training).
     """
-    info = predict_rotation_with_confidence(map_bgr, case_name=case_name)
-    rot = info["rotation_cw_degrees"]
-    if rot == 0:
+    rotation_info = predict_rotation_with_confidence(map_bgr, case_name=case_name)
+    rotation_degrees = rotation_info["rotation_cw_degrees"]
+    if rotation_degrees == 0:
         if verbose:
-            if info["abstained_low_confidence"]:
+            if rotation_info["abstained_low_confidence"]:
                 print(
                     f"  rotation_classifier: abstained "
-                    f"(conf={info['confidence']:.2f} < "
+                    f"(conf={rotation_info['confidence']:.2f} < "
                     f"{_DEFAULT_CONFIDENCE_THRESHOLD:.2f}); "
-                    f"raw_class={info['raw_class']} -> "
-                    f"{_CLASS_TO_DEGREES[info['raw_class']]}°. "
+                    f"raw_class={rotation_info['raw_class']} -> "
+                    f"{_CLASS_TO_DEGREES[rotation_info['raw_class']]}°. "
                     f"Leaving map unrotated."
                 )
             else:
-                print(f"  rotation_classifier: 0° (already upright, conf={info['confidence']:.2f})")
-        return map_bgr, info
-    rotated = cv2.rotate(map_bgr, _CV2_ROTATE_CODES[rot])
+                print(
+                    f"  rotation_classifier: 0° (already upright, "
+                    f"conf={rotation_info['confidence']:.2f})"
+                )
+        return map_bgr, rotation_info
+    rotated_map = cv2.rotate(map_bgr, _CV2_ROTATE_CODES[rotation_degrees])
     if verbose:
-        fold_str = f" fold={info['fold']}" if info.get("fold") is not None else ""
-        print(
-            f"  rotation_classifier: rotating {rot}° CW (conf={info['confidence']:.2f}{fold_str})"
+        fold_suffix = (
+            f" fold={rotation_info['fold']}" if rotation_info.get("fold") is not None else ""
         )
-    return rotated, info
+        print(
+            f"  rotation_classifier: rotating {rotation_degrees}° CW "
+            f"(conf={rotation_info['confidence']:.2f}{fold_suffix})"
+        )
+    return rotated_map, rotation_info

@@ -1,9 +1,4 @@
-"""The worker's tool surface, registered on the worker agent in definition order:
-propose_centers (locate sub-agent delegation), match_at + commit_match
-(MINIMA positioning + SAM3 segmentation + projection), submit_pdf_info
-(folded-ablation only, hidden otherwise), and lookup_district (OS
-BoundaryLine shortcut for district-wide documents).
-"""
+"""The worker agent's positioning tool surface: propose_centers, match_at, commit_match, submit_pdf_info, and lookup_district."""
 
 from __future__ import annotations
 
@@ -98,8 +93,8 @@ def propose_centers(
     map_bytes = None
     if map_img is not None:
         try:
-            _, buf = cv2.imencode(".png", map_img)
-            map_bytes = buf.tobytes()
+            _, encoded = cv2.imencode(".png", map_img)
+            map_bytes = encoded.tobytes()
         except Exception:
             map_bytes = None
 
@@ -107,14 +102,14 @@ def propose_centers(
     if extra_terms:
         merged_places = list(pdf_info.get("place_names") or [])
         merged_labels = list(pdf_info.get("visible_map_labels") or [])
-        for t in extra_terms:
-            if not isinstance(t, str) or not t.strip():
+        for term in extra_terms:
+            if not isinstance(term, str) or not term.strip():
                 continue
-            t = t.strip()
-            if t not in merged_places:
-                merged_places.insert(0, t)
-            if t not in merged_labels:
-                merged_labels.insert(0, t)
+            term = term.strip()
+            if term not in merged_places:
+                merged_places.insert(0, term)
+            if term not in merged_labels:
+                merged_labels.insert(0, term)
         pdf_info["place_names"] = merged_places
         pdf_info["visible_map_labels"] = merged_labels
 
@@ -141,9 +136,9 @@ def propose_centers(
     )
     state.locate_message_history = new_history
 
-    conf = pick.confidence
-    specificity = 5 if conf == "high" else 3 if conf == "med" else 1
-    cand = {
+    confidence = pick.confidence
+    specificity = 5 if confidence == "high" else 3 if confidence == "med" else 1
+    candidate = {
         "id": 0,
         "source": f"live_locate:{pick.picked_source[:40]}",
         "lat": float(pick.top_lat),
@@ -151,11 +146,11 @@ def propose_centers(
         "sigma_m": float(pick.sigma_m),
         "specificity": specificity,
     }
-    state.proposed_centers = [cand]
+    state.proposed_centers = [candidate]
     return {
         "success": True,
         "n_candidates": 1,
-        "candidates": [cand],
+        "candidates": [candidate],
         "engine": "live_llm_locate",
         "evidence": pick.evidence,
     }
@@ -182,10 +177,10 @@ def _axis_field(reward_dict: Optional[Dict[str, Any]], axis_name: str, field: st
 
 def _get_or_render_page(state: AgentState, page: int) -> Tuple[Optional[np.ndarray], Optional[str]]:
     """Return (map_img, map_crop_path) for `page`. Cache on first need."""
-    cached = state.rendered_pages.get(page)
+    cached_img = state.rendered_pages.get(page)
     cached_path = state.rendered_page_paths.get(page)
-    if cached is not None and cached_path is not None:
-        return cached, cached_path
+    if cached_img is not None and cached_path is not None:
+        return cached_img, cached_path
 
     from geoplanagent.tools.pdf import render_map_page
 
@@ -194,11 +189,11 @@ def _get_or_render_page(state: AgentState, page: int) -> Tuple[Optional[np.ndarr
     )
     if rendered is None:
         return None, None
-    map_img, rot_info = rendered
-    if rot_info.get("applied"):
+    map_img, rotation = rendered
+    if rotation.get("applied"):
         state.rotation_checked = True
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
-        path = tmp.name
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
+        path = temp_file.name
     cv2.imwrite(path, map_img)
     state.rendered_pages[page] = map_img
     state.rendered_page_paths[page] = path
@@ -207,9 +202,9 @@ def _get_or_render_page(state: AgentState, page: int) -> Tuple[Optional[np.ndarr
 
 def _get_or_compute_mask(state: AgentState, page: int, map_crop_path: str) -> Optional[np.ndarray]:
     """Return SAM3 mask for `page`. Compute + cache on first need."""
-    cached = state.sam_masks_by_page.get(page)
-    if cached is not None:
-        return cached
+    cached_mask = state.sam_masks_by_page.get(page)
+    if cached_mask is not None:
+        return cached_mask
     from geoplanagent.tools.segment import extract_boundary_sam3_semantic, set_fold_for_case
 
     set_fold_for_case(state.sam3_state, state.case_name)
@@ -230,18 +225,22 @@ def _resolve_area_group(state: AgentState, page: int) -> int:
     Raises ModelRetry if `page` isn't a category='match' page. Falls back
     to 0 when pdf_info is empty (the legacy "no metadata" path).
     """
-    details = (state.pdf_info or {}).get("map_page_details") or []
-    if not details:
+    page_details = (state.pdf_info or {}).get("map_page_details") or []
+    if not page_details:
         return 0  # legacy path with no metadata — treat as single group 0
-    by_page = {int(d["page"]): d for d in details if d.get("category") == "match"}
-    meta = by_page.get(int(page))
-    if meta is None:
+    match_pages_by_number = {
+        int(detail["page"]): detail
+        for detail in page_details
+        if detail.get("category") == "match"
+    }
+    page_meta = match_pages_by_number.get(int(page))
+    if page_meta is None:
         raise ModelRetry(
             f"page={page} is not a category='match' page. Valid match "
-            f"pages: {sorted(by_page.keys())}. Pick one from "
+            f"pages: {sorted(match_pages_by_number.keys())}. Pick one from "
             f"pdf_info.map_pages."
         )
-    return int(meta.get("area_group", 0))
+    return int(page_meta.get("area_group", 0))
 
 
 # match_at
@@ -310,7 +309,7 @@ def match_at(
     if state.proposed_centers:
         from geoplanagent.utils import haversine_m
 
-        nearest = min(
+        nearest_distance_m, nearest_candidate = min(
             (haversine_m(lat, lon, c["lat"], c["lon"]), c) for c in state.proposed_centers
         )
         # 100 m tolerance: covers rounding noise on candidate lat/lons
@@ -318,91 +317,91 @@ def match_at(
         # centroids to ~50 m). Anything beyond that means the LLM
         # produced a coordinate that wasn't in propose_centers — most
         # commonly a hallucinated centre from the map image itself.
-        if nearest[0] > 100.0:
-            avail = ", ".join(
+        if nearest_distance_m > 100.0:
+            available = ", ".join(
                 f"id={c['id']} ({c['source'][:30]})" for c in state.proposed_centers[:8]
             )
             raise ModelRetry(
                 f"match_at refuses fabricated coordinates "
                 f"({lat:.5f}, {lon:.5f}) — nearest propose_centers entry "
-                f"is {nearest[0]:.0f}m away ({nearest[1]['source']}). "
+                f"is {nearest_distance_m:.0f}m away ({nearest_candidate['source']}). "
                 f"Use a (lat, lon) from a propose_centers candidate "
-                f"directly. Available: {avail}. If none look right, call "
+                f"directly. Available: {available}. If none look right, call "
                 f"propose_centers(extra_terms=[...]) — do NOT invent "
                 f"coordinates."
             )
-        matched_candidate = nearest[1]
+        matched_candidate = nearest_candidate
 
     state.match_at_budget -= 1
 
     # σ resolution.
     from geoplanagent.tools.matching import sigma_from_scale
 
-    def _parse_scale(s: Any) -> Optional[int]:
-        if not s:
+    def _parse_scale_denominator(scale: Any) -> Optional[int]:
+        if not scale:
             return None
         import re
 
-        m = re.search(r"1\s*[:/]\s*([\d,]+)", str(s))
-        if not m:
+        match = re.search(r"1\s*[:/]\s*([\d,]+)", str(scale))
+        if not match:
             return None
         try:
-            return int(m.group(1).replace(",", ""))
+            return int(match.group(1).replace(",", ""))
         except ValueError:
             return None
 
     if sigma_m is None and matched_candidate is not None:
-        cand_sigma = matched_candidate.get("sigma_m")
-        if cand_sigma is not None and float(cand_sigma) > 0:
-            sigma_m = float(cand_sigma)
+        candidate_sigma_m = matched_candidate.get("sigma_m")
+        if candidate_sigma_m is not None and float(candidate_sigma_m) > 0:
+            sigma_m = float(candidate_sigma_m)
     if sigma_m is None:
-        sr = scale_ratio
-        if sr is None and state.pdf_info:
-            sr = _parse_scale(state.pdf_info.get("scale"))
-        sigma_m = sigma_from_scale(sr)
+        resolved_scale = scale_ratio
+        if resolved_scale is None and state.pdf_info:
+            resolved_scale = _parse_scale_denominator(state.pdf_info.get("scale"))
+        sigma_m = sigma_from_scale(resolved_scale)
     if scale_ratio is None and state.pdf_info:
-        scale_ratio = _parse_scale(state.pdf_info.get("scale"))
+        scale_ratio = _parse_scale_denominator(state.pdf_info.get("scale"))
 
     # Resolve the area_group of this page.
     area_group = _resolve_area_group(state, int(page))
 
     # Match the single requested page.
-    single = _match_single_page(
+    page_result = _match_single_page(
         state, int(page), name, float(lat), float(lon), float(sigma_m), scale_ratio
     )
-    single["area_group"] = area_group
-    single["page"] = int(page)
-    valid = single.get("affine_H") is not None and not single.get("error")
-    n_inliers = int((single.get("match_info") or {}).get("n_inliers") or 0) if valid else 0
-    geojson = single.get("geojson") if valid else None
+    page_result["area_group"] = area_group
+    page_result["page"] = int(page)
+    is_valid = page_result.get("affine_H") is not None and not page_result.get("error")
+    n_inliers = int((page_result.get("match_info") or {}).get("n_inliers") or 0) if is_valid else 0
+    geojson = page_result.get("geojson") if is_valid else None
 
     # Store the attempt. per_group is a 1-element list (kept for shape
     # parity with the rest of the pipeline — the critic,
     # utils.committed_primary_page, and the crash-path
     # partial_state.json all read per_group).
-    cid = state._match_attempt_counter
+    candidate_id = state._match_attempt_counter
     state._match_attempt_counter += 1
-    state.match_attempts[cid] = {
-        "candidate_id": cid,
+    state.match_attempts[candidate_id] = {
+        "candidate_id": candidate_id,
         "name": name,
         "lat": float(lat),
         "lon": float(lon),
-        "per_group": [single],
+        "per_group": [page_result],
         "geojson": geojson,
-        "n_groups_committed": 1 if valid else 0,
+        "n_groups_committed": 1 if is_valid else 0,
         "requested_page": int(page),
         "requested_group": area_group,
     }
 
     return {
         "success": True,
-        "candidate_id": cid,
+        "candidate_id": candidate_id,
         "area_group": area_group,
         "page": int(page),
         "n_inliers": n_inliers,
-        "road_name_agreement": _axis_field(single.get("reward"), "road_name_agreement", "score"),
-        "road_name_verdict": _axis_field(single.get("reward"), "road_name_agreement", "verdict"),
-        "scale_consistency": _axis_field(single.get("reward"), "scale_consistency", "score"),
+        "road_name_agreement": _axis_field(page_result.get("reward"), "road_name_agreement", "score"),
+        "road_name_verdict": _axis_field(page_result.get("reward"), "road_name_agreement", "verdict"),
+        "scale_consistency": _axis_field(page_result.get("reward"), "scale_consistency", "score"),
         "budget_remaining": state.match_at_budget,
         "committed_groups": sorted(state.committed_groups.keys()),
     }
@@ -462,8 +461,8 @@ def _project_candidate(state: AgentState, mask, result) -> Dict[str, Any]:
     mask through it to WGS84 (paper §4.2 step 3)."""
     from geoplanagent.tools.matching import compute_match_reward, mask_to_geojson_affine
 
-    mi = result.get("match_info") or {}
-    reward = compute_match_reward(match_info=mi, pdf_info=state.pdf_info)
+    match_info = result.get("match_info") or {}
+    reward = compute_match_reward(match_info=match_info, pdf_info=state.pdf_info)
 
     affine_H = result.get("affine_H")
     tile_info = result.get("tile_info")
@@ -474,7 +473,7 @@ def _project_candidate(state: AgentState, mask, result) -> Dict[str, Any]:
     return {
         "affine_H": affine_H,
         "tile_info": tile_info,
-        "match_info": mi,
+        "match_info": match_info,
         "geojson": geojson,
         "reward": reward.to_dict() if reward is not None else None,
     }
@@ -492,9 +491,9 @@ def _match_single_page(
     """One match_at attempt = segment → search → project on a single page.
     Returns a dict with affine_H / tile_info / match_info / geojson /
     reward; or error."""
-    map_img, mask, err = _segment_boundary(state, page)
-    if err is not None:
-        return err
+    map_img, mask, error = _segment_boundary(state, page)
+    if error is not None:
+        return error
 
     result = _search_window(state, map_img, mask, name, lat, lon, sigma_m, scale_ratio)
     if result.get("error"):
@@ -519,35 +518,35 @@ def _union_geojsons(geojsons: List[dict]) -> Optional[dict]:
     from shapely.geometry import shape, mapping
     from shapely.ops import unary_union
 
-    geoms = []
+    geometries = []
     properties: Dict[str, Any] = {}
-    for g in geojsons:
-        if not isinstance(g, dict):
+    for feature in geojsons:
+        if not isinstance(feature, dict):
             continue
-        geom = g.get("geometry") or g
+        geometry = feature.get("geometry") or feature
         try:
-            geoms.append(shape(geom))
+            geometries.append(shape(geometry))
         except Exception:
             continue
         if not properties:
-            properties = dict(g.get("properties") or {})
-    if not geoms:
+            properties = dict(feature.get("properties") or {})
+    if not geometries:
         return None
-    union = unary_union(geoms)
+    union = unary_union(geometries)
     if union.is_empty or union.geom_type not in ("Polygon", "MultiPolygon"):
         return None
-    out = {
+    feature = {
         "type": "Feature",
         "geometry": mapping(union),
         "properties": {**properties, "source": "match_at_union"},
     }
     # Normalise to MultiPolygon for downstream.
-    if out["geometry"].get("type") == "Polygon":
-        out["geometry"] = {
+    if feature["geometry"].get("type") == "Polygon":
+        feature["geometry"] = {
             "type": "MultiPolygon",
-            "coordinates": [out["geometry"]["coordinates"]],
+            "coordinates": [feature["geometry"]["coordinates"]],
         }
-    return out
+    return feature
 
 
 # commit_match
@@ -566,44 +565,44 @@ def _recompute_current_result(state: AgentState) -> None:
     For single-area docs (one entry in committed_groups) this matches
     the pre-refactor behavior exactly.
     """
-    cands = [state.match_attempts[cid] for cid in state.committed_groups.values()]
-    if not cands:
+    candidates = [state.match_attempts[cid] for cid in state.committed_groups.values()]
+    if not candidates:
         state.current_result = {}
         return
 
     # Union every group's geojson (helper handles the empty and
     # single-input cases: None / as-is).
-    geojsons = [c.get("geojson") for c in cands if c.get("geojson")]
-    unioned = _union_geojsons(geojsons)
+    geojsons = [c.get("geojson") for c in candidates if c.get("geojson")]
+    unioned_geojson = _union_geojsons(geojsons)
 
     # Primary = highest-inlier committed group. Its affine/tile/mask
     # are the ones we render for human visualisations and what
     # downstream `affine_H.npy` / `boundary_mask.png` get saved from.
     # n_inliers per candidate lives at per_group[0].match_info.n_inliers
     # since each candidate covers exactly one area_group.
-    def _cand_n_inliers(c) -> int:
-        pg = (c.get("per_group") or [{}])[0]
-        return int((pg.get("match_info") or {}).get("n_inliers") or 0)
+    def _candidate_n_inliers(candidate) -> int:
+        per_group = (candidate.get("per_group") or [{}])[0]
+        return int((per_group.get("match_info") or {}).get("n_inliers") or 0)
 
-    primary = max(cands, key=_cand_n_inliers)
-    primary_pg = (primary.get("per_group") or [{}])[0]
+    primary_candidate = max(candidates, key=_candidate_n_inliers)
+    primary_per_group = (primary_candidate.get("per_group") or [{}])[0]
 
     # Sum n_inliers across committed groups — exposed below as
     # state.current_result["total_inliers"] for the output validator
     # (which surfaces it as BoundaryOutcome.final_n_inliers).
-    total = sum(_cand_n_inliers(c) for c in cands)
+    total_inliers = sum(_candidate_n_inliers(c) for c in candidates)
 
     state.current_result = {
-        "affine_H": primary_pg.get("affine_H"),
-        "tile_info": primary_pg.get("tile_info"),
-        "match_info": primary_pg.get("match_info"),
-        "geojson": unioned,
-        "candidate_id": primary.get("candidate_id"),
+        "affine_H": primary_per_group.get("affine_H"),
+        "tile_info": primary_per_group.get("tile_info"),
+        "match_info": primary_per_group.get("match_info"),
+        "geojson": unioned_geojson,
+        "candidate_id": primary_candidate.get("candidate_id"),
         # per_group on current_result lists ONE entry per committed
         # group (the first/only per_group entry from each candidate).
-        "per_group": [(c.get("per_group") or [{}])[0] for c in cands],
-        "requested_group": primary.get("requested_group"),
-        "total_inliers": total,
+        "per_group": [(c.get("per_group") or [{}])[0] for c in candidates],
+        "requested_group": primary_candidate.get("requested_group"),
+        "total_inliers": total_inliers,
     }
 
 
@@ -628,54 +627,54 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
         candidate_id: ID returned from a prior match_at call.
     """
     state = ctx.deps
-    cand = state.match_attempts.get(int(candidate_id))
-    if cand is None:
+    candidate = state.match_attempts.get(int(candidate_id))
+    if candidate is None:
         raise ModelRetry(
             f"candidate_id={candidate_id} not found. Available IDs: "
             f"{sorted(state.match_attempts.keys())}"
         )
 
     # Strict gate: this candidate's match must have produced a valid affine.
-    n_committed = int(cand.get("n_groups_committed") or 0)
-    if n_committed == 0:
-        avail_ids = sorted(state.match_attempts.keys())
+    n_groups_committed = int(candidate.get("n_groups_committed") or 0)
+    if n_groups_committed == 0:
+        available_ids = sorted(state.match_attempts.keys())
         raise ModelRetry(
             f"commit_match REJECTED candidate_id={candidate_id}: MINIMA "
             f"produced no usable affine for this attempt (missing "
             f"affine_H/geojson). Try a different page or a different "
             f"centre via match_at; or call propose_centers"
             f"(extra_terms=[...]) to add more candidates. "
-            f"Available IDs: {avail_ids}."
+            f"Available IDs: {available_ids}."
         )
 
     # Update the per-group commit registry and rebuild current_result.
-    group_id = int(cand.get("requested_group", 0))
+    group_id = int(candidate.get("requested_group", 0))
     state.committed_groups[group_id] = int(candidate_id)
     _recompute_current_result(state)
     state.position_calls += 1
 
     # Count the number of polygons in the now-unioned final geojson.
     geojson = state.current_result.get("geojson")
-    n_polys = 0
+    n_polygons = 0
     if isinstance(geojson, dict):
-        geom = geojson.get("geometry") or {}
-        if geom.get("type") == "MultiPolygon":
-            n_polys = len(geom.get("coordinates") or [])
-        elif geom.get("type") == "Polygon":
-            n_polys = 1
+        geometry = geojson.get("geometry") or {}
+        if geometry.get("type") == "MultiPolygon":
+            n_polygons = len(geometry.get("coordinates") or [])
+        elif geometry.get("type") == "Polygon":
+            n_polygons = 1
 
     # n_inliers lives in this candidate's only per_group entry.
-    cand_pg = (cand.get("per_group") or [{}])[0]
-    cand_n_inliers = int((cand_pg.get("match_info") or {}).get("n_inliers") or 0)
+    candidate_per_group = (candidate.get("per_group") or [{}])[0]
+    candidate_n_inliers = int((candidate_per_group.get("match_info") or {}).get("n_inliers") or 0)
 
     return {
         "success": True,
         "committed": {
             "candidate_id": int(candidate_id),
             "area_group": group_id,
-            "name": cand["name"],
-            "n_inliers": cand_n_inliers,
-            "n_polygons": n_polys,
+            "name": candidate["name"],
+            "n_inliers": candidate_n_inliers,
+            "n_polygons": n_polygons,
         },
         # Across-call state so the worker can see which groups are
         # still uncommitted on multi-area documents.
@@ -796,28 +795,28 @@ def submit_pdf_info(ctx: RunContext[AgentState], info: PDFInfo) -> dict:
     from geoplanagent.tools.pdf import render_map_page
 
     map_pages = state.pdf_info.get("map_pages") or []
-    rendered: list[int] = []
+    rendered_page_numbers: list[int] = []
     for page_1based in map_pages:
-        result = render_map_page(
+        rendered = render_map_page(
             str(state.pdf_path),
             int(page_1based),
             dpi=state.dpi,
             verbose=False,
             case_name=state.case_name,
         )
-        if result is None:
+        if rendered is None:
             continue
-        page_img, rot_info = result
-        if rot_info.get("applied") and page_1based == map_pages[0]:
+        page_img, rotation = rendered
+        if rotation.get("applied") and page_1based == map_pages[0]:
             state.rotation_checked = True
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
-            tmp_path = tmp.name
-        cv2.imwrite(tmp_path, page_img)
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
+            temp_path = temp_file.name
+        cv2.imwrite(temp_path, page_img)
         state.rendered_pages[int(page_1based)] = page_img
-        state.rendered_page_paths[int(page_1based)] = tmp_path
-        rendered.append(int(page_1based))
+        state.rendered_page_paths[int(page_1based)] = temp_path
+        rendered_page_numbers.append(int(page_1based))
 
-    if not rendered:
+    if not rendered_page_numbers:
         return {
             "success": True,
             "map_pages_rendered": [],
@@ -830,10 +829,10 @@ def submit_pdf_info(ctx: RunContext[AgentState], info: PDFInfo) -> dict:
 
     return {
         "success": True,
-        "map_pages_rendered": rendered,
+        "map_pages_rendered": rendered_page_numbers,
         "next_step": (
-            f"Primary match page is {rendered[0]}. Now run "
-            f"propose_centers → match_at(page={rendered[0]}, ...) → "
+            f"Primary match page is {rendered_page_numbers[0]}. Now run "
+            f"propose_centers → match_at(page={rendered_page_numbers[0]}, ...) → "
             f"commit_match → return BoundaryOutcome. The locate sub-agent "
             f"reads the rendered map image directly from state."
         ),
@@ -889,11 +888,11 @@ def lookup_district(
         if result.get("success"):
             geojson = result["geojson"]
             # Normalize to MultiPolygon
-            geom = geojson.get("geometry", {})
-            if geom.get("type") == "Polygon":
+            geometry = geojson.get("geometry", {})
+            if geometry.get("type") == "Polygon":
                 geojson["geometry"] = {
                     "type": "MultiPolygon",
-                    "coordinates": [geom["coordinates"]],
+                    "coordinates": [geometry["coordinates"]],
                 }
             geojson["properties"]["source"] = "os_boundaryline_district_lookup"
             state.current_result = {"geojson": geojson, "match_info": {}}

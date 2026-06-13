@@ -1,85 +1,72 @@
-"""
-OS OpenData Tile Renderer
-=========================
-Render raster tiles from OS Open Zoomstack GeoPackage (free, OGL licensed).
-Produces tiles styled to match UK planning map conventions — pink buildings,
-road casings, water, woodland — so LoFTR/MINIMA can match scanned planning
-maps against them with minimal cross-modal gap.
-
-No API key required. Data: https://osdatahub.os.uk/downloads/open/OpenZoomstack
-Contains OS data © Crown Copyright and database right.
-
-Usage:
-    from geoplanagent.tools.tiles import fetch_os_opendata_grid
-
-    tile_info = fetch_os_opendata_grid(lat, lon, zoom, n_tiles_x, n_tiles_y)
-    # Returns dict compatible with existing pipeline:
-    # {"image": np.array, "zoom": int, "tx_min": int, "ty_min": int, ...}
-"""
+"""Render raster tiles from OS Open Zoomstack, styled to match UK planning maps for cross-modal matching."""
 
 from pathlib import Path
 
 import cv2
 import numpy as np
 
-BASE = Path(__file__).resolve().parent.parent.parent
-GPKG_PATH = BASE / "os_opendata" / "OS_Open_Zoomstack.gpkg"
-TILE_CACHE_DIR = BASE / "cache" / "os_opendata_tiles"
-
-# Coordinate transforms
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+GPKG_PATH = REPO_ROOT / "os_opendata" / "OS_Open_Zoomstack.gpkg"
+TILE_CACHE_DIR = REPO_ROOT / "cache" / "os_opendata_tiles"
 
 
-def _tile_to_bounds_3857(zoom, tx, ty):
-    """Convert tile coordinates to bounds in EPSG:3857 (Web Mercator meters)."""
-    n = 2**zoom
-    # World extent in EPSG:3857
-    origin = 20037508.342789244
-    tile_extent = 2 * origin / n
+def _tile_to_bounds_3857(
+    zoom: int, tile_x: int, tile_y: int
+) -> tuple[float, float, float, float]:
+    """Convert tile coordinates to bounds in EPSG:3857 (Web Mercator metres)."""
+    tiles_per_axis = 2**zoom
+    world_extent_m = 20037508.342789244
+    tile_extent_m = 2 * world_extent_m / tiles_per_axis
 
-    x_min = -origin + tx * tile_extent
-    x_max = x_min + tile_extent
-    y_max = origin - ty * tile_extent  # y is inverted in tile coords
-    y_min = y_max - tile_extent
+    x_min = -world_extent_m + tile_x * tile_extent_m
+    x_max = x_min + tile_extent_m
+    # Tile y increases southward, so the top edge is the larger y value.
+    y_max = world_extent_m - tile_y * tile_extent_m
+    y_min = y_max - tile_extent_m
 
     return x_min, y_min, x_max, y_max
 
 
-def _read_layer(layer_name, bounds_27700):
+def _read_layer(layer_name: str, bounds_27700: tuple[float, float, float, float]):
     """Read GeoPackage layer features within BNG bounds; None if empty/missing."""
     import geopandas as gpd
     from shapely.geometry import box
 
-    bbox = box(*bounds_27700)
+    bounding_box = box(*bounds_27700)
     try:
-        gdf = gpd.read_file(
+        layer = gpd.read_file(
             str(GPKG_PATH),
             layer=layer_name,
-            bbox=bbox,
+            bbox=bounding_box,
             engine="pyogrio",
         )
-        if gdf.empty:
+        if layer.empty:
             return None
-        return gdf
+        return layer
     except Exception:
         return None
 
 
-def _transform_3857_to_27700(x_min, y_min, x_max, y_max):
+def _transform_3857_to_27700(
+    x_min: float, y_min: float, x_max: float, y_max: float
+) -> tuple[float, float, float, float]:
     """Convert EPSG:3857 bounds to EPSG:27700 (British National Grid)."""
     import pyproj
 
     transformer = pyproj.Transformer.from_crs("EPSG:3857", "EPSG:27700", always_xy=True)
-    # Transform corners
-    x1, y1 = transformer.transform(x_min, y_min)
-    x2, y2 = transformer.transform(x_max, y_max)
-    # Add buffer to handle projection distortion at edges
-    buf = max(abs(x2 - x1), abs(y2 - y1)) * 0.05
-    return min(x1, x2) - buf, min(y1, y2) - buf, max(x1, x2) + buf, max(y1, y2) + buf
+    corner_x_1, corner_y_1 = transformer.transform(x_min, y_min)
+    corner_x_2, corner_y_2 = transformer.transform(x_max, y_max)
+    # Pad the box to absorb projection distortion that bends the straight edges.
+    margin_m = max(abs(corner_x_2 - corner_x_1), abs(corner_y_2 - corner_y_1)) * 0.05
+    return (
+        min(corner_x_1, corner_x_2) - margin_m,
+        min(corner_y_1, corner_y_2) - margin_m,
+        max(corner_x_1, corner_x_2) + margin_m,
+        max(corner_y_1, corner_y_2) + margin_m,
+    )
 
 
-# Tile renderer
-
-# UK planning map style colors (BGR for cv2)
+# UK planning map style colours (BGR for cv2)
 STYLE = {
     "background": (232, 240, 245),  # light cream/buff
     "building": (179, 179, 255),  # salmon/pink fill
@@ -106,45 +93,53 @@ ROAD_WIDTHS_Z17 = {
 }
 
 
-def _draw_polygon(canvas, pixel_geom, fill_color, outline=None, outline_width=1):
+def _draw_polygon(
+    canvas: np.ndarray,
+    pixel_geom,
+    fill_color: tuple[int, int, int],
+    outline: tuple[int, int, int] | None = None,
+    outline_width: int = 1,
+) -> None:
     """Draw a polygon geometry on the canvas."""
     from shapely.geometry import Polygon, MultiPolygon
 
     if pixel_geom.is_empty:
         return
 
-    polys = []
     if isinstance(pixel_geom, Polygon):
-        polys = [pixel_geom]
+        polygons = [pixel_geom]
     elif isinstance(pixel_geom, MultiPolygon):
-        polys = list(pixel_geom.geoms)
+        polygons = list(pixel_geom.geoms)
     else:
         return
 
-    for poly in polys:
-        if poly.is_empty:
+    for polygon in polygons:
+        if polygon.is_empty:
             continue
-        exterior = np.array(poly.exterior.coords, dtype=np.int32)
-        if len(exterior) < 3:
+        exterior_points = np.array(polygon.exterior.coords, dtype=np.int32)
+        if len(exterior_points) < 3:
             continue
-        cv2.fillPoly(canvas, [exterior], fill_color)
+        cv2.fillPoly(canvas, [exterior_points], fill_color)
         if outline is not None:
-            cv2.polylines(canvas, [exterior], True, outline, outline_width, lineType=cv2.LINE_AA)
-        # Draw holes
-        for interior in poly.interiors:
-            hole = np.array(interior.coords, dtype=np.int32)
-            if len(hole) >= 3:
-                cv2.fillPoly(canvas, [hole], STYLE["background"])
+            cv2.polylines(
+                canvas, [exterior_points], True, outline, outline_width, lineType=cv2.LINE_AA
+            )
+        # Punch holes back to the background colour.
+        for interior in polygon.interiors:
+            hole_points = np.array(interior.coords, dtype=np.int32)
+            if len(hole_points) >= 3:
+                cv2.fillPoly(canvas, [hole_points], STYLE["background"])
 
 
-def _draw_line(canvas, pixel_geom, color, width):
+def _draw_line(
+    canvas: np.ndarray, pixel_geom, color: tuple[int, int, int], width: int
+) -> None:
     """Draw a line geometry on the canvas."""
     from shapely.geometry import LineString, MultiLineString
 
     if pixel_geom.is_empty:
         return
 
-    lines = []
     if isinstance(pixel_geom, LineString):
         lines = [pixel_geom]
     elif isinstance(pixel_geom, MultiLineString):
@@ -155,20 +150,18 @@ def _draw_line(canvas, pixel_geom, color, width):
     for line in lines:
         if line.is_empty:
             continue
-        pts = np.array(line.coords, dtype=np.int32)
-        if len(pts) < 2:
+        line_points = np.array(line.coords, dtype=np.int32)
+        if len(line_points) < 2:
             continue
-        cv2.polylines(canvas, [pts], False, color, width, lineType=cv2.LINE_AA)
+        cv2.polylines(canvas, [line_points], False, color, width, lineType=cv2.LINE_AA)
 
 
-# Cached tile fetching
+def _render_canvas_bulk(
+    zoom: int, tx_min: int, ty_min: int, n_tiles_x: int, n_tiles_y: int
+) -> np.ndarray:
+    """Render the whole tile grid as one canvas, querying each layer once for the full extent.
 
-
-def _render_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y):
-    """Render an entire tile grid as one canvas with single spatial queries per layer.
-
-    Instead of 169 separate render_tile() calls (each doing 7+ spatial queries),
-    this does 7 spatial queries total for the whole grid. ~20x faster on cold cache.
+    Raises FileNotFoundError if the source GeoPackage is missing.
     """
     import pandas as pd
 
@@ -179,7 +172,7 @@ def _render_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y):
     canvas_w = n_tiles_x * tile_size
     canvas_h = n_tiles_y * tile_size
 
-    # Compute full bounds in 3857 for the entire grid
+    # Stitch the four edges of the grid into a single 3857 bounding box.
     bounds_3857 = (
         _tile_to_bounds_3857(zoom, tx_min, ty_min)[0],  # x_min (left edge)
         _tile_to_bounds_3857(zoom, tx_min, ty_min + n_tiles_y - 1)[1],  # y_min (bottom edge)
@@ -191,7 +184,6 @@ def _render_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y):
     scale = 2 ** (zoom - 17)
     canvas = np.full((canvas_h, canvas_w, 3), STYLE["background"], dtype=np.uint8)
 
-    # Pixel transform needs to know canvas dimensions for both axes
     x_min_3857, y_min_3857, x_max_3857, y_max_3857 = bounds_3857
     x_extent = x_max_3857 - x_min_3857
     y_extent = y_max_3857 - y_min_3857
@@ -202,43 +194,36 @@ def _render_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y):
     transformer_to_3857 = pyproj.Transformer.from_crs("EPSG:27700", "EPSG:3857", always_xy=True)
 
     def _geom_to_pixels(geom):
-        def _to_px(x, y):
-            mx, my = transformer_to_3857.transform(x, y)
-            px = (mx - x_min_3857) / x_extent * canvas_w
-            py = (1 - (my - y_min_3857) / y_extent) * canvas_h
-            return px, py
+        def _to_pixel(x, y):
+            mercator_x, mercator_y = transformer_to_3857.transform(x, y)
+            pixel_x = (mercator_x - x_min_3857) / x_extent * canvas_w
+            pixel_y = (1 - (mercator_y - y_min_3857) / y_extent) * canvas_h
+            return pixel_x, pixel_y
 
-        return shapely_transform(_to_px, geom)
+        return shapely_transform(_to_pixel, geom)
 
-    # ── Layer 1: Greenspaces
-    gdf = _read_layer("greenspace", bounds_27700)
-    if gdf is not None:
-        for _, row in gdf.iterrows():
-            _draw_polygon(canvas, _geom_to_pixels(row.geometry), STYLE["greenspace"])
+    def _draw_polygon_layer(layer_name: str, fill_color: tuple[int, int, int]) -> None:
+        layer = _read_layer(layer_name, bounds_27700)
+        if layer is not None:
+            for _, row in layer.iterrows():
+                _draw_polygon(canvas, _geom_to_pixels(row.geometry), fill_color)
 
-    # ── Layer 2: Woodland
-    gdf = _read_layer("woodland", bounds_27700)
-    if gdf is not None:
-        for _, row in gdf.iterrows():
-            _draw_polygon(canvas, _geom_to_pixels(row.geometry), STYLE["woodland"])
+    def _draw_line_layer(
+        layer_name: str, color: tuple[int, int, int], width: int
+    ) -> None:
+        layer = _read_layer(layer_name, bounds_27700)
+        if layer is not None:
+            for _, row in layer.iterrows():
+                _draw_line(canvas, _geom_to_pixels(row.geometry), color, width)
 
-    # ── Layer 3: Water (surfacewater)
-    gdf = _read_layer("surfacewater", bounds_27700)
-    if gdf is not None:
-        for _, row in gdf.iterrows():
-            _draw_polygon(canvas, _geom_to_pixels(row.geometry), STYLE["water"])
+    _draw_polygon_layer("greenspace", STYLE["greenspace"])
+    _draw_polygon_layer("woodland", STYLE["woodland"])
+    _draw_polygon_layer("surfacewater", STYLE["water"])
+    _draw_line_layer("waterlines", STYLE["water"], max(1, int(2 * scale)))
 
-    # ── Layer 4: Water lines
-    gdf = _read_layer("waterlines", bounds_27700)
-    if gdf is not None:
-        width = max(1, int(2 * scale))
-        for _, row in gdf.iterrows():
-            _draw_line(canvas, _geom_to_pixels(row.geometry), STYLE["water"], width)
-
-    # ── Layer 5: Buildings
-    gdf = _read_layer("local_buildings", bounds_27700)
-    if gdf is not None:
-        for _, row in gdf.iterrows():
+    buildings = _read_layer("local_buildings", bounds_27700)
+    if buildings is not None:
+        for _, row in buildings.iterrows():
             _draw_polygon(
                 canvas,
                 _geom_to_pixels(row.geometry),
@@ -247,21 +232,21 @@ def _render_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y):
                 outline_width=1,
             )
 
-    # ── Layer 6: Roads (all three layers combined)
-    road_gdfs = []
+    # The three road layers are merged so painting order is by road class, not source layer.
+    road_layers = []
     for layer_name, default_type in [
         ("roads_local", "Local Street"),
         ("roads_regional", "B Road"),
         ("roads_national", "A Road"),
     ]:
-        gdf = _read_layer(layer_name, bounds_27700)
-        if gdf is not None:
-            if "type" not in gdf.columns:
-                gdf["type"] = default_type
-            road_gdfs.append(gdf)
+        layer = _read_layer(layer_name, bounds_27700)
+        if layer is not None:
+            if "type" not in layer.columns:
+                layer["type"] = default_type
+            road_layers.append(layer)
 
-    if road_gdfs:
-        all_roads = pd.concat(road_gdfs, ignore_index=True)
+    if road_layers:
+        all_roads = pd.concat(road_layers, ignore_index=True)
         road_order = {
             "Motorway": 0,
             "A Road": 1,
@@ -274,59 +259,59 @@ def _render_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y):
         all_roads["_order"] = all_roads["type"].map(lambda t: road_order.get(t, 4))
         all_roads = all_roads.sort_values("_order", ascending=False)
 
-        # Pass 1: casings
+        # Casings underneath, then fills on top, so neighbouring roads share a clean edge.
         for _, row in all_roads.iterrows():
             road_type = row.get("type", "Local Street")
-            widths = ROAD_WIDTHS_Z17.get(road_type, (1.5, 2.5))
-            casing_w = max(1, int(widths[1] * scale))
-            _draw_line(canvas, _geom_to_pixels(row.geometry), STYLE["road_casing"], casing_w)
+            fill_width, casing_width = ROAD_WIDTHS_Z17.get(road_type, (1.5, 2.5))
+            _draw_line(
+                canvas,
+                _geom_to_pixels(row.geometry),
+                STYLE["road_casing"],
+                max(1, int(casing_width * scale)),
+            )
 
-        # Pass 2: fills
         for _, row in all_roads.iterrows():
             road_type = row.get("type", "Local Street")
-            widths = ROAD_WIDTHS_Z17.get(road_type, (1.5, 2.5))
-            fill_w = max(1, int(widths[0] * scale))
+            fill_width, casing_width = ROAD_WIDTHS_Z17.get(road_type, (1.5, 2.5))
             if road_type == "Motorway":
                 color = STYLE["motorway"]
             elif road_type == "A Road":
                 color = STYLE["a_road"]
             else:
                 color = STYLE["road_fill"]
-            _draw_line(canvas, _geom_to_pixels(row.geometry), color, fill_w)
+            _draw_line(
+                canvas, _geom_to_pixels(row.geometry), color, max(1, int(fill_width * scale))
+            )
 
-    # ── Layer 7: Railways
-    gdf = _read_layer("rail", bounds_27700)
-    if gdf is not None:
-        width = max(1, int(1.5 * scale))
-        for _, row in gdf.iterrows():
-            _draw_line(canvas, _geom_to_pixels(row.geometry), STYLE["rail"], width)
+    _draw_line_layer("rail", STYLE["rail"], max(1, int(1.5 * scale)))
 
     return canvas
 
 
-def _grid_cache_path(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y):
+def _grid_cache_path(
+    zoom: int, tx_min: int, ty_min: int, n_tiles_x: int, n_tiles_y: int
+) -> Path:
     """Cache path for a full rendered grid."""
     return TILE_CACHE_DIR / "grids" / f"z{zoom}_{tx_min}_{ty_min}_{n_tiles_x}x{n_tiles_y}.png"
 
 
-def fetch_os_opendata_grid(lat, lon, zoom, n_tiles_x, n_tiles_y):
+def fetch_os_opendata_grid(
+    lat: float, lon: float, zoom: int, n_tiles_x: int, n_tiles_y: int
+) -> dict:
     """Bulk-render a tile grid from OS OpenData; returns dict with image, zoom, tx_min, ty_min, nx, ny, tile_size."""
     from geoplanagent.utils import latlon_to_tile_xy
 
-    cx, cy = latlon_to_tile_xy(lat, lon, zoom)
-    half_x = n_tiles_x // 2
-    half_y = n_tiles_y // 2
-    tx_min = cx - half_x
-    ty_min = cy - half_y
+    center_tile_x, center_tile_y = latlon_to_tile_xy(lat, lon, zoom)
+    tx_min = center_tile_x - n_tiles_x // 2
+    ty_min = center_tile_y - n_tiles_y // 2
 
     tile_size = 256
 
-    # Check grid cache first
     cache_path = _grid_cache_path(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y)
     if cache_path.exists():
-        img = cv2.imread(str(cache_path))
-        if img is not None:
-            canvas = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        cached_bgr = cv2.imread(str(cache_path))
+        if cached_bgr is not None:
+            canvas = cv2.cvtColor(cached_bgr, cv2.COLOR_BGR2RGB)
             print(f"  OS OpenData: loaded cached grid z{zoom} ({n_tiles_x}x{n_tiles_y})")
             return {
                 "image": canvas,
@@ -338,15 +323,13 @@ def fetch_os_opendata_grid(lat, lon, zoom, n_tiles_x, n_tiles_y):
                 "tile_size": tile_size,
             }
 
-    # Bulk render
     import time
 
-    t0 = time.time()
+    render_start_s = time.time()
     canvas = _render_canvas_bulk(zoom, tx_min, ty_min, n_tiles_x, n_tiles_y)
-    elapsed = time.time() - t0
-    print(f"  OS OpenData: bulk rendered z{zoom} ({n_tiles_x}x{n_tiles_y}) in {elapsed:.1f}s")
+    elapsed_s = time.time() - render_start_s
+    print(f"  OS OpenData: bulk rendered z{zoom} ({n_tiles_x}x{n_tiles_y}) in {elapsed_s:.1f}s")
 
-    # Cache the grid
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     cv2.imwrite(str(cache_path), cv2.cvtColor(canvas, cv2.COLOR_RGB2BGR))
 

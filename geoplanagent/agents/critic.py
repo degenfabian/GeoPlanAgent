@@ -14,9 +14,6 @@ from geoplanagent.utils import resolve_model
 from geoplanagent.prompts import CRITIC_INSTRUCTIONS
 
 
-# Critic output schema
-
-
 class CriticDirective(BaseModel):
     """Pairwise judgement across all stored match_attempts."""
 
@@ -47,9 +44,6 @@ class CriticDirective(BaseModel):
     )
 
 
-# Agent cache
-
-
 _critic_agent: Optional[Agent] = None
 _critic_agent_model: Optional[str] = None
 
@@ -68,21 +62,26 @@ def _ensure_agent(model_name: str) -> Agent:
     return _critic_agent
 
 
-# Panel-building helpers
-
-
-def _label_strip(img: np.ndarray, text: str, height: int = 32) -> np.ndarray:
-    """Black label strip above img; font auto-shrinks to fit width."""
-    bar = np.full((height, img.shape[1], 3), 25, dtype=np.uint8)
-    available_w = max(20, img.shape[1] - 16)  # 8px margin each side
+def _label_strip(image: np.ndarray, text: str, height: int = 32) -> np.ndarray:
+    """Black label strip above image; font auto-shrinks to fit width."""
+    bar = np.full((height, image.shape[1], 3), 25, dtype=np.uint8)
+    available_width = max(20, image.shape[1] - 16)  # 8px margin each side
     font = cv2.FONT_HERSHEY_SIMPLEX
     scale = 0.55
-    (text_w, _), _ = cv2.getTextSize(text, font, scale, 1)
-    while text_w > available_w and scale > 0.3:
+    (text_width, _), _ = cv2.getTextSize(text, font, scale, 1)
+    while text_width > available_width and scale > 0.3:
         scale -= 0.05
-        (text_w, _), _ = cv2.getTextSize(text, font, scale, 1)
+        (text_width, _), _ = cv2.getTextSize(text, font, scale, 1)
     cv2.putText(bar, text, (8, height - 10), font, scale, (255, 255, 255), 1, cv2.LINE_AA)
-    return np.vstack([bar, img])
+    return np.vstack([bar, image])
+
+
+def _binary_mask_at(mask: np.ndarray, shape: tuple) -> np.ndarray:
+    """Binarise mask and nearest-neighbour resize it to (height, width) shape."""
+    binary = (mask > 0).astype(np.uint8)
+    if binary.shape != shape:
+        binary = cv2.resize(binary, (shape[1], shape[0]), interpolation=cv2.INTER_NEAREST)
+    return binary
 
 
 def _build_one_group_panel(
@@ -99,42 +98,40 @@ def _build_one_group_panel(
         return None
     left = map_img.copy()
     if isinstance(mask, np.ndarray) and mask.sum() > 0:
-        mb = (mask > 0).astype(np.uint8)
-        if mb.shape != left.shape[:2]:
-            mb = cv2.resize(mb, (left.shape[1], left.shape[0]), interpolation=cv2.INTER_NEAREST)
+        mask_binary = _binary_mask_at(mask, left.shape[:2])
         layer = left.copy()
-        layer[mb > 0] = (0, 255, 0)
+        layer[mask_binary > 0] = (0, 255, 0)
         left = cv2.addWeighted(left, 0.55, layer, 0.45, 0)
-    h_l, w_l = left.shape[:2]
-    left = cv2.resize(left, (max(1, int(w_l * target_h / h_l)), target_h))
+    left_h, left_w = left.shape[:2]
+    left = cv2.resize(left, (max(1, int(left_w * target_h / left_h)), target_h))
 
     tile_img = tile_info["image"]
     tile_bgr = cv2.cvtColor(tile_img, cv2.COLOR_RGB2BGR)
 
     # Project SAM-mask contour through affine_H onto the OS tile.
     if isinstance(mask, np.ndarray) and mask.sum() > 0 and affine_H is not None:
-        mb = (mask > 0).astype(np.uint8)
-        if mb.shape != map_img.shape[:2]:
-            mb = cv2.resize(
-                mb, (map_img.shape[1], map_img.shape[0]), interpolation=cv2.INTER_NEAREST
-            )
-        contours, _ = cv2.findContours(mb, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        for cnt in contours:
-            if len(cnt) < 3:
+        mask_binary = _binary_mask_at(mask, map_img.shape[:2])
+        contours, _ = cv2.findContours(
+            mask_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+        )
+        for contour in contours:
+            if len(contour) < 3:
                 continue
-            pts = cnt.reshape(-1, 2).astype(np.float32)
-            pts_h = np.concatenate([pts, np.ones((len(pts), 1), dtype=np.float32)], axis=1)
-            proj = pts_h @ affine_H.T
-            proj_int = np.round(proj).astype(np.int32).reshape(-1, 1, 2)
+            points = contour.reshape(-1, 2).astype(np.float32)
+            points_homogeneous = np.concatenate(
+                [points, np.ones((len(points), 1), dtype=np.float32)], axis=1
+            )
+            projected = points_homogeneous @ affine_H.T
+            projected_int = np.round(projected).astype(np.int32).reshape(-1, 1, 2)
             cv2.polylines(
                 tile_bgr,
-                [proj_int],
+                [projected_int],
                 isClosed=True,
                 color=(0, 0, 255),
                 thickness=max(2, tile_bgr.shape[0] // 250),
             )
-    h_r, w_r = tile_bgr.shape[:2]
-    right = cv2.resize(tile_bgr, (max(1, int(w_r * target_h / h_r)), target_h))
+    right_h, right_w = tile_bgr.shape[:2]
+    right = cv2.resize(tile_bgr, (max(1, int(right_w * target_h / right_h)), target_h))
 
     return np.hstack([_label_strip(left, left_label), _label_strip(right, right_label)])
 
@@ -143,16 +140,16 @@ def _build_candidate_panel(
     state: Any, attempt: Dict[str, Any], is_committed: bool
 ) -> Optional[np.ndarray]:
     """Build the visual panel for ONE candidate (possibly multiple groups)."""
-    cid = attempt.get("candidate_id")
-    badge = f"CANDIDATE {cid}" + (" [COMMITTED]" if is_committed else "")
+    candidate_id = attempt.get("candidate_id")
+    badge = f"CANDIDATE {candidate_id}" + (" [COMMITTED]" if is_committed else "")
     rows: List[np.ndarray] = []
-    for g in attempt.get("per_group") or []:
-        page = g.get("page")
+    for group in attempt.get("per_group") or []:
+        page = group.get("page")
         map_img = state.rendered_pages.get(page) if state.rendered_pages else None
         mask = (state.sam_masks_by_page or {}).get(page)
-        tile_info = g.get("tile_info")
-        affine_H = g.get("affine_H")
-        group_id = g.get("area_group", "?")
+        tile_info = group.get("tile_info")
+        affine_H = group.get("affine_H")
+        group_id = group.get("area_group", "?")
         zoom = (tile_info or {}).get("zoom", "?")
         # LEFT identifies the row; numeric metrics live in the text block.
         left_label = f"{badge}  group {group_id}  page {page}"
@@ -165,35 +162,35 @@ def _build_candidate_panel(
     if not rows:
         return None
     # Pad rows to common width.
-    max_w = max(r.shape[1] for r in rows)
+    max_width = max(row.shape[1] for row in rows)
     padded = []
-    for r in rows:
-        if r.shape[1] < max_w:
-            pad = np.full((r.shape[0], max_w - r.shape[1], 3), 220, dtype=np.uint8)
-            r = np.hstack([r, pad])
-        padded.append(r)
-        padded.append(np.full((4, max_w, 3), 220, dtype=np.uint8))
+    for row in rows:
+        if row.shape[1] < max_width:
+            pad = np.full((row.shape[0], max_width - row.shape[1], 3), 220, dtype=np.uint8)
+            row = np.hstack([row, pad])
+        padded.append(row)
+        padded.append(np.full((4, max_width, 3), 220, dtype=np.uint8))
     return np.vstack(padded[:-1])
 
 
 def _stack_candidate_panels(panels: List[np.ndarray]) -> Optional[np.ndarray]:
     """Vertical stack of per-candidate blocks with spacers."""
-    panels = [p for p in panels if p is not None]
+    panels = [panel for panel in panels if panel is not None]
     if not panels:
         return None
-    max_w = max(p.shape[1] for p in panels)
-    out = []
-    for p in panels:
-        if p.shape[1] < max_w:
-            pad = np.full((p.shape[0], max_w - p.shape[1], 3), 240, dtype=np.uint8)
-            p = np.hstack([p, pad])
-        out.append(p)
-        out.append(np.full((10, max_w, 3), 80, dtype=np.uint8))  # darker spacer
-    big = np.vstack(out[:-1])
-    if big.shape[1] > 2000:
-        s = 2000 / big.shape[1]
-        big = cv2.resize(big, (2000, int(big.shape[0] * s)))
-    return big
+    max_width = max(panel.shape[1] for panel in panels)
+    rows = []
+    for panel in panels:
+        if panel.shape[1] < max_width:
+            pad = np.full((panel.shape[0], max_width - panel.shape[1], 3), 240, dtype=np.uint8)
+            panel = np.hstack([panel, pad])
+        rows.append(panel)
+        rows.append(np.full((10, max_width, 3), 80, dtype=np.uint8))  # darker spacer
+    stacked = np.vstack(rows[:-1])
+    if stacked.shape[1] > 2000:
+        scale = 2000 / stacked.shape[1]
+        stacked = cv2.resize(stacked, (2000, int(stacked.shape[0] * scale)))
+    return stacked
 
 
 def _format_metrics_text(attempts: List[Dict[str, Any]], committed_ids: set) -> str:
@@ -206,34 +203,33 @@ def _format_metrics_text(attempts: List[Dict[str, Any]], committed_ids: set) -> 
     else:
         lines.append(f"  worker's committed_ids (one per area_group): {sorted(committed_ids)}")
     lines.append("")
-    for a in attempts:
-        cid = a.get("candidate_id")
-        tag = "  [COMMITTED]" if cid in committed_ids else ""
-        per_group = a.get("per_group") or []
-        for g in per_group:
-            mi = g.get("match_info") or {}
-            rwd = g.get("reward") or {}
-            n_inl = int(mi.get("n_inliers") or 0)
-            axes = rwd.get("axes") or {}
-            rna = axes.get("road_name_agreement") or {}
-            sc = axes.get("scale_consistency") or {}
-            road_v = rna.get("score") if isinstance(rna, dict) else None
-            road_verdict = (rna.get("verdict") if isinstance(rna, dict) else None) or ""
-            scale_v = sc.get("score") if isinstance(sc, dict) else None
-            road_str = f"{road_v:.2f}" if isinstance(road_v, (int, float)) else "?"
-            scale_str = f"{scale_v:.2f}" if isinstance(scale_v, (int, float)) else "?"
+    for attempt in attempts:
+        candidate_id = attempt.get("candidate_id")
+        tag = "  [COMMITTED]" if candidate_id in committed_ids else ""
+        per_group = attempt.get("per_group") or []
+        for group in per_group:
+            match_info = group.get("match_info") or {}
+            reward = group.get("reward") or {}
+            n_inliers = int(match_info.get("n_inliers") or 0)
+            axes = reward.get("axes") or {}
+            road_agreement = axes.get("road_name_agreement") or {}
+            scale = axes.get("scale_consistency") or {}
+            road_score = road_agreement.get("score") if isinstance(road_agreement, dict) else None
+            road_verdict = (
+                road_agreement.get("verdict") if isinstance(road_agreement, dict) else None
+            ) or ""
+            scale_score = scale.get("score") if isinstance(scale, dict) else None
+            road_str = f"{road_score:.2f}" if isinstance(road_score, (int, float)) else "?"
+            scale_str = f"{scale_score:.2f}" if isinstance(scale_score, (int, float)) else "?"
             verdict_str = f" ({road_verdict})" if road_verdict else ""
             lines.append(
-                f"  cand {cid}  group {g.get('area_group', '?')}  "
-                f"page {g.get('page', '?')}  "
-                f"n_inliers={n_inl}  "
+                f"  cand {candidate_id}  group {group.get('area_group', '?')}  "
+                f"page {group.get('page', '?')}  "
+                f"n_inliers={n_inliers}  "
                 f"road_name_agreement={road_str}{verdict_str}  "
                 f"scale_consistency={scale_str}{tag}"
             )
     return "\n".join(lines)
-
-
-# Critic single-call + rehand
 
 
 def _run_critic_once(state: Any, model_name: str, message_history: Optional[list] = None) -> tuple:
@@ -250,7 +246,9 @@ def _run_critic_once(state: Any, model_name: str, message_history: Optional[list
                     — same images sent to the LLM as separate inputs
     - new_history:  updated message list for next iteration (None on error)
     """
-    attempts = sorted(state.match_attempts.values(), key=lambda a: int(a.get("candidate_id") or 0))
+    attempts = sorted(
+        state.match_attempts.values(), key=lambda a: int(a.get("candidate_id") or 0)
+    )
     # SET of committed candidate_ids — one per area_group. Single-area
     # docs have one entry; multi-area docs can have several.
     committed_ids: set = set(
@@ -260,10 +258,10 @@ def _run_critic_once(state: Any, model_name: str, message_history: Optional[list
     # Rank candidates by n_inliers (each attempt covers one area_group
     # so this is the per-group strength). Tie-break by candidate_id
     # for reproducibility.
-    def _attempt_n_inliers(a: Dict[str, Any]) -> int:
-        per = a.get("per_group") or [{}]
-        mi = (per[0] or {}).get("match_info") or {}
-        return int(mi.get("n_inliers") or 0)
+    def _attempt_n_inliers(attempt: Dict[str, Any]) -> int:
+        per_group = attempt.get("per_group") or [{}]
+        match_info = (per_group[0] or {}).get("match_info") or {}
+        return int(match_info.get("n_inliers") or 0)
 
     total_n_attempts = len(attempts)
     by_inliers = sorted(
@@ -273,13 +271,13 @@ def _run_critic_once(state: Any, model_name: str, message_history: Optional[list
     shown = list(by_inliers[:3])
     shown_ids = {a.get("candidate_id") for a in shown}
     # Always include every committed candidate, even if not in top-3.
-    for cid in committed_ids:
-        if cid in shown_ids:
+    for candidate_id in committed_ids:
+        if candidate_id in shown_ids:
             continue
-        committed_attempt = state.match_attempts.get(cid)
+        committed_attempt = state.match_attempts.get(candidate_id)
         if committed_attempt is not None:
             shown.append(committed_attempt)
-            shown_ids.add(cid)
+            shown_ids.add(candidate_id)
     # Display order: by candidate_id (stable across iterations).
     shown.sort(key=lambda a: int(a.get("candidate_id") or 0))
 
@@ -287,10 +285,12 @@ def _run_critic_once(state: Any, model_name: str, message_history: Optional[list
     # the VLM sees each candidate at full resolution rather than
     # downscaled inside a tall vertical stack).
     cand_panels_with_id = []
-    for a in shown:
-        p = _build_candidate_panel(state, a, is_committed=(a.get("candidate_id") in committed_ids))
-        if p is not None:
-            cand_panels_with_id.append((a.get("candidate_id"), p))
+    for attempt in shown:
+        panel_image = _build_candidate_panel(
+            state, attempt, is_committed=(attempt.get("candidate_id") in committed_ids)
+        )
+        if panel_image is not None:
+            cand_panels_with_id.append((attempt.get("candidate_id"), panel_image))
 
     # Aggregated stack — for disk save only, not sent to the LLM.
     panel = _stack_candidate_panels([p for _, p in cand_panels_with_id])
@@ -325,16 +325,16 @@ def _run_critic_once(state: Any, model_name: str, message_history: Optional[list
 
     # Multi-image input: one BinaryContent per shown candidate.
     user_input: List[Any] = [text_block]
-    for cid, p in cand_panels_with_id:
-        _, buf = cv2.imencode(".png", p)
-        user_input.append(BinaryContent(data=buf.tobytes(), media_type="image/png"))
+    for _candidate_id, panel_image in cand_panels_with_id:
+        _, encoded_png = cv2.imencode(".png", panel_image)
+        user_input.append(BinaryContent(data=encoded_png.tobytes(), media_type="image/png"))
 
     agent = _ensure_agent(model_name)
     in_tokens = 0
     out_tokens = 0
     llm_error: Optional[str] = None
     new_history: Optional[list] = None
-    t0 = time.time()
+    start_time = time.time()
     try:
         from geoplanagent.utils import _run_sync_with_retry
 
@@ -361,24 +361,24 @@ def _run_critic_once(state: Any, model_name: str, message_history: Optional[list
             )
         except Exception:
             pass
-    except Exception as e:
+    except Exception as error:
         # Surface the failure: emit an approve directive (so the loop
         # exits cleanly) but tag it so downstream can distinguish a
         # genuine approve from a critic-LLM crash. Pick an arbitrary
         # committed_id when available; fall back to 0 (a valid id) when
         # nothing has been committed yet.
-        llm_error = f"{type(e).__name__}: {str(e)[:100]}"
+        llm_error = f"{type(error).__name__}: {str(error)[:100]}"
         directive = CriticDirective(
             chosen_candidate_id=(next(iter(committed_ids)) if committed_ids else 0),
             action="approve",
             reasoning=f"CRITIC_LLM_ERROR (treated as approve): {llm_error}",
         )
-    wall = time.time() - t0
+    wall_s = time.time() - start_time
     return (
         directive,
         panel,
         cand_panels_with_id,
-        wall,
+        wall_s,
         in_tokens,
         out_tokens,
         llm_error,
@@ -404,7 +404,7 @@ def _direct_switch_commit(
     breaks on ``switch``, so we never need fresh worker messages
     downstream.
     """
-    cand = state.match_attempts.get(int(chosen_id))
+    candidate = state.match_attempts.get(int(chosen_id))
 
     # Strict gate: refuse to commit a candidate that produced no
     # valid affine for any group — mirrors commit_match's check at
@@ -413,12 +413,12 @@ def _direct_switch_commit(
     # rendered panel), but guard against it: a candidate with no
     # geojson would silently null-out state.current_result["geojson"]
     # and crash downstream IoU scoring.
-    n_committed = int(cand.get("n_groups_committed") or 0)
-    if n_committed == 0 or cand.get("geojson") is None:
+    n_groups_committed = int(candidate.get("n_groups_committed") or 0)
+    if n_groups_committed == 0 or candidate.get("geojson") is None:
         if verbose:
             print(
                 f"  direct_switch: id {chosen_id} has no usable affine / "
-                f"geojson (n_groups_committed={n_committed}); skipping"
+                f"geojson (n_groups_committed={n_groups_committed}); skipping"
             )
         return
 
@@ -430,7 +430,7 @@ def _direct_switch_commit(
     # groups stay committed to whatever the worker chose for them.
     from geoplanagent.tools.positioning import _recompute_current_result
 
-    group_id = int(cand.get("requested_group", 0))
+    group_id = int(candidate.get("requested_group", 0))
     state.committed_groups[group_id] = int(chosen_id)
     _recompute_current_result(state)
     # Mirror commit_match's position_calls increment so agent_stats
@@ -446,20 +446,20 @@ def _direct_switch_commit(
     # safe against schema changes.
     from geoplanagent.schemas import BoundaryOutcome
 
-    prev = getattr(state, "last_output", None)
-    prev_status = prev.status if prev is not None else "accepted"
+    previous_output = getattr(state, "last_output", None)
+    previous_status = previous_output.status if previous_output is not None else "accepted"
     new_reasoning = f"[critic-switch to candidate {chosen_id}] {(directive_reasoning or '')[:900]}"
     # final_n_inliers reflects the SUM across all committed groups,
     # which is what state.current_result["total_inliers"] holds after
     # _recompute_current_result ran above.
     state.last_output = BoundaryOutcome(
-        status=prev_status,
+        status=previous_status,
         final_n_inliers=int(state.current_result.get("total_inliers") or 0),
         rotation_checked=state.rotation_checked,
         reasoning=new_reasoning,
     )
-    state.accepted = prev_status in ("accepted", "district_lookup")
-    state.accept_reason = f"[{prev_status}] {new_reasoning[:160]}"
+    state.accepted = previous_status in ("accepted", "district_lookup")
+    state.accept_reason = f"[{previous_status}] {new_reasoning[:160]}"
 
     if verbose:
         print(
@@ -488,23 +488,23 @@ def _rehand_to_worker(
     from geoplanagent.agents.worker import _agent
 
     action = directive.action
-    cr = state.current_result or {}
-    worker_committed_id = cr.get("candidate_id")
+    current_result = state.current_result or {}
+    worker_committed_id = current_result.get("candidate_id")
 
     rehand_error: Optional[str] = None
     if action == "switch":
-        chosen = directive.chosen_candidate_id
-        if chosen == worker_committed_id:
+        chosen_id = directive.chosen_candidate_id
+        if chosen_id == worker_committed_id:
             if verbose:
-                print(f"  critic switch: chose committed_id {chosen} — treating as approve")
+                print(f"  critic switch: chose committed_id {chosen_id} — treating as approve")
             return worker_result, None
-        if chosen not in state.match_attempts:
+        if chosen_id not in state.match_attempts:
             if verbose:
-                print(f"  critic switch: id {chosen} not in stored candidates, skipping")
+                print(f"  critic switch: id {chosen_id} not in stored candidates, skipping")
             return worker_result, None
         _direct_switch_commit(
             state,
-            chosen,
+            chosen_id,
             directive.reasoning or "",
             verbose=verbose,
         )
@@ -562,14 +562,11 @@ def _rehand_to_worker(
         except Exception:
             pass
         return sub_result, None
-    except Exception as e:
-        rehand_error = f"{type(e).__name__}: {str(e)[:160]}"
+    except Exception as error:
+        rehand_error = f"{type(error).__name__}: {str(error)[:160]}"
         if verbose:
             print(f"  critic rehand: worker re-invoke failed: {rehand_error}")
         return worker_result, rehand_error
-
-
-# Outer loop
 
 
 def _snapshot_geojson(state: Any) -> Optional[dict]:
@@ -581,9 +578,9 @@ def _snapshot_geojson(state: Any) -> Optional[dict]:
     """
     import copy
 
-    cr = state.current_result or {}
-    gj = cr.get("geojson")
-    return copy.deepcopy(gj) if gj is not None else None
+    current_result = state.current_result or {}
+    geojson = current_result.get("geojson")
+    return copy.deepcopy(geojson) if geojson is not None else None
 
 
 def run_critic_loop(
@@ -625,8 +622,8 @@ def run_critic_loop(
         }
 
     iterations: List[Dict[str, Any]] = []
-    total_in = 0
-    total_out = 0
+    total_in_tokens = 0
+    total_out_tokens = 0
     panels_by_iter: List[Optional[np.ndarray]] = []
     # per-iteration list of (candidate_id, panel) tuples — same images
     # the LLM saw, saved separately so we can audit exactly what the
@@ -640,33 +637,40 @@ def run_critic_loop(
     # the history just adds its own prior reasoning to that context.
     critic_message_history: Optional[list] = None
 
-    for it_idx in range(max_iters):
-        (directive, panel, cand_panels, wall, in_t, out_t, llm_error, new_history) = (
-            _run_critic_once(state, model_name, message_history=critic_message_history)
-        )
+    for iter_idx in range(max_iters):
+        (
+            directive,
+            panel,
+            cand_panels,
+            wall_s,
+            iter_in_tokens,
+            iter_out_tokens,
+            llm_error,
+            new_history,
+        ) = _run_critic_once(state, model_name, message_history=critic_message_history)
         # Update history for next iter (only if the call succeeded; on
         # LLM error new_history is None and we keep prior history).
         if new_history is not None:
             critic_message_history = new_history
         panels_by_iter.append(panel)
         per_cand_panels_by_iter.append(cand_panels)
-        total_in += in_t
-        total_out += out_t
+        total_in_tokens += iter_in_tokens
+        total_out_tokens += iter_out_tokens
 
         if verbose:
             err_tag = " [LLM_ERROR]" if llm_error else ""
             print(
-                f"  critic iter{it_idx}: action={directive.action}{err_tag}  "
+                f"  critic iter{iter_idx}: action={directive.action}{err_tag}  "
                 f"chose={directive.chosen_candidate_id}  "
-                f"reason={directive.reasoning[:80]!r}  wall={wall:.1f}s"
+                f"reason={directive.reasoning[:80]!r}  wall={wall_s:.1f}s"
             )
 
         iter_entry = {
-            "iter_idx": it_idx,
+            "iter_idx": iter_idx,
             "action": directive.action,
             "chosen_candidate_id": directive.chosen_candidate_id,
             "reasoning": directive.reasoning,
-            "wall_s": round(wall, 1),
+            "wall_s": round(wall_s, 1),
             "llm_error": llm_error,  # None on success, error string on crash
         }
 
@@ -708,13 +712,17 @@ def run_critic_loop(
     # as approvals, otherwise a run where 100% of critic calls
     # crashed would report n_rejections=0 (= 100% agreement), which
     # is the opposite of reality.
-    n_rej = sum(1 for it in iterations if it["action"] != "approve" or it.get("llm_error"))
+    n_rejections = sum(
+        1
+        for iteration in iterations
+        if iteration["action"] != "approve" or iteration.get("llm_error")
+    )
 
     return {
         "worker_first_geojson": worker_first_geojson,
         "iterations": iterations,
-        "n_rejections": n_rej,
-        "tokens": {"request": total_in, "response": total_out},
+        "n_rejections": n_rejections,
+        "tokens": {"request": total_in_tokens, "response": total_out_tokens},
         # Per-iteration stacked panel (for human-friendly debugging) +
         # per-iteration per-candidate panels (the actual images the LLM
         # received). Caller writes both to disk.

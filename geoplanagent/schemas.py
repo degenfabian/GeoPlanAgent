@@ -233,16 +233,16 @@ class PDFInfo(BaseModel):
         mode="after",
     )
     @classmethod
-    def _strict_ascii(cls, v: List[str]) -> List[str]:
+    def _strict_ascii(cls, values: List[str]) -> List[str]:
         # UK metadata is plain English. Reject CJK / Cyrillic / etc.
         # Allow Latin Extended-A/B (covers accented place names).
-        for s in v:
-            if any(ord(c) > 0x024F for c in s):
+        for value in values:
+            if any(ord(char) > 0x024F for char in value):
                 raise ValueError(
-                    f"non-ASCII characters in UK string field: {s!r}. "
+                    f"non-ASCII characters in UK string field: {value!r}. "
                     f"UK metadata must be plain English. Re-extract."
                 )
-        return v
+        return values
 
     @model_validator(mode="after")
     def _critical_fields_not_all_empty(self):
