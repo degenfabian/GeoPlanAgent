@@ -752,7 +752,6 @@ def build_run_agent_return(
         "tile_info_meta": {
             k: v for k, v in (state.current_result.get("tile_info") or {}).items() if k != "image"
         },
-        "agent_accepted": state.accepted,
         "agent_reason": state.accept_reason,
         "agent_stats": agent_stats,
         "message_log": message_log,

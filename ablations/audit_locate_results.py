@@ -83,7 +83,7 @@ def audit_config(cfg_dir: Path) -> dict:
     csv_path = cfg_dir / "locate_picks.csv"
     traj_dir = cfg_dir / "trajectories"
     if not csv_path.exists():
-        return {"config": cfg_dir.name, "skipped": "no CSV"}
+        return {"skipped": "no CSV"}
 
     bucket_a: list[dict] = []  # emergency fallbacks
     bucket_b: list[dict] = []  # L2-catchable
@@ -133,8 +133,6 @@ def audit_config(cfg_dir: Path) -> dict:
             )
 
     return {
-        "config": cfg_dir.name,
-        "n_rows": len(rows),
         "bucket_a": bucket_a,
         "bucket_b": bucket_b,
     }

@@ -414,7 +414,6 @@ def _run_case(
             "sl_no": sl_no,
             "match_info": mi,
             "processing_time": dt,
-            "agent_accepted": result.get("agent_accepted"),
             "agent_reason": result.get("agent_reason"),
             "agent_stats": result.get("agent_stats", {}),
             **metrics,

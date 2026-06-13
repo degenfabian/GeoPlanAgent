@@ -229,7 +229,7 @@ def sliding_window_position(
 
     centers is `[(name, lat, lon, sigma_m)]` from the locate sub-agent (single
     entry; list shape is historical). scale_ratio=None tries common scales.
-    Returns: geojson, affine_H, tile_info, match_info, n_windows.
+    Returns: geojson, affine_H, tile_info, match_info.
     """
     from geoplanagent.tools.tiles import fetch_os_opendata_grid
 
@@ -239,7 +239,6 @@ def sliding_window_position(
             "affine_H": None,
             "tile_info": None,
             "match_info": {},
-            "n_windows": 0,
         }
 
     # Trust the locate sub-agent's σ; fallback only for offline/test callers.
@@ -257,7 +256,6 @@ def sliding_window_position(
     per_bucket: Dict[Tuple[str, int], List[Tuple[float, int, dict]]] = {}
     _seq = 0  # tiebreaker for heap
     best_metric = 0
-    total_windows = 0
 
     map_mpp = compute_map_mpp(scale_ratio, dpi)
     map_h, map_w = map_img.shape[:2]
@@ -337,7 +335,6 @@ def sliding_window_position(
                         mkpts0, mkpts1, mconf=mconf
                     )
                     n_windows += 1
-                    total_windows += 1
 
                     if affine_H is None or n_inliers < 5:
                         continue
@@ -373,7 +370,6 @@ def sliding_window_position(
                         "match_info": {
                             "center": cname,
                             "zoom": zoom,
-                            "rotation": 0,
                             "n_inliers": n_inliers,
                             "scale_factor": round(sf, 3),
                             "avg_scale": round(avg_scale_now, 4),
@@ -383,7 +379,6 @@ def sliding_window_position(
                             "_inlier_pts_map": inlier_pts_map,
                             "_rot_map_shape": (rh, rw),
                         },
-                        "_metric": metric,
                         "_sam3_mask": sam3_mask,
                     }
                     _seq += 1
@@ -407,7 +402,6 @@ def sliding_window_position(
             "affine_H": None,
             "tile_info": None,
             "match_info": {},
-            "n_windows": total_windows,
         }
     all_candidates.sort(key=lambda x: -x[0])
 
@@ -443,13 +437,10 @@ def sliding_window_position(
 
     # Project mask now (deferred from inner loop).
     cur_mask = best_result.pop("_sam3_mask", None)
-    best_result.pop("_metric", None)
     if sam3_mask is not None and cur_mask is not None:
         best_result["geojson"] = mask_to_geojson_affine(
             cur_mask, best_result["affine_H"], best_result["tile_info"]
         )
-
-    best_result["n_windows"] = total_windows
 
     return best_result
 

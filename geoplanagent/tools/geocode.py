@@ -768,7 +768,6 @@ def lookup_district_boundary(
             "properties": {
                 "source": "os_boundaryline",
                 "query": district_name,
-                "resolved_variant": district_name,
             },
             "geometry": mapping(poly),
         },
