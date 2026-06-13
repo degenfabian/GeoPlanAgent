@@ -125,7 +125,7 @@ def aggregate_spatial_metrics(ious, centroid_distances, feret_diameters) -> Dict
         mean_IoU    mean IoU
         median_IoU  median IoU
         pct_grt_08  % with IoU >= 0.8 (high-quality matches)
-        med_err     median centroid distance, metres
+        median_centroid_distance_m  median centroid distance over all cases
         acc_01d     % whose centroid distance is within 0.1 x the GT Feret
                     diameter (scale-relative localisation accuracy)
     """
@@ -140,6 +140,6 @@ def aggregate_spatial_metrics(ious, centroid_distances, feret_diameters) -> Dict
         "mean_IoU": float(np.mean(ious)),
         "median_IoU": float(np.median(ious)),
         "pct_grt_08": 100 * np.mean(ious >= 0.8),
-        "med_err": float(np.median(centroid_distances)),
+        "median_centroid_distance_m": float(np.median(centroid_distances)),
         "acc_01d": 100 * np.mean(centroid_distances <= 0.1 * feret_diameters),
     }

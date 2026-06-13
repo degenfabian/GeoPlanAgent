@@ -87,7 +87,7 @@ def print_row(label, s, paper=None, cost=None, secs=None):
     line = (
         f"  {label:<28} n={s['n_cases']:<4} %IoU>0 {s['pct_grt_0']:5.1f}  "
         f"mean {s['mean_IoU']:.3f}  med {s['median_IoU']:.3f}  "
-        f"%>=0.8 {s['pct_grt_08']:5.1f}  medErr {s['med_err']:7.1f} m  "
+        f"%>=0.8 {s['pct_grt_08']:5.1f}  medErr {s['median_centroid_distance_m']:7.1f} m  "
         f"Acc@0.1D {s['acc_01d']:5.1f}"
     )
     if cost is not None:
