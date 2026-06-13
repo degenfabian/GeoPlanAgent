@@ -88,13 +88,17 @@ def feret_diameter_m(geom) -> float:
         return 0.0
     pts = list(hull.exterior.coords)[:-1] if hull.geom_type == "Polygon" else list(hull.coords)
     return max(
-        (haversine_m(y1, x1, y2, x2) for (x1, y1), (x2, y2) in combinations(pts, 2)),
+        (
+            # shapely coords are (lon, lat); haversine_m takes (lat, lon).
+            haversine_m(lat1, lon1, lat2, lon2)
+            for (lon1, lat1), (lon2, lat2) in combinations(pts, 2)
+        ),
         default=0.0,
     )
 
 
-def stats(values: Sequence[float]) -> Dict[str, float]:
-    """mean / median / std / min / max of a sequence (population std)."""
+def aggregate_stats(values: Sequence[float]) -> Dict[str, float]:
+    """Aggregates the statistics: mean, median, std, min, max of a sequence of values."""
     arr = np.asarray(values, dtype=float)
     return {
         "mean": float(arr.mean()),
@@ -105,7 +109,7 @@ def stats(values: Sequence[float]) -> Dict[str, float]:
     }
 
 
-def summarize_spatial_metrics(ious, errs, ferets) -> Dict[str, float]:
+def aggregate_spatial_metrics(ious, errs, ferets) -> Dict[str, float]:
     """Aggregate paper metrics over a set of cases: count, %IoU>0, mean/median
     IoU, %IoU>=0.8, median centroid distance (m), and Acc@0.1D — the fraction
     of cases whose centroid distance is within 0.1 x the GT Feret diameter."""

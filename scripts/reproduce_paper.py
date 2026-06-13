@@ -30,7 +30,7 @@ DEFAULT_RUN = REPO / "results/benchmark_std_post_fix/gemini-flash"
 sys.path.insert(0, str(REPO))
 
 from _pricing import PRICES  # noqa: E402 (scripts/ on sys.path when run as a file)
-from geoplanagent.metrics import feret_diameter_m, summarize_spatial_metrics  # noqa: E402
+from geoplanagent.metrics import feret_diameter_m, aggregate_spatial_metrics  # noqa: E402
 
 
 # ---------------------------------------------------------------- geometry
@@ -112,12 +112,12 @@ def table1(run_dir: Path):
     wf = [worker_first(m) for m in metrics.values()]
     print_row(
         "GeoPlanAgent",
-        summarize_spatial_metrics([x[0] for x in wf], [x[1] for x in wf], fer),
+        aggregate_spatial_metrics([x[0] for x in wf], [x[1] for x in wf], fer),
         paper="89.4 / 0.736 / 0.904 / 67.8 / 4.6 m / 78.8",
     )
     print_row(
         "+ Critic",
-        summarize_spatial_metrics(
+        aggregate_spatial_metrics(
             [m["iou"] for m in metrics.values()],
             [m.get("centroid_distance_m") for m in metrics.values()],
             fer,
@@ -142,7 +142,7 @@ def table1(run_dir: Path):
     fer_nr = [gt_feret(c) for c in nr]
     print_row(
         "Collapsed Reader",
-        summarize_spatial_metrics(
+        aggregate_spatial_metrics(
             [m["iou"] for m in nr.values()],
             [m.get("centroid_distance_m") for m in nr.values()],
             fer_nr,
@@ -202,7 +202,7 @@ def table1(run_dir: Path):
             secs = np.mean([float(r["call_seconds"]) for r in sel])
             print_row(
                 f"{model} ({n})",
-                summarize_spatial_metrics(ious, errs, [gt_feret(r["case"]) for r in sel]),
+                aggregate_spatial_metrics(ious, errs, [gt_feret(r["case"]) for r in sel]),
                 paper=paper_vlm.get((model, n)),
                 cost=cost,
                 secs=secs,
@@ -213,7 +213,7 @@ def table1(run_dir: Path):
     wf_sub = [worker_first(m) for m in sub.values()]
     print_row(
         "GeoPlanAgent (40 subset)",
-        summarize_spatial_metrics([x[0] for x in wf_sub], [x[1] for x in wf_sub], [gt_feret(c) for c in sub]),
+        aggregate_spatial_metrics([x[0] for x in wf_sub], [x[1] for x in wf_sub], [gt_feret(c) for c in sub]),
         paper="85.0 / 0.721 / 0.901 / 67.5 / 6.7 m / 80.0",
         secs=float(np.mean([m["processing_time"] for m in sub.values()])),
     )
