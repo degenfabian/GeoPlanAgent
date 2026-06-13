@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 from shapely.geometry import shape, Polygon, MultiPolygon
 
-from geoplanagent.utils import haversine_km
+from geoplanagent.utils import haversine_m
 
 
 def load_geojson(geojson_path: str) -> Dict[str, Any]:
@@ -72,11 +72,11 @@ def calculate_spatial_metrics(
     return {
         "iou": intersection / union if union else 0.0,
         "precision": intersection / pred.area if pred.area else 0.0,
-        "recall": intersection / gt.area if gt.area else 0.0,
-        "centroid_distance_m": haversine_km(
+        "recall": intersection / gt.area if gt.area else 0.0,#
+        # Computes the haversine distance (see utils.py) between the two polygon centroids in metres.
+        "centroid_distance_m": haversine_m(
             gt.centroid.y, gt.centroid.x, pred.centroid.y, pred.centroid.x
-        )
-        * 1000.0,
+        ),
     }
 
 
@@ -88,7 +88,7 @@ def feret_diameter_m(geom) -> float:
         return 0.0
     pts = list(hull.exterior.coords)[:-1] if hull.geom_type == "Polygon" else list(hull.coords)
     return max(
-        (haversine_km(y1, x1, y2, x2) * 1000.0 for (x1, y1), (x2, y2) in combinations(pts, 2)),
+        (haversine_m(y1, x1, y2, x2) for (x1, y1), (x2, y2) in combinations(pts, 2)),
         default=0.0,
     )
 

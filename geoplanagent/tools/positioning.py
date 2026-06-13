@@ -308,10 +308,10 @@ def match_at(
     # Reject invented coordinates.
     matched_candidate = None
     if state.proposed_centers:
-        from geoplanagent.utils import haversine_km
+        from geoplanagent.utils import haversine_m
 
         nearest = min(
-            (haversine_km(lat, lon, c["lat"], c["lon"]) * 1000.0, c) for c in state.proposed_centers
+            (haversine_m(lat, lon, c["lat"], c["lon"]), c) for c in state.proposed_centers
         )
         # 100 m tolerance: covers rounding noise on candidate lat/lons
         # (sub-metre postcode centroids round to ~10 m, place-name

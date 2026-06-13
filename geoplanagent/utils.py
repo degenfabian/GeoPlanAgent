@@ -273,6 +273,12 @@ def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     return 2.0 * _EARTH_R_KM * math.asin(min(1.0, math.sqrt(a)))
 
 
+def haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Great-circle distance in metres — a metres wrapper over haversine_km so
+    metric code doesn't hand-multiply by 1000."""
+    return haversine_km(lat1, lon1, lat2, lon2) * 1000.0
+
+
 def tile_mpp(lat: float, zoom: int) -> float:
     """Ground metres per pixel for a Web-Mercator tile at (lat, zoom)."""
     return WEB_MERCATOR_C * math.cos(math.radians(lat)) / (2**zoom)
