@@ -3,6 +3,7 @@
 import json
 from typing import Dict, Any
 from pathlib import Path
+from shapely.errors import GEOSException
 from shapely.geometry import shape, Polygon, MultiPolygon
 from geoplanagent.utils import haversine_km
 
@@ -106,7 +107,9 @@ def calculate_spatial_metrics(
             }
         )
 
-    except Exception as e:
+    except GEOSException as e:
+        # Overlay ops can fail on pathological geometry pairs; that is a
+        # scoring verdict. Anything else (a code defect) propagates loudly.
         metrics["validation_error"] = f"Calculation error: {e}"
 
     return metrics
