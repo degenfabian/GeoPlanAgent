@@ -114,9 +114,7 @@ def aggregate_spatial_metrics(ious, centroid_distances, feret_diameters) -> Dict
 
     Inputs are three parallel lists, one entry per case:
         ious                IoU of each prediction against its ground truth
-        centroid_distances  centroid-to-centroid distance in metres
-                            (None where the case produced no scoreable
-                            prediction; counted as a miss)
+        centroid_distances  gt-centroid to prediction-centroid distance in metres
         feret_diameters     GT Feret diameter (widest span) in metres
 
     Returns the paper's headline aggregates:
@@ -124,15 +122,15 @@ def aggregate_spatial_metrics(ious, centroid_distances, feret_diameters) -> Dict
         pct_grt_0   % of cases with IoU > 0 (any overlap with the ground truth)
         mean_IoU    mean IoU
         median_IoU  median IoU
-        pct_grt_08  % with IoU >= 0.8 (high-quality matches)
+        pct_grt_08  % of cases with IoU >= 0.8 (high-quality matches)
         median_centroid_distance_m  median centroid distance over all cases
-        acc_01d     % whose centroid distance is within 0.1 x the GT Feret
-                    diameter (scale-relative localisation accuracy)
+        acc_01d     % of caseswhose centroid distance is within 0.1 x the GT Feret
+                    diameter
     """
     ious = np.asarray(ious, float)
     centroid_distances = np.asarray(
         [d if d is not None else np.inf for d in centroid_distances], float
-    )
+    ) # None values are counted as a miss
     feret_diameters = np.asarray(feret_diameters, float)
     return {
         "n_cases": len(ious),
