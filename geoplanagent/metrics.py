@@ -1,9 +1,13 @@
 """Scoring of predicted boundaries against ground truth."""
 
 import json
-from typing import Dict, Any
+from itertools import combinations
+from typing import Any, Dict, Sequence
 from pathlib import Path
+
+import numpy as np
 from shapely.geometry import shape, Polygon, MultiPolygon
+
 from geoplanagent.utils import haversine_km
 
 
@@ -73,4 +77,47 @@ def calculate_spatial_metrics(
             gt.centroid.y, gt.centroid.x, pred.centroid.y, pred.centroid.x
         )
         * 1000.0,
+    }
+
+
+def feret_diameter_m(geom) -> float:
+    """Feret diameter: the largest distance (metres) between any two points of
+    the geometry — its widest span. Computed over the convex hull."""
+    hull = geom.convex_hull
+    if hull.geom_type == "Point":
+        return 0.0
+    pts = list(hull.exterior.coords)[:-1] if hull.geom_type == "Polygon" else list(hull.coords)
+    return max(
+        (haversine_km(y1, x1, y2, x2) * 1000.0 for (x1, y1), (x2, y2) in combinations(pts, 2)),
+        default=0.0,
+    )
+
+
+def stats(values: Sequence[float]) -> Dict[str, float]:
+    """mean / median / std / min / max of a sequence (population std)."""
+    arr = np.asarray(values, dtype=float)
+    return {
+        "mean": float(arr.mean()),
+        "median": float(np.median(arr)),
+        "std": float(arr.std()),
+        "min": float(arr.min()),
+        "max": float(arr.max()),
+    }
+
+
+def summarize_spatial_metrics(ious, errs, ferets) -> Dict[str, float]:
+    """Aggregate paper metrics over a set of cases: count, %IoU>0, mean/median
+    IoU, %IoU>=0.8, median centroid distance (m), and Acc@0.1D — the fraction
+    of cases whose centroid distance is within 0.1 x the GT Feret diameter."""
+    iou = np.asarray(ious, float)
+    err = np.asarray([e if e is not None else np.inf for e in errs], float)
+    fer = np.asarray(ferets, float)
+    return {
+        "n": len(iou),
+        "pct_pos": 100 * np.mean(iou > 0),
+        "mean": float(np.mean(iou)),
+        "median": float(np.median(iou)),
+        "pct_08": 100 * np.mean(iou >= 0.8),
+        "med_err": float(np.median(err)),
+        "acc_01d": 100 * np.mean(err <= 0.1 * fer),
     }

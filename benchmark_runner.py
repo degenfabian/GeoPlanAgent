@@ -24,7 +24,7 @@ from typing import Any, Dict, Optional
 from datetime import datetime
 
 from geoplanagent.tools.pdf import resolve_case_pdf
-from geoplanagent.metrics import load_geojson, calculate_spatial_metrics
+from geoplanagent.metrics import load_geojson, calculate_spatial_metrics, stats
 import contextily as ctx
 import geopandas as gpd
 import matplotlib.patches as mpatches
@@ -647,25 +647,14 @@ def _compute_summary(results):
     }
 
     if honest:
-
-        def _stats(values):
-            arr = np.array(values)
-            return {
-                "mean": float(arr.mean()),
-                "median": float(np.median(arr)),
-                "std": float(arr.std()),
-                "min": float(arr.min()),
-                "max": float(arr.max()),
-            }
-
         # Production-honest IoU (rejections counted as 0).
-        summary["metrics"] = {"iou": _stats(honest)}
+        summary["metrics"] = {"iou": stats(honest)}
 
         if polygons:
             summary["metrics_successful_only"] = {
-                "iou": _stats([r["iou"] for r in polygons]),
-                "precision": _stats([r["precision"] for r in polygons]),
-                "recall": _stats([r["recall"] for r in polygons]),
+                "iou": stats([r["iou"] for r in polygons]),
+                "precision": stats([r["precision"] for r in polygons]),
+                "recall": stats([r["recall"] for r in polygons]),
             }
             pos_errs = [
                 r["centroid_distance_m"]
@@ -673,7 +662,7 @@ def _compute_summary(results):
                 if r.get("centroid_distance_m") is not None
             ]
             if pos_errs:
-                summary["metrics_successful_only"]["centroid_distance_m"] = _stats(pos_errs)
+                summary["metrics_successful_only"]["centroid_distance_m"] = stats(pos_errs)
 
     summary["per_case"] = results
     return summary

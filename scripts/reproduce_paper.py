@@ -18,10 +18,8 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-import math
 import re
 import sys
-from itertools import combinations
 from pathlib import Path
 
 import numpy as np
@@ -29,8 +27,10 @@ import numpy as np
 REPO = Path(__file__).resolve().parent.parent
 EVAL = REPO / "evaluation_data"
 DEFAULT_RUN = REPO / "results/benchmark_std_post_fix/gemini-flash"
+sys.path.insert(0, str(REPO))
 
 from _pricing import PRICES  # noqa: E402 (scripts/ on sys.path when run as a file)
+from geoplanagent.metrics import feret_diameter_m, summarize_spatial_metrics  # noqa: E402
 
 
 # ---------------------------------------------------------------- geometry
@@ -48,34 +48,13 @@ def load_shape(path: Path):
     return geom if geom.is_valid else geom.buffer(0)
 
 
-def haversine_m(lat1, lon1, lat2, lon2):
-    R = 6371008.8
-    p1, p2 = math.radians(lat1), math.radians(lat2)
-    a = (
-        math.sin((p2 - p1) / 2) ** 2
-        + math.cos(p1) * math.cos(p2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2
-    )
-    return 2 * R * math.asin(math.sqrt(a))
-
-
-def feret_m(geom):
-    """Max pairwise haversine distance over the convex hull (GT diameter)."""
-    hull = geom.convex_hull
-    if hull.geom_type == "Point":
-        return 0.0
-    pts = list(hull.exterior.coords)[:-1] if hull.geom_type == "Polygon" else list(hull.coords)
-    return max(
-        (haversine_m(y1, x1, y2, x2) for (x1, y1), (x2, y2) in combinations(pts, 2)), default=0.0
-    )
-
-
 _feret_cache: dict[str, float] = {}
 
 
 def gt_feret(case: str) -> float:
     if case not in _feret_cache:
         gt_file = next((EVAL / case).glob("*.geojson"))
-        _feret_cache[case] = feret_m(load_shape(gt_file))
+        _feret_cache[case] = feret_diameter_m(load_shape(gt_file))
     return _feret_cache[case]
 
 
@@ -102,21 +81,6 @@ def worker_first(m: dict) -> tuple[float, float | None]:
         return m["iou"], m.get("centroid_distance_m")
     wf = m.get("worker_first_metrics") or {}
     return m["worker_first_iou"], wf.get("centroid_distance_m")
-
-
-def summarise(ious, errs, ferets):
-    iou = np.asarray(ious, float)
-    err = np.asarray([e if e is not None else np.inf for e in errs], float)
-    fer = np.asarray(ferets, float)
-    return {
-        "n": len(iou),
-        "pct_pos": 100 * np.mean(iou > 0),
-        "mean": float(np.mean(iou)),
-        "median": float(np.median(iou)),
-        "pct_08": 100 * np.mean(iou >= 0.8),
-        "med_err": float(np.median(err)),
-        "acc_01d": 100 * np.mean(err <= 0.1 * fer),
-    }
 
 
 def print_row(label, s, paper=None, cost=None, secs=None):
@@ -148,12 +112,12 @@ def table1(run_dir: Path):
     wf = [worker_first(m) for m in metrics.values()]
     print_row(
         "GeoPlanAgent",
-        summarise([x[0] for x in wf], [x[1] for x in wf], fer),
+        summarize_spatial_metrics([x[0] for x in wf], [x[1] for x in wf], fer),
         paper="89.4 / 0.736 / 0.904 / 67.8 / 4.6 m / 78.8",
     )
     print_row(
         "+ Critic",
-        summarise(
+        summarize_spatial_metrics(
             [m["iou"] for m in metrics.values()],
             [m.get("centroid_distance_m") for m in metrics.values()],
             fer,
@@ -178,7 +142,7 @@ def table1(run_dir: Path):
     fer_nr = [gt_feret(c) for c in nr]
     print_row(
         "Collapsed Reader",
-        summarise(
+        summarize_spatial_metrics(
             [m["iou"] for m in nr.values()],
             [m.get("centroid_distance_m") for m in nr.values()],
             fer_nr,
@@ -238,7 +202,7 @@ def table1(run_dir: Path):
             secs = np.mean([float(r["call_seconds"]) for r in sel])
             print_row(
                 f"{model} ({n})",
-                summarise(ious, errs, [gt_feret(r["case"]) for r in sel]),
+                summarize_spatial_metrics(ious, errs, [gt_feret(r["case"]) for r in sel]),
                 paper=paper_vlm.get((model, n)),
                 cost=cost,
                 secs=secs,
@@ -249,7 +213,7 @@ def table1(run_dir: Path):
     wf_sub = [worker_first(m) for m in sub.values()]
     print_row(
         "GeoPlanAgent (40 subset)",
-        summarise([x[0] for x in wf_sub], [x[1] for x in wf_sub], [gt_feret(c) for c in sub]),
+        summarize_spatial_metrics([x[0] for x in wf_sub], [x[1] for x in wf_sub], [gt_feret(c) for c in sub]),
         paper="85.0 / 0.721 / 0.901 / 67.5 / 6.7 m / 80.0",
         secs=float(np.mean([m["processing_time"] for m in sub.values()])),
     )
