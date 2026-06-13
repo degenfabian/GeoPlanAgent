@@ -124,7 +124,7 @@ def aggregate_spatial_metrics(ious, centroid_distances, feret_diameters) -> Dict
         median_IoU  median IoU
         pct_grt_08  % of cases with IoU >= 0.8 (high-quality matches)
         median_centroid_distance_m  median centroid distance over all cases
-        acc_01d     % of caseswhose centroid distance is within 0.1 x the GT Feret
+        acc_01d     % of cases whose centroid distance is within 0.1 x the GT Feret
                     diameter
     """
     ious = np.asarray(ious, float)
