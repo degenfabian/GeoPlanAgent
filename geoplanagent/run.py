@@ -5,12 +5,14 @@ critic pass, returning the final GeoJSON plus telemetry.
 
 from __future__ import annotations
 
+import copy
 import json
+import os
+import tempfile
 import traceback
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
-import os
-import tempfile
+
 import cv2
 from pydantic_ai import BinaryContent
 from pydantic_ai.exceptions import UnexpectedModelBehavior, UsageLimitExceeded
@@ -30,6 +32,23 @@ from geoplanagent.agents.worker import _agent
 
 # Import registers the worker tools on the agent in definition order.
 from geoplanagent.tools import positioning as _positioning  # noqa: F401
+
+
+def _public(pdf_info: dict) -> dict:
+    """Drop private (underscore-prefixed) keys such as _reader_tokens."""
+    return {k: v for k, v in pdf_info.items() if not k.startswith("_")}
+
+
+def _write_case_json(case_dir: Optional[Path], filename: str, payload: Any, verbose: bool) -> None:
+    """Write payload as indented JSON into case_dir; tolerate I/O failure (debug artifact)."""
+    if case_dir is None:
+        return
+    try:
+        case_dir.mkdir(parents=True, exist_ok=True)
+        (case_dir / filename).write_text(json.dumps(payload, indent=2, default=str))
+    except Exception as e:
+        if verbose:
+            print(f"  Warning: failed to write {filename}: {e}")
 
 
 def run_agent(
@@ -83,19 +102,7 @@ def run_agent(
         pdf_info = read_pdf_phase(pdf_path, model_name, verbose=verbose)
 
         # Flush pdf_info.json so it survives a Phase 2 crash.
-        if case_dir is not None:
-            try:
-                case_dir.mkdir(parents=True, exist_ok=True)
-                (case_dir / "pdf_info.json").write_text(
-                    json.dumps(
-                        {k: v for k, v in pdf_info.items() if not k.startswith("_")},
-                        indent=2,
-                        default=str,
-                    )
-                )
-            except Exception as _e:
-                if verbose:
-                    print(f"  Warning: failed to flush pdf_info.json: {_e}")
+        _write_case_json(case_dir, "pdf_info.json", _public(pdf_info), verbose)
 
         # Phase 2 setup: state + worker user_parts
         state, user_parts = prepare_worker_state(
@@ -161,9 +168,7 @@ def run_agent(
     )
     if can_run_critic:
         # Deep-copy: protect the snapshot from any future in-place mutation.
-        import copy as _copy
-
-        worker_first_geojson_snapshot = _copy.deepcopy(state.current_result.get("geojson"))
+        worker_first_geojson_snapshot = copy.deepcopy(state.current_result.get("geojson"))
         try:
             from geoplanagent.agents.critic import run_critic_loop
 
@@ -177,10 +182,10 @@ def run_agent(
                 verbose=verbose,
             )
             if verbose:
-                n_rej = critic_result.get("n_rejections", 0)
-                its = critic_result.get("iterations") or [{}]
-                final_action = its[-1].get("action", "?")
-                print(f"  Phase 3 done: {n_rej} rejection(s), final_decision={final_action}")
+                n_rejections = critic_result.get("n_rejections", 0)
+                iterations = critic_result.get("iterations") or [{}]
+                final_action = iterations[-1].get("action", "?")
+                print(f"  Phase 3 done: {n_rejections} rejection(s), final_decision={final_action}")
         except Exception as e:
             if verbose:
                 print(f"  Phase 3 critic failed: {type(e).__name__}: {e}")
@@ -194,20 +199,21 @@ def run_agent(
     if critic_result is not None and "error" not in critic_result and case_dir is not None:
         try:
             case_dir.mkdir(parents=True, exist_ok=True)
-            for _i, _p in enumerate(critic_result.get("panels_by_iter") or []):
-                if _p is None:
+            for iter_idx, panel in enumerate(critic_result.get("panels_by_iter") or []):
+                if panel is None:
                     continue
-                _path = case_dir / f"critic_panel_iter{_i}.png"
-                cv2.imwrite(str(_path), _p)
-            for _i, _cands in enumerate(critic_result.get("per_cand_panels_by_iter") or []):
-                for _cid, _cp in _cands or []:
-                    if _cp is None:
+                cv2.imwrite(str(case_dir / f"critic_panel_iter{iter_idx}.png"), panel)
+            for iter_idx, cand_panels in enumerate(
+                critic_result.get("per_cand_panels_by_iter") or []
+            ):
+                for cand_id, cand_panel in cand_panels or []:
+                    if cand_panel is None:
                         continue
-                    _path = case_dir / f"critic_panel_iter{_i}_cand{_cid}.png"
-                    cv2.imwrite(str(_path), _cp)
-        except Exception as _e:
+                    path = case_dir / f"critic_panel_iter{iter_idx}_cand{cand_id}.png"
+                    cv2.imwrite(str(path), cand_panel)
+        except Exception as e:
             if verbose:
-                print(f"  Warning: failed to save critic panels: {_e}")
+                print(f"  Warning: failed to save critic panels: {e}")
 
     # Cleanup, stats, soft quality gate, return
     cleanup_temp_pages(state)
@@ -217,19 +223,14 @@ def run_agent(
     # stats + the on-disk pdf_info.json reflect what the worker submitted.
     if folded:
         pdf_info = dict(state.pdf_info or {})
-        if case_dir is not None and pdf_info:
-            try:
-                case_dir.mkdir(parents=True, exist_ok=True)
-                (case_dir / "pdf_info.json").write_text(json.dumps(pdf_info, indent=2, default=str))
-            except Exception as _e:
-                if verbose:
-                    print(f"  Warning: failed to flush pdf_info.json (folded): {_e}")
+        if pdf_info:
+            _write_case_json(case_dir, "pdf_info.json", pdf_info, verbose)
 
     if verbose:
-        mi = state.current_result.get("match_info", {})
+        match_info = state.current_result.get("match_info", {})
         print(
             f"  Agent done: accepted={state.accepted}, "
-            f"inliers={mi.get('n_inliers', 0)}, "
+            f"inliers={match_info.get('n_inliers', 0)}, "
             f"reason={state.accept_reason[:100]}"
         )
 
@@ -237,9 +238,9 @@ def run_agent(
     # conversation including those sub-turns — use it for log extraction.
     log_source_result = result
     if critic_result is not None and "error" not in critic_result:
-        final_wr = critic_result.get("final_worker_result")
-        if final_wr is not None:
-            log_source_result = final_wr
+        final_worker_result = critic_result.get("final_worker_result")
+        if final_worker_result is not None:
+            log_source_result = final_worker_result
 
     message_log = []
     extracted_stats: dict = {}
@@ -349,7 +350,7 @@ def prepare_worker_state(
         locate_model=locate_model,
         locate_disabled_tools=locate_disabled_tools,
     )
-    state.pdf_info = {k: v for k, v in pdf_info.items() if not k.startswith("_")}
+    state.pdf_info = _public(pdf_info)
 
     map_pages = pdf_info.get("map_pages", []) or []
     map_page_details = pdf_info.get("map_page_details", []) or []
@@ -372,19 +373,17 @@ def prepare_worker_state(
             state.rendered_pages[int(page_1based)] = page_img
             state.rendered_page_paths[int(page_1based)] = tmp_path
 
-    summary_text = json.dumps(
-        {k: v for k, v in pdf_info.items() if not k.startswith("_")}, indent=2
-    )
+    summary_text = json.dumps(_public(pdf_info), indent=2)
     roles_line = ""
     if map_page_details:
         roles = ", ".join(
-            f"page {d.get('page', '?')}=["
-            f"{d.get('category', '?')}, "
-            f"grp={d.get('area_group', '?')}, "
-            f"{d.get('boundary_clarity', '?')}/"
-            f"{d.get('detail_level', '?')}"
-            f"] {(d.get('caption') or '')[:60]!r}"
-            for d in map_page_details
+            f"page {detail.get('page', '?')}=["
+            f"{detail.get('category', '?')}, "
+            f"grp={detail.get('area_group', '?')}, "
+            f"{detail.get('boundary_clarity', '?')}/"
+            f"{detail.get('detail_level', '?')}"
+            f"] {(detail.get('caption') or '')[:60]!r}"
+            for detail in map_page_details
         )
         roles_line = (
             "\nMap-page metadata (only category='match' pages are pre-"
@@ -393,21 +392,21 @@ def prepare_worker_state(
         )
         by_group: dict[int, list[int]] = {}
         page_to_group = {
-            int(d["page"]): int(d.get("area_group", 0))
-            for d in map_page_details
-            if d.get("category") == "match"
+            int(detail["page"]): int(detail.get("area_group", 0))
+            for detail in map_page_details
+            if detail.get("category") == "match"
         }
-        for p in map_pages:
-            g = page_to_group.get(int(p))
-            if g is None:
+        for page in map_pages:
+            group = page_to_group.get(int(page))
+            if group is None:
                 continue
-            by_group.setdefault(g, []).append(int(p))
+            by_group.setdefault(group, []).append(int(page))
         if by_group:
             grouped = "; ".join(
-                f"Group {g}: pages {pages} (primary={pages[0]}"
+                f"Group {group}: pages {pages} (primary={pages[0]}"
                 + (f", alternates={pages[1:]}" if len(pages) > 1 else "")
                 + ")"
-                for g, pages in sorted(by_group.items())
+                for group, pages in sorted(by_group.items())
             )
             roles_line += (
                 "\nMatch pages by area_group (each match_at call covers "
@@ -534,15 +533,7 @@ def dump_partial_state(
         "rotation_checked": state.rotation_checked,
         "last_output": (state.last_output.model_dump() if state.last_output is not None else None),
     }
-    if case_dir is not None:
-        try:
-            case_dir.mkdir(parents=True, exist_ok=True)
-            (case_dir / "partial_state.json").write_text(
-                json.dumps(partial_stats, indent=2, default=str)
-            )
-        except Exception as _e:
-            if verbose:
-                print(f"  Warning: failed to flush partial_state.json: {_e}")
+    _write_case_json(case_dir, "partial_state.json", partial_stats, verbose)
     return partial_stats
 
 
@@ -552,12 +543,12 @@ def dump_partial_state(
 def cleanup_temp_pages(state: AgentState) -> None:
     """Unlink every pre-rendered page tempfile."""
     seen_paths = set()
-    for p in state.rendered_page_paths.values():
-        if not p or p in seen_paths:
+    for path in state.rendered_page_paths.values():
+        if not path or path in seen_paths:
             continue
-        seen_paths.add(p)
+        seen_paths.add(path)
         try:
-            os.unlink(p)
+            os.unlink(path)
         except OSError:
             pass
 
@@ -597,17 +588,17 @@ def extract_message_log_from_msgs(messages: list) -> Tuple[list, dict]:
                 entry["return"] = _coerce_return(getattr(part, "content", None))
 
             elif "retry" in kind_lower:
-                rc = getattr(part, "content", None)
-                entry["retry_content"] = str(rc)[:1000] if rc else ""
+                retry_content = getattr(part, "content", None)
+                entry["retry_content"] = str(retry_content)[:1000] if retry_content else ""
 
             elif "userprompt" in kind_lower:
-                c = getattr(part, "content", None)
-                if isinstance(c, list):
-                    n_images = sum(1 for x in c if hasattr(x, "media_type"))
-                    n_text = sum(1 for x in c if isinstance(x, str))
+                content = getattr(part, "content", None)
+                if isinstance(content, list):
+                    n_images = sum(1 for x in content if hasattr(x, "media_type"))
+                    n_text = sum(1 for x in content if isinstance(x, str))
                     entry["user_summary"] = f"{n_text} text + {n_images} images"
-                elif isinstance(c, str):
-                    entry["text"] = c[:500]
+                elif isinstance(content, str):
+                    entry["text"] = content[:500]
 
             elif "text" in kind_lower or "thinking" in kind_lower:
                 entry["text"] = str(getattr(part, "content", ""))[:2000]
@@ -665,7 +656,7 @@ def collect_agent_stats(
     """Assemble the agent_stats dict that benchmark_runner persists."""
     agent_stats: dict = {
         "position_calls": state.position_calls,
-        "pdf_info": {k: v for k, v in pdf_info.items() if not k.startswith("_")},
+        "pdf_info": _public(pdf_info),
     }
     reader_tokens = pdf_info.get("_reader_tokens", {}) or {}
     if reader_tokens:
@@ -689,10 +680,10 @@ def collect_agent_stats(
         agent_stats["locate_calls"] = locate_calls
 
     if state.last_output is not None:
-        out = state.last_output
-        agent_stats["outcome_status"] = out.status
-        agent_stats["outcome_reasoning"] = out.reasoning
-        agent_stats["rotation_checked"] = out.rotation_checked
+        output = state.last_output
+        agent_stats["outcome_status"] = output.status
+        agent_stats["outcome_reasoning"] = output.reasoning
+        agent_stats["rotation_checked"] = output.rotation_checked
 
     if message_log_extracted:
         agent_stats.update(message_log_extracted)
@@ -740,7 +731,7 @@ def build_run_agent_return(
         sel = primary_img.copy()
         sel[primary_mask > 0] = [0, 255, 0]
         primary_overlay = cv2.addWeighted(primary_img, 0.5, sel, 0.5, 0)
-    out: Dict[str, Any] = {
+    result_dict: Dict[str, Any] = {
         "success": True,
         "geojson": state.current_result.get("geojson"),
         "match_info": state.current_result.get("match_info", {}),
@@ -759,7 +750,7 @@ def build_run_agent_return(
     # produced a paired result" from "critic disabled" without confusing
     # either with a critic crash mid-run.
     if critic_result is not None:
-        wf = critic_result.get("worker_first_geojson")
-        if wf is not None:
-            out["worker_first_geojson"] = wf
-    return out
+        worker_first = critic_result.get("worker_first_geojson")
+        if worker_first is not None:
+            result_dict["worker_first_geojson"] = worker_first
+    return result_dict
