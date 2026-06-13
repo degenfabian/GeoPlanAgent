@@ -240,7 +240,7 @@ def _run_case(
     force,
     enable_critic,
     critic_max_iters,
-    locate_model,
+    locate_model_name,
     locate_disabled_tools,
     folded,
 ):
@@ -315,7 +315,7 @@ def _run_case(
             case_dir=case_dir,
             enable_critic=enable_critic,
             critic_max_iters=critic_max_iters,
-            locate_model=locate_model,
+            locate_model_name=locate_model_name,
             locate_disabled_tools=locate_disabled_tools,
             folded=folded,
         )
@@ -548,7 +548,7 @@ def run_benchmark(
     force=False,
     enable_critic=False,
     critic_max_iters=2,
-    locate_model="google/gemini-3-flash-preview",
+    locate_model_name="google/gemini-3-flash-preview",
     locate_disabled_tools=PRODUCTION_LOCATE_DISABLED_TOOLS,
     folded=False,
 ):
@@ -562,7 +562,7 @@ def run_benchmark(
         dpi: PDF rendering DPI.
         max_iterations: Max agent turns per case.
         only_cases: If set, only run these specific folder names.
-        locate_model: Model for the locate sub-agent (independent of
+        locate_model_name: Model for the locate sub-agent (independent of
             model_name). Default google/gemini-3-flash-preview.
     """
     dataset = _load_dataset(dataset_path, eval_dir, only_cases, start_from, max_cases)
@@ -589,7 +589,7 @@ def run_benchmark(
             force=force,
             enable_critic=enable_critic,
             critic_max_iters=critic_max_iters,
-            locate_model=locate_model,
+            locate_model_name=locate_model_name,
             locate_disabled_tools=locate_disabled_tools,
             folded=folded,
         )
@@ -751,7 +751,7 @@ if __name__ == "__main__":
         force=args.force,
         enable_critic=args.enable_critic,
         critic_max_iters=args.critic_max_iters,
-        locate_model=args.locate_model,
+        locate_model_name=args.locate_model,
         folded=args.no_reader,
     )
     if args.locate_disabled_tools is not None:

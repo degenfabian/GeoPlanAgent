@@ -43,7 +43,7 @@ class AgentState:
         dpi,
         sam3_state,
         case_name,
-        locate_model: str,
+        locate_model_name: str,
         locate_disabled_tools: frozenset,
         folded_mode: bool = False,
     ):
@@ -53,7 +53,7 @@ class AgentState:
         self.device = device
         self.minima_matcher = minima_matcher
         self.dpi = dpi
-        self.locate_model: str = locate_model
+        self.locate_model_name: str = locate_model_name
         # Production ships the locate sub-agent with `place` only — the
         # locate-stage ablation showed 1-tool ≈ 6-tool in IoU (Δmean = +0.001
         # on the 11 cross-1km regression-risk cases), and dropping the 5

@@ -62,7 +62,7 @@ def run_agent(
     case_dir: Optional[Path] = None,
     enable_critic: bool = False,
     critic_max_iters: int = 2,
-    locate_model: str = "google/gemini-3-flash-preview",
+    locate_model_name: str = "google/gemini-3-flash-preview",
     locate_disabled_tools: frozenset = PRODUCTION_LOCATE_DISABLED_TOOLS,
     folded: bool = False,
 ) -> Dict[str, Any]:
@@ -95,7 +95,7 @@ def run_agent(
             dpi=dpi,
             case_name=case_name,
             verbose=verbose,
-            locate_model=locate_model,
+            locate_model_name=locate_model_name,
             locate_disabled_tools=locate_disabled_tools,
         )
     else:
@@ -113,7 +113,7 @@ def run_agent(
             dpi=dpi,
             case_name=case_name,
             verbose=verbose,
-            locate_model=locate_model,
+            locate_model_name=locate_model_name,
             locate_disabled_tools=locate_disabled_tools,
         )
 
@@ -334,7 +334,7 @@ def prepare_worker_state(
     dpi: int,
     case_name: Optional[str],
     verbose: bool,
-    locate_model: str,
+    locate_model_name: str,
     locate_disabled_tools: frozenset,
 ) -> Tuple[AgentState, list]:
     """Build AgentState + worker user_parts (summary JSON + primary page image)."""
@@ -347,7 +347,7 @@ def prepare_worker_state(
         dpi=dpi,
         sam3_state=sam3,
         case_name=case_name,
-        locate_model=locate_model,
+        locate_model_name=locate_model_name,
         locate_disabled_tools=locate_disabled_tools,
     )
     state.pdf_info = _public(pdf_info)
@@ -441,7 +441,7 @@ def prepare_folded_state(
     dpi: int,
     case_name: Optional[str],
     verbose: bool,
-    locate_model: str,
+    locate_model_name: str,
     locate_disabled_tools: frozenset,
 ) -> Tuple[AgentState, list]:
     """Build AgentState + worker user_parts for the folded ablation.
@@ -462,7 +462,7 @@ def prepare_folded_state(
         dpi=dpi,
         sam3_state=sam3,
         case_name=case_name,
-        locate_model=locate_model,
+        locate_model_name=locate_model_name,
         locate_disabled_tools=locate_disabled_tools,
         folded_mode=True,
     )

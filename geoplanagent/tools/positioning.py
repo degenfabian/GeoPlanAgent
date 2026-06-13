@@ -85,7 +85,7 @@ def propose_centers(
     # Model is configured at run_agent time via the CLI --locate-model
     # flag, threaded through AgentState. Default in AgentState is
     # google/gemini-3-flash-preview (matches the previous hardcode).
-    model_name = state.locate_model
+    locate_model_name = state.locate_model_name
 
     # Locate sub-agent always sees the primary match page (the
     # reader's top-ranked one). That single image is sent on EVERY
@@ -126,7 +126,7 @@ def propose_centers(
     pick, new_history = run_locate(
         pdf_info=pdf_info,
         map_img_bytes=map_bytes,
-        model_name=model_name,
+        model_name=locate_model_name,
         match_context=match_context,
         prior_messages=state.locate_message_history or None,
         extra_terms=extra_terms,
