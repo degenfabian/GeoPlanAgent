@@ -64,7 +64,9 @@ rendered = render_map_page(str(PDF_PATH), int(map_page), dpi=200, case_name=CASE
 if rendered is None:
     raise SystemExit(f"render_map_page returned None for page {map_page}")
 map_img, rot_info = rendered
-print(f"  raw map: {map_img.shape[1]}x{map_img.shape[0]} (rotation_applied={rot_info.get('applied')})")
+print(
+    f"  raw map: {map_img.shape[1]}x{map_img.shape[0]} (rotation_applied={rot_info.get('applied')})"
+)
 
 # Load MINIMA
 print("\nLoading MINIMA-LoFTR weights...")
@@ -110,9 +112,9 @@ best_n = 0
 best_meta: dict | None = None
 for iy, wy in enumerate(ys):
     for ix, wx in enumerate(xs):
-        window_img = os_canvas[wy:wy + rh, wx:wx + rw]
-        mkpts0, mkpts1, mconf = run_minima(matcher, resized_map, window_img)
-        H, n_inliers, score, inlier_mask = estimate_affine(mkpts0, mkpts1, mconf=mconf)
+        window_img = os_canvas[wy : wy + rh, wx : wx + rw]
+        mkpts0, mkpts1, _ = run_minima(matcher, resized_map, window_img)
+        H, n_inliers, inlier_mask = estimate_affine(mkpts0, mkpts1)
 
         avg_scale = None
         if H is not None:
@@ -122,7 +124,10 @@ for iy, wy in enumerate(ys):
             avg_scale = float((sx + sy) / 2.0)
 
         rec = {
-            "x": int(wx), "y": int(wy), "w": int(rw), "h": int(rh),
+            "x": int(wx),
+            "y": int(wy),
+            "w": int(rw),
+            "h": int(rh),
             "n_inliers": int(n_inliers),
             "avg_scale": round(avg_scale, 4) if avg_scale is not None else None,
         }
@@ -134,11 +139,12 @@ for iy, wy in enumerate(ys):
             # MINIMA correspondences in the demo.
             inl = inlier_mask.ravel().astype(bool) if inlier_mask is not None else None
             best_meta = {
-                "x": int(wx), "y": int(wy),
+                "x": int(wx),
+                "y": int(wy),
                 "n_inliers": int(n_inliers),
                 # Keep ALL matches (so the UI can show outliers in grey + inliers bright)
-                "mkpts0":      mkpts0.tolist() if mkpts0 is not None else [],
-                "mkpts1":      mkpts1.tolist() if mkpts1 is not None else [],
+                "mkpts0": mkpts0.tolist() if mkpts0 is not None else [],
+                "mkpts1": mkpts1.tolist() if mkpts1 is not None else [],
                 "inlier_mask": [int(v) for v in inl.tolist()] if inl is not None else [],
             }
         print(
@@ -161,8 +167,10 @@ if best_meta is not None and best_meta["mkpts0"]:
     inl = best_meta["inlier_mask"]
     inlier_idx = [i for i, v in enumerate(inl) if v == 1]
     outlier_idx = [i for i, v in enumerate(inl) if v == 0]
-    keep_idx = (inlier_idx[: min(64, len(inlier_idx))]
-                + outlier_idx[: max(0, 80 - min(64, len(inlier_idx)))])
+    keep_idx = (
+        inlier_idx[: min(64, len(inlier_idx))]
+        + outlier_idx[: max(0, 80 - min(64, len(inlier_idx)))]
+    )
     best_meta["mkpts0"] = [best_meta["mkpts0"][i] for i in keep_idx]
     best_meta["mkpts1"] = [best_meta["mkpts1"][i] for i in keep_idx]
     best_meta["inlier_mask"] = [best_meta["inlier_mask"][i] for i in keep_idx]
@@ -171,8 +179,10 @@ payload = {
     "case": CASE,
     "zoom": zoom,
     "scale_factor": scale_factor_cached,
-    "canvas_w": cw, "canvas_h": ch,
-    "map_w": rw, "map_h": rh,
+    "canvas_w": cw,
+    "canvas_h": ch,
+    "map_w": rw,
+    "map_h": rh,
     "anchor_latlon": [anchor_lat, anchor_lon],
     "windows": windows,
     "best_window": best_meta,
@@ -180,8 +190,7 @@ payload = {
 (OUT_DIR / "windows.json").write_text(json.dumps(payload, indent=2))
 
 print("\nDone.")
-print(f"  Best window: ({best_meta['x']},{best_meta['y']}) "
-      f"n_inliers={best_meta['n_inliers']}")
+print(f"  Best window: ({best_meta['x']},{best_meta['y']}) n_inliers={best_meta['n_inliers']}")
 print(f"  Wrote {OUT_DIR}/resized_map.png  ({rw}x{rh})")
 print(f"  Wrote {OUT_DIR}/tile_canvas.png  ({cw}x{ch})")
 print(f"  Wrote {OUT_DIR}/windows.json     ({len(windows)} windows)")

@@ -117,7 +117,7 @@ def run_agent(
     result = None
     outcome: Optional[BoundaryOutcome] = None  # may stay None on exception path
     try:
-        result = invoke_worker(state, user_parts, model_name, max_iterations, verbose)
+        result = invoke_worker(state, user_parts, model_name, max_iterations)
     except (UnexpectedModelBehavior, UsageLimitExceeded) as e:
         if verbose:
             print(f"  Agent loop ended: {type(e).__name__}: {str(e)}")
@@ -129,7 +129,7 @@ def run_agent(
         if verbose:
             print(f"  Agent error: {e}")
             traceback.print_exc()
-        partial_stats = dump_partial_state(state, pdf_info, e, case_dir, verbose)
+        partial_stats = dump_partial_state(state, e, case_dir, verbose)
         return {
             "success": False,
             "error": str(e),
@@ -492,7 +492,6 @@ def invoke_worker(
     user_parts: list,
     model_name: str,
     max_iterations: int,
-    verbose: bool,
 ):
     """Run the worker tool loop. Returns the pydantic-ai result or raises."""
     model = resolve_model(model_name)
@@ -510,7 +509,7 @@ def invoke_worker(
 
 
 def dump_partial_state(
-    state: AgentState, pdf_info: dict, exc: Exception, case_dir: Optional[Path], verbose: bool
+    state: AgentState, exc: Exception, case_dir: Optional[Path], verbose: bool
 ) -> dict:
     """Write partial_state.json for post-hoc debug on a mid-run worker error."""
     partial_stats = {

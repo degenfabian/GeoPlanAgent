@@ -75,7 +75,7 @@ def run_minima(matcher, map_img, tile_img):
     return result["mkpts0"], result["mkpts1"], result["mconf"]
 
 
-def estimate_affine(mkpts0, mkpts1, mconf=None):
+def estimate_affine(mkpts0, mkpts1):
     """Estimate a 4-DOF similarity transform (rotation + uniform scale +
     translation) via RANSAC.
 
@@ -84,10 +84,10 @@ def estimate_affine(mkpts0, mkpts1, mconf=None):
     fallback was tried and netted out slightly negative on mean IoU,
     so we keep this deliberately simple.
 
-    Returns (H, n_inliers, score, inlier_mask). H is shape (2, 3).
+    Returns (H, n_inliers, inlier_mask). H is shape (2, 3).
     """
     if len(mkpts0) < 4:
-        return None, 0, 0.0, None
+        return None, 0, None
 
     try:
         cv2.setRNGSeed(42)
@@ -100,16 +100,10 @@ def estimate_affine(mkpts0, mkpts1, mconf=None):
         ransacReprojThreshold=10.0,
     )
     if H is None or inlier_mask is None:
-        return None, 0, 0.0, None
+        return None, 0, None
     n_inliers = int(inlier_mask.sum())
 
-    if mconf is not None and n_inliers > 0:
-        inlier_flags = inlier_mask.ravel().astype(bool)
-        score = float(np.sum(mconf[inlier_flags]))
-    else:
-        score = float(n_inliers)
-
-    return H, n_inliers, score, inlier_mask
+    return H, n_inliers, inlier_mask
 
 
 # Scale and zoom utilities
@@ -330,10 +324,8 @@ def sliding_window_position(
             for wy in range(0, ch - rh + 1, step_y):
                 for wx in range(0, cw - rw + 1, step_x):
                     window = os_canvas[wy : wy + rh, wx : wx + rw]
-                    mkpts0, mkpts1, mconf = run_minima(matcher, resized_map, window)
-                    affine_H, n_inliers, score, inlier_mask = estimate_affine(
-                        mkpts0, mkpts1, mconf=mconf
-                    )
+                    mkpts0, mkpts1, _ = run_minima(matcher, resized_map, window)
+                    affine_H, n_inliers, inlier_mask = estimate_affine(mkpts0, mkpts1)
                     n_windows += 1
 
                     if affine_H is None or n_inliers < 5:
