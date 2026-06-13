@@ -120,14 +120,14 @@ def aggregate_spatial_metrics(ious, centroid_distances, feret_diameters) -> Dict
         feret_diameters     GT Feret diameter (widest span) in metres
 
     Returns the paper's headline aggregates:
-        n_cases   number of cases
-        pct_pos   % with IoU > 0 (any overlap with the ground truth)
-        mean      mean IoU
-        median    median IoU
-        pct_08    % with IoU >= 0.8 (high-quality matches)
-        med_err   median centroid distance, metres
-        acc_01d   % whose centroid distance is within 0.1 x the GT Feret
-                  diameter (scale-relative localisation accuracy)
+        n_cases     number of cases
+        pct_grt_0   % of cases with IoU > 0 (any overlap with the ground truth)
+        mean_IoU    mean IoU
+        median_IoU  median IoU
+        pct_grt_08  % with IoU >= 0.8 (high-quality matches)
+        med_err     median centroid distance, metres
+        acc_01d     % whose centroid distance is within 0.1 x the GT Feret
+                    diameter (scale-relative localisation accuracy)
     """
     ious = np.asarray(ious, float)
     centroid_distances = np.asarray(
@@ -136,10 +136,10 @@ def aggregate_spatial_metrics(ious, centroid_distances, feret_diameters) -> Dict
     feret_diameters = np.asarray(feret_diameters, float)
     return {
         "n_cases": len(ious),
-        "pct_pos": 100 * np.mean(ious > 0),
-        "mean": float(np.mean(ious)),
-        "median": float(np.median(ious)),
-        "pct_08": 100 * np.mean(ious >= 0.8),
+        "pct_grt_0": 100 * np.mean(ious > 0),
+        "mean_IoU": float(np.mean(ious)),
+        "median_IoU": float(np.median(ious)),
+        "pct_grt_08": 100 * np.mean(ious >= 0.8),
         "med_err": float(np.median(centroid_distances)),
         "acc_01d": 100 * np.mean(centroid_distances <= 0.1 * feret_diameters),
     }
