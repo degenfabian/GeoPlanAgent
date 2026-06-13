@@ -60,7 +60,6 @@ _OPEN_NAMES_KEEP_COLUMNS = [
     "GEOMETRY_Y",
     "DISTRICT_BOROUGH",
     "COUNTY_UNITARY",
-    "COUNTRY",
     # The context filter in search() reads POPULATED_PLACE; without it here
     # the column is absent and village-level disambiguation silently no-ops.
     "POPULATED_PLACE",
@@ -170,7 +169,7 @@ def search(query: str, max_results: int = 10, context: Optional[str] = None) -> 
             so 'East Langdon village' matches NAME1='East Langdon'.
         max_results: cap on returned hits.
         context: optional UK county/region/district to disambiguate. Pre-FILTERS
-            the search to rows whose DISTRICT_BOROUGH/COUNTY_UNITARY/COUNTRY
+            the search to rows whose DISTRICT_BOROUGH/COUNTY_UNITARY/POPULATED_PLACE
             contains any context token. Falls back to global if no rows match.
     """
     if not query or not query.strip():

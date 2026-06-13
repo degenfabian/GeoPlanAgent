@@ -278,7 +278,6 @@ def extract_boundary_sam3_semantic(
     model,
     device: torch.device,
     query: str = "planning boundary",
-    bbox: list[float] | None = None,
 ) -> np.ndarray | None:
     """Extract boundary using semantic segmentation mode.
 
@@ -291,7 +290,6 @@ def extract_boundary_sam3_semantic(
         model: SAM3 model (base or LoRA).
         device: torch device.
         query: Text prompt for segmentation.
-        bbox: Optional [x1, y1, x2, y2] bounding box to focus segmentation.
 
     Returns:
         Binary mask (0/255 uint8) or None if extraction failed.
@@ -316,17 +314,7 @@ def extract_boundary_sam3_semantic(
             )
             query = truncated
 
-    if bbox is not None:
-        x1, y1, x2, y2 = bbox
-        inputs = processor(
-            images=image,
-            text=query,
-            input_boxes=[[[float(x1), float(y1), float(x2), float(y2)]]],
-            input_boxes_labels=[[1]],
-            return_tensors="pt",
-        )
-    else:
-        inputs = processor(images=image, text=query, return_tensors="pt")
+    inputs = processor(images=image, text=query, return_tensors="pt")
 
     inputs = {
         key: value.to(device) if isinstance(value, torch.Tensor) else value
@@ -340,6 +328,5 @@ def extract_boundary_sam3_semantic(
     mask = masks[0].cpu().numpy().astype(np.uint8)
     mask = (mask > 0).astype(np.uint8) * 255
     mask_fraction_pct = np.sum(mask > 0) / (height * width) * 100
-    bbox_suffix = f", bbox={bbox}" if bbox is not None else ""
-    print(f"  SAM3 semantic: mask {mask_fraction_pct:.1f}% of image (query={query!r}{bbox_suffix})")
+    print(f"  SAM3 semantic: mask {mask_fraction_pct:.1f}% of image (query={query!r})")
     return mask

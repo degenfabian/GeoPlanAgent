@@ -168,7 +168,6 @@ def run_prompt(
                     model,
                     device,
                     query=prompt,
-                    bbox=None,
                 )
         except Exception as e:
             print(

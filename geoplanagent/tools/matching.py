@@ -235,7 +235,8 @@ def sliding_window_position(
     # Trust the locate sub-agent's σ; fallback only for offline/test callers.
     name, lat, lon, sigma_in = centers[0]
     if sigma_in is None or float(sigma_in) <= 0:
-        sigma_in = effective_sigma(scale_ratio)
+        # Conservative σ floor; the live locate sub-agent always supplies σ.
+        sigma_in = max(5000, sigma_from_scale(scale_ratio))
     centers = [(name, lat, lon, float(sigma_in))]
 
     # Diversity-bucketed top-K: PER_BUCKET per (anchor, zoom), MAX_CANDIDATES global.
@@ -482,12 +483,6 @@ def quadrant_coverage_from_inlier_points(
         return 4
 
 
-# Generic source-side σ floor used by ``effective_sigma`` when the
-# worker omits σ. The live locate sub-agent's picks always carry a σ
-# directly, so this only matters for the rare fallback path.
-_FALLBACK_SIGMA_M = 5000
-
-
 def sigma_from_scale(scale_ratio):
     """Compute MAP-SCALE-DRIVEN search sigma (meters).
 
@@ -507,17 +502,6 @@ def sigma_from_scale(scale_ratio):
     diagonal_mm = math.sqrt(297**2 + 210**2)  # A4 landscape
     half_diagonal_m = 0.5 * (diagonal_mm / 1000.0) * scale_ratio
     return max(150, int(half_diagonal_m))  # tiny floor — only covers numerical safety
-
-
-def effective_sigma(scale_ratio: Optional[int]) -> int:
-    """Fallback MINIMA search sigma when the worker omits σ.
-
-    Returns ``max(_FALLBACK_SIGMA_M, sigma_from_scale(scale_ratio))`` —
-    conservative floor covering both candidate→GT drift and the map's
-    visible extent. Fires almost never in practice because the live
-    locate sub-agent always supplies σ on its picks.
-    """
-    return max(_FALLBACK_SIGMA_M, sigma_from_scale(scale_ratio))
 
 
 # A reader-provided scale is signaled by a real "1:N" / "1/N" pattern in
