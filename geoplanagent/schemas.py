@@ -1,14 +1,10 @@
-"""Pydantic schemas for the planning-boundary agent pipeline.
+"""Pydantic schemas for GeoPlanAgent pipeline.
 
 - PDFInfo             : output of the reader agent — everything the worker
                         needs to know about a planning PDF.
 - BoundaryOutcome     : output of the worker agent (status + checklist +
                         reasoning). The output_validator in agent.py enforces
                         that tool-call preconditions are met before accepting.
-
-The module is intentionally dependency-light: only pydantic. It does NOT
-import pydantic_ai or anything from geoplanagent.* so it can be loaded without
-spinning up SAM3, MINIMA, etc.
 """
 
 from __future__ import annotations
@@ -18,7 +14,7 @@ from typing import List, Literal, Optional
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 
-# Structured Outputs (Pydantic models enforced via pydantic-ai)
+# Structured Outputs (enforced via pydantic-ai)
 
 
 class MapPageMeta(BaseModel):
@@ -81,7 +77,7 @@ class MapPageMeta(BaseModel):
 
 class PDFInfo(BaseModel):
     """Structured output for the reader agent. pydantic-ai enforces the schema;
-    the model physically cannot return a string — it must fill these fields."""
+    the model is forced to fill these fields."""
 
     site_address: str = Field(
         default="",
@@ -153,9 +149,6 @@ class PDFInfo(BaseModel):
         "'Dover District, Kent, UK | Dover, Kent, UK'). Downstream "
         "lookup uses OS BoundaryLine and normalises common variants.",
     )
-    # Locate-stage fields. These mirror what downstream regex parsers
-    # used to pull out of site_address / notes; having the LLM populate
-    # them directly handles paraphrasing, typos and mixed formats.
 
     house_number_road_pairs: List[str] = Field(
         default_factory=list,
@@ -223,6 +216,8 @@ class PDFInfo(BaseModel):
         "residential properties' → ['Pipers Lane'].",
     )
 
+    # Validates that all lists of strings are strictly ASCII.
+
     @field_validator(
         "place_names",
         "road_names",
@@ -234,9 +229,9 @@ class PDFInfo(BaseModel):
     )
     @classmethod
     def _strict_ascii(cls, values: List[str]) -> List[str]:
-        # UK metadata is plain English. Reject CJK / Cyrillic / etc.
-        # Allow Latin Extended-A/B (covers accented place names).
+        """Ensure that all strings in the list are strictly ASCII and not e.g. Cyrillic."""
         for value in values:
+            # Check if character is outside the Latin Extended-B range. (UK planning data is always plain English.)
             if any(ord(char) > 0x024F for char in value):
                 raise ValueError(
                     f"non-ASCII characters in UK string field: {value!r}. "
@@ -246,10 +241,13 @@ class PDFInfo(BaseModel):
 
     @model_validator(mode="after")
     def _critical_fields_not_all_empty(self):
-        # Catches the silent-dropout failure mode where the LLM returns
-        # an otherwise-valid PDFInfo with all the actually-useful map
-        # fields blank, even though other fields prove this is a real
-        # planning doc.
+        """
+        Catches the silent-dropout failure mode where the LLM returns
+        an otherwise-valid PDFInfo with all the actually-useful map
+        fields blank, even though other fields prove this is a real
+        planning doc.
+        """
+        # Check if most important map-related fields are empty but other fields show this is a real planning doc.
         all_empty = not self.place_names and not self.road_names and not self.visible_map_labels
         has_other_signal = self.site_address or self.house_number_road_pairs or self.parish_names
         if all_empty and has_other_signal:
@@ -262,16 +260,13 @@ class PDFInfo(BaseModel):
 
 
 class BoundaryOutcome(BaseModel):
-    """Structured output for the worker agent.
+    """
+    Structured output for the worker agent.
 
-    The agent always submits status="accepted", or status="district_lookup"
-    for the OS BoundaryLine district fallback. Refusing a case is not a
-    supported action: the pipeline always produces a polygon and
-    downstream measures IoU on whatever was committed.
-
-    Post-commit visual review is no longer the worker's responsibility.
-    The optional independent critic (enable_critic=True) handles that
-    role using pairwise comparison across stored match candidates."""
+    The agent submits either status="accepted" if a valid polygon was
+    produced via the main pipeline or status="district_lookup"
+    if the OS BoundaryLine district fallback was used.
+    """
 
     status: Literal["accepted", "district_lookup"] = Field(
         description="accepted = produce GeoJSON from match_at + commit_match; "
