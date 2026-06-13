@@ -85,7 +85,7 @@ def worker_first(m: dict) -> tuple[float, float | None]:
 
 def print_row(label, s, paper=None, cost=None, secs=None):
     line = (
-        f"  {label:<28} n={s['n']:<4} %IoU>0 {s['pct_pos']:5.1f}  "
+        f"  {label:<28} n={s['n_cases']:<4} %IoU>0 {s['pct_pos']:5.1f}  "
         f"mean {s['mean']:.3f}  med {s['median']:.3f}  "
         f"%>=0.8 {s['pct_08']:5.1f}  medErr {s['med_err']:7.1f} m  "
         f"Acc@0.1D {s['acc_01d']:5.1f}"

@@ -109,19 +109,37 @@ def aggregate_stats(values: Sequence[float]) -> Dict[str, float]:
     }
 
 
-def aggregate_spatial_metrics(ious, errs, ferets) -> Dict[str, float]:
-    """Aggregate paper metrics over a set of cases: count, %IoU>0, mean/median
-    IoU, %IoU>=0.8, median centroid distance (m), and Acc@0.1D — the fraction
-    of cases whose centroid distance is within 0.1 x the GT Feret diameter."""
-    iou = np.asarray(ious, float)
-    err = np.asarray([e if e is not None else np.inf for e in errs], float)
-    fer = np.asarray(ferets, float)
+def aggregate_spatial_metrics(ious, centroid_distances, feret_diameters) -> Dict[str, float]:
+    """Summarise per-case spatial metrics across a set of cases.
+
+    Inputs are three parallel lists, one entry per case:
+        ious                IoU of each prediction against its ground truth
+        centroid_distances  centroid-to-centroid distance in metres
+                            (None where the case produced no scoreable
+                            prediction; counted as a miss)
+        feret_diameters     GT Feret diameter (widest span) in metres
+
+    Returns the paper's headline aggregates:
+        n_cases   number of cases
+        pct_pos   % with IoU > 0 (any overlap with the ground truth)
+        mean      mean IoU
+        median    median IoU
+        pct_08    % with IoU >= 0.8 (high-quality matches)
+        med_err   median centroid distance, metres
+        acc_01d   % whose centroid distance is within 0.1 x the GT Feret
+                  diameter (scale-relative localisation accuracy)
+    """
+    ious = np.asarray(ious, float)
+    centroid_distances = np.asarray(
+        [d if d is not None else np.inf for d in centroid_distances], float
+    )
+    feret_diameters = np.asarray(feret_diameters, float)
     return {
-        "n": len(iou),
-        "pct_pos": 100 * np.mean(iou > 0),
-        "mean": float(np.mean(iou)),
-        "median": float(np.median(iou)),
-        "pct_08": 100 * np.mean(iou >= 0.8),
-        "med_err": float(np.median(err)),
-        "acc_01d": 100 * np.mean(err <= 0.1 * fer),
+        "n_cases": len(ious),
+        "pct_pos": 100 * np.mean(ious > 0),
+        "mean": float(np.mean(ious)),
+        "median": float(np.median(ious)),
+        "pct_08": 100 * np.mean(ious >= 0.8),
+        "med_err": float(np.median(centroid_distances)),
+        "acc_01d": 100 * np.mean(centroid_distances <= 0.1 * feret_diameters),
     }
