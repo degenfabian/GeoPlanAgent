@@ -337,7 +337,7 @@ CSV_FIELDNAMES = [
     "iou",
     "precision",
     "recall",
-    "positioning_error_m",
+    "centroid_distance_m",
     "valid_pred",
     "schema_failure",
     "validation_error",
@@ -560,7 +560,7 @@ def evaluate(args: argparse.Namespace) -> int:
                 row["iou"] = f"{metrics['iou']:.6f}"
                 row["precision"] = f"{metrics['precision']:.6f}"
                 row["recall"] = f"{metrics['recall']:.6f}"
-                row["positioning_error_m"] = f"{metrics['positioning_error_m']:.2f}"
+                row["centroid_distance_m"] = f"{metrics['centroid_distance_m']:.2f}"
             except Exception as e:
                 metrics = {}
                 valid_pred = False

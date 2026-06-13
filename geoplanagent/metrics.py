@@ -56,7 +56,7 @@ def geojson_to_shape(geojson_data: Dict[str, Any]) -> Polygon | MultiPolygon:
 def calculate_spatial_metrics(
     ground_truth_geojson: Dict[str, Any], predicted_geojson: Dict[str, Any]
 ) -> Dict[str, float]:
-    """IoU, precision, recall, and centroid positioning error (metres).
+    """ Computes IoU, precision, recall, and centroid distance (metres).
 
     Raises ValueError if either geometry can't be built or repaired.
     """
@@ -69,8 +69,7 @@ def calculate_spatial_metrics(
         "iou": intersection / union if union else 0.0,
         "precision": intersection / pred.area if pred.area else 0.0,
         "recall": intersection / gt.area if gt.area else 0.0,
-        # Centroid distance in metres (haversine, WGS84 centroids).
-        "positioning_error_m": haversine_km(
+        "centroid_distance_m": haversine_km(
             gt.centroid.y, gt.centroid.x, pred.centroid.y, pred.centroid.x
         )
         * 1000.0,

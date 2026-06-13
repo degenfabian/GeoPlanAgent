@@ -269,7 +269,7 @@ Max 2 rejection iterations per case by default.
 results/<output-dir>/<model>/<case>/
 ├── predicted.geojson                   # Final boundary (Feature, Polygon | MultiPolygon)
 ├── predicted_worker_first.geojson      # (with --enable-critic) pre-critic snapshot
-├── metrics.json                        # IoU, precision, recall, positioning_error_m,
+├── metrics.json                        # IoU, precision, recall, centroid_distance_m,
 │                                       # match_info, agent_stats, processing_time,
 │                                       # worker_first_{iou,metrics} when critic ran
 ├── message_log.json                    # Full worker conversation trace (binary parts summarised)

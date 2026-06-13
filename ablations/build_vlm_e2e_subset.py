@@ -80,7 +80,7 @@ def load_labels(xlsx_path: Path, include_ambiguous: bool = False) -> pd.DataFram
 
 
 def load_benchmark_per_case(summary_path: Path) -> dict:
-    """folder → {iou, precision, recall, positioning_error_m}."""
+    """folder → {iou, precision, recall, centroid_distance_m}."""
     summary = json.loads(summary_path.read_text())
     out = {}
     for r in summary["per_case"]:
@@ -88,7 +88,7 @@ def load_benchmark_per_case(summary_path: Path) -> dict:
             "iou": r.get("iou"),
             "precision": r.get("precision"),
             "recall": r.get("recall"),
-            "positioning_error_m": r.get("positioning_error_m"),
+            "centroid_distance_m": r.get("centroid_distance_m"),
         }
     return out
 
@@ -202,7 +202,7 @@ def write_outputs(
             "iou": bench.get("iou"),
             "precision": bench.get("precision"),
             "recall": bench.get("recall"),
-            "positioning_error_m": bench.get("positioning_error_m"),
+            "centroid_distance_m": bench.get("centroid_distance_m"),
         }
 
     subset_json = {

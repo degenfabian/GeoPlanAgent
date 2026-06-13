@@ -668,12 +668,12 @@ def _compute_summary(results):
                 "recall": _stats([r["recall"] for r in polygons]),
             }
             pos_errs = [
-                r["positioning_error_m"]
+                r["centroid_distance_m"]
                 for r in polygons
-                if r.get("positioning_error_m") is not None
+                if r.get("centroid_distance_m") is not None
             ]
             if pos_errs:
-                summary["metrics_successful_only"]["positioning_error_m"] = _stats(pos_errs)
+                summary["metrics_successful_only"]["centroid_distance_m"] = _stats(pos_errs)
 
     summary["per_case"] = results
     return summary
