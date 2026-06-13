@@ -3,7 +3,6 @@
 import json
 from typing import Dict, Any
 from pathlib import Path
-from shapely.errors import GEOSException
 from shapely.geometry import shape, Polygon, MultiPolygon
 from geoplanagent.utils import haversine_km
 
@@ -56,60 +55,23 @@ def geojson_to_shape(geojson_data: Dict[str, Any]) -> Polygon | MultiPolygon:
 
 def calculate_spatial_metrics(
     ground_truth_geojson: Dict[str, Any], predicted_geojson: Dict[str, Any]
-) -> Dict[str, Any]:
+) -> Dict[str, float]:
+    """IoU, precision, recall, and centroid positioning error (metres).
+
+    Raises ValueError if either geometry can't be built or repaired.
     """
-    Calculates the spatial metrics: IoU, precision, recall,
-    and positioning error in metres.
-    """
-    metrics = {
-        "valid_ground_truth": False,
-        "valid_prediction": False,
-        "validation_error": None,
-        "iou": 0.0,
-        "precision": 0.0,
-        "recall": 0.0,
-    }
+    gt = geojson_to_shape(ground_truth_geojson)
+    pred = geojson_to_shape(predicted_geojson)
 
-    try:
-        gt_shape = geojson_to_shape(ground_truth_geojson)
-        metrics["valid_ground_truth"] = True
-    except ValueError as e:
-        metrics["validation_error"] = f"Ground truth error: {e}"
-        return metrics
-
-    try:
-        pred_shape = geojson_to_shape(predicted_geojson)
-        metrics["valid_prediction"] = True
-    except ValueError as e:
-        metrics["validation_error"] = f"Prediction error: {e}"
-        return metrics
-
-    try:
-        gt_area = gt_shape.area
-        pred_area = pred_shape.area
-        intersection_area = gt_shape.intersection(pred_shape).area
-        union_area = gt_shape.union(pred_shape).area
-
-        iou = intersection_area / union_area if union_area > 0 else 0.0
-        precision = intersection_area / pred_area if pred_area > 0 else 0.0
-        recall = intersection_area / gt_area if gt_area > 0 else 0.0
-
-        metrics.update(
-            {
-                "iou": float(iou),
-                "precision": float(precision),
-                "recall": float(recall),
-                # Centroid distance in metres (haversine, WGS84 centroids).
-                "positioning_error_m": haversine_km(
-                    gt_shape.centroid.y, gt_shape.centroid.x,
-                    pred_shape.centroid.y, pred_shape.centroid.x,
-                ) * 1000.0,
-            }
+    intersection = gt.intersection(pred).area
+    union = gt.union(pred).area
+    return {
+        "iou": intersection / union if union else 0.0,
+        "precision": intersection / pred.area if pred.area else 0.0,
+        "recall": intersection / gt.area if gt.area else 0.0,
+        # Centroid distance in metres (haversine, WGS84 centroids).
+        "positioning_error_m": haversine_km(
+            gt.centroid.y, gt.centroid.x, pred.centroid.y, pred.centroid.x
         )
-
-    except GEOSException as e:
-        # Overlay ops can fail on pathological geometry pairs; that is a
-        # scoring verdict. Anything else (a code defect) propagates loudly.
-        metrics["validation_error"] = f"Calculation error: {e}"
-
-    return metrics
+        * 1000.0,
+    }

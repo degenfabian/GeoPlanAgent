@@ -551,18 +551,21 @@ def evaluate(args: argparse.Namespace) -> int:
                 row["latlon_swap_warning"] = warn
                 print(f"  WARN: {warn}", flush=True)
 
-            # Scoring — same metric as benchmark_runner.
-            metrics = calculate_spatial_metrics(gt_geojson, pred_dict)
-            row["valid_pred"] = bool(metrics.get("valid_prediction"))
-            row["iou"] = f"{metrics['iou']:.6f}" if metrics.get("valid_prediction") else ""
-            row["precision"] = (
-                f"{metrics['precision']:.6f}" if metrics.get("valid_prediction") else ""
-            )
-            row["recall"] = f"{metrics['recall']:.6f}" if metrics.get("valid_prediction") else ""
-            pos_err = metrics.get("positioning_error_m")
-            row["positioning_error_m"] = f"{pos_err:.2f}" if pos_err is not None else ""
-            if metrics.get("validation_error"):
-                row["validation_error"] = str(metrics["validation_error"])[:200]
+            # Scoring — same metric as benchmark_runner. The scorer raises
+            # if a geometry can't be built; record that as an invalid pred.
+            try:
+                metrics = calculate_spatial_metrics(gt_geojson, pred_dict)
+                valid_pred = True
+                row["valid_pred"] = True
+                row["iou"] = f"{metrics['iou']:.6f}"
+                row["precision"] = f"{metrics['precision']:.6f}"
+                row["recall"] = f"{metrics['recall']:.6f}"
+                row["positioning_error_m"] = f"{metrics['positioning_error_m']:.2f}"
+            except Exception as e:
+                metrics = {}
+                valid_pred = False
+                row["valid_pred"] = False
+                row["validation_error"] = str(e)[:200]
 
             writer.writerow(row)
             f.flush()
@@ -587,7 +590,7 @@ def evaluate(args: argparse.Namespace) -> int:
                         "vlm_model": args.vlm_model,
                         "temperature": args.temperature,
                     },
-                    "metrics": {k: v for k, v in metrics.items() if k != "validation_error" or v},
+                    "metrics": metrics,
                     "trajectory_stats": traj_stats,
                     "trajectory": trajectory,
                 }
@@ -597,7 +600,7 @@ def evaluate(args: argparse.Namespace) -> int:
             except Exception as _e:
                 print(f"  WARN: trajectory dump failed: {_e!s:.80}", flush=True)
 
-            iou_val = metrics.get("iou", 0) if metrics.get("valid_prediction") else None
+            iou_val = metrics.get("iou") if valid_pred else None
             iou_s = f"{iou_val:.3f}" if iou_val is not None else "invalid"
             print(
                 f"  -> ok | IoU={iou_s} | polys={row['n_polygons']} | {row['call_seconds']}s",
