@@ -301,9 +301,9 @@ def evaluate(args: argparse.Namespace) -> int:
             # Per-case trajectory JSON — same shape as locate harness so
             # aggregation tooling treats them uniformly. For VLM-direct
             # the trajectory is just the user prompt + the model's
-            # response; total_tool_calls will typically be 1 (the
-            # synthetic final_result tool pydantic-ai uses to emit
-            # structured output).
+            # response; tool_calls typically shows a single synthetic
+            # final_result tool (pydantic-ai uses it to emit structured
+            # output).
             write_trajectory(
                 traj_dir,
                 case,

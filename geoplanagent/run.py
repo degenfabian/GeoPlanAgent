@@ -515,7 +515,6 @@ def dump_partial_state(
     """Write partial_state.json for post-hoc debug on a mid-run worker error."""
     partial_stats = {
         "pdf_info": state.pdf_info,
-        "method": "error",
         "error": str(exc),
         "error_type": type(exc).__name__,
         "current_match_info": state.current_result.get("match_info", {}),
@@ -570,7 +569,7 @@ def cleanup_temp_pages(state: AgentState) -> None:
 def extract_message_log_from_msgs(messages: list) -> Tuple[list, dict]:
     """Return (message_log, stats) for a pydantic-ai message list.
 
-    stats keys: tool_calls, total_tool_calls, n_turns, validator_retries.
+    stats keys: tool_calls, n_turns, validator_retries.
     Binary content is summarised so the log is JSON-safe.
     """
     message_log: list = []
@@ -624,7 +623,6 @@ def extract_message_log_from_msgs(messages: list) -> Tuple[list, dict]:
 
     extracted = {
         "tool_calls": tool_calls,
-        "total_tool_calls": sum(tool_calls.values()),
         "n_turns": turn_idx,
         "validator_retries": validator_retries,
     }

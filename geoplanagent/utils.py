@@ -294,25 +294,6 @@ def best_zoom_for_scale(map_mpp, lat: float):
     return max(15, min(19, round(z)))
 
 
-def latlon_to_global_tile_pixel(
-    lat: float,
-    lon: float,
-    zoom: int,
-    tile_size: int = 256,
-) -> Tuple[float, float]:
-    """WGS84 → global Web-Mercator tile-pixel (px, py). Origin = top-left of zoom grid."""
-    n = 2**zoom
-    lat_rad = math.radians(lat)
-    px = (lon + 180.0) / 360.0 * n * tile_size
-    py = (
-        (1.0 - math.log(math.tan(lat_rad) + 1.0 / math.cos(lat_rad)) / math.pi)
-        / 2.0
-        * n
-        * tile_size
-    )
-    return px, py
-
-
 def osm_pixel_to_latlon(
     px: float,
     py: float,
@@ -321,7 +302,7 @@ def osm_pixel_to_latlon(
     ty_min: int,
     tile_size: int = 256,
 ) -> Tuple[float, float]:
-    """Inverse of latlon_to_global_tile_pixel, offset by canvas origin (tx_min, ty_min)."""
+    """Global Web-Mercator tile-pixel → WGS84, offset by canvas origin (tx_min, ty_min)."""
     n = 2**zoom
     global_px = tx_min * tile_size + px
     global_py = ty_min * tile_size + py
