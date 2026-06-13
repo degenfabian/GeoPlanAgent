@@ -1,6 +1,4 @@
-"""Package-wide shared state, image/retry/model helpers, geodesy, and k-fold routing."""
-
-from __future__ import annotations
+"""Utility functions for the GeoPlanAgent pipeline."""
 
 import hashlib
 import json
