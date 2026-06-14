@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-import tempfile
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import cv2
 import numpy as np
@@ -173,12 +172,11 @@ def _axis_field(reward_dict: Optional[Dict[str, Any]], axis_name: str, field: st
 # Per-page render + segmentation helpers
 
 
-def _get_or_render_page(state: AgentState, page: int) -> Tuple[Optional[np.ndarray], Optional[str]]:
-    """Return (map_img, map_crop_path) for `page`. Cache on first need."""
+def _get_or_render_page(state: AgentState, page: int) -> Optional[np.ndarray]:
+    """Return the rendered map image for `page`. Cache on first need."""
     cached_img = state.rendered_pages.get(page)
-    cached_path = state.rendered_page_paths.get(page)
-    if cached_img is not None and cached_path is not None:
-        return cached_img, cached_path
+    if cached_img is not None:
+        return cached_img
 
     from geoplanagent.tools.pdf import render_map_page
 
@@ -186,19 +184,15 @@ def _get_or_render_page(state: AgentState, page: int) -> Tuple[Optional[np.ndarr
         state.pdf_path, page, dpi=state.dpi, verbose=False, case_name=state.case_name
     )
     if rendered is None:
-        return None, None
+        return None
     map_img, rotation = rendered
     if rotation.get("applied"):
         state.rotation_checked = True
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
-        path = temp_file.name
-    cv2.imwrite(path, map_img)
     state.rendered_pages[page] = map_img
-    state.rendered_page_paths[page] = path
-    return map_img, path
+    return map_img
 
 
-def _get_or_compute_mask(state: AgentState, page: int, map_crop_path: str) -> Optional[np.ndarray]:
+def _get_or_compute_mask(state: AgentState, page: int, image: np.ndarray) -> Optional[np.ndarray]:
     """Return SAM3 mask for `page`. Compute + cache on first need."""
     cached_mask = state.sam_masks_by_page.get(page)
     if cached_mask is not None:
@@ -207,7 +201,7 @@ def _get_or_compute_mask(state: AgentState, page: int, map_crop_path: str) -> Op
 
     set_fold_for_case(state.sam3_state, state.case_name)
     mask = extract_boundary_sam3_semantic(
-        map_crop_path,
+        image,
         state.sam3_state["processor"],
         state.sam3_state["model"],
         state.sam3_state["device"],
@@ -412,10 +406,10 @@ def _segment_boundary(state: AgentState, page: int):
     """match_at step 1 — render the page and segment the drawn boundary
     with the fold-routed SAM3 (paper §4.2 step 2). Returns
     (map_img, mask, error_dict)."""
-    map_img, map_crop_path = _get_or_render_page(state, page)
-    if map_img is None or map_crop_path is None:
+    map_img = _get_or_render_page(state, page)
+    if map_img is None:
         return None, None, {"error": f"render failed for page {page}"}
-    mask = _get_or_compute_mask(state, page, map_crop_path)
+    mask = _get_or_compute_mask(state, page, map_img)
     if mask is None:
         return map_img, None, {"error": f"SAM3 returned no mask for page {page}"}
     return map_img, mask, None
@@ -807,11 +801,7 @@ def submit_pdf_info(ctx: RunContext[AgentState], info: PDFInfo) -> dict:
         page_img, rotation = rendered
         if rotation.get("applied") and page_1based == map_pages[0]:
             state.rotation_checked = True
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
-            temp_path = temp_file.name
-        cv2.imwrite(temp_path, page_img)
         state.rendered_pages[int(page_1based)] = page_img
-        state.rendered_page_paths[int(page_1based)] = temp_path
         rendered_page_numbers.append(int(page_1based))
 
     if not rendered_page_numbers:

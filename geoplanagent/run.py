@@ -7,13 +7,10 @@ from __future__ import annotations
 
 import copy
 import json
-import os
-import tempfile
 import traceback
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
-import cv2
 from pydantic_ai import BinaryContent
 from pydantic_ai.exceptions import UnexpectedModelBehavior, UsageLimitExceeded
 from pydantic_ai.usage import UsageLimits
@@ -170,9 +167,7 @@ def run_agent(
                 "worker_first_geojson": worker_first_geojson_snapshot,
             }
 
-    # Cleanup, stats, soft quality gate, return
-    cleanup_temp_pages(state)
-
+    # Stats, soft quality gate, return
     # In folded mode pdf_info was populated by the worker's submit_pdf_info
     # tool call rather than Phase 1. Pull it back from state so the token
     # telemetry reflects what the worker submitted.
@@ -313,11 +308,7 @@ def prepare_worker_state(
             page_img, rot_info = rendered
             if rot_info.get("applied") and page_1based == map_pages[0]:
                 state.rotation_checked = True
-            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
-                tmp_path = tmp.name
-            cv2.imwrite(tmp_path, page_img)
             state.rendered_pages[int(page_1based)] = page_img
-            state.rendered_page_paths[int(page_1based)] = tmp_path
 
     summary_text = json.dumps(_public(pdf_info), indent=2)
     roles_line = ""
@@ -474,19 +465,6 @@ def build_error_stats(state: AgentState, exc: Exception) -> dict:
 
 
 # Cleanup
-
-
-def cleanup_temp_pages(state: AgentState) -> None:
-    """Unlink every pre-rendered page tempfile."""
-    seen_paths = set()
-    for path in state.rendered_page_paths.values():
-        if not path or path in seen_paths:
-            continue
-        seen_paths.add(path)
-        try:
-            os.unlink(path)
-        except OSError:
-            pass
 
 
 # Message log + stats extraction

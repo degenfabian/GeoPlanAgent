@@ -40,10 +40,7 @@ class AgentState:
                 across all cases).
             dpi: render resolution for map pages.
             sam3_state: the loaded SAM3 segmentation model and everything it
-                needs to run, bundled together by the loader. SAM3 is
-                fine-tuned in several folds; before a case is segmented, the
-                fold that was not trained on that case is selected, so the
-                model is never evaluated on data it learned from.
+                needs to run, bundled together by the loader.
             case_name: case folder name; drives k-fold adapter routing and
                 telemetry. Derived from ``pdf_path`` when not given.
             locate_model_name: model id for the locate sub-agent.
@@ -65,11 +62,10 @@ class AgentState:
         self.locate_model_name: str = locate_model_name
         self.folded_mode: bool = folded_mode
 
-        # Pre-rendered match pages, keyed by 1-based page number.
+        # Rendered match-page images, keyed by 1-based page number.
         self.rendered_pages: Dict[int, np.ndarray] = {}
-        self.rendered_page_paths: Dict[int, str] = {}
 
-        # Lazily computed in match_at on first need per page.
+        # SAM3 masks, keyed by page. Lazily computed in match_at on first need.
         self.sam_masks_by_page: Dict[int, np.ndarray] = {}
 
         self.current_result: dict = {}

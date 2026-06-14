@@ -34,6 +34,7 @@ import time
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+import cv2
 import numpy as np
 from PIL import Image
 
@@ -163,7 +164,7 @@ def run_prompt(
         try:
             with contextlib.redirect_stdout(io.StringIO()):
                 mask = extract_boundary_sam3_semantic(
-                    str(img_path),
+                    cv2.imread(str(img_path)),
                     processor,
                     model,
                     device,

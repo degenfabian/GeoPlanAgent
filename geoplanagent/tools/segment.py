@@ -1,5 +1,6 @@
 """Extracts planning boundaries from map images via SAM3 semantic segmentation with k-fold LoRA routing."""
 
+import cv2
 import numpy as np
 import torch
 
@@ -147,7 +148,7 @@ def load_sam3_ft() -> dict:
 
 
 def extract_boundary_sam3_semantic(
-    map_crop_path: str,
+    image: np.ndarray,
     processor,
     model,
     device: torch.device,
@@ -159,7 +160,7 @@ def extract_boundary_sam3_semantic(
     Works with both base SAM3 and SAM3-FT (LoRA).
 
     Args:
-        map_crop_path: Path to the map crop image.
+        image: the map crop as a cv2 BGR uint8 array.
         processor: Sam3Processor.
         model: SAM3 model (base or LoRA).
         device: torch device.
@@ -170,8 +171,11 @@ def extract_boundary_sam3_semantic(
     """
     from PIL import Image
 
-    image = Image.open(map_crop_path).convert("RGB")
-    width, height = image.size
+    # SAM3 wants a PIL RGB image; rendered pages are cv2 BGR arrays.
+    # Reversing the channels here is byte-identical to the old
+    # cv2.imwrite + Image.open().convert("RGB") round-trip.
+    pil_image = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    width, height = pil_image.size
 
     # The LoRA was trained on the literal phrase "planning boundary"
     # (the default value of `query`). Other phrasings still work via the
@@ -188,7 +192,7 @@ def extract_boundary_sam3_semantic(
             )
             query = truncated
 
-    inputs = processor(images=image, text=query, return_tensors="pt")
+    inputs = processor(images=pil_image, text=query, return_tensors="pt")
 
     inputs = {
         key: value.to(device) if isinstance(value, torch.Tensor) else value
