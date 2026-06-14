@@ -81,7 +81,9 @@ class AgentState:
 
         self.pdf_info: Dict[str, Any] = {}
         self.rotation_checked: bool = False
-        # The current BoundaryOutcome. The critic can update this, so it may
+        # The worker's structured verdict (status + reasoning + inlier /
+        # rotation telemetry), i.e. result.output. The geometry lives in
+        # current_result, NOT here. The critic can update this, so it may
         # differ from the worker's original result.output.
         self.last_output: Optional["BoundaryOutcome"] = None
 
