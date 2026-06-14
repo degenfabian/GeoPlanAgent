@@ -68,10 +68,13 @@ class AgentState:
         # SAM3 masks, keyed by page. Lazily computed in match_at on first need.
         self.sam_masks_by_page: Dict[int, np.ndarray] = {}
 
-        # The current extraction result: the unioned geojson across all
-        # committed groups, plus the primary (highest-inlier) group's
-        # match_info / affine_H / tile_info / total_inliers. Rebuilt by
-        # _recompute_current_result on every commit; the final answer.
+        # The current extraction result, rebuilt by _recompute_current_result
+        # on every commit. geojson is the union of EVERY committed group's
+        # polygon — that union is the final answer. affine_H / tile_info /
+        # match_info are single-page values (can't be unioned), so they come
+        # from the primary (highest-inlier) group for visualisation only;
+        # the other groups still live in per_group, and total_inliers sums
+        # n_inliers across all of them.
         self.current_result: dict = {}
 
         self.accepted = False
