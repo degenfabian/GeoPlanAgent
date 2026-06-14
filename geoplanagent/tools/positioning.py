@@ -11,7 +11,7 @@ from pydantic_ai.tools import ToolDefinition
 
 from geoplanagent.agents.worker import _agent
 from geoplanagent.schemas import PDFInfo
-from geoplanagent.utils import AgentState, _dedup_check
+from geoplanagent.utils import AgentState, dedup_check
 
 
 # propose_centers
@@ -283,7 +283,7 @@ def match_at(
             "polygon, even if the best score is low."
         )
 
-    _dedup_check(
+    dedup_check(
         state,
         "match_at",
         {
@@ -864,7 +864,7 @@ def lookup_district(
         {"success": false, "error": str} — name not in OS BoundaryLine.
     """
     state = ctx.deps
-    _dedup_check(state, "lookup_district", {"district_name": district_name})
+    dedup_check(state, "lookup_district", {"district_name": district_name})
 
     from geoplanagent.tools.geocode import lookup_district_boundary
 

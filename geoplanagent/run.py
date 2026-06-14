@@ -17,8 +17,8 @@ from pydantic_ai.usage import UsageLimits
 from geoplanagent.schemas import BoundaryOutcome, PDFInfo
 from geoplanagent.utils import (
     AgentState,
-    _img_to_binary,
-    _run_sync_with_retry,
+    img_to_binary,
+    run_sync_with_retry,
     resolve_model,
     resolve_model_name,
 )
@@ -231,7 +231,7 @@ def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict
     model = resolve_model(model_name)
 
     try:
-        result = _run_sync_with_retry(
+        result = run_sync_with_retry(
             _reader_agent,
             [
                 BinaryContent(data=pdf_bytes, media_type="application/pdf"),
@@ -364,7 +364,7 @@ def prepare_worker_state(
     primary_img = state.rendered_pages.get(int(map_pages[0])) if map_pages else None
     if primary_img is not None:
         user_parts.append(f"Map page {map_pages[0]}:")
-        user_parts.append(_img_to_binary(primary_img))
+        user_parts.append(img_to_binary(primary_img))
     return state, user_parts
 
 
@@ -426,7 +426,7 @@ def invoke_worker(
 ):
     """Run the worker tool loop. Returns the pydantic-ai result or raises."""
     model = resolve_model(model_name)
-    return _run_sync_with_retry(
+    return run_sync_with_retry(
         _agent,
         user_parts,
         deps=state,

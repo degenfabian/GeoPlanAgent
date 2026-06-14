@@ -77,7 +77,7 @@ class AgentState:
 
         self.accepted = False
         self.accept_reason = ""
-        # Hashes of (tool, args) already issued this case; _dedup_check
+        # Hashes of (tool, args) already issued this case; dedup_check
         # blocks an exact repeat with a ModelRetry.
         self.seen_call_keys: set = set()
         # Count of committed matches (incremented in commit_match); a
@@ -129,13 +129,13 @@ def resize_for_api(img: np.ndarray, max_dim: int = 1024) -> np.ndarray:
     return cv2.resize(img, (int(width * scale), int(height * scale)))
 
 
-def _img_to_binary(img: np.ndarray) -> BinaryContent:
+def img_to_binary(img: np.ndarray) -> BinaryContent:
     """Convert numpy BGR image to PydanticAI BinaryContent."""
     _, encoded = cv2.imencode(".png", resize_for_api(img))
     return BinaryContent(data=encoded.tobytes(), media_type="image/png")
 
 
-def _dedup_check(state: "AgentState", tool_name: str, args: dict) -> None:
+def dedup_check(state: "AgentState", tool_name: str, args: dict) -> None:
     """Raise ModelRetry if this exact tool+args was already called."""
     key = (
         tool_name
@@ -170,7 +170,7 @@ def is_http_error(e: Exception) -> bool:
     return "status_code:" in str(e).lower()
 
 
-def _run_sync_with_retry(
+def run_sync_with_retry(
     agent_obj, *args, max_retries: int = 2, backoff_s: float = 5.0, label: str = "agent", **kwargs
 ):
     """Wrap Agent.run_sync with retries on transient HTTP errors.

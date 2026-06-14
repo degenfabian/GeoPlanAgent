@@ -310,9 +310,9 @@ def _run_critic_once(state: Any, model_name: str, message_history: Optional[list
     new_history: Optional[list] = None
     start_time = time.time()
     try:
-        from geoplanagent.utils import _run_sync_with_retry
+        from geoplanagent.utils import run_sync_with_retry
 
-        result = _run_sync_with_retry(
+        result = run_sync_with_retry(
             agent,
             user_input,
             label="critic",
@@ -514,9 +514,9 @@ def _rehand_to_worker(
             if worker_result is not None and hasattr(worker_result, "all_messages")
             else None
         )
-        from geoplanagent.utils import _run_sync_with_retry
+        from geoplanagent.utils import run_sync_with_retry
 
-        sub_result = _run_sync_with_retry(
+        sub_result = run_sync_with_retry(
             _agent,
             instruction,
             deps=state,
