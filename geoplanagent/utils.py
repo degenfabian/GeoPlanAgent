@@ -69,12 +69,11 @@ class AgentState:
         self.sam_masks_by_page: Dict[int, np.ndarray] = {}
 
         # The current extraction result, rebuilt by _recompute_current_result
-        # on every commit. geojson is the union of EVERY committed group's
-        # polygon — that union is the final answer. affine_H / tile_info /
-        # match_info are single-page values (can't be unioned), so they come
-        # from the primary (highest-inlier) group for visualisation only;
-        # the other groups still live in per_group, and total_inliers sums
-        # n_inliers across all of them.
+        # on every commit. geojson is the union of every committed group's
+        # polygon. affine_H / tile_info / match_info are single-page values 
+        # (can't be unioned), so they come from the primary (highest-inlier)
+        # group for visualisation only; the other groups still live in per_group,
+        # and total_inliers sums n_inliers across all of them.
         self.current_result: dict = {}
 
         self.accepted = False
@@ -90,7 +89,7 @@ class AgentState:
         self.rotation_checked: bool = False
         # The worker's structured verdict (status + reasoning + inlier /
         # rotation telemetry), i.e. result.output. The geometry lives in
-        # current_result, NOT here. The critic can update this, so it may
+        # current_result, not here. The critic can update this, so it may
         # differ from the worker's original result.output.
         self.last_output: Optional["BoundaryOutcome"] = None
 
@@ -120,22 +119,6 @@ def primary_match_page(state: "AgentState") -> Optional[int]:
     """Highest-ranked map_page from the reader, or None."""
     pages = (state.pdf_info or {}).get("map_pages") or []
     return int(pages[0]) if pages else None
-
-
-def committed_primary_page(state: "AgentState") -> Optional[int]:
-    """Page of the worker's committed primary group, else the default match page."""
-    current_result = state.current_result or {}
-    per_group = current_result.get("per_group") or []
-    if per_group:
-        requested = current_result.get("requested_group")
-        primary = next(
-            (group for group in per_group if group.get("area_group") == requested),
-            per_group[0],
-        )
-        page = primary.get("page")
-        if page is not None:
-            return int(page)
-    return primary_match_page(state)
 
 
 def resize_for_api(img: np.ndarray, max_dim: int = 1024) -> np.ndarray:
