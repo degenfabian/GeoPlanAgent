@@ -2,7 +2,7 @@
 
 Each subcommand forwards to one self-contained harness and exposes that
 harness's full CLI — run `<subcommand> -h` for its flags. All
-subcommands except build-subset, audit-locate, reader-cache and
+subcommands except build-subset, reader-cache and
 sam-prompts call OpenRouter and cost API credits; every harness
 supports --max-cases N for a cheap smoke run first.
 
@@ -19,7 +19,6 @@ Subcommands and the paper rows they produce:
                       (benchmark_runner.py with --no-reader injected)
     build-subset      Stratified 40-case subset (offline, seed 42)
     reader-cache      PDFInfo cache shared by the locate ablations
-    audit-locate      Post-hoc audit of locate trajectories (offline)
 
 The exact invocation behind every published row is listed in
 ablations/README.md.
@@ -40,7 +39,6 @@ COMMANDS = {
     "collapsed-reader": "benchmark_runner",
     "build-subset": "ablations.build_vlm_e2e_subset",
     "reader-cache": "ablations.extract_pdf_info_cache",
-    "audit-locate": "ablations.audit_locate_results",
 }
 
 
