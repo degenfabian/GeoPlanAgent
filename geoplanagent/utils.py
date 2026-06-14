@@ -18,13 +18,6 @@ if TYPE_CHECKING:
     from geoplanagent.schemas import BoundaryOutcome
 
 
-# Production locate sub-agent ships with `place` only — see the rationale on
-# AgentState.locate_disabled_tools below.
-PRODUCTION_LOCATE_DISABLED_TOOLS: frozenset = frozenset(
-    {"postcode", "grid_ref", "road", "intersect", "la_check"}
-)
-
-
 class AgentState:
     """Mutable state shared across all tool calls."""
 
@@ -39,7 +32,6 @@ class AgentState:
         sam3_state,
         case_name,
         locate_model_name: str,
-        locate_disabled_tools: frozenset,
         folded_mode: bool = False,
     ):
         self.pdf_path = pdf_path
@@ -49,17 +41,6 @@ class AgentState:
         self.minima_matcher = minima_matcher
         self.dpi = dpi
         self.locate_model_name: str = locate_model_name
-        # Production ships the locate sub-agent with `place` only — the
-        # locate-stage ablation showed 1-tool ≈ 6-tool in IoU (Δmean = +0.001
-        # on the 11 cross-1km regression-risk cases), and dropping the 5
-        # other tools shrinks the prompt + tool schema sent to the LLM.
-        #
-        # The other 5 tool wrappers + the factory pattern are RETAINED in
-        # geoplanagent.agents.locate for paper-ablation reproducibility — the
-        # ablation harness calls run_locate(disabled_tools=…) directly with
-        # the LOO/min_N kits. Override via benchmark_runner's
-        # --locate-disabled-tools to run those kits in production too.
-        self.locate_disabled_tools: frozenset = locate_disabled_tools
         # Ablation flag: when True the worker is also responsible for
         # PDFInfo extraction (no separate reader phase). Drives the
         # system_prompt branch, the submit_pdf_info tool gate, and the

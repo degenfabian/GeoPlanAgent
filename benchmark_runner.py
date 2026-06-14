@@ -21,7 +21,6 @@ from datetime import datetime
 
 from geoplanagent.tools.pdf import resolve_case_pdf
 from geoplanagent.metrics import load_geojson, calculate_spatial_metrics, aggregate_stats
-from geoplanagent.utils import PRODUCTION_LOCATE_DISABLED_TOOLS
 
 # Duplicates removed from disk; filtered out of the dataset at load time.
 DUPLICATE_SL_NOS = {9, 68, 83, 232, 253}
@@ -123,7 +122,6 @@ def _run_case(
     enable_critic,
     critic_max_iters,
     locate_model_name,
-    locate_disabled_tools,
     folded,
 ):
     """Run one case (or load it from cache), appending its summary row to
@@ -197,7 +195,6 @@ def _run_case(
             enable_critic=enable_critic,
             critic_max_iters=critic_max_iters,
             locate_model_name=locate_model_name,
-            locate_disabled_tools=locate_disabled_tools,
             folded=folded,
         )
         dt = time.time() - t0
@@ -331,7 +328,6 @@ def run_benchmark(
     enable_critic=False,
     critic_max_iters=2,
     locate_model_name="google/gemini-3-flash-preview",
-    locate_disabled_tools=PRODUCTION_LOCATE_DISABLED_TOOLS,
     folded=False,
 ):
     """Run benchmark using the unified tool-calling agent.
@@ -372,7 +368,6 @@ def run_benchmark(
             enable_critic=enable_critic,
             critic_max_iters=critic_max_iters,
             locate_model_name=locate_model_name,
-            locate_disabled_tools=locate_disabled_tools,
             folded=folded,
         )
         if fatal:
@@ -469,16 +464,6 @@ if __name__ == "__main__":
         "sub-agent (independent of --model). Default: "
         "google/gemini-3-flash-preview.",
     )
-    parser.add_argument(
-        "--locate-disabled-tools",
-        default=None,
-        help="Comma-separated locate-agent tools to disable for the "
-        "locate sub-agent (e.g. 'la_check' or "
-        "'postcode,grid_ref,road,intersect,la_check' for min_1_tool, "
-        "or '' for the full 6-tool kit). Default (flag not passed) = "
-        "production place-only kit. Vocabulary: postcode, grid_ref, "
-        "place, road, intersect, la_check.",
-    )
     parser.add_argument("--max-cases", type=int, default=None)
     parser.add_argument("--start-from", type=int, default=0)
     parser.add_argument("--dpi", type=int, default=200)
@@ -536,19 +521,4 @@ if __name__ == "__main__":
         locate_model_name=args.locate_model,
         folded=args.no_reader,
     )
-    if args.locate_disabled_tools is not None:
-        _KNOWN_LOCATE_TOOLS = frozenset(
-            {"postcode", "grid_ref", "place", "road", "intersect", "la_check"}
-        )
-        disabled_set = frozenset(
-            t.strip() for t in args.locate_disabled_tools.split(",") if t.strip()
-        )
-        unknown = disabled_set - _KNOWN_LOCATE_TOOLS
-        if unknown:
-            parser.error(
-                f"--locate-disabled-tools: unknown tool(s) {sorted(unknown)}. "
-                f"Known: {sorted(_KNOWN_LOCATE_TOOLS)}"
-            )
-        run_kwargs["locate_disabled_tools"] = disabled_set
-
     run_benchmark(**run_kwargs)

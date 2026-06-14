@@ -36,8 +36,7 @@ def propose_centers(
     queries before returning one picked (lat, lon, sigma_m, confidence,
     source). The five other geocoders implemented in
     ``geoplanagent.agents.locate`` (postcode, grid_ref, road, intersect,
-    la_check) are off by default; they remain available via the factory's
-    ``disabled_tools`` parameter for paper-ablation reproducibility.
+    la_check) are used only by the locate ablation's all-tools agent.
 
     If the sub-agent loop fails entirely (validation retries exhausted,
     HTTP error, budget exceeded), run_locate emits an emergency
@@ -125,7 +124,6 @@ def propose_centers(
         match_context=match_context,
         prior_messages=state.locate_message_history or None,
         extra_terms=extra_terms,
-        disabled_tools=getattr(state, "locate_disabled_tools", frozenset()),
         # Telemetry sink: one dict per invocation appended to state.locate_calls.
         # Aggregated in run.collect_agent_stats so each metrics.json carries
         # locate_request_tokens / locate_response_tokens / locate_n_calls plus

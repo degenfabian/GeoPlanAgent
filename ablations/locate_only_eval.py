@@ -4,38 +4,29 @@ Skips the worker, MINIMA, SAM3, commit/critic — just calls the locate
 sub-agent once per case and scores its picked (lat, lon) against the
 nearest GT polygon-part centroid (haversine km).
 
-Used for:
-  1. Locate LOO ablation: run with ``--disabled-tools postcode`` (etc.)
-     for each of the 6 tools and compare per-tool error deltas against
-     the no-disabled baseline.
-  2. Locate vs VLM-direct geocode (sibling: locate_vlm_direct.py).
+Two configs (the only locate rows the paper reports, Table 2):
+  - ``production`` — the single ``place`` geocoder (-> min_1_tool/).
+  - ``all_tools``  — all six geocoders (-> full/).
+The VLM-direct baseline is a separate harness (locate_vlm_direct.py).
 
 Inputs:
   ablations/cached_pdf_info_for_locate_ablations.json (frozen reader
-  output, identical across LOO variants — isolates locate-side
-  variation from reader-side noise).
+  output, identical across configs — isolates locate-side variation
+  from reader-side noise).
   evaluation_data/<case>/<gt>.geojson for scoring.
 
-Outputs (per --disabled-tools config):
-  ablations/locate_only_eval/<config>/locate_picks.csv
+Outputs (per config):
+  ablations/locate_only_eval/{min_1_tool,full}/locate_picks.csv
     one row per case: err_km, picked coord, source, confidence,
     sigma, evidence.
 
-The harness has a ``--dump-prompts`` mode that writes all 7 prompt
-variants to disk and exits without LLM calls. Use this for pre-run
-verification — read the prompts, confirm the LOO variants look clean,
-then approve the actual runs.
-
 Usage (from repo root):
 
-  # Dump prompts for review, no LLM calls
-  uv run python ablations/locate_only_eval.py --dump-prompts
+  # Production config (place only)
+  uv run python ablations/locate_only_eval.py --config production
 
-  # Full baseline (no tool disabled)
-  uv run python ablations/locate_only_eval.py
-
-  # LOO variant
-  uv run python ablations/locate_only_eval.py --disabled-tools postcode
+  # All-six-tools config
+  uv run python ablations/locate_only_eval.py --config all_tools
 
   # Smoke (first 3 cases)
   uv run python ablations/locate_only_eval.py --max-cases 3
@@ -53,7 +44,6 @@ import sys
 import time
 import traceback
 from pathlib import Path
-from typing import Optional
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
@@ -67,11 +57,7 @@ from ablations._shared import (  # noqa: E402
     nearest_part_err_km,
     print_err_km_summary,
 )
-from geoplanagent.agents.locate import (  # noqa: E402
-    _LOCATE_TOOL_NAMES,
-    _build_locate_prompt,
-    run_locate,
-)
+from geoplanagent.agents.locate import run_locate  # noqa: E402
 from geoplanagent.tools.pdf import resolve_case_pdf  # noqa: E402
 from geoplanagent.tools.pdf import render_map_page  # noqa: E402
 from geoplanagent.metrics import load_geojson  # noqa: E402
@@ -80,32 +66,15 @@ from geoplanagent.metrics import load_geojson  # noqa: E402
 DEFAULT_CACHE = REPO_ROOT / "ablations" / "cached_pdf_info_for_locate_ablations.json"
 DEFAULT_EVAL_DIR = REPO_ROOT / "evaluation_data"
 DEFAULT_LOCATE_MODEL = "gemini-flash"
-DEFAULT_PROMPTS_DIR = REPO_ROOT / "ablations" / "prompts"
 DEFAULT_OUT_ROOT = REPO_ROOT / "ablations" / "locate_only_eval"
 
-
-# Helpers
-
-
-def _config_label(disabled: frozenset) -> str:
-    """Filesystem-safe label for a config: 'full' or 'no_<tool>'."""
-    if not disabled:
-        return "full"
-    return "no_" + "_".join(sorted(disabled))
-
-
-def _parse_disabled(s: Optional[str]) -> frozenset[str]:
-    """Parse a comma-separated tool list. Empty / None → no tools disabled."""
-    if not s:
-        return frozenset()
-    tools = {t.strip() for t in s.split(",") if t.strip()}
-    unknown = tools - _LOCATE_TOOL_NAMES
-    if unknown:
-        raise ValueError(
-            f"Unknown locate tool(s) in --disabled-tools: {sorted(unknown)}. "
-            f"Valid names: {sorted(_LOCATE_TOOL_NAMES)}"
-        )
-    return frozenset(tools)
+# config name -> (output dir label, all_tools flag). These are the only
+# locate configs the paper reports: production = the single `place`
+# geocoder; all_tools = all six geocoders.
+_CONFIGS: dict[str, tuple[str, bool]] = {
+    "production": ("min_1_tool", False),
+    "all_tools": ("full", True),
+}
 
 
 # GT-centroid extraction + nearest-part scoring live in ablations._shared
@@ -114,95 +83,16 @@ def _parse_disabled(s: Optional[str]) -> frozenset[str]:
 # nearest_part_err_km.
 
 
-# Prompt dump (no LLM calls)
-
-
-def dump_prompts(out_dir: Path) -> None:
-    """Write all 7 prompt variants + a diff overview to ``out_dir``.
-
-    For each variant: ``locate_prompt_<config>.md`` — the literal prompt
-    that pydantic-ai would send to the locate sub-agent for that config.
-    Plus ``locate_prompt_diffs.md`` listing the lines each LOO variant
-    removes vs the full prompt, so a reviewer can confirm "disabling X
-    actually scrubbed all mentions of X".
-    """
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    configs = [frozenset()] + [frozenset({t}) for t in sorted(_LOCATE_TOOL_NAMES)]
-
-    written: list[tuple[str, Path, int, int]] = []
-    full_prompt: Optional[str] = None
-    prompts_by_label: dict[str, str] = {}
-    for cfg in configs:
-        label = _config_label(cfg)
-        prompt = _build_locate_prompt(cfg)
-        prompts_by_label[label] = prompt
-        if not cfg:
-            full_prompt = prompt
-        path = out_dir / f"locate_prompt_{label}.md"
-        path.write_text(prompt)
-        written.append((label, path, len(prompt), prompt.count("\n") + 1))
-
-    # Diff view: for each LOO variant, lines removed vs full.
-    full_lines = set((full_prompt or "").splitlines())
-    diff_lines: list[str] = [
-        "# Locate prompt variants — diff vs full",
-        "",
-        "Each section lists lines present in the FULL prompt but NOT in "
-        "the LOO variant. Use this to sanity-check that disabling a tool "
-        "actually removes all references to it (tool description, signal-"
-        "priority bullets, protocol-step references).",
-        "",
-        f"Full prompt: {len(full_prompt or '')} chars, "
-        f"{(full_prompt or '').count(chr(10)) + 1} lines",
-        "",
-    ]
-
-    for cfg in configs:
-        if not cfg:
-            continue
-        label = _config_label(cfg)
-        variant_lines = set(prompts_by_label[label].splitlines())
-        removed = sorted(full_lines - variant_lines)
-        added = sorted(variant_lines - full_lines)
-        diff_lines.append(f"## {label}")
-        diff_lines.append("")
-        diff_lines.append(f"**Removed from full ({len(removed)} lines):**")
-        diff_lines.append("```")
-        diff_lines.extend(removed)
-        diff_lines.append("```")
-        if added:
-            diff_lines.append("")
-            diff_lines.append(f"**Added (not in full, {len(added)} lines):**")
-            diff_lines.append("```")
-            diff_lines.extend(added)
-            diff_lines.append("```")
-        diff_lines.append("")
-
-    diff_path = out_dir / "locate_prompt_diffs.md"
-    diff_path.write_text("\n".join(diff_lines))
-
-    print(f"Wrote {len(written)} prompt variants to {out_dir.relative_to(REPO_ROOT)}/")
-    for label, path, n_chars, n_lines in written:
-        print(f"  {label:<14} {path.name:<32} ({n_chars} chars, {n_lines} lines)")
-    print(f"  + diff view:  {diff_path.relative_to(REPO_ROOT)}")
-
-
 # Main eval
 
 
 def evaluate(args: argparse.Namespace) -> int:
-    disabled = _parse_disabled(args.disabled_tools)
-    # Allow caller to override the auto-derived dir name. Useful for
-    # named subset ablations (e.g. "min_1_tool" instead of the verbose
-    # "no_grid_ref_intersect_la_check_postcode_road").
-    label = args.config_label or _config_label(disabled)
-    out_root = Path(args.out_root)
-    out_dir = out_root / label
+    label, all_tools = _CONFIGS[args.config]
+    out_dir = Path(args.out_root) / label
     out_dir.mkdir(parents=True, exist_ok=True)
     out_csv = out_dir / "locate_picks.csv"
 
-    print(f"Config:        {label!r} (disabled={sorted(disabled) or 'none'})")
+    print(f"Config:        {args.config} -> {label}/ (all_tools={all_tools})")
     print(f"Locate model:  {args.locate_model}")
     print(f"Output CSV:    {out_csv.relative_to(REPO_ROOT)}")
 
@@ -316,7 +206,7 @@ def evaluate(args: argparse.Namespace) -> int:
                     pdf_info=pi,
                     map_img_bytes=png_bytes,
                     model_name=args.locate_model,
-                    disabled_tools=disabled,
+                    all_tools=all_tools,
                 )
             except Exception as e:
                 traceback.print_exc()
@@ -368,6 +258,14 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
+        "--config",
+        choices=sorted(_CONFIGS),
+        default="production",
+        help="Which locate config to run. 'production' = the single "
+        "`place` geocoder (-> min_1_tool/); 'all_tools' = all six "
+        "geocoders (-> full/). Default: production.",
+    )
+    parser.add_argument(
         "--cache",
         default=str(DEFAULT_CACHE),
         help=f"Cached pdf_info JSON. Default: {DEFAULT_CACHE.relative_to(REPO_ROOT)}",
@@ -384,21 +282,6 @@ def main() -> int:
         f"sub-agent. Default: {DEFAULT_LOCATE_MODEL}.",
     )
     parser.add_argument(
-        "--disabled-tools",
-        default=None,
-        help="Comma-separated locate tool names to disable. Valid: "
-        "postcode, grid_ref, place, road, intersect, la_check. "
-        "Empty / omitted = full baseline.",
-    )
-    parser.add_argument(
-        "--config-label",
-        default=None,
-        help="Override the auto-derived output dir name. Default: "
-        "'full' / 'no_<tool>' / 'no_<tool1>_<tool2>'. Set this "
-        "(e.g. 'min_1_tool') when running multi-tool subsets so "
-        "the output path is human-readable.",
-    )
-    parser.add_argument(
         "--out-root",
         default=str(DEFAULT_OUT_ROOT),
         help=f"Output root (a per-config subdir is created). "
@@ -408,18 +291,7 @@ def main() -> int:
         "--dpi", type=int, default=200, help="PDF rendering DPI. Default: 200 (matches production)."
     )
     add_subset_args(parser)
-    parser.add_argument(
-        "--dump-prompts",
-        action="store_true",
-        help=f"Write all 7 prompt variants to "
-        f"{DEFAULT_PROMPTS_DIR.relative_to(REPO_ROOT)}/ and exit. "
-        f"No LLM calls, no eval.",
-    )
     args = parser.parse_args()
-
-    if args.dump_prompts:
-        dump_prompts(DEFAULT_PROMPTS_DIR)
-        return 0
 
     return evaluate(args)
 

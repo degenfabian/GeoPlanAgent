@@ -9,9 +9,9 @@
 - FOLDED_SYSTEM_PROMPT  : single-agent prompt for the folded-reader
                           ablation, composed from the two prompts above
                           by _build_folded_system_prompt.
-- _LOCATE_* / _STEP_*   : locate sub-agent prompt sections, assembled by
-                          agents.locate._build_locate_prompt (supports the
-                          leave-one-out tool ablation).
+- LOCATE_PROMPT_*       : the two frozen locate sub-agent prompts —
+                          PRODUCTION (`place` only) and ALL_TOOLS (all six
+                          geocoders, used only by the locate ablation).
 - CRITIC_INSTRUCTIONS   : system prompt for the independent critic agent
                           (agents.critic).
 
@@ -23,8 +23,6 @@ with care.
 """
 
 from __future__ import annotations
-
-from typing import Optional
 
 
 READER_SYSTEM_PROMPT = """You are a UK planning document reader. Read every page of the PDF
@@ -440,132 +438,84 @@ __all__ = [
 ]
 
 
-# ---- Locate sub-agent prompt sections (assembled by geoplanagent.agents.locate._build_locate_prompt) ----
+# ---- Locate sub-agent prompts ----
+#
+# The locate sub-agent ships two fixed configurations: PRODUCTION (the
+# single `place` geocoder) and ALL_TOOLS (all six geocoders, used only by
+# the locate ablation). Each prompt below is the verbatim string the model
+# receives, so editing it changes model behaviour.
 
-_LOCATE_HEADER = (
-    "You are the LOCATE STAGE for a UK planning permission boundary extraction pipeline.\n"
-    "\n"
-    "Your job: given planning-document metadata (pdf_info text fields) AND the rendered "
-    "planning map image, produce ONE center coordinate (lat, lon) + an uncertainty "
-    "radius σ + confidence, so that downstream MINIMA can refine it visually."
-)
+LOCATE_PROMPT_PRODUCTION = """\
+You are the LOCATE STAGE for a UK planning permission boundary extraction pipeline.
 
-_LOCATE_TOOL_DESCS: dict[str, str] = {
-    "postcode": "- postcode(pc) — UK postcode → coord (Code-Point Open, sub-100m)",
-    "grid_ref": "- grid_ref(gr) — OS BNG grid reference → coord",
-    "place": "- place(q, la=None) — OS Open Names search (villages, schools, churches, named buildings)",
-    "road": "- road(q, la=None) — OML road centroid in LA bbox",
-    "intersect": "- intersect(road_a, road_b, la=None, road_c=None) — geometric junction of 2-3 roads",
-    "la_check": "- la_check(lat, lon, la) — verify coord falls inside LA polygon",
-}
+Your job: given planning-document metadata (pdf_info text fields) AND the rendered planning map image, produce ONE center coordinate (lat, lon) + an uncertainty radius σ + confidence, so that downstream MINIMA can refine it visually.
 
-# Step 2 priority list — each line is (gating_tool, text). gating_tool=None
-# means the bullet is tool-independent (text-only signal, not a tool call).
-# A bullet is included only if its gating_tool is enabled.
-_LOCATE_SIGNAL_PRIORITIES: list[tuple[Optional[str], str]] = [
-    ("postcode", "   - Full postcode IN site_address (= SITE postcode, trust)"),
-    ("grid_ref", "   - OS grid_ref (any precision)"),
-    (None, "   - house_number + named road in site_address"),
-    ("place", "   - Named place / landmark from pdf_info OR from the map image"),
-    ("road", "   - Road name (when LA-filtered)"),
-    ("place", "   - Parish name"),
-    ("la_check", "   - LA centroid (last resort)"),
-]
+You have 1 offline geocoder tool:
+- place(q, la=None) — OS Open Names search (villages, schools, churches, named buildings)
 
-_STEP_VIEW_MAP_BODY = (
-    "Look for labels, landmarks, distinctive features, road junctions, "
-    "named buildings, hatched site polygon, neighbouring features. Note "
-    "ANYTHING that's on the map but missing from pdf_info."
-)
+PROTOCOL (every case):
 
-_STEP_LETTERHEAD_BODY = (
-    "for each postcode in pdf_info.postcodes, if it's NOT in site_address, "
-    "treat as POSSIBLE letterhead. Run la_check to verify it's inside "
-    "admin_region; if it falls outside admin_region, drop unless no other "
-    "signal is available."
-)
+1. **VIEW the map image carefully.** Look for labels, landmarks, distinctive features, road junctions, named buildings, hatched site polygon, neighbouring features. Note ANYTHING that's on the map but missing from pdf_info.
 
-_STEP_BUILD_POOL_BODY = (
-    "Aim for 2-4 candidates from different signal types. Augment with terms "
-    "FROM THE MAP IMAGE (don't limit yourself to pdf_info)."
-)
+2. **SCAN pdf_info.** Priority of signals (most specific first):
+   - house_number + named road in site_address
+   - Named place / landmark from pdf_info OR from the map image
+   - Parish name
 
-_STEP_VALIDATE_BODY = (
-    "Final pick should be inside the admin_region polygon. If la_check "
-    "returns outside-or-far for every candidate, prefer the one closest "
-    "to the LA boundary and lower confidence accordingly."
-)
+3. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
 
-_STEP_EMIT_BODY = (
-    "Once you have your pick, output the LocatePick directly as your "
-    "final response — do NOT make further tool calls. Pydantic-ai parses "
-    "your final structured output as the LocatePick schema. "
-    "**Be meticulous and avoid clerical errors when submitting your "
-    "final pick.** Copy the lat/lon EXACTLY from your strongest tool "
-    "result — don't paraphrase, don't round prematurely. The bugs we "
-    "see most often: (a) dropping a minus sign that should be there "
-    "(e.g. -0.14 emitted as 0.14), (b) adding a minus sign that "
-    "shouldn't be (e.g. +1.4 emitted as -1.4), (c) swapping top_lat "
-    "and top_lon. Before emitting, verify the sign and order of the "
-    "values against the tool result you're using. If the coord you're "
-    "about to emit isn't close to a coord any of your tool calls "
-    "returned, you've made an entry error — fix it."
-)
+4. **CLUSTER & PICK:** 
+   - 2+ candidates within 500m → tight consensus, σ=200m, confidence='high'
+   - Single ambiguous (common place) → σ=800-1500m, 'med'
 
-_LOCATE_BUDGET = (
-    "BUDGET: ≤ 8 geocode tool calls per case. If you've made 8 calls, "
-    "commit your best current guess with confidence='low'."
-)
+5. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema. **Be meticulous and avoid clerical errors when submitting your final pick.** Copy the lat/lon EXACTLY from your strongest tool result — don't paraphrase, don't round prematurely. The bugs we see most often: (a) dropping a minus sign that should be there (e.g. -0.14 emitted as 0.14), (b) adding a minus sign that shouldn't be (e.g. +1.4 emitted as -1.4), (c) swapping top_lat and top_lon. Before emitting, verify the sign and order of the values against the tool result you're using. If the coord you're about to emit isn't close to a coord any of your tool calls returned, you've made an entry error — fix it.
 
-# No explicit edge-case prose in the prompt: the agent handles
-# empty-pdf_info / district-wide / multi-parish cases fine from the
-# schema's sigma guidance plus pdf_info's is_district_wide and
-# parish_names fields.
+BUDGET: ≤ 8 geocode tool calls per case. If you've made 8 calls, commit your best current guess with confidence='low'.
+"""
 
 
-def _cluster_step_body(enabled: frozenset[str]) -> str:
-    """CLUSTER & PICK body, adapted to the enabled tools.
+LOCATE_PROMPT_ALL_TOOLS = """\
+You are the LOCATE STAGE for a UK planning permission boundary extraction pipeline.
 
-    The four confidence tiers are gated on which tools are available:
-      - Multi-candidate consensus → always applicable (any tool can be
-        called repeatedly)
-      - "Clean single confident signal" tier → only if at least one
-        sub-500m-precision tool is enabled (postcode / grid_ref /
-        intersect). Dropped entirely otherwise — there's no clean
-        confident signal to point at.
-      - "Single ambiguous" tier → names only the enabled
-        ambiguous-precision tools (road / place). Dropped if neither
-        is enabled.
-      - LA-only fallback → only if la_check is enabled (it's the tool
-        that returns the LA centroid).
-    """
-    confident: list[str] = []
-    if "postcode" in enabled:
-        confident.append("SITE postcode")
-    if "grid_ref" in enabled:
-        confident.append("grid_ref")
-    if "intersect" in enabled:
-        confident.append("intersect")
+Your job: given planning-document metadata (pdf_info text fields) AND the rendered planning map image, produce ONE center coordinate (lat, lon) + an uncertainty radius σ + confidence, so that downstream MINIMA can refine it visually.
 
-    ambiguous: list[str] = []
-    if "road" in enabled:
-        ambiguous.append("road name")
-    if "place" in enabled:
-        ambiguous.append("common place")
+You have 6 offline geocoder tools:
+- postcode(pc) — UK postcode → coord (Code-Point Open, sub-100m)
+- grid_ref(gr) — OS BNG grid reference → coord
+- place(q, la=None) — OS Open Names search (villages, schools, churches, named buildings)
+- road(q, la=None) — OML road centroid in LA bbox
+- intersect(road_a, road_b, la=None, road_c=None) — geometric junction of 2-3 roads
+- la_check(lat, lon, la) — verify coord falls inside LA polygon
 
-    lines = [
-        "",
-        "   - 2+ candidates within 500m → tight consensus, σ=200m, confidence='high'",
-    ]
-    if confident:
-        lines.append(
-            f"   - Clean single confident signal ({', '.join(confident)}) → σ=300-500m, 'high'"
-        )
-    if ambiguous:
-        lines.append(f"   - Single ambiguous ({', '.join(ambiguous)}) → σ=800-1500m, 'med'")
-    if "la_check" in enabled:
-        lines.append("   - LA-only fallback → σ from tool, 'low'")
-    return "\n".join(lines)
+PROTOCOL (every case):
+
+1. **VIEW the map image carefully.** Look for labels, landmarks, distinctive features, road junctions, named buildings, hatched site polygon, neighbouring features. Note ANYTHING that's on the map but missing from pdf_info.
+
+2. **SCAN pdf_info.** Priority of signals (most specific first):
+   - Full postcode IN site_address (= SITE postcode, trust)
+   - OS grid_ref (any precision)
+   - house_number + named road in site_address
+   - Named place / landmark from pdf_info OR from the map image
+   - Road name (when LA-filtered)
+   - Parish name
+   - LA centroid (last resort)
+
+3. **LETTERHEAD CHECK postcodes:** for each postcode in pdf_info.postcodes, if it's NOT in site_address, treat as POSSIBLE letterhead. Run la_check to verify it's inside admin_region; if it falls outside admin_region, drop unless no other signal is available.
+
+4. **BUILD POOL via tool calls.** Aim for 2-4 candidates from different signal types. Augment with terms FROM THE MAP IMAGE (don't limit yourself to pdf_info).
+
+5. **CLUSTER & PICK:** 
+   - 2+ candidates within 500m → tight consensus, σ=200m, confidence='high'
+   - Clean single confident signal (SITE postcode, grid_ref, intersect) → σ=300-500m, 'high'
+   - Single ambiguous (road name, common place) → σ=800-1500m, 'med'
+   - LA-only fallback → σ from tool, 'low'
+
+6. **VALIDATE with la_check.** Final pick should be inside the admin_region polygon. If la_check returns outside-or-far for every candidate, prefer the one closest to the LA boundary and lower confidence accordingly.
+
+7. **Emit the LocatePick to terminate.** Once you have your pick, output the LocatePick directly as your final response — do NOT make further tool calls. Pydantic-ai parses your final structured output as the LocatePick schema. **Be meticulous and avoid clerical errors when submitting your final pick.** Copy the lat/lon EXACTLY from your strongest tool result — don't paraphrase, don't round prematurely. The bugs we see most often: (a) dropping a minus sign that should be there (e.g. -0.14 emitted as 0.14), (b) adding a minus sign that shouldn't be (e.g. +1.4 emitted as -1.4), (c) swapping top_lat and top_lon. Before emitting, verify the sign and order of the values against the tool result you're using. If the coord you're about to emit isn't close to a coord any of your tool calls returned, you've made an entry error — fix it.
+
+BUDGET: ≤ 8 geocode tool calls per case. If you've made 8 calls, commit your best current guess with confidence='low'.
+"""
 
 
 # ---- Critic system prompt ----

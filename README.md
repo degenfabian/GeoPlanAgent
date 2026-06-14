@@ -120,7 +120,6 @@ uv run benchmark_runner.py \
 |---|---|---|
 | `--model` | `gemini-flash` | Reader + worker model (alias or full OpenRouter ID); default is the paper configuration |
 | `--locate-model` | `google/gemini-3-flash-preview` | Locate sub-agent model (separate from `--model`) |
-| `--locate-disabled-tools` | `postcode,grid_ref,road,intersect,la_check` | Disable named geocoders in the locate sub-agent. Default leaves only `place` enabled — the production kit; pass an empty string for the full 6-tool kit |
 | `--max-iterations` | `12` | Max worker turns per case |
 | `--max-cases` | — | Cap dataset size (quick smoke test) |
 | `--cases <ids…>` | — | Run only the listed case folder names |
@@ -174,8 +173,7 @@ if result["geojson"]:
 ```
 
 `run_agent` also accepts `enable_critic=True`, `critic_max_iters=2`,
-`locate_model="..."`, `locate_disabled_tools=frozenset({...})`, and
-`folded=True` (folded ablation).
+`locate_model="..."`, and `folded=True` (folded ablation).
 
 ## Phase details
 
@@ -206,8 +204,8 @@ Tool-calling pydantic-ai agent. Four worker tools:
    **In production the sub-agent ships with a single geocoder tool —
    `place` (OS Open Names).** Five additional offline geocoders
    (`postcode`, `grid_ref`, `road`, `intersect`, `la_check`) are
-   implemented and reachable via `--locate-disabled-tools` for the
-   paper-ablation harness.
+   implemented and used only by the locate ablation's all-tools agent
+   (`ablations/locate_only_eval.py --config all_tools`).
 2. **`match_at(page=N, name, lat, lon, sigma_m?, scale_ratio?)`** —
    runs MINIMA on ONE page (one `area_group`) at the supplied centre.
    Returns one candidate with `n_inliers`, `scale_consistency`,

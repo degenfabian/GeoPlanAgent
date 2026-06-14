@@ -14,6 +14,7 @@ from pydantic_ai import Agent, BinaryContent, ModelRetry, RunContext
 from pydantic_ai.usage import UsageLimits
 
 from geoplanagent.utils import haversine_km, resolve_model
+from geoplanagent.prompts import LOCATE_PROMPT_PRODUCTION, LOCATE_PROMPT_ALL_TOOLS
 
 REPO = Path(__file__).resolve().parent.parent.parent
 
@@ -62,7 +63,8 @@ class LocatePick(BaseModel):
     )
 
 
-# ── Tool implementations (registered conditionally by make_locate_agent) ──
+# ── Tool implementations (the all-tools agent registers all six; the
+# production agent registers only `place`) ──
 
 
 def postcode(pc: str) -> dict:
@@ -421,140 +423,26 @@ _TOOL_IMPLS: dict[str, callable] = {
     "la_check": la_check,
 }
 
-_LOCATE_TOOL_NAMES: frozenset[str] = frozenset(_TOOL_IMPLS.keys())
-
-
-# System-prompt builder
-#
-# The locate sub-agent system prompt is composed of named sections. The
-# tool list, the priority-signals list inside step 2, the CLUSTER step's
-# example signals, and the LETTERHEAD / VALIDATE steps are all
-# tool-dependent and get filtered out when a tool is in ``disabled``.
-#
-# Building the prompt this way means an LOO ablation's agent literally
-# does not know the disabled tool ever existed — no advertised name in
-# the bulleted list, no protocol step referencing it, no signal-priority
-# bullet that depends on its output. That avoids the confound of "tool
-# stubbed but still listed in the prompt → agent calls it anyway and
-# gets confused by the error".
-
-from geoplanagent.prompts import (  # locate prompt sections
-    _LOCATE_BUDGET,
-    _LOCATE_TOOL_DESCS,
-    _LOCATE_SIGNAL_PRIORITIES,
-    _cluster_step_body,
-    _LOCATE_HEADER,
-    _STEP_BUILD_POOL_BODY,
-    _STEP_EMIT_BODY,
-    _STEP_LETTERHEAD_BODY,
-    _STEP_VALIDATE_BODY,
-    _STEP_VIEW_MAP_BODY,
-)
-
-
-def _build_locate_prompt(disabled: frozenset[str] = frozenset()) -> str:
-    """Assemble the locate sub-agent system prompt.
-
-    The prompt tells the agent which tools it has, in what priority,
-    when to use each, and how to package the final pick. When some tools
-    are disabled (LOO ablation), the prompt is rebuilt to omit any
-    mention of them — bulleted descriptions, priority-list entries,
-    confidence-signal examples, and the protocol steps that depend
-    exclusively on them (e.g. LETTERHEAD CHECK when postcode is gone).
-
-    Step numbers renumber dynamically — the agent sees a coherent
-    1..N protocol with no gaps.
-    """
-    unknown = disabled - _LOCATE_TOOL_NAMES
-    if unknown:
-        raise ValueError(
-            f"Unknown locate tool name(s) in disabled set: {sorted(unknown)}. "
-            f"Valid names: {sorted(_LOCATE_TOOL_NAMES)}"
-        )
-
-    enabled_set = _LOCATE_TOOL_NAMES - disabled
-    # Stable order for the bulleted tool list — _TOOL_IMPLS insertion
-    # order matches the original prompt so unchanged variants produce a
-    # byte-identical prompt (modulo the one auto-fixed count word).
-    enabled_tools_ordered = [tool_name for tool_name in _TOOL_IMPLS if tool_name in enabled_set]
-    enabled_count = len(enabled_tools_ordered)
-
-    parts: list[str] = []
-    parts.append(_LOCATE_HEADER)
-    parts.append("")
-    parts.append(
-        f"You have {enabled_count} offline geocoder tool{'s' if enabled_count != 1 else ''}:"
-    )
-    for tool_name in enabled_tools_ordered:
-        parts.append(_LOCATE_TOOL_DESCS[tool_name])
-    parts.append("")
-    parts.append("PROTOCOL (every case):")
-    parts.append("")
-
-    # Build the dynamically-numbered protocol step list.
-    # Each entry is (header, body) where body has been pre-shaped for
-    # multi-line formatting.
-    steps: list[tuple[str, str]] = []
-    steps.append(("**VIEW the map image carefully.**", _STEP_VIEW_MAP_BODY))
-
-    # Step: SCAN pdf_info — priority list filtered by enabled tools.
-    priority_lines = [
-        line
-        for gating_tool, line in _LOCATE_SIGNAL_PRIORITIES
-        if gating_tool is None or gating_tool in enabled_set
-    ]
-    scan_body = "Priority of signals (most specific first):\n" + "\n".join(priority_lines)
-    steps.append(("**SCAN pdf_info.**", scan_body))
-
-    # LETTERHEAD CHECK requires BOTH postcode and la_check.
-    if "postcode" in enabled_set and "la_check" in enabled_set:
-        steps.append(("**LETTERHEAD CHECK postcodes:**", _STEP_LETTERHEAD_BODY))
-
-    steps.append(("**BUILD POOL via tool calls.**", _STEP_BUILD_POOL_BODY))
-    steps.append(("**CLUSTER & PICK:**", _cluster_step_body(enabled_set)))
-
-    if "la_check" in enabled_set:
-        steps.append(("**VALIDATE with la_check.**", _STEP_VALIDATE_BODY))
-    # When la_check is disabled (production default), the VALIDATE step
-    # is dropped entirely. Other LOO variants (no_postcode etc.) are
-    # similarly invisible because the factory only references each tool
-    # under "if tool in enabled_set".
-
-    steps.append(("**Emit the LocatePick to terminate.**", _STEP_EMIT_BODY))
-
-    for step_number, (header, body) in enumerate(steps, start=1):
-        parts.append(f"{step_number}. {header} {body}")
-        parts.append("")
-
-    parts.append(_LOCATE_BUDGET)
-    parts.append("")
-
-    return "\n".join(parts)
-
 
 # Factory
 
 
-def make_locate_agent(disabled_tools=None) -> Agent:
-    """Locate sub-agent with ``disabled_tools`` removed from tools + prompt. Cached."""
-    return _make_locate_agent_cached(frozenset(disabled_tools) if disabled_tools else frozenset())
+def _build_locate_agent(instructions: str, tool_impls: dict) -> Agent:
+    """Construct a locate sub-agent with a fixed prompt + tool set.
 
-
-@lru_cache(maxsize=16)
-def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
-    """Cached builder; keyed on normalised frozenset."""
+    The agent model is a placeholder overridden per-run via ``model=``
+    in run_locate.
+    """
     agent = Agent(
         "test",  # placeholder, overridden per-run via model=...
         output_type=LocatePick,
         retries=5,
         output_retries=5,
         model_settings={"temperature": _TEMPERATURE},
-        instructions=_build_locate_prompt(disabled_tools),
+        instructions=instructions,
     )
 
-    for tool_name, impl in _TOOL_IMPLS.items():
-        if tool_name in disabled_tools:
-            continue
+    for impl in tool_impls.values():
         agent.tool_plain(impl)
 
     # L2 output validator: cross-check the agent's final LocatePick
@@ -651,6 +539,18 @@ def _make_locate_agent_cached(disabled_tools: frozenset) -> Agent:
         return pick
 
     return agent
+
+
+@lru_cache(maxsize=1)
+def _locate_agent_production() -> Agent:
+    """Production locate agent: the single ``place`` geocoder."""
+    return _build_locate_agent(LOCATE_PROMPT_PRODUCTION, {"place": place})
+
+
+@lru_cache(maxsize=1)
+def _locate_agent_all_tools() -> Agent:
+    """All-six-geocoders locate agent — used only by the locate ablation."""
+    return _build_locate_agent(LOCATE_PROMPT_ALL_TOOLS, _TOOL_IMPLS)
 
 
 # Helpers for transient-error handling
@@ -770,15 +670,15 @@ def run_locate(
     match_context: Optional[str] = None,
     prior_messages: Optional[list] = None,
     extra_terms: Optional[List[str]] = None,
-    disabled_tools: frozenset[str] = frozenset(),
+    all_tools: bool = False,
     usage_sink: Optional[list] = None,
 ) -> tuple:
     """Run the locate sub-agent for one case; returns (LocatePick, all_messages).
 
     On a re-pick, pass the prior call's `all_messages` as `prior_messages` and
     feedback in `match_context`; the agent refines instead of starting over.
-    `disabled_tools` drops tools from both the agent and its prompt (used by
-    the locate LOO ablation).
+    `all_tools=True` selects the six-geocoder ablation agent; the default is
+    the production agent (the single `place` geocoder).
 
     `usage_sink`: optional list. If supplied, one dict per invocation is
     appended:
@@ -788,7 +688,7 @@ def run_locate(
     telemetry survives in ``state.locate_calls``.
     """
     model = resolve_model(model_name)
-    agent = make_locate_agent(disabled_tools)
+    agent = _locate_agent_all_tools() if all_tools else _locate_agent_production()
 
     if prior_messages:
         # Continuation: pdf_info already in history; just append feedback.
@@ -877,12 +777,12 @@ def run_locate(
     postcodes = pdf_info.get("postcodes") or []
     grid_refs = pdf_info.get("grid_refs") or []
     history_tag = f"prior_msgs={len(prior_messages)}" if prior_messages else "first_call"
-    disabled_tag = f", disabled={sorted(disabled_tools)}" if disabled_tools else ""
+    tools_tag = ", all_tools" if all_tools else ""
     img_tag = f", img={len(map_img_bytes) // 1024}KB" if map_img_bytes is not None else ""
     print(
         f"  [locate] start: admin_region={admin!r}, postcodes={postcodes[:2]}, "
         f"grid_refs={grid_refs[:2]}, match_context={'yes' if match_context else 'no'}, "
-        f"{history_tag}{disabled_tag}{img_tag}"
+        f"{history_tag}{tools_tag}{img_tag}"
     )
 
     # Run the agent with up to one retry on transient HTTP errors. The

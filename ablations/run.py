@@ -13,7 +13,7 @@ Subcommands and the paper rows they produce:
     vlm-e2e           Table 1 VLM end-to-end rows + per-model table
     vlm-seg           Segmentation comparison, VLM-direct rows
     sam-prompts       Vanilla-SAM3 prompt sweep (appendix)
-    locate            Locate-stage table: place-only / 6-tool / LOO
+    locate            Locate-stage table: place-only / 6-tool
     locate-vlm        Locate-stage table, VLM-direct row
     collapsed-reader  Table 1 Collapsed Reader row
                       (benchmark_runner.py with --no-reader injected)
