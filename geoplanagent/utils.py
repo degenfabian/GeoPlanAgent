@@ -303,8 +303,7 @@ def normalise_case_name(case_name: str) -> str:
 def resolve_fold(case_name: str, fold_assignment: dict, available_folds: set[int]) -> int:
     """Return the fold whose checkpoint should serve `case_name`.
 
-    Keys and query are both normalised (':' / '/' → '_'), so the
-    filename-safety swap never matters — one lookup covers every form.
+    Keys and query are both normalised (':' / '/' → '_').
     Multi-page cases are keyed per page ('A108P_p4'), and pages of one
     case share a fold, so a page-suffixed hit is enough. A case the
     training pool never saw falls back to min(available_folds): any
@@ -312,7 +311,7 @@ def resolve_fold(case_name: str, fold_assignment: dict, available_folds: set[int
     """
     by_fold = {normalise_case_name(k): v for k, v in fold_assignment.items()}
     key = normalise_case_name(case_name)
-    # NB: fold 0 is valid, so test `is None`, never `a or b` (0 is falsy).
+
     fold = by_fold.get(key)
     if fold is None:
         prefix = key + "_p"
