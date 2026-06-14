@@ -223,11 +223,6 @@ def _run_case(
                     default=str,
                 )
             )
-            msg_log = result.get("message_log", [])
-            if msg_log:
-                (case_dir / "message_log.json").write_text(
-                    json.dumps(msg_log, indent=2, default=str)
-                )
             # Save partial geojson if any
             partial_gj = result.get("geojson")
             if partial_gj:

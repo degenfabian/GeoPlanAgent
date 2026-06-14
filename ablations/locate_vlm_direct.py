@@ -19,7 +19,6 @@ aggregation step can pivot all configs into one table:
         no_postcode/, no_*/              # locate LOO variants
         vlm_direct_<model_alias>/        # this script
             locate_picks.csv             # same column schema
-            trajectories/<case>.json
 
 Usage (from repo root):
 
@@ -53,7 +52,6 @@ from ablations._shared import (  # noqa: E402
     gt_part_centroids,
     nearest_part_err_km,
     print_err_km_summary,
-    write_trajectory,
 )
 from geoplanagent.utils import resolve_model  # noqa: E402
 from geoplanagent.tools.pdf import resolve_case_pdf  # noqa: E402
@@ -171,14 +169,11 @@ def evaluate(args: argparse.Namespace) -> int:
     out_dir = out_root / config_label
     out_dir.mkdir(parents=True, exist_ok=True)
     out_csv = out_dir / "locate_picks.csv"
-    traj_dir = out_dir / "trajectories"
-    traj_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Config:        {config_label}", flush=True)
     print(f"VLM model:     {args.vlm_model}", flush=True)
     print(f"Temperature:   {args.temperature}", flush=True)
     print(f"Output CSV:    {out_csv.relative_to(REPO_ROOT)}", flush=True)
-    print(f"Trajectories:  {traj_dir.relative_to(REPO_ROOT)}/<case>.json", flush=True)
 
     eval_root = Path(args.eval_dir)
     all_cases = sorted(p.name for p in eval_root.iterdir() if p.is_dir())
@@ -275,7 +270,6 @@ def evaluate(args: argparse.Namespace) -> int:
                     usage_limits=UsageLimits(request_limit=4),
                 )
                 pick: VlmGeocodePick = result.output
-                msgs = list(result.all_messages())
             except Exception as e:
                 traceback.print_exc()
                 row["error"] = f"vlm geocode raised: {e!s:.140}"
@@ -297,26 +291,6 @@ def evaluate(args: argparse.Namespace) -> int:
             writer.writerow(row)
             f.flush()
             n_ok += 1
-
-            # Per-case trajectory JSON — same shape as locate harness so
-            # aggregation tooling treats them uniformly. For VLM-direct
-            # the trajectory is just the user prompt + the model's
-            # response; tool_calls typically shows a single synthetic
-            # final_result tool (pydantic-ai uses it to emit structured
-            # output).
-            write_trajectory(
-                traj_dir,
-                case,
-                {
-                    "approach": "vlm_direct",
-                    "vlm_model": args.vlm_model,
-                    "temperature": args.temperature,
-                },
-                pick,
-                err,
-                centroids,
-                msgs,
-            )
 
             if err is not None:
                 print(f"  -> ok | err={err:.2f} km | ({pick.lat:.5f}, {pick.lon:.5f})", flush=True)

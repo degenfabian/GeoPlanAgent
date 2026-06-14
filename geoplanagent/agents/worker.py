@@ -24,7 +24,8 @@ def _strip_old_images(messages):
 
     Rebinds ``part.content`` rather than mutating in place — the same list
     objects are passed back into pydantic-ai across critic rehands, and an
-    in-place strip would cascade and corrupt the on-disk message_log.
+    in-place strip would cascade and corrupt the live conversation the
+    model still reads on later turns.
     """
     KEEP_RECENT = 4
     if len(messages) <= KEEP_RECENT:

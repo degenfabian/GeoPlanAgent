@@ -23,7 +23,6 @@ Output sits under the same root that holds the subset definitions;
             results.csv
             summary.json
             pred_geojsons/<case>.geojson
-            trajectories/<case>.json
 
 Usage (from repo root):
 
@@ -54,7 +53,6 @@ from pydantic_ai import Agent, BinaryContent, NativeOutput  # noqa: E402
 from pydantic_ai.usage import UsageLimits  # noqa: E402
 
 from geoplanagent.utils import resolve_model, resolve_model_name  # noqa: E402
-from geoplanagent.run import extract_message_log_from_msgs  # noqa: E402
 from geoplanagent.tools.pdf import resolve_case_pdf  # noqa: E402
 from geoplanagent.metrics import calculate_spatial_metrics, load_geojson  # noqa: E402
 
@@ -380,15 +378,12 @@ def evaluate(args: argparse.Namespace) -> int:
     out_csv = out_dir / "results.csv"
     pred_dir = out_dir / "pred_geojsons"
     pred_dir.mkdir(parents=True, exist_ok=True)
-    traj_dir = out_dir / "trajectories"
-    traj_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Config:        {config_label}", flush=True)
     print(f"VLM model:     {args.vlm_model}", flush=True)
     print(f"Temperature:   {args.temperature}", flush=True)
     print(f"Output CSV:    {out_csv.relative_to(REPO_ROOT)}", flush=True)
     print(f"Pred geojson:  {pred_dir.relative_to(REPO_ROOT)}/<case>.geojson", flush=True)
-    print(f"Trajectories:  {traj_dir.relative_to(REPO_ROOT)}/<case>.json", flush=True)
 
     eval_root = Path(args.eval_dir)
 
@@ -468,7 +463,6 @@ def evaluate(args: argparse.Namespace) -> int:
             print(f"  -> sending {pdf_path.name} ({len(pdf_bytes) // 1024} KB)", flush=True)
             t_call = time.time()
             feature: Optional[GeoJSONFeature] = None
-            msgs: list = []
             usage = None
             schema_failure = False
 
@@ -490,7 +484,6 @@ def evaluate(args: argparse.Namespace) -> int:
                     usage_limits=UsageLimits(request_limit=4),
                 )
                 feature = result.output
-                msgs = list(result.all_messages())
                 usage = result.usage()
             except ValidationError as e:
                 schema_failure = True
@@ -578,27 +571,6 @@ def evaluate(args: argparse.Namespace) -> int:
                 )
             except Exception as _e:
                 print(f"  WARN: pred geojson dump failed: {_e!s:.80}", flush=True)
-
-            # Per-case trajectory (same shape as locate ablations).
-            try:
-                trajectory, traj_stats = extract_message_log_from_msgs(msgs)
-                traj_payload = {
-                    "case": case,
-                    "stratum": meta["stratum"],
-                    "config": {
-                        "approach": "vlm_e2e_pdf_to_geojson",
-                        "vlm_model": args.vlm_model,
-                        "temperature": args.temperature,
-                    },
-                    "metrics": metrics,
-                    "trajectory_stats": traj_stats,
-                    "trajectory": trajectory,
-                }
-                (traj_dir / f"{case.replace('/', '_').replace(':', '_')}.json").write_text(
-                    json.dumps(traj_payload, indent=2, default=str)
-                )
-            except Exception as _e:
-                print(f"  WARN: trajectory dump failed: {_e!s:.80}", flush=True)
 
             iou_val = metrics.get("iou") if valid_pred else None
             iou_s = f"{iou_val:.3f}" if iou_val is not None else "invalid"

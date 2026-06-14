@@ -66,7 +66,6 @@ from ablations._shared import (  # noqa: E402
     gt_part_centroids,
     nearest_part_err_km,
     print_err_km_summary,
-    write_trajectory,
 )
 from geoplanagent.agents.locate import (  # noqa: E402
     _LOCATE_TOOL_NAMES,
@@ -202,13 +201,10 @@ def evaluate(args: argparse.Namespace) -> int:
     out_dir = out_root / label
     out_dir.mkdir(parents=True, exist_ok=True)
     out_csv = out_dir / "locate_picks.csv"
-    traj_dir = out_dir / "trajectories"
-    traj_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Config:        {label!r} (disabled={sorted(disabled) or 'none'})")
     print(f"Locate model:  {args.locate_model}")
     print(f"Output CSV:    {out_csv.relative_to(REPO_ROOT)}")
-    print(f"Trajectories:  {traj_dir.relative_to(REPO_ROOT)}/<case>.json")
 
     cache_path = Path(args.cache)
     if not cache_path.exists():
@@ -316,7 +312,7 @@ def evaluate(args: argparse.Namespace) -> int:
             png_bytes = buf.tobytes()
 
             try:
-                pick, msgs = run_locate(
+                pick, _ = run_locate(
                     pdf_info=pi,
                     map_img_bytes=png_bytes,
                     model_name=args.locate_model,
@@ -346,21 +342,6 @@ def evaluate(args: argparse.Namespace) -> int:
             writer.writerow(row)
             f.flush()
             n_ok += 1
-
-            # Trajectory dump — per-case JSON capturing the full pick
-            # plus the locate sub-agent's tool-call trajectory. Binary
-            # content (e.g. the map PNG sent on the first user message)
-            # is summarised by extract_message_log_from_msgs, so the
-            # JSON stays small (~10-30 KB per case).
-            write_trajectory(
-                traj_dir,
-                case,
-                {"disabled_tools": sorted(disabled), "locate_model": args.locate_model},
-                pick,
-                err,
-                centroids,
-                msgs,
-            )
 
             if err is not None:
                 print(

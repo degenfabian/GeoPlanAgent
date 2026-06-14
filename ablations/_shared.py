@@ -85,33 +85,6 @@ def add_subset_args(parser) -> None:
     )
 
 
-def write_trajectory(traj_dir, case: str, config: dict, pick, err_km, centroids, msgs) -> None:
-    """Persist one locate trajectory JSON.
-
-    Never fails the case — the CSV row is already written; a
-    serialisation hiccup is only worth a warning. Case names may
-    contain ':' / '/' which are illegal on some filesystems.
-    """
-    import json
-    from geoplanagent.run import extract_message_log_from_msgs
-
-    try:
-        trajectory, traj_stats = extract_message_log_from_msgs(msgs)
-        payload = {
-            "case": case,
-            "config": config,
-            "pick": pick.model_dump(),
-            "err_km": err_km,
-            "gt_centroids": [{"lat": lat, "lon": lon} for lat, lon in centroids],
-            "trajectory_stats": traj_stats,
-            "trajectory": trajectory,
-        }
-        fs_case = case.replace("/", "_").replace(":", "_")
-        (traj_dir / f"{fs_case}.json").write_text(json.dumps(payload, indent=2, default=str))
-    except Exception as _e:
-        print(f"  WARN: trajectory dump failed: {_e!s:.80}", flush=True)
-
-
 def print_err_km_summary(out_csv) -> None:
     """Mean/median err_km aggregate printed at the end of a locate run."""
     import csv

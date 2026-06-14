@@ -173,26 +173,6 @@ def _build_candidate_panel(
     return np.vstack(padded[:-1])
 
 
-def _stack_candidate_panels(panels: List[np.ndarray]) -> Optional[np.ndarray]:
-    """Vertical stack of per-candidate blocks with spacers."""
-    panels = [panel for panel in panels if panel is not None]
-    if not panels:
-        return None
-    max_width = max(panel.shape[1] for panel in panels)
-    rows = []
-    for panel in panels:
-        if panel.shape[1] < max_width:
-            pad = np.full((panel.shape[0], max_width - panel.shape[1], 3), 240, dtype=np.uint8)
-            panel = np.hstack([panel, pad])
-        rows.append(panel)
-        rows.append(np.full((10, max_width, 3), 80, dtype=np.uint8))  # darker spacer
-    stacked = np.vstack(rows[:-1])
-    if stacked.shape[1] > 2000:
-        scale = 2000 / stacked.shape[1]
-        stacked = cv2.resize(stacked, (2000, int(stacked.shape[0] * scale)))
-    return stacked
-
-
 def _format_metrics_text(attempts: List[Dict[str, Any]], committed_ids: set) -> str:
     """Per-candidate metrics block; tags [COMMITTED] for each id in committed_ids."""
     lines = ["=== CANDIDATES ==="]
@@ -239,11 +219,8 @@ def _run_critic_once(state: Any, model_name: str, message_history: Optional[list
     iteration(s) — lets iter 2 reason about whether the worker's
     response to iter 1's directive actually helped.
 
-    Returns (directive, panel, cand_panels, wall_s, in_tokens, out_tokens,
-    llm_error, new_history).
-    - panel:        the stacked top-N view (for disk save / human audit)
-    - cand_panels:  list of (candidate_id, panel) for each shown candidate
-                    — same images sent to the LLM as separate inputs
+    Returns (directive, wall_s, in_tokens, out_tokens, llm_error,
+    new_history).
     - new_history:  updated message list for next iteration (None on error)
     """
     attempts = sorted(
@@ -291,9 +268,6 @@ def _run_critic_once(state: Any, model_name: str, message_history: Optional[list
         )
         if panel_image is not None:
             cand_panels_with_id.append((attempt.get("candidate_id"), panel_image))
-
-    # Aggregated stack — for disk save only, not sent to the LLM.
-    panel = _stack_candidate_panels([p for _, p in cand_panels_with_id])
 
     metrics_text = _format_metrics_text(shown, committed_ids)
     selection_note = (
@@ -376,8 +350,6 @@ def _run_critic_once(state: Any, model_name: str, message_history: Optional[list
     wall_s = time.time() - start_time
     return (
         directive,
-        panel,
-        cand_panels_with_id,
         wall_s,
         in_tokens,
         out_tokens,
@@ -606,8 +578,7 @@ def run_critic_loop(
         - iterations           : list of per-iter records (action, reasoning, ...)
         - n_rejections         : count of switch/retry_locate actions issued
         - tokens               : {request, response} totals across critic calls
-        - panels_by_iter       : per-iteration stacked panel (np.ndarray) for viz
-        - per_cand_panels_by_iter : per-iteration (candidate_id, panel) tuples
+        - final_worker_result  : latest worker result (for token/tool stats)
     """
     # Snapshot the worker's first commit BEFORE any critic intervention.
     worker_first_geojson = _snapshot_geojson(state)
@@ -624,11 +595,6 @@ def run_critic_loop(
     iterations: List[Dict[str, Any]] = []
     total_in_tokens = 0
     total_out_tokens = 0
-    panels_by_iter: List[Optional[np.ndarray]] = []
-    # per-iteration list of (candidate_id, panel) tuples — same images
-    # the LLM saw, saved separately so we can audit exactly what the
-    # critic was looking at when it made each decision.
-    per_cand_panels_by_iter: List[List[tuple]] = []
     current_worker_result = worker_result
     # Critic's own message history across iterations — lets iter 2
     # reason about whether iter 1's directive was followed and helped.
@@ -640,8 +606,6 @@ def run_critic_loop(
     for iter_idx in range(max_iters):
         (
             directive,
-            panel,
-            cand_panels,
             wall_s,
             iter_in_tokens,
             iter_out_tokens,
@@ -652,8 +616,6 @@ def run_critic_loop(
         # LLM error new_history is None and we keep prior history).
         if new_history is not None:
             critic_message_history = new_history
-        panels_by_iter.append(panel)
-        per_cand_panels_by_iter.append(cand_panels)
         total_in_tokens += iter_in_tokens
         total_out_tokens += iter_out_tokens
 
@@ -723,14 +685,9 @@ def run_critic_loop(
         "iterations": iterations,
         "n_rejections": n_rejections,
         "tokens": {"request": total_in_tokens, "response": total_out_tokens},
-        # Per-iteration stacked panel (for human-friendly debugging) +
-        # per-iteration per-candidate panels (the actual images the LLM
-        # received). Caller writes both to disk.
-        "panels_by_iter": panels_by_iter,
-        "per_cand_panels_by_iter": per_cand_panels_by_iter,
-        # The latest worker result — carries the full conversation
-        # including all critic-triggered rehand sub-turns. Use this for
-        # message_log extraction so the on-disk log includes critic
+        # The latest worker result — carries the full conversation including
+        # all critic-triggered rehand sub-turns. Used for agent-stats
+        # extraction so the per-run token/tool counts include those
         # interventions; otherwise the rehand turns are lost.
         "final_worker_result": current_worker_result,
     }

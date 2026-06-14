@@ -23,7 +23,6 @@ from geoplanagent.utils import (
     AgentState,
     _img_to_binary,
     _run_sync_with_retry,
-    committed_primary_page,
     resolve_model,
     resolve_model_name,
 )
@@ -196,18 +195,17 @@ def run_agent(
         )
 
     # If the critic triggered rehands, the post-critic result has the full
-    # conversation including those sub-turns — use it for log extraction.
+    # conversation including those sub-turns — use it for stats extraction.
     log_source_result = result
     if critic_result is not None and "error" not in critic_result:
         final_worker_result = critic_result.get("final_worker_result")
         if final_worker_result is not None:
             log_source_result = final_worker_result
 
-    message_log = []
     extracted_stats: dict = {}
     if log_source_result is not None:
         try:
-            message_log, extracted_stats = extract_message_log_from_msgs(
+            extracted_stats = extract_agent_stats_from_msgs(
                 log_source_result.all_messages()
             )
         except Exception:
@@ -228,7 +226,6 @@ def run_agent(
     return build_run_agent_return(
         state,
         agent_stats,
-        message_log,
         critic_result=critic_result,
     )
 
@@ -512,102 +509,41 @@ def cleanup_temp_pages(state: AgentState) -> None:
 # Message log + stats extraction
 
 
-def extract_message_log_from_msgs(messages: list) -> Tuple[list, dict]:
-    """Return (message_log, stats) for a pydantic-ai message list.
+def extract_agent_stats_from_msgs(messages: list) -> dict:
+    """Aggregate lightweight telemetry from a pydantic-ai message list.
 
-    stats keys: tool_calls, n_turns, validator_retries.
-    Binary content is summarised so the log is JSON-safe.
+    Returns counts only — ``tool_calls`` (name → invocation count),
+    ``n_turns`` (number of messages), and ``validator_retries`` (how many
+    ModelRetry / validation prompts fired). The raw conversation is never
+    retained: it carries the planning document's text and imagery, which we
+    deliberately do not persist.
     """
-    message_log: list = []
     tool_calls: Dict[str, int] = {}
-    turn_idx = 0
+    n_turns = 0
+    validator_retries = 0
 
     for msg in messages:
-        role = getattr(msg, "kind", type(msg).__name__)
-        parts = getattr(msg, "parts", None)
-        if not parts:
-            turn_idx += 1
-            continue
-        for part in parts:
-            kind = getattr(part, "kind", type(part).__name__)
-            kind_lower = kind.lower()
-            entry = {"turn": turn_idx, "role": role, "kind": kind}
-
+        n_turns += 1
+        for part in getattr(msg, "parts", None) or []:
+            kind_lower = getattr(part, "kind", type(part).__name__).lower()
             if "toolcall" in kind_lower:
                 name = getattr(part, "tool_name", "?")
                 tool_calls[name] = tool_calls.get(name, 0) + 1
-                entry["tool"] = name
-                entry["args"] = _coerce_args(getattr(part, "args", None))
+            elif kind_lower.startswith("retryprompt"):
+                validator_retries += 1
 
-            elif "toolreturn" in kind_lower:
-                entry["tool"] = getattr(part, "tool_name", "?")
-                entry["return"] = _coerce_return(getattr(part, "content", None))
-
-            elif "retry" in kind_lower:
-                retry_content = getattr(part, "content", None)
-                entry["retry_content"] = str(retry_content)[:1000] if retry_content else ""
-
-            elif "userprompt" in kind_lower:
-                content = getattr(part, "content", None)
-                if isinstance(content, list):
-                    n_images = sum(1 for x in content if hasattr(x, "media_type"))
-                    n_text = sum(1 for x in content if isinstance(x, str))
-                    entry["user_summary"] = f"{n_text} text + {n_images} images"
-                elif isinstance(content, str):
-                    entry["text"] = content[:500]
-
-            elif "text" in kind_lower or "thinking" in kind_lower:
-                entry["text"] = str(getattr(part, "content", ""))[:2000]
-
-            message_log.append(entry)
-        turn_idx += 1
-
-    validator_retries = 0
-    for e in message_log:
-        if e.get("kind", "").lower().startswith("retryprompt"):
-            validator_retries += 1
-
-    extracted = {
+    return {
         "tool_calls": tool_calls,
-        "n_turns": turn_idx,
+        "n_turns": n_turns,
         "validator_retries": validator_retries,
     }
-    return message_log, extracted
-
-
-def _coerce_args(args: Any) -> Any:
-    if args is None:
-        return {}
-    if isinstance(args, dict):
-        return {
-            k: (v if not isinstance(v, (bytes, bytearray)) else f"<bytes:{len(v)}>")
-            for k, v in args.items()
-        }
-    if isinstance(args, str):
-        try:
-            parsed = json.loads(args)
-            return parsed if isinstance(parsed, dict) else str(args)[:500]
-        except Exception:
-            return args[:500]
-    return str(args)[:500]
-
-
-def _coerce_return(content: Any) -> Any:
-    if isinstance(content, dict):
-        return {
-            k: (v if not isinstance(v, (bytes, bytearray)) else f"<bytes:{len(v)}>")
-            for k, v in content.items()
-        }
-    if isinstance(content, str):
-        return content[:1000]
-    return str(content)[:1000]
 
 
 def collect_agent_stats(
     state: AgentState,
     pdf_info: dict,
     result: Any,
-    message_log_extracted: Optional[dict] = None,
+    extracted_stats: Optional[dict] = None,
 ) -> dict:
     """Assemble the agent_stats dict that benchmark_runner persists."""
     agent_stats: dict = {
@@ -639,8 +575,8 @@ def collect_agent_stats(
         agent_stats["outcome_status"] = output.status
         agent_stats["rotation_checked"] = output.rotation_checked
 
-    if message_log_extracted:
-        agent_stats.update(message_log_extracted)
+    if extracted_stats:
+        agent_stats.update(extracted_stats)
 
     if result is not None:
         try:
@@ -665,7 +601,6 @@ def collect_agent_stats(
 def build_run_agent_return(
     state: AgentState,
     agent_stats: dict,
-    message_log: list,
     critic_result: Optional[dict] = None,
 ) -> dict:
     """Assemble the dict that run_agent returns to benchmark_runner.
@@ -677,27 +612,12 @@ def build_run_agent_return(
     worker's commit otherwise). This lets downstream score both
     conditions from a single run.
     """
-    primary_page = committed_primary_page(state)
-    primary_img = state.rendered_pages.get(primary_page) if primary_page else None
-    primary_mask = state.sam_masks_by_page.get(primary_page) if primary_page else None
-    primary_overlay = None
-    if primary_img is not None and primary_mask is not None:
-        sel = primary_img.copy()
-        sel[primary_mask > 0] = [0, 255, 0]
-        primary_overlay = cv2.addWeighted(primary_img, 0.5, sel, 0.5, 0)
     result_dict: Dict[str, Any] = {
         "success": True,
         "geojson": state.current_result.get("geojson"),
         "match_info": state.current_result.get("match_info", {}),
-        "mask": primary_mask,
-        "affine_H": state.current_result.get("affine_H"),
-        "tile_info_meta": {
-            k: v for k, v in (state.current_result.get("tile_info") or {}).items() if k != "image"
-        },
         "agent_reason": state.accept_reason,
         "agent_stats": agent_stats,
-        "message_log": message_log,
-        "selected_overlay": primary_overlay,
     }
     # Surface worker_first_geojson on BOTH the success path AND the
     # critic-error path — lets downstream distinguish "critic ran and
