@@ -22,12 +22,23 @@ MODEL_ALIASES = {
 }
 
 
-# Ground metres per zoom-0 tile pixel at the equator: 2π·6378137 / 256.
+# Web Mercator ground resolution: metres per pixel at zoom 0 on the
+# equator = equatorial circumference (2π · 6_378_137 m, the WGS84
+# equatorial radius) / 256 px per tile. At zoom z and latitude lat the
+# resolution is WEB_MERCATOR_C · cos(lat) / 2**z — used to pick the OS
+# tile zoom matching a printed map's scale (see best_zoom_for_scale).
 WEB_MERCATOR_C: float = 156543.03
 
-# Spherical Earth (~0.3% off vs ellipsoid at UK scale).
+# Mean spherical Earth radius (km) for haversine great-circle distances.
+# A sphere vs the WGS84 ellipsoid is ~0.3% off — negligible at UK scale.
 _EARTH_R_KM = 6371.0
 
+# Millimetres per inch — turns a render DPI (dots per inch) into a
+# physical mm-per-pixel in compute_map_mpp.
+MM_PER_INCH = 25.4
+
+# k-fold cross-validation folds: each case is segmented by the SAM3
+# adapter whose fold excluded it from training (no train/test leakage).
 N_FOLDS = 5
 
 
@@ -225,8 +236,7 @@ def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 
 
 def haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    """Great-circle distance in metres — a metres wrapper over haversine_km so
-    metric code doesn't hand-multiply by 1000."""
+    """Great-circle distance in metres — a metres wrapper over haversine_km."""
     return haversine_km(lat1, lon1, lat2, lon2) * 1000.0
 
 
@@ -239,7 +249,8 @@ def compute_map_mpp(scale_ratio, dpi: int = 200):
     """Ground metres per pixel for a 1:scale_ratio map rendered at dpi. None passes through."""
     if scale_ratio is None:
         return None
-    mm_per_px = 25.4 / dpi
+    # paper mm per pixel → ground metres (× scale_ratio), with mm→m (÷1000).
+    mm_per_px = MM_PER_INCH / dpi
     return mm_per_px / 1000.0 * scale_ratio
 
 
