@@ -21,8 +21,11 @@ os_opendata/
 *.log
 *.out
 
-# External dependency repo (cloned, not part of this project)
-MINIMA/
+# Vendored MINIMA-LoFTR matcher (Apache 2.0, trimmed to the LoFTR backbone).
+# Code is tracked; the large checkpoint is fetched via MINIMA/weights/download.sh.
+MINIMA/weights/*.ckpt
+MINIMA/weights/*.pth
+MINIMA/**/__pycache__/
 
 # Model weights — only the multi-GB .pt files are ignored. Track everything
 # else under models/: README, cv_summary.{json,csv}, per-fold history.json,
