@@ -119,6 +119,7 @@ def _run_case(
     dpi,
     max_iterations,
     force,
+    retry_failed,
     enable_critic,
     critic_max_iters,
     locate_model_name,
@@ -164,7 +165,11 @@ def _run_case(
         # entry has no worker_first_iou in either mode and stays valid.
         cached_had_critic = "worker_first_iou" in prev
         is_district = (prev.get("agent_stats") or {}).get("outcome_status") == "district_lookup"
-        if cached_had_critic != enable_critic and not is_district:
+        if retry_failed and prev.get("status") == "crashed":
+            # --retry-failed: re-run only cases whose cached run crashed
+            # (e.g. reader failures); ok / no_prediction cases stay cached.
+            print("  [retry-failed — re-running crashed case]")
+        elif cached_had_critic != enable_critic and not is_district:
             print(
                 f"  [cache mode mismatch — re-running] "
                 f"cached_had_critic={cached_had_critic} "
@@ -199,20 +204,22 @@ def _run_case(
         )
         dt = time.time() - t0
 
-        if not result.get("success"):
+        if result.get("status") == "crashed":
             err = result.get("error", "agent failed")
             print(f"  Error: {err}")
             # Fail fast only on invalid model ID (don't waste 200 cases)
             if "not a valid model ID" in str(err):
                 print("\n  FATAL: Invalid model ID, stopping benchmark.")
                 return True
-            # Still save what we can from failed cases
+            # Record the crash: status + stack trace + whatever partial state exists.
             case_dir.mkdir(parents=True, exist_ok=True)
             (case_dir / "metrics.json").write_text(
                 json.dumps(
                     {
                         "sl_no": sl_no,
+                        "status": "crashed",
                         "error": err,
+                        "traceback": result.get("traceback"),
                         "processing_time": dt,
                         "agent_stats": result.get("agent_stats", {}),
                     },
@@ -228,6 +235,7 @@ def _run_case(
                 {
                     "folder": folder_name,
                     "sl_no": sl_no,
+                    "status": "crashed",
                     "error": err,
                     "processing_time": dt,
                 }
@@ -237,12 +245,21 @@ def _run_case(
         geojson = result.get("geojson")
         mi = result.get("match_info", {})
 
-        # Compute metrics on the (final) geojson — this is the
-        # critic_iou when the critic is enabled, or the worker_iou
-        # when it isn't.
+        # Compute metrics on the (final) geojson — this is the critic_iou when
+        # the critic is enabled, or the worker_iou when it isn't. run_agent
+        # already returns status "no_prediction" when it produced no geojson;
+        # downgrade "ok" to "no_prediction" here if a polygon was produced but
+        # is unscorable (invalid geometry that buffer(0) can't repair).
+        status = result.get("status", "ok")
         metrics = {}
         if gt_geojson and geojson:
-            metrics = calculate_spatial_metrics(gt_geojson, geojson)
+            try:
+                metrics = calculate_spatial_metrics(gt_geojson, geojson)
+            except ValueError as e:
+                status = "no_prediction"
+                print(f"  WARNING: produced geometry is unscorable ({e}); recording no_prediction (IoU 0).")
+        elif not geojson:
+            print("  WARNING: no polygon produced; recording no_prediction (IoU 0).")
 
         iou = metrics.get("iou", 0)
 
@@ -279,6 +296,7 @@ def _run_case(
         # Core metrics (used for cache-hit detection on re-runs)
         metrics_payload = {
             "sl_no": sl_no,
+            "status": status,
             "match_info": mi,
             "processing_time": dt,
             "agent_stats": result.get("agent_stats", {}),
@@ -309,8 +327,23 @@ def _run_case(
         )
 
     except Exception as e:
+        # Last-resort guard: a failure in the per-case harness itself (scoring,
+        # file IO) rather than inside run_agent, which handles its own crashes.
+        # Record it as a crash with a trace so every case leaves exactly one
+        # metrics.json instead of silently vanishing.
+        tb = traceback.format_exc()
         traceback.print_exc()
-        all_results.append({"folder": folder_name, "sl_no": sl_no, "error": str(e)})
+        case_dir.mkdir(parents=True, exist_ok=True)
+        (case_dir / "metrics.json").write_text(
+            json.dumps(
+                {"sl_no": sl_no, "status": "crashed", "error": str(e), "traceback": tb},
+                indent=2,
+                default=str,
+            )
+        )
+        all_results.append(
+            {"folder": folder_name, "sl_no": sl_no, "status": "crashed", "error": str(e)}
+        )
     return False
 
 
@@ -325,6 +358,7 @@ def run_benchmark(
     eval_dir="evaluation_data",
     only_cases=None,
     force=False,
+    retry_failed=False,
     enable_critic=False,
     critic_max_iters=2,
     locate_model_name="google/gemini-3-flash-preview",
@@ -365,6 +399,7 @@ def run_benchmark(
             dpi=dpi,
             max_iterations=max_iterations,
             force=force,
+            retry_failed=retry_failed,
             enable_critic=enable_critic,
             critic_max_iters=critic_max_iters,
             locate_model_name=locate_model_name,
@@ -474,6 +509,12 @@ if __name__ == "__main__":
     )
     parser.add_argument("--force", action="store_true", help="Re-run even if cached results exist")
     parser.add_argument(
+        "--retry-failed",
+        action="store_true",
+        help="Re-run only cases whose cached metrics.json has status='crashed' "
+        "(e.g. reader failures); ok / no_prediction cases stay cached.",
+    )
+    parser.add_argument(
         "--enable-critic",
         action="store_true",
         help="Run an independent LLM critic after the worker "
@@ -516,6 +557,7 @@ if __name__ == "__main__":
         max_iterations=args.max_iterations,
         only_cases=args.cases,
         force=args.force,
+        retry_failed=args.retry_failed,
         enable_critic=args.enable_critic,
         critic_max_iters=args.critic_max_iters,
         locate_model_name=args.locate_model,

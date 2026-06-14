@@ -1,6 +1,5 @@
 """Live locate sub-agent: pdf_info + map page to one (lat, lon, sigma) LocatePick."""
 
-from __future__ import annotations
 import json
 import math
 import os
@@ -13,7 +12,7 @@ from pydantic import BaseModel, Field
 from pydantic_ai import Agent, BinaryContent, ModelRetry, RunContext
 from pydantic_ai.usage import UsageLimits
 
-from geoplanagent.utils import haversine_km, resolve_model
+from geoplanagent.utils import haversine_km, resolve_model, result_tokens
 from geoplanagent.prompts import LOCATE_PROMPT_PRODUCTION, LOCATE_PROMPT_ALL_TOOLS
 
 REPO = Path(__file__).resolve().parent.parent.parent
@@ -682,7 +681,7 @@ def run_locate(
 
     `usage_sink`: optional list. If supplied, one dict per invocation is
     appended:
-       {request_tokens, response_tokens, generation_id}
+       {request_tokens, response_tokens}
     The locate ablation harness doesn't pass it; the worker tool
     (``geoplanagent.tools.positioning.propose_centers``) does, so per-case cost
     telemetry survives in ``state.locate_calls``.
@@ -816,14 +815,12 @@ def run_locate(
         error = last_error if last_error is not None else RuntimeError("unknown locate failure")
         print(f"  [locate] FAILED: {error!s:.200}")
         pick = _emergency_la_centroid_pick(pdf_info, reason=f"agent failed: {error!s:.60}")
-        # Record a zero-token entry so the audit script can still count
-        # the invocation attempt (and so n_calls is accurate).
+        # Record a zero-token entry so n_calls still counts this attempt.
         if usage_sink is not None:
             usage_sink.append(
                 {
                     "request_tokens": 0,
                     "response_tokens": 0,
-                    "generation_id": None,
                     "error": f"{type(error).__name__}: {error!s:.120}",
                 }
             )
@@ -845,48 +842,10 @@ def run_locate(
 
     # Telemetry capture (no-op unless caller passed a sink).
     if usage_sink is not None:
-        try:
-            usage = result.usage()
-            request_tokens = getattr(usage, "request_tokens", None) or 0
-            response_tokens = getattr(usage, "response_tokens", None) or 0
-        except Exception:
-            request_tokens, response_tokens = 0, 0
-        usage_sink.append(
-            {
-                "request_tokens": int(request_tokens),
-                "response_tokens": int(response_tokens),
-                "generation_id": _extract_generation_id(result),
-            }
-        )
+        req_tokens, resp_tokens = result_tokens(result)
+        usage_sink.append({"request_tokens": req_tokens, "response_tokens": resp_tokens})
 
     return pick, all_messages
-
-
-def _extract_generation_id(result) -> Optional[str]:
-    """Best-effort dig the OpenRouter generation id out of a pydantic-ai result.
-
-    pydantic-ai's surfaced attribute name has shifted across versions
-    (``vendor_id`` → ``provider_response_id`` → stored inside
-    ``vendor_details``). Try the known shapes and return whichever lands
-    first; return None if none do — the audit script tolerates missing ids
-    and falls back to token-rate cost estimation for those calls.
-    """
-    try:
-        messages = list(result.all_messages())
-    except Exception:
-        return None
-    for msg in reversed(messages):
-        for attr in ("vendor_id", "provider_response_id", "model_response_id", "response_id"):
-            value = getattr(msg, attr, None)
-            if isinstance(value, str) and value:
-                return value
-        vendor_details = getattr(msg, "vendor_details", None)
-        if isinstance(vendor_details, dict):
-            for key in ("id", "generation_id", "openrouter_id"):
-                value = vendor_details.get(key)
-                if isinstance(value, str) and value:
-                    return value
-    return None
 
 
 def _print_locate_trajectory(result) -> None:

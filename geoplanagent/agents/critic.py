@@ -1,7 +1,5 @@
 """Pairwise LLM critic: reviews stored match_attempts post-worker-commit."""
 
-from __future__ import annotations
-
 import time
 from typing import Any, Dict, List, Literal, Optional
 
@@ -10,7 +8,7 @@ import numpy as np
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, BinaryContent
 
-from geoplanagent.utils import resolve_model
+from geoplanagent.utils import resolve_model, result_tokens
 from geoplanagent.prompts import CRITIC_INSTRUCTIONS
 
 
@@ -323,18 +321,7 @@ def _run_critic_once(state: Any, model_name: str, message_history: Optional[list
             new_history = result.all_messages()
         except Exception:
             new_history = None
-        try:
-            usage = result.usage()
-            # Prefer the modern pydantic-ai field names; fall back to the
-            # legacy aliases the rest of the codebase uses elsewhere.
-            in_tokens = int(
-                getattr(usage, "input_tokens", None) or getattr(usage, "request_tokens", 0) or 0
-            )
-            out_tokens = int(
-                getattr(usage, "output_tokens", None) or getattr(usage, "response_tokens", 0) or 0
-            )
-        except Exception:
-            pass
+        in_tokens, out_tokens = result_tokens(result)
     except Exception as error:
         # Surface the failure: emit an approve directive (so the loop
         # exits cleanly) but tag it so downstream can distinguish a
@@ -457,7 +444,7 @@ def _rehand_to_worker(
 
     Returns ``(worker_result, rehand_error_or_None)``.
     """
-    from geoplanagent.agents.worker import _agent
+    from geoplanagent.agents.worker import _worker_agent
 
     action = directive.action
     current_result = state.current_result or {}
@@ -517,7 +504,7 @@ def _rehand_to_worker(
         from geoplanagent.utils import run_sync_with_retry
 
         sub_result = run_sync_with_retry(
-            _agent,
+            _worker_agent,
             instruction,
             deps=state,
             message_history=history,
@@ -643,9 +630,19 @@ def run_critic_loop(
         # Apply the directive to state (switch = direct Python commit,
         # no worker LLM; retry_locate = worker re-invoked).
         before = _snapshot_geojson(state)
+        prev_worker_result = current_worker_result
         current_worker_result, rehand_error = _rehand_to_worker(
             state, current_worker_result, directive, verbose=verbose
         )
+        # A retry_locate rehand re-invokes the worker, yielding a NEW result
+        # object; fold its tokens into the critic total so the critic's
+        # reported cost includes the worker turns it triggered. switch / failed
+        # rehands return the SAME object, so the identity check avoids
+        # double-counting the original worker run (already in worker_*_tokens).
+        if rehand_error is None and current_worker_result is not prev_worker_result:
+            rehand_in, rehand_out = result_tokens(current_worker_result)
+            total_in_tokens += rehand_in
+            total_out_tokens += rehand_out
         after = _snapshot_geojson(state)
         iter_entry["geojson_changed"] = before != after
         if rehand_error is not None:

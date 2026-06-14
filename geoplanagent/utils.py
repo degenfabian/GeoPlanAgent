@@ -126,8 +126,8 @@ class AgentState:
         # to run_locate as `prior_messages` so the locate sub-agent sees
         # its previous reasoning + tool calls + pick.
         self.locate_message_history: List[Any] = []
-        # One {request_tokens, response_tokens, generation_id} dict per
-        # locate call; summed into agent_stats for cost telemetry.
+        # One {request_tokens, response_tokens} dict per locate call;
+        # summed into agent_stats for cost telemetry.
         self.locate_calls: List[Dict[str, Any]] = []
         # Each match attempt covers one area_group; commit_match references by id.
         self.match_attempts: Dict[int, Dict[str, Any]] = {}
@@ -225,6 +225,23 @@ def resolve_model_name(name: str) -> str:
 def resolve_model(name: str) -> OpenRouterModel:
     """Convenience: resolve alias + construct OpenRouterModel."""
     return OpenRouterModel(resolve_model_name(name))
+
+
+def result_tokens(result: Any) -> Tuple[int, int]:
+    """(input, output) token counts for a pydantic-ai result; (0, 0) on any
+    failure. Uses the modern field names, falling back to the deprecated
+    request_tokens/response_tokens aliases for older pydantic-ai."""
+    try:
+        usage = result.usage()
+        in_tokens = int(
+            getattr(usage, "input_tokens", None) or getattr(usage, "request_tokens", 0) or 0
+        )
+        out_tokens = int(
+            getattr(usage, "output_tokens", None) or getattr(usage, "response_tokens", 0) or 0
+        )
+        return in_tokens, out_tokens
+    except Exception:
+        return 0, 0
 
 
 def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:

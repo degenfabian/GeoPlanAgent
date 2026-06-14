@@ -1,7 +1,5 @@
 """Phase 2 worker Agent + output validator + history processor."""
 
-from __future__ import annotations
-
 import os
 
 from dotenv import load_dotenv
@@ -73,7 +71,7 @@ def _strip_old_images(messages):
     return messages
 
 
-_agent = Agent(
+_worker_agent = Agent(
     "test",  # overridden at runtime via model= kwarg
     deps_type=AgentState,
     output_type=BoundaryOutcome,
@@ -84,7 +82,7 @@ _agent = Agent(
 )
 
 
-@_agent.output_validator
+@_worker_agent.output_validator
 async def validate_boundary_outcome(
     ctx: RunContext[AgentState], out: BoundaryOutcome
 ) -> BoundaryOutcome:
@@ -141,7 +139,7 @@ async def validate_boundary_outcome(
     return out
 
 
-@_agent.system_prompt
+@_worker_agent.system_prompt
 def build_system_prompt(ctx: RunContext[AgentState]) -> str:
     """Pick the worker's system prompt: folded variant when the run
     skips the dedicated reader phase (--no-reader), standard otherwise."""

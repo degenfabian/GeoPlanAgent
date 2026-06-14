@@ -1,7 +1,5 @@
 """The worker agent's positioning tool surface: propose_centers, match_at, commit_match, submit_pdf_info, and lookup_district."""
 
-from __future__ import annotations
-
 from typing import Any, Dict, List, Optional
 
 import cv2
@@ -9,7 +7,7 @@ import numpy as np
 from pydantic_ai import ModelRetry, RunContext
 from pydantic_ai.tools import ToolDefinition
 
-from geoplanagent.agents.worker import _agent
+from geoplanagent.agents.worker import _worker_agent
 from geoplanagent.schemas import PDFInfo
 from geoplanagent.utils import AgentState, dedup_check
 
@@ -17,7 +15,7 @@ from geoplanagent.utils import AgentState, dedup_check
 # propose_centers
 
 
-@_agent.tool
+@_worker_agent.tool
 def propose_centers(
     ctx: RunContext[AgentState],
     extra_terms: Optional[List[str]] = None,
@@ -125,10 +123,8 @@ def propose_centers(
         extra_terms=extra_terms,
         # Telemetry sink: one dict per invocation appended to state.locate_calls.
         # Aggregated in run.collect_agent_stats so each metrics.json carries
-        # locate_request_tokens / locate_response_tokens / locate_n_calls plus
-        # the per-call dicts in agent_stats["locate_calls"] (whose
-        # generation_ids scripts/compute_costs.py turns into
-        # locate_generation_ids) alongside the reader + worker stats.
+        # locate_request_tokens / locate_response_tokens / locate_n_calls
+        # alongside the reader + worker stats.
         usage_sink=state.locate_calls,
     )
     state.locate_message_history = new_history
@@ -238,7 +234,7 @@ def _resolve_area_group(state: AgentState, page: int) -> int:
 # match_at
 
 
-@_agent.tool
+@_worker_agent.tool
 def match_at(
     ctx: RunContext[AgentState],
     page: int,
@@ -368,8 +364,8 @@ def match_at(
     geojson = page_result.get("geojson") if is_valid else None
 
     # Store the attempt. per_group is a 1-element list (kept for shape
-    # parity with the rest of the pipeline — the critic,
-    # _recompute_current_result, and build_error_stats all read per_group).
+    # parity with the rest of the pipeline — the critic and
+    # _recompute_current_result both read per_group).
     candidate_id = state._match_attempt_counter
     state._match_attempt_counter += 1
     state.match_attempts[candidate_id] = {
@@ -597,7 +593,7 @@ def _recompute_current_result(state: AgentState) -> None:
     }
 
 
-@_agent.tool
+@_worker_agent.tool
 def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
     """Commit a stored match_at attempt for its area_group.
 
@@ -718,7 +714,7 @@ def _is_empty_pdfinfo(info: PDFInfo) -> bool:
     )
 
 
-@_agent.tool(prepare=_hide_unless_folded)
+@_worker_agent.tool(prepare=_hide_unless_folded)
 def submit_pdf_info(ctx: RunContext[AgentState], info: PDFInfo) -> dict:
     """Initialise PDFInfo for this case. One-shot per case — this tool
     populates the PDFInfo that the positioning tools (propose_centers,
@@ -829,7 +825,7 @@ def submit_pdf_info(ctx: RunContext[AgentState], info: PDFInfo) -> dict:
 # Tool: lookup_district
 
 
-@_agent.tool
+@_worker_agent.tool
 def lookup_district(
     ctx: RunContext[AgentState],
     district_name: str,

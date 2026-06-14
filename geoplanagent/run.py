@@ -3,8 +3,6 @@ rendering with auto-rotation, the worker tool loop, and the optional
 critic pass, returning the final GeoJSON plus telemetry.
 """
 
-from __future__ import annotations
-
 import copy
 import json
 import traceback
@@ -21,11 +19,15 @@ from geoplanagent.utils import (
     run_sync_with_retry,
     resolve_model,
     resolve_model_name,
+    result_tokens,
 )
 from geoplanagent.agents.reader import _reader_agent
-from geoplanagent.agents.worker import _agent
+from geoplanagent.agents.worker import _worker_agent
 
-# Import registers the worker tools on the agent in definition order.
+# Side-effect import: importing positioning.py runs its @_worker_agent.tool
+# decorators, which is what registers the worker's tools on the agent.
+# Nothing here uses `positioning` directly, so it looks unused to the linter
+# (the trailing noqa) — but deleting it would leave the worker with no tools.
 from geoplanagent.tools import positioning as _positioning  # noqa: F401
 
 
@@ -37,7 +39,7 @@ def _public(pdf_info: dict) -> dict:
 def run_agent(
     pdf_path: str,
     models_state: dict,
-    model_name: str = "google/gemini-3.1-pro-preview",
+    model_name: str = "google/gemini-3-flash-preview",
     max_iterations: int = 12,
     dpi: int = 200,
     verbose: bool = True,
@@ -47,7 +49,10 @@ def run_agent(
     locate_model_name: str = "google/gemini-3-flash-preview",
     folded: bool = False,
 ) -> Dict[str, Any]:
-    """Run reader → worker on one planning PDF. Returns geojson, mask, stats.
+    """Run reader → worker (and optionally critic) on one planning PDF. Returns geojson, mask, stats.
+
+    model_name drives the reader, worker, and critic (they share one model);
+    locate_model_name is a separate model for the locate sub-agent.
 
     folded=True runs the folded-reader ablation: a single agent does both
     PDFInfo extraction and positioning. Phase 1 (the dedicated reader
@@ -59,7 +64,7 @@ def run_agent(
 
     sam3 = models_state.get("sam3_ft")
     if sam3 is None:
-        return {"success": False, "error": "No SAM3 model loaded"}
+        return _crashed("No SAM3 model loaded")
 
     # Phase 1: read the PDF (skipped in folded ablation)
     if folded:
@@ -77,6 +82,15 @@ def run_agent(
         )
     else:
         pdf_info = read_pdf_phase(pdf_path, model_name, verbose=verbose)
+        if pdf_info.get("error"):
+            # The reader couldn't parse the PDF, so the worker has no map
+            # pages or location signals to act on — a full worker run would
+            # just burn tokens for a guaranteed non-result. Fail fast with a
+            # crashed status (carries the reader error) so the case is flagged
+            # for a later rerun.
+            if verbose:
+                print(f"  Reader failed — skipping worker: {pdf_info['error']}")
+            return _crashed(f"reader failed: {pdf_info['error']}")
 
         # Phase 2 setup: state + worker user_parts
         state, user_parts = prepare_worker_state(
@@ -109,12 +123,11 @@ def run_agent(
         if verbose:
             print(f"  Agent error: {e}")
             traceback.print_exc()
-        return {
-            "success": False,
-            "error": str(e),
-            "geojson": state.current_result.get("geojson"),
-            "agent_stats": build_error_stats(state, e),
-        }
+        return _crashed(
+            str(e),
+            geojson=state.current_result.get("geojson"),
+            tb=traceback.format_exc(),
+        )
     else:
         outcome = result.output
         state.last_output = outcome
@@ -128,52 +141,17 @@ def run_agent(
             )
 
     # Phase 3 (optional): critic loop
-    # Snapshot the worker's first commit so critic-crash and critic-disabled
-    # stay distinguishable downstream.
-    critic_result: Optional[Dict[str, Any]] = None
-    worker_first_geojson_snapshot: Optional[dict] = None
-    can_run_critic = (
-        enable_critic
-        and state.accepted
-        and outcome is not None
-        and outcome.status != "district_lookup"
+    critic_result = run_critic_phase(
+        state,
+        result,
+        outcome,
+        enable_critic=enable_critic,
+        model_name=model_name,
+        critic_max_iters=critic_max_iters,
+        verbose=verbose,
     )
-    if can_run_critic:
-        # Deep-copy: protect the snapshot from any future in-place mutation.
-        worker_first_geojson_snapshot = copy.deepcopy(state.current_result.get("geojson"))
-        try:
-            from geoplanagent.agents.critic import run_critic_loop
 
-            if verbose:
-                print(f"  Phase 3: running LLM critic loop (max_iters={critic_max_iters})...")
-            critic_result = run_critic_loop(
-                state,
-                result,
-                model_name=model_name,
-                max_iters=critic_max_iters,
-                verbose=verbose,
-            )
-            if verbose:
-                n_rejections = critic_result.get("n_rejections", 0)
-                iterations = critic_result.get("iterations") or [{}]
-                final_action = iterations[-1].get("action", "?")
-                print(f"  Phase 3 done: {n_rejections} rejection(s), final_decision={final_action}")
-        except Exception as e:
-            if verbose:
-                print(f"  Phase 3 critic failed: {type(e).__name__}: {e}")
-                traceback.print_exc()
-            critic_result = {
-                "error": str(e)[:200],
-                "worker_first_geojson": worker_first_geojson_snapshot,
-            }
-
-    # Stats, soft quality gate, return
-    # In folded mode pdf_info was populated by the worker's submit_pdf_info
-    # tool call rather than Phase 1. Pull it back from state so the token
-    # telemetry reflects what the worker submitted.
-    if folded:
-        pdf_info = dict(state.pdf_info or {})
-
+    # Stats and return
     if verbose:
         match_info = state.current_result.get("match_info", {})
         print(
@@ -190,26 +168,7 @@ def run_agent(
         if final_worker_result is not None:
             log_source_result = final_worker_result
 
-    extracted_stats: dict = {}
-    if log_source_result is not None:
-        try:
-            extracted_stats = extract_agent_stats_from_msgs(
-                log_source_result.all_messages()
-            )
-        except Exception:
-            pass
-
-    agent_stats = collect_agent_stats(state, pdf_info, result, extracted_stats)
-
-    # Critic telemetry into agent_stats; geojsons go through build_run_agent_return.
-    if critic_result is not None and "error" not in critic_result:
-        agent_stats["critic"] = {
-            "n_rejections": critic_result.get("n_rejections", 0),
-            "iterations": list(critic_result.get("iterations") or []),
-            "tokens": critic_result.get("tokens", {}),
-        }
-    elif critic_result is not None:
-        agent_stats["critic"] = {"error": critic_result.get("error")}
+    agent_stats = collect_agent_stats(state, pdf_info, result, log_source_result, critic_result)
 
     return build_run_agent_return(
         state,
@@ -222,7 +181,7 @@ def run_agent(
 
 
 def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict:
-    """Reader → PDFInfo dict (+ _reader_tokens). Empty dict + 'error' on failure."""
+    """Reader → PDFInfo dict (+ _reader_tokens). {'error': str} on failure (run_agent then fails the case)."""
     pdf_bytes = Path(pdf_path).read_bytes()
 
     if verbose:
@@ -254,19 +213,14 @@ def read_pdf_phase(pdf_path: str, model_name: str, verbose: bool = True) -> dict
                 f"district={info['is_district_wide']}"
             )
 
-        usage = result.usage()
-        info["_reader_tokens"] = {
-            "request": usage.request_tokens,
-            "response": usage.response_tokens,
-        }
+        req_tokens, resp_tokens = result_tokens(result)
+        info["_reader_tokens"] = {"request": req_tokens, "response": resp_tokens}
         return info
 
     except UnexpectedModelBehavior as e:
         if verbose:
             print(f"  Phase 1 failed: {e}")
-        empty = PDFInfo().model_dump()
-        empty["error"] = str(e)
-        return empty
+        return {"error": str(e)}
 
 
 # Phase 2 setup: pre-render map pages, build worker user prompt
@@ -291,7 +245,8 @@ def prepare_worker_state(
         case_name=case_name,
         locate_model_name=locate_model_name,
     )
-    state.pdf_info = _public(pdf_info)
+    public_info = _public(pdf_info)
+    state.pdf_info = public_info
 
     map_pages = pdf_info.get("map_pages", []) or []
     map_page_details = pdf_info.get("map_page_details", []) or []
@@ -310,48 +265,8 @@ def prepare_worker_state(
                 state.rotation_checked = True
             state.rendered_pages[int(page_1based)] = page_img
 
-    summary_text = json.dumps(_public(pdf_info), indent=2)
-    roles_line = ""
-    if map_page_details:
-        roles = ", ".join(
-            f"page {detail.get('page', '?')}=["
-            f"{detail.get('category', '?')}, "
-            f"grp={detail.get('area_group', '?')}, "
-            f"{detail.get('boundary_clarity', '?')}/"
-            f"{detail.get('detail_level', '?')}"
-            f"] {(detail.get('caption') or '')[:60]!r}"
-            for detail in map_page_details
-        )
-        roles_line = (
-            "\nMap-page metadata (only category='match' pages are pre-"
-            "rendered; pass the page number you want as match_at's "
-            f"`page` argument): {roles}\n"
-        )
-        by_group: dict[int, list[int]] = {}
-        page_to_group = {
-            int(detail["page"]): int(detail.get("area_group", 0))
-            for detail in map_page_details
-            if detail.get("category") == "match"
-        }
-        for page in map_pages:
-            group = page_to_group.get(int(page))
-            if group is None:
-                continue
-            by_group.setdefault(group, []).append(int(page))
-        if by_group:
-            grouped = "; ".join(
-                f"Group {group}: pages {pages} (primary={pages[0]}"
-                + (f", alternates={pages[1:]}" if len(pages) > 1 else "")
-                + ")"
-                for group, pages in sorted(by_group.items())
-            )
-            roles_line += (
-                "\nMatch pages by area_group (each match_at call covers "
-                "ONE group — iterate propose_centers → match_at → "
-                "commit_match per group; to retry a specific group, "
-                "pass `page=<next alternate in that group>`): "
-                f"{grouped}\n"
-            )
+    summary_text = json.dumps(public_info, indent=2)
+    roles_line = _build_map_roles_line(map_page_details, map_pages)
     user_parts: list = [
         f"PDF EXTRACTION SUMMARY:\n{summary_text}\n{roles_line}\n"
         f"Use this information to geolocate and extract the planning boundary. "
@@ -366,6 +281,55 @@ def prepare_worker_state(
         user_parts.append(f"Map page {map_pages[0]}:")
         user_parts.append(img_to_binary(primary_img))
     return state, user_parts
+
+
+def _build_map_roles_line(map_page_details: list, map_pages: list) -> str:
+    """Worker-prompt line (verbatim, LLM-visible) describing each match page
+    and grouping the pages by area_group, so the worker knows which page to
+    pass to match_at per group. Returns "" when there is no map metadata.
+    """
+    if not map_page_details:
+        return ""
+    roles = ", ".join(
+        f"page {detail.get('page', '?')}=["
+        f"{detail.get('category', '?')}, "
+        f"grp={detail.get('area_group', '?')}, "
+        f"{detail.get('boundary_clarity', '?')}/"
+        f"{detail.get('detail_level', '?')}"
+        f"] {(detail.get('caption') or '')[:60]!r}"
+        for detail in map_page_details
+    )
+    roles_line = (
+        "\nMap-page metadata (only category='match' pages are pre-"
+        "rendered; pass the page number you want as match_at's "
+        f"`page` argument): {roles}\n"
+    )
+    by_group: dict[int, list[int]] = {}
+    page_to_group = {
+        int(detail["page"]): int(detail["area_group"])
+        for detail in map_page_details
+        if detail.get("category") == "match"
+    }
+    for page in map_pages:
+        group = page_to_group.get(int(page))
+        if group is None:
+            continue
+        by_group.setdefault(group, []).append(int(page))
+    if by_group:
+        grouped = "; ".join(
+            f"Group {group}: pages {pages} (primary={pages[0]}"
+            + (f", alternates={pages[1:]}" if len(pages) > 1 else "")
+            + ")"
+            for group, pages in sorted(by_group.items())
+        )
+        roles_line += (
+            "\nMatch pages by area_group (each match_at call covers "
+            "ONE group — iterate propose_centers → match_at → "
+            "commit_match per group; to retry a specific group, "
+            "pass `page=<next alternate in that group>`): "
+            f"{grouped}\n"
+        )
+    return roles_line
 
 
 # Folded ablation: no reader phase, worker fills PDFInfo itself
@@ -427,7 +391,7 @@ def invoke_worker(
     """Run the worker tool loop. Returns the pydantic-ai result or raises."""
     model = resolve_model(model_name)
     return run_sync_with_retry(
-        _agent,
+        _worker_agent,
         user_parts,
         deps=state,
         model=model,
@@ -436,35 +400,61 @@ def invoke_worker(
     )
 
 
-# Phase 2 error path: dump partial state
+# Phase 3 (optional): critic loop
 
 
-def build_error_stats(state: AgentState, exc: Exception) -> dict:
-    """agent_stats record for a mid-run worker error (no pdf_info — that is personal data)."""
-    return {
-        "error": str(exc),
-        "error_type": type(exc).__name__,
-        "current_match_info": state.current_result.get("match_info", {}),
-        "match_attempts_summary": {
-            cid: {
-                "name": a.get("name"),
-                "lat": a.get("lat"),
-                "lon": a.get("lon"),
-                "area_group": a.get("requested_group"),
-                "page": a.get("requested_page"),
-                "n_inliers": (
-                    ((a.get("per_group") or [{}])[0].get("match_info") or {}).get("n_inliers")
-                ),
-            }
-            for cid, a in (state.match_attempts or {}).items()
-        },
-        "n_commits": state.n_commits,
-        "rotation_checked": state.rotation_checked,
-        "last_output": (state.last_output.model_dump() if state.last_output is not None else None),
-    }
+def run_critic_phase(
+    state: AgentState,
+    result: Any,
+    outcome: Optional[BoundaryOutcome],
+    enable_critic: bool,
+    model_name: str,
+    critic_max_iters: int,
+    verbose: bool,
+) -> Optional[Dict[str, Any]]:
+    """Run the LLM critic loop when it is enabled.
 
+    Returns the critic_result dict, or None when the critic is skipped
+    (disabled or a district lookup — nothing to review).
+    On a critic crash, returns {"error", "worker_first_geojson"} so downstream
+    can tell a mid-run critic failure apart from the critic being disabled.
+    """
+    if not (
+        enable_critic
+        and state.accepted
+        and outcome is not None
+        and outcome.status != "district_lookup"
+    ):
+        return None
 
-# Cleanup
+    # Deep-copy: protect the snapshot from any future in-place mutation.
+    worker_first_geojson_snapshot = copy.deepcopy(state.current_result.get("geojson"))
+    try:
+        from geoplanagent.agents.critic import run_critic_loop
+
+        if verbose:
+            print(f"  Phase 3: running LLM critic loop (max_iters={critic_max_iters})...")
+        critic_result = run_critic_loop(
+            state,
+            result,
+            model_name=model_name,
+            max_iters=critic_max_iters,
+            verbose=verbose,
+        )
+        if verbose:
+            n_rejections = critic_result.get("n_rejections", 0)
+            iterations = critic_result.get("iterations") or [{}]
+            final_action = iterations[-1].get("action", "?")
+            print(f"  Phase 3 done: {n_rejections} rejection(s), final_decision={final_action}")
+        return critic_result
+    except Exception as e:
+        if verbose:
+            print(f"  Phase 3 critic failed: {type(e).__name__}: {e}")
+            traceback.print_exc()
+        return {
+            "error": str(e)[:200],
+            "worker_first_geojson": worker_first_geojson_snapshot,
+        }
 
 
 # Message log + stats extraction
@@ -475,9 +465,7 @@ def extract_agent_stats_from_msgs(messages: list) -> dict:
 
     Returns counts only — ``tool_calls`` (name → invocation count),
     ``n_turns`` (number of messages), and ``validator_retries`` (how many
-    ModelRetry / validation prompts fired). The raw conversation is never
-    retained: it carries the planning document's text and imagery, which we
-    deliberately do not persist.
+    ModelRetry / validation prompts fired).
     """
     tool_calls: Dict[str, int] = {}
     n_turns = 0
@@ -504,9 +492,16 @@ def collect_agent_stats(
     state: AgentState,
     pdf_info: dict,
     result: Any,
-    extracted_stats: Optional[dict] = None,
+    log_source_result: Any = None,
+    critic_result: Optional[dict] = None,
 ) -> dict:
-    """Assemble the agent_stats dict that benchmark_runner persists."""
+    """Assemble the agent_stats dict that benchmark_runner persists.
+
+    ``result`` supplies the worker token usage; ``log_source_result`` is the
+    conversation mined for tool-call / turn counts — normally the same object,
+    but the critic's post-rehand result when the critic intervened.
+    ``critic_result`` (when the critic ran) adds the ``critic`` sub-record.
+    """
     agent_stats: dict = {
         "n_commits": state.n_commits,
     }
@@ -518,45 +513,63 @@ def collect_agent_stats(
     # Locate sub-agent telemetry
     # Populated by ``geoplanagent.tools.positioning.propose_centers`` via the
     # ``usage_sink=state.locate_calls`` kwarg threaded into ``run_locate``.
-    # Legacy ``metrics.json`` files that pre-date the telemetry patch lack
-    # the locate_* keys (read back as 0) — safe to compare against.
     locate_calls = state.locate_calls
     locate_req = sum(int(c.get("request_tokens", 0) or 0) for c in locate_calls)
     locate_resp = sum(int(c.get("response_tokens", 0) or 0) for c in locate_calls)
     agent_stats["locate_n_calls"] = len(locate_calls)
     agent_stats["locate_request_tokens"] = locate_req
     agent_stats["locate_response_tokens"] = locate_resp
-    if locate_calls:
-        # Keep per-call records (small) so the audit script can query
-        # OpenRouter's /v1/generation?id=<gen_id> for exact billed cost.
-        agent_stats["locate_calls"] = locate_calls
 
     if state.last_output is not None:
         output = state.last_output
         agent_stats["outcome_status"] = output.status
         agent_stats["rotation_checked"] = output.rotation_checked
 
-    if extracted_stats:
-        agent_stats.update(extracted_stats)
-
-    if result is not None:
+    if log_source_result is not None:
         try:
-            usage = result.usage()
-            agent_stats["worker_request_tokens"] = usage.request_tokens
-            agent_stats["worker_response_tokens"] = usage.response_tokens
-            reader_total = sum(reader_tokens.values()) if reader_tokens else 0
-            worker_total = (usage.request_tokens or 0) + (usage.response_tokens or 0)
-            # NB: totals now INCLUDE locate_* if telemetry is present.
-            # Old cached metrics.json files that pre-date this patch will
-            # have locate_* = 0, so their totals are reader + worker only
-            # (matching the paper's $/doc computation).
-            agent_stats["total_tokens"] = reader_total + worker_total + locate_req + locate_resp
+            agent_stats.update(extract_agent_stats_from_msgs(log_source_result.all_messages()))
         except Exception:
             pass
+
+    if result is not None:
+        worker_req, worker_resp = result_tokens(result)
+        agent_stats["worker_request_tokens"] = worker_req
+        agent_stats["worker_response_tokens"] = worker_resp
+        reader_total = sum(reader_tokens.values()) if reader_tokens else 0
+        agent_stats["total_tokens"] = (
+            reader_total + worker_req + worker_resp + locate_req + locate_resp
+        )
+
+    # Critic sub-record (geojsons go through build_run_agent_return, not here).
+    if critic_result is not None and "error" not in critic_result:
+        agent_stats["critic"] = {
+            "n_rejections": critic_result.get("n_rejections", 0),
+            "iterations": list(critic_result.get("iterations") or []),
+            "tokens": critic_result.get("tokens", {}),
+        }
+    elif critic_result is not None:
+        agent_stats["critic"] = {"error": critic_result.get("error")}
+
     return agent_stats
 
 
 # Return-dict assembly
+
+
+def _crashed(error: str, geojson: Optional[dict] = None, tb: Optional[str] = None) -> Dict[str, Any]:
+    """run_agent return dict for a hard failure (status='crashed') — the
+    crashed-path counterpart to build_run_agent_return. ``tb`` is the formatted
+    traceback for an actual exception; the guard paths pass None.
+    """
+    result: Dict[str, Any] = {
+        "status": "crashed",
+        "error": error,
+        "geojson": geojson,
+        "agent_stats": {},
+    }
+    if tb is not None:
+        result["traceback"] = tb
+    return result
 
 
 def build_run_agent_return(
@@ -573,9 +586,10 @@ def build_run_agent_return(
     worker's commit otherwise). This lets downstream score both
     conditions from a single run.
     """
+    geojson = state.current_result.get("geojson")
     result_dict: Dict[str, Any] = {
-        "success": True,
-        "geojson": state.current_result.get("geojson"),
+        "status": "ok" if geojson else "no_prediction",
+        "geojson": geojson,
         "match_info": state.current_result.get("match_info", {}),
         "agent_reason": state.accept_reason,
         "agent_stats": agent_stats,
