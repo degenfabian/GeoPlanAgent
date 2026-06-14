@@ -72,11 +72,17 @@ class AgentState:
 
         self.accepted = False
         self.accept_reason = ""
-        self.recent_calls: set = set()
+        # Hashes of (tool, args) already issued this case; _dedup_check
+        # blocks an exact repeat with a ModelRetry.
+        self.seen_call_keys: set = set()
+        # Count of committed matches (incremented in commit_match); a
+        # metrics.json telemetry field.
         self.position_calls: int = 0
 
         self.pdf_info: Dict[str, Any] = {}
         self.rotation_checked: bool = False
+        # The current BoundaryOutcome. The critic can update this, so it may
+        # differ from the worker's original result.output.
         self.last_output: Optional["BoundaryOutcome"] = None
 
         # Locate sub-agent's picked candidates (one entry usually).
@@ -145,12 +151,12 @@ def _dedup_check(state: "AgentState", tool_name: str, args: dict) -> None:
         + ":"
         + hashlib.md5(json.dumps(args, sort_keys=True, default=str).encode()).hexdigest()
     )
-    if key in state.recent_calls:
+    if key in state.seen_call_keys:
         raise ModelRetry(
             "You already called this tool with the same arguments. "
             "Try different arguments or respond with DONE."
         )
-    state.recent_calls.add(key)
+    state.seen_call_keys.add(key)
 
 
 # Status codes that are typically transient and worth retrying. 400 is

@@ -490,7 +490,7 @@ def _rehand_to_worker(
         # match_at, the exception is swallowed below, and the critic's
         # intended fix is lost with no on-disk trace.
         state.match_at_budget = max(state.match_at_budget, 0) + 2
-        state.recent_calls = set()
+        state.seen_call_keys = set()
         instruction = (
             f"Reconsider your commit. None of your stored match "
             f"candidates appear to align with the boundary drawn on the "
