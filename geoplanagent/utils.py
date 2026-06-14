@@ -29,17 +29,21 @@ class AgentState:
         locate_model_name: str,
         folded_mode: bool = False,
     ):
-        """Bundle the per-case inputs every tool call reads via ctx.deps.
+        """The shared state for one case.
+
+        Built once per document and handed to every tool, so each tool reads
+        the models, paths, and options it needs from one place.
 
         Args:
-            pdf_path: path to the case PDF.
+            pdf_path: path to the PDF of the current Article 4 planning application.
             minima_matcher: shared MINIMA-LoFTR matcher (loaded once, reused
                 across all cases).
             dpi: render resolution for map pages.
-            sam3_state: the SAM3 segmentation bundle from the loader —
-                ``{processor, model, device, kind, + k-fold adapter routing}``.
-                positioning.py reads processor/model/device from it and
-                switches the LoRA fold per case via ``set_fold_for_case``.
+            sam3_state: the loaded SAM3 segmentation model and everything it
+                needs to run, bundled together by the loader. SAM3 is
+                fine-tuned in several folds; before a case is segmented, the
+                fold that was not trained on that case is selected, so the
+                model is never evaluated on data it learned from.
             case_name: case folder name; drives k-fold adapter routing and
                 telemetry. Derived from ``pdf_path`` when not given.
             locate_model_name: model id for the locate sub-agent.
