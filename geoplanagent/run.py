@@ -47,7 +47,6 @@ def run_agent(
     dpi: int = 200,
     verbose: bool = True,
     case_name: Optional[str] = None,
-    case_dir: Optional[Path] = None,
     enable_critic: bool = False,
     critic_max_iters: int = 2,
     locate_model_name: str = "google/gemini-3-flash-preview",
@@ -178,26 +177,6 @@ def run_agent(
                 "error": str(e)[:200],
                 "worker_first_geojson": worker_first_geojson_snapshot,
             }
-
-    # Write critic-panel PNGs to disk for post-hoc debugging.
-    if critic_result is not None and "error" not in critic_result and case_dir is not None:
-        try:
-            case_dir.mkdir(parents=True, exist_ok=True)
-            for iter_idx, panel in enumerate(critic_result.get("panels_by_iter") or []):
-                if panel is None:
-                    continue
-                cv2.imwrite(str(case_dir / f"critic_panel_iter{iter_idx}.png"), panel)
-            for iter_idx, cand_panels in enumerate(
-                critic_result.get("per_cand_panels_by_iter") or []
-            ):
-                for cand_id, cand_panel in cand_panels or []:
-                    if cand_panel is None:
-                        continue
-                    path = case_dir / f"critic_panel_iter{iter_idx}_cand{cand_id}.png"
-                    cv2.imwrite(str(path), cand_panel)
-        except Exception as e:
-            if verbose:
-                print(f"  Warning: failed to save critic panels: {e}")
 
     # Cleanup, stats, soft quality gate, return
     cleanup_temp_pages(state)

@@ -194,7 +194,6 @@ def _run_case(
             dpi=dpi,
             verbose=True,
             case_name=folder_name,
-            case_dir=case_dir,
             enable_critic=enable_critic,
             critic_max_iters=critic_max_iters,
             locate_model_name=locate_model_name,
