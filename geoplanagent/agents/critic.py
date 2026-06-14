@@ -405,11 +405,11 @@ def _direct_switch_commit(
     group_id = int(candidate.get("requested_group", 0))
     state.committed_groups[group_id] = int(chosen_id)
     _recompute_current_result(state)
-    # Mirror commit_match's position_calls increment so agent_stats
+    # Mirror commit_match's n_commits increment so agent_stats
     # accurately reflects total commits, including critic-driven
     # switches. Without this, the metric undercounts commits whenever
     # the critic flips the worker's pick.
-    state.position_calls += 1
+    state.n_commits += 1
 
     # Synthesise a BoundaryOutcome for downstream consumers that read
     # ``state.last_output``. Preserve the prior status when available

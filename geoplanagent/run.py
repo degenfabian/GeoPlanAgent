@@ -458,7 +458,7 @@ def build_error_stats(state: AgentState, exc: Exception) -> dict:
             }
             for cid, a in (state.match_attempts or {}).items()
         },
-        "position_calls": state.position_calls,
+        "n_commits": state.n_commits,
         "rotation_checked": state.rotation_checked,
         "last_output": (state.last_output.model_dump() if state.last_output is not None else None),
     }
@@ -508,7 +508,7 @@ def collect_agent_stats(
 ) -> dict:
     """Assemble the agent_stats dict that benchmark_runner persists."""
     agent_stats: dict = {
-        "position_calls": state.position_calls,
+        "n_commits": state.n_commits,
     }
     reader_tokens = pdf_info.get("_reader_tokens", {}) or {}
     if reader_tokens:

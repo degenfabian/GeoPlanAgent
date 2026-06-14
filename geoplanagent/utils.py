@@ -77,7 +77,7 @@ class AgentState:
         self.seen_call_keys: set = set()
         # Count of committed matches (incremented in commit_match); a
         # metrics.json telemetry field.
-        self.position_calls: int = 0
+        self.n_commits: int = 0
 
         self.pdf_info: Dict[str, Any] = {}
         self.rotation_checked: bool = False

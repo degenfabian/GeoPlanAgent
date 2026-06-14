@@ -643,7 +643,7 @@ def commit_match(ctx: RunContext[AgentState], candidate_id: int) -> dict:
     group_id = int(candidate.get("requested_group", 0))
     state.committed_groups[group_id] = int(candidate_id)
     _recompute_current_result(state)
-    state.position_calls += 1
+    state.n_commits += 1
 
     # Count the number of polygons in the now-unioned final geojson.
     geojson = state.current_result.get("geojson")
