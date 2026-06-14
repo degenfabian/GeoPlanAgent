@@ -193,7 +193,6 @@ def is_http_error(e: Exception) -> bool:
 def run_sync_with_retry(
     agent_obj,
     user_prompt,
-    *,
     max_retries: int = 2,
     backoff_s: float = 5.0,
     label: str = "agent",
