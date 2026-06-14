@@ -616,7 +616,7 @@ def _image_media_type(img_bytes: bytes) -> str:
     return "image/png"  # default — pydantic-ai expects something
 
 
-from geoplanagent.utils import is_transient_http_error as _is_transient_error  # noqa: E402
+from geoplanagent.utils import is_http_error  # noqa: E402
 
 
 # Entry point
@@ -802,7 +802,7 @@ def run_locate(
             break
         except Exception as e:
             last_error = e
-            if attempt < MAX_RETRIES and _is_transient_error(e):
+            if attempt < MAX_RETRIES and is_http_error(e):
                 wait_seconds = 2**attempt
                 print(
                     f"  [locate] transient error (attempt {attempt + 1}/"

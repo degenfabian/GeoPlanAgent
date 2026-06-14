@@ -3,7 +3,6 @@
 import hashlib
 import json
 import math
-import re
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -151,39 +150,24 @@ def _dedup_check(state: "AgentState", tool_name: str, args: dict) -> None:
     state.seen_call_keys.add(key)
 
 
-# Status codes that are typically transient and worth retrying. 400 is
-# included because OpenRouter routinely surfaces upstream Gemini hiccups
-# (rate limit, model overload, transient safety-check backend failures)
-# as a generic 400 with body "Provider returned error"; 413 (payload too
-# large, e.g. an oversized image) is likewise retried.
-_RETRYABLE_STATUS = {400, 408, 413, 425, 429, 500, 502, 503, 504}
+def is_http_error(e: Exception) -> bool:
+    """True if this is a provider HTTP error worth retrying.
 
-
-def _is_retryable_http_error(exc: Exception) -> bool:
-    """True if this exception looks like a transient OpenRouter/provider hiccup."""
+    We retry on ANY HTTP status — OpenRouter surfaces transient upstream
+    hiccups across a wide range (400 / 413 / 429 / 5xx), so the specific
+    code isn't a reliable signal. Matches both pydantic-ai's wrapped
+    ModelHTTPError and raw transport errors that carry a status code in
+    their message. Non-HTTP errors (auth, bad input, ModelRetry) return
+    False, so the caller re-raises them immediately.
+    """
     try:
         from pydantic_ai.exceptions import ModelHTTPError
+
+        if isinstance(e, ModelHTTPError):
+            return True
     except Exception:
-        return False
-    if not isinstance(exc, ModelHTTPError):
-        return False
-    status_match = re.search(r"status_code:\s*(\d+)", str(exc))
-    if not status_match:
-        return False
-    return int(status_match.group(1)) in _RETRYABLE_STATUS
-
-
-# Substring forms of the same canonical status set, for raw transport
-# exceptions that aren't wrapped in ModelHTTPError.
-_TRANSIENT_HTTP_MARKERS = tuple(f"status_code: {s}" for s in sorted(_RETRYABLE_STATUS))
-
-
-def is_transient_http_error(e: Exception) -> bool:
-    """Substring variant of _is_retryable_http_error for raw transport
-    exceptions that aren't wrapped in ModelHTTPError (used by the locate
-    sub-agent's own retry loop)."""
-    message = str(e).lower()
-    return any(marker.lower() in message for marker in _TRANSIENT_HTTP_MARKERS)
+        pass
+    return "status_code:" in str(e).lower()
 
 
 def _run_sync_with_retry(
@@ -198,7 +182,7 @@ def _run_sync_with_retry(
         try:
             return agent_obj.run_sync(*args, **kwargs)
         except Exception as error:
-            if not _is_retryable_http_error(error) or attempt == max_retries:
+            if not is_http_error(error) or attempt == max_retries:
                 raise
             wait_s = backoff_s * (2**attempt)
             print(
