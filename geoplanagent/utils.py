@@ -191,16 +191,25 @@ def is_http_error(e: Exception) -> bool:
 
 
 def run_sync_with_retry(
-    agent_obj, *args, max_retries: int = 2, backoff_s: float = 5.0, label: str = "agent", **kwargs
+    agent_obj,
+    user_prompt,
+    *,
+    max_retries: int = 2,
+    backoff_s: float = 5.0,
+    label: str = "agent",
+    **run_kwargs,
 ):
     """Wrap Agent.run_sync with retries on transient HTTP errors.
 
-    Non-retryable errors (auth, bad input, ModelRetry / UnexpectedModelBehavior)
-    are re-raised immediately so we don't waste cycles.
+    ``user_prompt`` and ``run_kwargs`` (model, deps, usage_limits,
+    message_history, …) are passed straight through to
+    ``agent_obj.run_sync``. Non-retryable errors (auth, bad input,
+    ModelRetry / UnexpectedModelBehavior) are re-raised immediately so we
+    don't waste cycles.
     """
     for attempt in range(max_retries + 1):
         try:
-            return agent_obj.run_sync(*args, **kwargs)
+            return agent_obj.run_sync(user_prompt, **run_kwargs)
         except Exception as error:
             if not is_http_error(error) or attempt == max_retries:
                 raise
