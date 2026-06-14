@@ -14,6 +14,22 @@ from pydantic_ai.models.openrouter import OpenRouterModel
 
 from geoplanagent.schemas import BoundaryOutcome
 
+MODEL_ALIASES = {
+    "claude-opus": "anthropic/claude-opus-4.7",
+    "gpt-5.5-pro": "openai/gpt-5.5-pro",
+    "gemini-pro": "google/gemini-3.1-pro-preview",
+    "gemini-flash": "google/gemini-3-flash-preview",
+}
+
+
+# Ground metres per zoom-0 tile pixel at the equator: 2π·6378137 / 256.
+WEB_MERCATOR_C: float = 156543.03
+
+# Spherical Earth (~0.3% off vs ellipsoid at UK scale).
+_EARTH_R_KM = 6371.0
+
+N_FOLDS = 5
+
 
 class AgentState:
     """Mutable state shared across all tool calls."""
@@ -153,20 +169,13 @@ def dedup_check(state: "AgentState", tool_name: str, args: dict) -> None:
 def is_http_error(e: Exception) -> bool:
     """True if this is a provider HTTP error worth retrying.
 
-    We retry on ANY HTTP status — OpenRouter surfaces transient upstream
-    hiccups across a wide range (400 / 413 / 429 / 5xx), so the specific
-    code isn't a reliable signal. Matches both pydantic-ai's wrapped
-    ModelHTTPError and raw transport errors that carry a status code in
-    their message. Non-HTTP errors (auth, bad input, ModelRetry) return
-    False, so the caller re-raises them immediately.
+    Retries on ANY HTTP status — OpenRouter surfaces transient upstream
+    hiccups across a wide range, so the specific code isn't a reliable
+    signal. Both pydantic-ai's ModelHTTPError and raw transport errors put
+    the status in their message (``status_code: 503, ...``), so this one
+    substring catches both; non-HTTP errors (auth, bad input, ModelRetry)
+    don't, so the caller re-raises them immediately.
     """
-    try:
-        from pydantic_ai.exceptions import ModelHTTPError
-
-        if isinstance(e, ModelHTTPError):
-            return True
-    except Exception:
-        pass
     return "status_code:" in str(e).lower()
 
 
@@ -193,14 +202,6 @@ def run_sync_with_retry(
             time.sleep(wait_s)
 
 
-MODEL_ALIASES = {
-    "claude-opus": "anthropic/claude-opus-4.7",
-    "gpt-5.5-pro": "openai/gpt-5.5-pro",
-    "gemini-pro": "google/gemini-3.1-pro-preview",
-    "gemini-flash": "google/gemini-3-flash-preview",
-}
-
-
 def resolve_model_name(name: str) -> str:
     """Map a short alias (gemini-flash, claude-opus, …) to a full
     OpenRouter model identifier. Already-qualified IDs (containing "/")
@@ -211,13 +212,6 @@ def resolve_model_name(name: str) -> str:
 def resolve_model(name: str) -> OpenRouterModel:
     """Convenience: resolve alias + construct OpenRouterModel."""
     return OpenRouterModel(resolve_model_name(name))
-
-
-# Ground metres per zoom-0 tile pixel at the equator: 2π·6378137 / 256.
-WEB_MERCATOR_C: float = 156543.03
-
-# Spherical Earth (~0.3% off vs ellipsoid at UK scale).
-_EARTH_R_KM = 6371.0
 
 
 def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -282,8 +276,6 @@ def latlon_to_tile_xy(lat: float, lon: float, zoom: int) -> Tuple[int, int]:
     y = int((1.0 - math.log(math.tan(lat_rad) + 1.0 / math.cos(lat_rad)) / math.pi) / 2.0 * n)
     return x, y
 
-
-N_FOLDS = 5
 
 
 def normalise_case_name(case_name: str) -> str:
