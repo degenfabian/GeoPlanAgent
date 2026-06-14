@@ -293,9 +293,6 @@ def prepare_worker_state(
     """Build AgentState + worker user_parts (summary JSON + primary page image)."""
     state = AgentState(
         pdf_path=str(pdf_path),
-        sam3_processor=sam3["processor"],
-        sam3_model=sam3["model"],
-        device=sam3["device"],
         minima_matcher=minima_matcher,
         dpi=dpi,
         sam3_state=sam3,
@@ -406,9 +403,6 @@ def prepare_folded_state(
     """
     state = AgentState(
         pdf_path=str(pdf_path),
-        sam3_processor=sam3["processor"],
-        sam3_model=sam3["model"],
-        device=sam3["device"],
         minima_matcher=minima_matcher,
         dpi=dpi,
         sam3_state=sam3,

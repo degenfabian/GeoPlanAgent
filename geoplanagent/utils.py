@@ -6,16 +6,14 @@ import math
 import re
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Tuple
 
 import cv2
 import numpy as np
 from pydantic_ai import BinaryContent, ModelRetry
 from pydantic_ai.models.openrouter import OpenRouterModel
 
-
-if TYPE_CHECKING:
-    from geoplanagent.schemas import BoundaryOutcome
+from geoplanagent.schemas import BoundaryOutcome
 
 
 class AgentState:
@@ -24,9 +22,6 @@ class AgentState:
     def __init__(
         self,
         pdf_path,
-        sam3_processor,
-        sam3_model,
-        device,
         minima_matcher,
         dpi,
         sam3_state,
@@ -34,26 +29,37 @@ class AgentState:
         locate_model_name: str,
         folded_mode: bool = False,
     ):
+        """Bundle the per-case inputs every tool call reads via ctx.deps.
+
+        Args:
+            pdf_path: path to the case PDF.
+            minima_matcher: shared MINIMA-LoFTR matcher (loaded once, reused
+                across all cases).
+            dpi: render resolution for map pages.
+            sam3_state: the SAM3 segmentation bundle from the loader —
+                ``{processor, model, device, kind, + k-fold adapter routing}``.
+                positioning.py reads processor/model/device from it and
+                switches the LoRA fold per case via ``set_fold_for_case``.
+            case_name: case folder name; drives k-fold adapter routing and
+                telemetry. Derived from ``pdf_path`` when not given.
+            locate_model_name: model id for the locate sub-agent.
+            folded_mode: ablation flag — when True the worker also extracts
+                PDFInfo (no separate reader phase), which gates the system
+                prompt, the submit_pdf_info tool, and the pdf_info-empty
+                validator.
+        """
         self.pdf_path = pdf_path
-        self.sam3_processor = sam3_processor
-        self.sam3_model = sam3_model
-        self.device = device
         self.minima_matcher = minima_matcher
         self.dpi = dpi
-        self.locate_model_name: str = locate_model_name
-        # Ablation flag: when True the worker is also responsible for
-        # PDFInfo extraction (no separate reader phase). Drives the
-        # system_prompt branch, the submit_pdf_info tool gate, and the
-        # validator's pdf_info-empty check.
-        self.folded_mode: bool = folded_mode
         self.sam3_state: Optional[Dict[str, Any]] = sam3_state
-        # Case folder name; needed for k-fold adapter routing.
         self.case_name: Optional[str] = case_name
         if self.case_name is None and pdf_path:
             try:
                 self.case_name = Path(pdf_path).parent.name
             except Exception:
                 pass
+        self.locate_model_name: str = locate_model_name
+        self.folded_mode: bool = folded_mode
 
         # Pre-rendered match pages, keyed by 1-based page number.
         self.rendered_pages: Dict[int, np.ndarray] = {}

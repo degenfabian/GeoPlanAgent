@@ -208,9 +208,9 @@ def _get_or_compute_mask(state: AgentState, page: int, map_crop_path: str) -> Op
     set_fold_for_case(state.sam3_state, state.case_name)
     mask = extract_boundary_sam3_semantic(
         map_crop_path,
-        state.sam3_processor,
-        state.sam3_model,
-        state.device,
+        state.sam3_state["processor"],
+        state.sam3_state["model"],
+        state.sam3_state["device"],
     )
     if mask is not None:
         state.sam_masks_by_page[page] = mask
