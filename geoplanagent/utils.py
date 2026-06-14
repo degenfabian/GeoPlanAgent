@@ -178,15 +178,7 @@ def dedup_check(state: "AgentState", tool_name: str, args: dict) -> None:
 
 
 def is_http_error(e: Exception) -> bool:
-    """True if this is a provider HTTP error worth retrying.
-
-    Retries on ANY HTTP status — OpenRouter surfaces transient upstream
-    hiccups across a wide range, so the specific code isn't a reliable
-    signal. Both pydantic-ai's ModelHTTPError and raw transport errors put
-    the status in their message (``status_code: 503, ...``), so this one
-    substring catches both; non-HTTP errors (auth, bad input, ModelRetry)
-    don't, so the caller re-raises them immediately.
-    """
+    """True if this is a provider HTTP error. In this case, we will retry the request."""
     return "status_code:" in str(e).lower()
 
 
@@ -198,7 +190,8 @@ def run_sync_with_retry(
     label: str = "agent",
     **run_kwargs,
 ):
-    """Wrap Agent.run_sync with retries on transient HTTP errors.
+    """
+    Wrap Agent.run_sync with retries on transient HTTP errors.
 
     ``user_prompt`` and ``run_kwargs`` (model, deps, usage_limits,
     message_history, …) are passed straight through to
@@ -212,6 +205,7 @@ def run_sync_with_retry(
         except Exception as error:
             if not is_http_error(error) or attempt == max_retries:
                 raise
+            # Increases the wait time exponentially.
             wait_s = backoff_s * (2**attempt)
             print(
                 f"  {label}: transient HTTP error (attempt "
@@ -298,7 +292,7 @@ def latlon_to_tile_xy(lat: float, lon: float, zoom: int) -> Tuple[int, int]:
 
 
 def normalise_case_name(case_name: str) -> str:
-    """Map a case name to the safe-filename form used in fold_assignment.json.
+    """Map a case name to safe filenames (no ":" or "/").
 
     The dataset builder replaces ':' and '/' with '_', so e.g. the eval
     folder '12:00114:ART4' is keyed as '12_00114_ART4'.
@@ -309,24 +303,22 @@ def normalise_case_name(case_name: str) -> str:
 def resolve_fold(case_name: str, fold_assignment: dict, available_folds: set[int]) -> int:
     """Return the fold whose checkpoint should serve `case_name`.
 
-    Lookup order: exact key, then the normalised safe-filename form, then
-    page-suffixed keys (multi-page cases are stored per page, e.g.
-    'A108P_p4', but the benchmark asks for 'A108P'). Cases outside the
-    training pool were never seen by any fold, so any checkpoint is fine;
-    we pick min(available_folds) for determinism.
+    Tries the exact key, then the normalised safe-filename form, then any
+    page-suffixed key ('A108P_p4' — multi-page cases are stored per page,
+    but the benchmark asks for 'A108P'; pages of one case share a fold).
+    Cases the training pool never saw fall back to min(available_folds):
+    any checkpoint is fine, and min is deterministic.
     """
+    # NB: fold 0 is valid, so look up with .get(...) / `is None` — never
+    # `a or b`, which would treat fold 0 as "not found".
     normalised = normalise_case_name(case_name)
-    fold = fold_assignment.get(case_name)
+    fold = fold_assignment.get(case_name, fold_assignment.get(normalised))
     if fold is None:
-        fold = fold_assignment.get(normalised)
-    if fold is None:
-        # Multi-page cases: pages of one document always share a fold
-        # (the split is grouped by case), so the first hit is enough.
         prefix = normalised + "_p"
-        for key, fold_value in fold_assignment.items():
-            if key.startswith(prefix) and key[len(prefix) :].isdigit():
-                fold = fold_value
-                break
+        fold = next(
+            (v for k, v in fold_assignment.items() if k.startswith(prefix) and k[len(prefix) :].isdigit()),
+            None,
+        )
     if fold is None or fold not in available_folds:
         return min(available_folds)
     return int(fold)
