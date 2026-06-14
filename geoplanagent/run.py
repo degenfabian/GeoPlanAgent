@@ -60,11 +60,8 @@ def run_agent(
     """
     model_name = resolve_model_name(model_name)
 
-    if "sam3_ft" in models_state:
-        sam3 = models_state["sam3_ft"]
-    elif "sam3_base" in models_state:
-        sam3 = models_state["sam3_base"]
-    else:
+    sam3 = models_state.get("sam3_ft")
+    if sam3 is None:
         return {"success": False, "error": "No SAM3 model loaded"}
 
     # Phase 1: read the PDF (skipped in folded ablation)
