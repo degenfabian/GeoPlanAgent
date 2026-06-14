@@ -303,20 +303,21 @@ def normalise_case_name(case_name: str) -> str:
 def resolve_fold(case_name: str, fold_assignment: dict, available_folds: set[int]) -> int:
     """Return the fold whose checkpoint should serve `case_name`.
 
-    Tries the exact key, then the normalised safe-filename form, then any
-    page-suffixed key ('A108P_p4' — multi-page cases are stored per page,
-    but the benchmark asks for 'A108P'; pages of one case share a fold).
-    Cases the training pool never saw fall back to min(available_folds):
-    any checkpoint is fine, and min is deterministic.
+    Keys and query are both normalised (':' / '/' → '_'), so the
+    filename-safety swap never matters — one lookup covers every form.
+    Multi-page cases are keyed per page ('A108P_p4'), and pages of one
+    case share a fold, so a page-suffixed hit is enough. A case the
+    training pool never saw falls back to min(available_folds): any
+    checkpoint is fine, and min is deterministic.
     """
-    # NB: fold 0 is valid, so look up with .get(...) / `is None` — never
-    # `a or b`, which would treat fold 0 as "not found".
-    normalised = normalise_case_name(case_name)
-    fold = fold_assignment.get(case_name, fold_assignment.get(normalised))
+    by_fold = {normalise_case_name(k): v for k, v in fold_assignment.items()}
+    key = normalise_case_name(case_name)
+    # NB: fold 0 is valid, so test `is None`, never `a or b` (0 is falsy).
+    fold = by_fold.get(key)
     if fold is None:
-        prefix = normalised + "_p"
+        prefix = key + "_p"
         fold = next(
-            (v for k, v in fold_assignment.items() if k.startswith(prefix) and k[len(prefix) :].isdigit()),
+            (v for k, v in by_fold.items() if k.startswith(prefix) and k[len(prefix) :].isdigit()),
             None,
         )
     if fold is None or fold not in available_folds:
