@@ -31,9 +31,8 @@ Run:   uv run python training/train_rotation.py
        uv run python training/train_rotation.py --epochs 15
 """
 
-from __future__ import annotations
-
 import os as _os
+
 _os.environ.setdefault("PYTHONWARNINGS", "ignore::FutureWarning")
 
 import argparse
@@ -88,6 +87,7 @@ IMAGENET_STD = [0.229, 0.224, 0.225]
 
 # Shared model + utilities
 
+
 def seed_everything(seed: int = 42) -> torch.Generator:
     random.seed(seed)
     np.random.seed(seed)
@@ -113,8 +113,7 @@ class RotationClassifier(nn.Module):
 
     def __init__(self, n_classes: int = 4):
         super().__init__()
-        self.backbone = tv_models.resnet50(
-            weights=tv_models.ResNet50_Weights.IMAGENET1K_V2)
+        self.backbone = tv_models.resnet50(weights=tv_models.ResNet50_Weights.IMAGENET1K_V2)
         in_features = self.backbone.fc.in_features
         self.backbone.fc = nn.Linear(in_features, n_classes)
 
@@ -134,23 +133,24 @@ def _make_transform(img_size: int, train: bool):
     Eval: plain resize + normalise.
     """
     if train:
-        return T.Compose([
+        return T.Compose(
+            [
+                T.ToPILImage(),
+                T.RandomResizedCrop(img_size, scale=(0.6, 1.0), ratio=(0.85, 1.18), antialias=True),
+                T.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.15, hue=0.05),
+                T.ToTensor(),
+                T.Normalize(IMAGENET_MEAN, IMAGENET_STD),
+                T.RandomErasing(p=0.4, scale=(0.02, 0.18), ratio=(0.3, 3.3), value=0),
+            ]
+        )
+    return T.Compose(
+        [
             T.ToPILImage(),
-            T.RandomResizedCrop(img_size, scale=(0.6, 1.0),
-                                ratio=(0.85, 1.18), antialias=True),
-            T.ColorJitter(brightness=0.3, contrast=0.3,
-                          saturation=0.15, hue=0.05),
+            T.Resize((img_size, img_size), antialias=True),
             T.ToTensor(),
             T.Normalize(IMAGENET_MEAN, IMAGENET_STD),
-            T.RandomErasing(p=0.4, scale=(0.02, 0.18),
-                            ratio=(0.3, 3.3), value=0),
-        ])
-    return T.Compose([
-        T.ToPILImage(),
-        T.Resize((img_size, img_size), antialias=True),
-        T.ToTensor(),
-        T.Normalize(IMAGENET_MEAN, IMAGENET_STD),
-    ])
+        ]
+    )
 
 
 def evaluate(model, loader, device) -> tuple[float, float]:
@@ -221,8 +221,9 @@ class KFoldRotationDataset(Dataset):
     sees the same augmentation regime the existing one was trained with.
     """
 
-    def __init__(self, cases: list[str], labels: dict[str, int],
-                 img_size: int = 768, train: bool = True):
+    def __init__(
+        self, cases: list[str], labels: dict[str, int], img_size: int = 768, train: bool = True
+    ):
         self.cases = cases
         self.labels = labels
         self.train = train
@@ -248,30 +249,43 @@ class KFoldRotationDataset(Dataset):
         return tensor, DEG_TO_CLASS[new_r]
 
 
-def train_one_fold(fold_idx: int, train_cases: list[str], val_cases: list[str],
-                    labels: dict[str, int], args, device: str) -> dict:
+def train_one_fold(
+    fold_idx: int,
+    train_cases: list[str],
+    val_cases: list[str],
+    labels: dict[str, int],
+    args,
+    device: str,
+) -> dict:
     fold_dir = OUTPUT_DIR / f"fold_{fold_idx}"
     fold_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"\n{'='*70}")
-    print(f"FOLD {fold_idx}: train={len(train_cases)} cases "
-          f"({len(train_cases)*4} samples), "
-          f"val={len(val_cases)} cases ({len(val_cases)*4} samples)")
+    print(f"\n{'=' * 70}")
+    print(
+        f"FOLD {fold_idx}: train={len(train_cases)} cases "
+        f"({len(train_cases) * 4} samples), "
+        f"val={len(val_cases)} cases ({len(val_cases) * 4} samples)"
+    )
     print(f"  output: {fold_dir}")
 
     g = seed_everything(args.seed + fold_idx)
 
     train_ds = KFoldRotationDataset(train_cases, labels, img_size=args.img_size, train=True)
     val_ds = KFoldRotationDataset(val_cases, labels, img_size=args.img_size, train=False)
-    train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True,
-                              num_workers=args.num_workers, generator=g)
-    val_loader = DataLoader(val_ds, batch_size=args.batch_size, shuffle=False,
-                            num_workers=0)
+    train_loader = DataLoader(
+        train_ds,
+        batch_size=args.batch_size,
+        shuffle=True,
+        num_workers=args.num_workers,
+        generator=g,
+    )
+    val_loader = DataLoader(val_ds, batch_size=args.batch_size, shuffle=False, num_workers=0)
 
     model = RotationClassifier(n_classes=4).to(device)
     optim = torch.optim.AdamW(
         [p for p in model.parameters() if p.requires_grad],
-        lr=args.lr, weight_decay=1e-4,
+        lr=args.lr,
+        weight_decay=1e-4,
     )
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(optim, T_max=max(1, args.epochs))
 
@@ -284,7 +298,8 @@ def train_one_fold(fold_idx: int, train_cases: list[str], val_cases: list[str],
         t0 = time.time()
         losses, n_correct, n_total = [], 0, 0
         for x, y in train_loader:
-            x = x.to(device); y = y.to(device)
+            x = x.to(device)
+            y = y.to(device)
             optim.zero_grad()
             logits = model(x)
             loss = F.cross_entropy(logits, y)
@@ -299,45 +314,64 @@ def train_one_fold(fold_idx: int, train_cases: list[str], val_cases: list[str],
         train_acc = n_correct / max(1, n_total)
         val_loss, val_acc = evaluate(model, val_loader, device)
         elapsed = time.time() - t0
-        history.append({
-            "epoch": epoch, "wall_s": round(elapsed, 1),
-            "train_loss": round(train_loss, 4), "train_acc": round(train_acc, 4),
-            "val_loss": round(val_loss, 4), "val_acc": round(val_acc, 4),
-            "lr": sched.get_last_lr()[0],
-        })
-        print(f"  fold{fold_idx} ep{epoch+1}/{args.epochs}: "
-              f"train_loss={train_loss:.3f} train_acc={train_acc:.3f}  "
-              f"val_loss={val_loss:.3f} val_acc={val_acc:.3f}  "
-              f"wall={elapsed:.0f}s")
+        history.append(
+            {
+                "epoch": epoch,
+                "wall_s": round(elapsed, 1),
+                "train_loss": round(train_loss, 4),
+                "train_acc": round(train_acc, 4),
+                "val_loss": round(val_loss, 4),
+                "val_acc": round(val_acc, 4),
+                "lr": sched.get_last_lr()[0],
+            }
+        )
+        print(
+            f"  fold{fold_idx} ep{epoch + 1}/{args.epochs}: "
+            f"train_loss={train_loss:.3f} train_acc={train_acc:.3f}  "
+            f"val_loss={val_loss:.3f} val_acc={val_acc:.3f}  "
+            f"wall={elapsed:.0f}s"
+        )
 
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             epochs_since_best = 0
-            torch.save({
-                "state_dict": model.state_dict(),
-                "config": {
-                    "img_size": args.img_size,
-                    "n_classes": 4,
-                    "class_degrees": CLASS_DEGREES,
-                    "imagenet_mean": IMAGENET_MEAN,
-                    "imagenet_std": IMAGENET_STD,
+            torch.save(
+                {
+                    "state_dict": model.state_dict(),
+                    "config": {
+                        "img_size": args.img_size,
+                        "n_classes": 4,
+                        "class_degrees": CLASS_DEGREES,
+                        "imagenet_mean": IMAGENET_MEAN,
+                        "imagenet_std": IMAGENET_STD,
+                    },
+                    "epoch": epoch,
+                    "best_val_acc": best_val_acc,
+                    "fold_idx": fold_idx,
+                    "history": history,
                 },
-                "epoch": epoch, "best_val_acc": best_val_acc,
-                "fold_idx": fold_idx, "history": history,
-            }, fold_dir / "best.pt")
+                fold_dir / "best.pt",
+            )
             print(f"    fold{fold_idx} new best val_acc={best_val_acc:.3f}, saved.")
         else:
             epochs_since_best += 1
             if epochs_since_best >= args.patience:
-                print(f"    fold{fold_idx} early stop: no improvement for "
-                      f"{args.patience} epochs (best={best_val_acc:.3f})")
+                print(
+                    f"    fold{fold_idx} early stop: no improvement for "
+                    f"{args.patience} epochs (best={best_val_acc:.3f})"
+                )
                 break
 
         (fold_dir / "history.json").write_text(json.dumps(history, indent=2))
 
     print(f"Fold {fold_idx} done. best_val_acc={best_val_acc:.3f}")
-    return {"fold": fold_idx, "best_val_acc": best_val_acc, "history": history,
-            "n_train": len(train_cases), "n_val": len(val_cases)}
+    return {
+        "fold": fold_idx,
+        "best_val_acc": best_val_acc,
+        "history": history,
+        "n_train": len(train_cases),
+        "n_val": len(val_cases),
+    }
 
 
 def main() -> int:
@@ -349,8 +383,12 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--patience", type=int, default=4)
     ap.add_argument("--num-workers", type=int, default=2)
-    ap.add_argument("--folds", type=str, default="0,1,2,3,4",
-                    help="Comma-separated fold indices to train (default all 5).")
+    ap.add_argument(
+        "--folds",
+        type=str,
+        default="0,1,2,3,4",
+        help="Comma-separated fold indices to train (default all 5).",
+    )
     args = ap.parse_args()
 
     if torch.cuda.is_available():
@@ -362,23 +400,27 @@ def main() -> int:
     print(f"Device: {device}")
 
     if not DATASET_DIR.exists():
-        print(f"ERROR: dataset dir missing: {DATASET_DIR}", file=sys.stderr); return 1
+        print(f"ERROR: dataset dir missing: {DATASET_DIR}", file=sys.stderr)
+        return 1
     if not LABELS_FILE.exists():
-        print(f"ERROR: labels missing: {LABELS_FILE}", file=sys.stderr); return 1
+        print(f"ERROR: labels missing: {LABELS_FILE}", file=sys.stderr)
+        return 1
     if not SAM3_FOLD_ASSIGNMENT.exists():
-        print(f"ERROR: SAM3 fold_assignment.json missing: {SAM3_FOLD_ASSIGNMENT}",
-              file=sys.stderr); return 1
+        print(f"ERROR: SAM3 fold_assignment.json missing: {SAM3_FOLD_ASSIGNMENT}", file=sys.stderr)
+        return 1
 
     labels = load_labels()
-    print(f"Loaded {len(labels)} labels from {LABELS_FILE.name} "
-          f"(skipping skip/timestamp entries)")
+    print(f"Loaded {len(labels)} labels from {LABELS_FILE.name} (skipping skip/timestamp entries)")
 
     # Class distribution before augmentation
     from collections import Counter
+
     raw_dist = Counter(labels.values())
     print(f"Raw label distribution: {dict(sorted(raw_dist.items()))}")
-    print(f"After 4-rotation augmentation per case: each class gets "
-          f"{len(labels)} samples ({len(labels)*4} total).")
+    print(
+        f"After 4-rotation augmentation per case: each class gets "
+        f"{len(labels)} samples ({len(labels) * 4} total)."
+    )
 
     sam3_fa = json.loads(SAM3_FOLD_ASSIGNMENT.read_text())
     case_to_fold = {c: fold_for(c, sam3_fa) for c in labels}
@@ -388,27 +430,29 @@ def main() -> int:
     # the SAM3 file, but it's guaranteed identical for shared cases.
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUTPUT_DIR / "fold_assignment.json").write_text(
-        json.dumps(case_to_fold, indent=2, sort_keys=True))
+        json.dumps(case_to_fold, indent=2, sort_keys=True)
+    )
     print(f"Wrote fold_assignment.json ({len(case_to_fold)} entries) to {OUTPUT_DIR}")
 
     requested_folds = [int(x) for x in args.folds.split(",") if x.strip()]
     if not all(0 <= f < N_FOLDS for f in requested_folds):
-        print(f"ERROR: --folds must be in [0,{N_FOLDS-1}]", file=sys.stderr); return 1
+        print(f"ERROR: --folds must be in [0,{N_FOLDS - 1}]", file=sys.stderr)
+        return 1
 
     summary = []
     for fold in requested_folds:
         train_cases = sorted([c for c, f in case_to_fold.items() if f != fold])
         val_cases = sorted([c for c, f in case_to_fold.items() if f == fold])
         if not val_cases:
-            print(f"FOLD {fold}: no val cases (skip)"); continue
+            print(f"FOLD {fold}: no val cases (skip)")
+            continue
         result = train_one_fold(fold, train_cases, val_cases, labels, args, device)
         summary.append(result)
 
     (OUTPUT_DIR / "kfold_summary.json").write_text(json.dumps(summary, indent=2))
     if summary:
         mean_acc = sum(r["best_val_acc"] for r in summary) / len(summary)
-        print(f"\n{'='*70}\nAll requested folds done. "
-              f"mean best_val_acc = {mean_acc:.3f}")
+        print(f"\n{'=' * 70}\nAll requested folds done. mean best_val_acc = {mean_acc:.3f}")
     return 0
 
 

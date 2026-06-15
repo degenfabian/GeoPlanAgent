@@ -22,8 +22,6 @@ paper appendix (and FOLDED_SYSTEM_PROMPT is derived from them), so edit
 with care.
 """
 
-from __future__ import annotations
-
 
 READER_SYSTEM_PROMPT = """You are a UK planning document reader. Read every page of the PDF
 carefully and populate the PDFInfo schema.

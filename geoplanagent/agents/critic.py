@@ -1,5 +1,6 @@
 """Pairwise LLM critic: reviews stored match_attempts post-worker-commit."""
 
+import copy
 import time
 from typing import Any, Dict, List, Literal, Optional
 
@@ -8,7 +9,7 @@ import numpy as np
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, BinaryContent
 
-from geoplanagent.utils import resolve_model, result_tokens
+from geoplanagent.utils import resolve_model, result_tokens, run_sync_with_retry
 from geoplanagent.prompts import CRITIC_INSTRUCTIONS
 
 
@@ -192,11 +193,9 @@ def _format_metrics_text(attempts: List[Dict[str, Any]], committed_ids: set) -> 
             axes = reward.get("axes") or {}
             road_agreement = axes.get("road_name_agreement") or {}
             scale = axes.get("scale_consistency") or {}
-            road_score = road_agreement.get("score") if isinstance(road_agreement, dict) else None
-            road_verdict = (
-                road_agreement.get("verdict") if isinstance(road_agreement, dict) else None
-            ) or ""
-            scale_score = scale.get("score") if isinstance(scale, dict) else None
+            road_score = road_agreement.get("score")
+            road_verdict = road_agreement.get("verdict") or ""
+            scale_score = scale.get("score")
             road_str = f"{road_score:.2f}" if isinstance(road_score, (int, float)) else "?"
             scale_str = f"{scale_score:.2f}" if isinstance(scale_score, (int, float)) else "?"
             verdict_str = f" ({road_verdict})" if road_verdict else ""
@@ -308,8 +307,6 @@ def _run_critic_once(state: Any, model_name: str, message_history: Optional[list
     new_history: Optional[list] = None
     start_time = time.time()
     try:
-        from geoplanagent.utils import run_sync_with_retry
-
         result = run_sync_with_retry(
             agent,
             user_input,
@@ -367,7 +364,7 @@ def _direct_switch_commit(
 
     # Strict gate: refuse to commit a candidate that produced no
     # valid affine for any group — mirrors commit_match's check at
-    # match.py around the n_groups_committed==0 path. The critic
+    # positioning.py around the n_groups_committed==0 path. The critic
     # *should* never pick such a candidate (it has no tile_info /
     # rendered panel), but guard against it: a candidate with no
     # geojson would silently null-out state.current_result["geojson"]
@@ -501,8 +498,6 @@ def _rehand_to_worker(
             if worker_result is not None and hasattr(worker_result, "all_messages")
             else None
         )
-        from geoplanagent.utils import run_sync_with_retry
-
         sub_result = run_sync_with_retry(
             _worker_agent,
             instruction,
@@ -535,8 +530,6 @@ def _snapshot_geojson(state: Any) -> Optional[dict]:
     state.current_result dict but might be refactored to mutate in
     place) cannot retroactively corrupt the snapshot.
     """
-    import copy
-
     current_result = state.current_result or {}
     geojson = current_result.get("geojson")
     return copy.deepcopy(geojson) if geojson is not None else None

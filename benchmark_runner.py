@@ -9,7 +9,6 @@ Usage:
     uv run benchmark_runner.py --model gemini-flash --enable-critic   # paper configuration
     uv run benchmark_runner.py --max-cases 5                          # quick smoke test
     uv run benchmark_runner.py --cases 12:00116:ART4                  # specific case
-    uv run benchmark_runner.py --max-iterations 3                     # limit agent turns
 """
 
 import time
@@ -18,12 +17,15 @@ import traceback
 import pandas as pd
 from pathlib import Path, PurePosixPath
 from datetime import datetime
+from dotenv import load_dotenv
 
 from geoplanagent.tools.pdf import resolve_case_pdf
 from geoplanagent.metrics import load_geojson, calculate_spatial_metrics, aggregate_stats
+from geoplanagent.paths import DATA_DIR, DATASET_XLSX, DATASET_SHEET
 
-# Duplicates removed from disk; filtered out of the dataset at load time.
-DUPLICATE_SL_NOS = {9, 68, 83, 232, 253}
+# Load .env once at the entry point so HF_TOKEN, OPENROUTER_API_KEY, etc. are in
+# os.environ before any model load or agent call.
+load_dotenv()
 
 
 # Model Loading
@@ -44,59 +46,33 @@ def load_models():
 
 
 def _load_dataset(dataset_path, eval_dir, only_cases, start_from, max_cases):
-    """Build the case list: Excel rows that exist under eval_dir, plus
-    *_merged folders on disk that aren't in the spreadsheet, minus the
-    physically-removed duplicates; then apply the case/range filters."""
-    dataset = pd.read_excel(dataset_path, sheet_name="0_planning_dataset_list")
-    n_total = len(dataset)
+    """Build the case-list DataFrame from the cleaned 208-case sheet, keeping
+    only rows whose folder exists under eval_dir, then apply the case/range
+    filters. A full run (no filters) yields all 208 cases.
 
-    # Filter to cases that exist in eval_dir
+    k-fold SAM3 routes each case to its held-out fold's adapter at inference,
+    so cases that appear in the training pool are still scored without leakage.
+
+    Args:
+        dataset_path: path to the dataset .xlsx (the DATASET_SHEET tab is read).
+        eval_dir: directory with one folder per case; rows whose folder is
+            absent here are dropped.
+        only_cases: the --cases flag. If given, keep only these exact folder
+            names (e.g. to re-run a single case); overrides start_from/max_cases.
+        start_from: the --start-from flag. Skip the first N rows (e.g. to resume
+            a partial run).
+        max_cases: the --max-cases flag. Keep at most this many rows after
+            start_from (e.g. a quick smoke test). None means no limit.
+
+    Returns the filtered dataset DataFrame.
+    """
+    dataset = pd.read_excel(dataset_path, sheet_name=DATASET_SHEET)
     eval_path = Path(eval_dir)
-    dataset = dataset[
-        dataset["Unique ID (Folder_Name)"].apply(lambda f: (eval_path / str(f)).exists())
-    ]
-    n_exists = len(dataset)
+    dataset = dataset[dataset["Folder Name"].apply(lambda f: (eval_path / str(f)).exists())]
+    print(f"Dataset: {len(dataset)} cases under {eval_path}")
 
-    # Inject *_merged folders that exist on disk but aren't in the Excel.
-    # Each merged folder is its own complete case (own PDF + GT geojson).
-    excel_folders = set(dataset["Unique ID (Folder_Name)"].astype(str))
-    merged_extras = []
-    for sub in sorted(eval_path.iterdir()):
-        if not sub.is_dir() or not sub.name.endswith("_merged"):
-            continue
-        if sub.name in excel_folders:
-            continue
-        gj = sub / f"{sub.name}.geojson"
-        if not gj.exists():
-            continue
-        merged_extras.append(
-            {
-                "Sl no": 9000 + len(merged_extras) + 1,
-                "Unique ID (Folder_Name)": sub.name,
-                "geojson ID (for sanity check)": gj.name,
-            }
-        )
-    if merged_extras:
-        dataset = pd.concat([dataset, pd.DataFrame(merged_extras)], ignore_index=True)
-        print(
-            f"Injected {len(merged_extras)} *_merged cases not in Excel: "
-            f"{[e['Unique ID (Folder_Name)'] for e in merged_extras]}"
-        )
-
-    # Drop physically-removed duplicates. There is no training-case
-    # exclusion: k-fold SAM3 routes each case to its held-out fold's
-    # adapter at inference, so cases that appear in the training pool
-    # are still scored leak-free.
-    dataset = dataset[~dataset["Sl no"].isin(DUPLICATE_SL_NOS)]
-    print(
-        f"Dataset: {len(dataset)} cases "
-        f"({n_total} in Excel, {n_total - n_exists} missing from disk, "
-        f"{len(DUPLICATE_SL_NOS)} duplicates dropped)"
-    )
-
-    # Filter to specific cases if requested
     if only_cases:
-        dataset = dataset[dataset["Unique ID (Folder_Name)"].apply(lambda f: str(f) in only_cases)]
+        dataset = dataset[dataset["Folder Name"].apply(lambda f: str(f) in only_cases)]
         print(f"Filtered to {len(dataset)} specific cases: {only_cases}")
     else:
         dataset = dataset.iloc[start_from:]
@@ -104,6 +80,84 @@ def _load_dataset(dataset_path, eval_dir, only_cases, start_from, max_cases):
             dataset = dataset.head(max_cases)
 
     return dataset
+
+
+def _cached_entry(metrics_path, force, retry_failed, enable_critic):
+    """Return the cached per-case row to reuse, or None to (re-)run the case.
+
+    A cached metrics.json is reused unless one of these forces a re-run:
+      - force: --force was passed;
+      - retry_failed: --retry-failed was passed and the cached run crashed
+        (ok / no_prediction cases stay cached);
+      - critic-mode mismatch: a cached worker_first_iou means the cache came
+        from a --enable-critic run, whose IoU isn't comparable to a no-critic
+        run. district_lookup cases are exempt (the critic never runs on them,
+        so their cached entry is valid in either mode).
+
+    Args:
+        metrics_path: path to the case's cached metrics.json.
+        force / retry_failed / enable_critic: the matching CLI flags.
+
+    Returns the cached row (minus sl_no, ready to merge) on a cache hit, else None.
+    """
+    if force or not metrics_path.exists():
+        return None
+    prev = json.loads(metrics_path.read_text())
+    if retry_failed and prev.get("status") == "crashed":
+        print("  [retry-failed — re-running crashed case]")
+        return None
+    cached_had_critic = "worker_first_iou" in prev
+    is_district = (prev.get("agent_stats") or {}).get("outcome_status") == "district_lookup"
+    if cached_had_critic != enable_critic and not is_district:
+        print(
+            f"  [cache mode mismatch — re-running] "
+            f"cached_had_critic={cached_had_critic} current={enable_critic}"
+        )
+        return None
+    print(f"  [cached] IoU={prev.get('iou', 0):.3f}")
+    return {k: v for k, v in prev.items() if k != "sl_no"}
+
+
+def _score_prediction(gt_geojson, result):
+    """Score a run_agent result against ground truth.
+
+    Computes IoU/precision/recall/centroid on the final polygon, and — when the
+    critic ran — the worker's first-commit polygon too (the no-critic baseline).
+    Downgrades status 'ok' to 'no_prediction' when a polygon was produced but is
+    unscorable (invalid geometry that buffer(0) can't repair), or when none was
+    produced; both then count as IoU 0 in the headline aggregate.
+
+    Args:
+        gt_geojson: ground-truth GeoJSON (None if the case has no GT).
+        result: the dict returned by run_agent.
+
+    Returns {status, metrics, worker_first_iou, worker_first_metrics}; the
+    worker_first_* values are None unless the critic produced a paired result.
+    """
+    geojson = result.get("geojson")
+    status = result.get("status", "ok")
+    metrics = {}
+    if gt_geojson and geojson:
+        try:
+            metrics = calculate_spatial_metrics(gt_geojson, geojson)
+        except ValueError as e:
+            status = "no_prediction"
+            print(f"  WARNING: produced geometry is unscorable ({e}); recording no_prediction (IoU 0).")
+    elif not geojson:
+        print("  WARNING: no polygon produced; recording no_prediction (IoU 0).")
+
+    worker_first_iou = worker_first_metrics = None
+    worker_first_gj = result.get("worker_first_geojson")
+    if worker_first_gj is not None and gt_geojson:
+        worker_first_metrics = calculate_spatial_metrics(gt_geojson, worker_first_gj)
+        worker_first_iou = worker_first_metrics.get("iou")
+
+    return {
+        "status": status,
+        "metrics": metrics,
+        "worker_first_iou": worker_first_iou,
+        "worker_first_metrics": worker_first_metrics,
+    }
 
 
 def _run_case(
@@ -114,10 +168,9 @@ def _run_case(
     output_path,
     models_state,
     all_results,
-    *,
     model_name,
     dpi,
-    max_iterations,
+    max_requests,
     force,
     retry_failed,
     enable_critic,
@@ -125,13 +178,21 @@ def _run_case(
     locate_model_name,
     folded,
 ):
-    """Run one case (or load it from cache), appending its summary row to
-    ``all_results``. Returns True only on a fatal error that should stop
-    the whole benchmark (invalid model ID)."""
+    """Run (or load from cache) one benchmark case and append its summary row.
+
+    Resolves the case PDF + ground truth, reuses a cached result when valid
+    (see ``_cached_entry``), otherwise runs the agent, scores it (see
+    ``_score_prediction``), and writes ``predicted.geojson`` + ``metrics.json``.
+    Every case leaves exactly one metrics.json — including crashes, which are
+    recorded with a traceback.
+
+    Returns True only on a fatal error that should stop the whole benchmark
+    (an invalid model ID); False otherwise.
+    """
     from geoplanagent.run import run_agent
 
-    folder_name = str(row["Unique ID (Folder_Name)"])
-    sl_no = int(row["Sl no"])
+    folder_name = str(row["Folder Name"])
+    sl_no = int(row["Sl no (Unique ID)"])
     # The xlsx cells were authored on POSIX; PurePosixPath always uses
     # '/' regardless of host OS, so the basename extraction works the
     # same on Windows or Linux.
@@ -151,40 +212,12 @@ def _run_case(
         gt_files = list(folder_path.glob("*.geojson"))
     gt_geojson = load_geojson(str(gt_files[0])) if gt_files else None
 
-    # Check for cached result
+    # Reuse a valid cached result; otherwise (re-)run below.
     case_dir = output_path / folder_name
-    cached_metrics = case_dir / "metrics.json"
-    if cached_metrics.exists() and not force:
-        prev = json.loads(cached_metrics.read_text())
-        # Cache-mode mismatch detection: a cached entry that contains
-        # worker_first_iou came from a --enable-critic run. If the
-        # current invocation is in a different mode, the cached IoU
-        # is not comparable — force re-run to avoid silently mixing
-        # critic and no-critic results. district_lookup cases are
-        # mode-agnostic: the critic never runs on them, so their cached
-        # entry has no worker_first_iou in either mode and stays valid.
-        cached_had_critic = "worker_first_iou" in prev
-        is_district = (prev.get("agent_stats") or {}).get("outcome_status") == "district_lookup"
-        if retry_failed and prev.get("status") == "crashed":
-            # --retry-failed: re-run only cases whose cached run crashed
-            # (e.g. reader failures); ok / no_prediction cases stay cached.
-            print("  [retry-failed — re-running crashed case]")
-        elif cached_had_critic != enable_critic and not is_district:
-            print(
-                f"  [cache mode mismatch — re-running] "
-                f"cached_had_critic={cached_had_critic} "
-                f"current={enable_critic}"
-            )
-        else:
-            print(f"  [cached] IoU={prev.get('iou', 0):.3f}")
-            all_results.append(
-                {
-                    "folder": folder_name,
-                    "sl_no": sl_no,
-                    **{k: v for k, v in prev.items() if k not in ("sl_no",)},
-                }
-            )
-            return False
+    cached = _cached_entry(case_dir / "metrics.json", force, retry_failed, enable_critic)
+    if cached is not None:
+        all_results.append({"folder": folder_name, "sl_no": sl_no, **cached})
+        return False
 
     # ── Run the agent ──
     try:
@@ -193,7 +226,7 @@ def _run_case(
             pdf_path=str(pdf_path),
             models_state=models_state,
             model_name=model_name,
-            max_iterations=max_iterations,
+            max_requests=max_requests,
             dpi=dpi,
             verbose=True,
             case_name=folder_name,
@@ -245,32 +278,12 @@ def _run_case(
         geojson = result.get("geojson")
         mi = result.get("match_info", {})
 
-        # Compute metrics on the (final) geojson — this is the critic_iou when
-        # the critic is enabled, or the worker_iou when it isn't. run_agent
-        # already returns status "no_prediction" when it produced no geojson;
-        # downgrade "ok" to "no_prediction" here if a polygon was produced but
-        # is unscorable (invalid geometry that buffer(0) can't repair).
-        status = result.get("status", "ok")
-        metrics = {}
-        if gt_geojson and geojson:
-            try:
-                metrics = calculate_spatial_metrics(gt_geojson, geojson)
-            except ValueError as e:
-                status = "no_prediction"
-                print(f"  WARNING: produced geometry is unscorable ({e}); recording no_prediction (IoU 0).")
-        elif not geojson:
-            print("  WARNING: no polygon produced; recording no_prediction (IoU 0).")
-
+        scored = _score_prediction(gt_geojson, result)
+        status = scored["status"]
+        metrics = scored["metrics"]
         iou = metrics.get("iou", 0)
-
-        # When critic was enabled, also compute the worker's
-        # first-commit IoU (no-critic baseline) and stash it.
-        worker_first_iou = None
-        worker_first_metrics = None
-        worker_first_gj = result.get("worker_first_geojson")
-        if worker_first_gj is not None and gt_geojson:
-            worker_first_metrics = calculate_spatial_metrics(gt_geojson, worker_first_gj)
-            worker_first_iou = worker_first_metrics.get("iou")
+        worker_first_iou = scored["worker_first_iou"]
+        worker_first_metrics = scored["worker_first_metrics"]
 
         if worker_first_iou is not None:
             delta = (iou or 0) - (worker_first_iou or 0)
@@ -353,9 +366,9 @@ def run_benchmark(
     max_cases=None,
     start_from=0,
     dpi=200,
-    max_iterations=12,
-    dataset_path="evaluation_data/0_planning_dataset_list.xlsx",
-    eval_dir="evaluation_data",
+    max_requests=30,
+    dataset_path=DATASET_XLSX,
+    eval_dir=DATA_DIR,
     only_cases=None,
     force=False,
     retry_failed=False,
@@ -372,7 +385,7 @@ def run_benchmark(
         max_cases: Limit number of cases to run.
         start_from: Skip first N cases.
         dpi: PDF rendering DPI.
-        max_iterations: Max agent turns per case.
+        max_requests: Max worker LLM requests (model calls) per case.
         only_cases: If set, only run these specific folder names.
         locate_model_name: Model for the locate sub-agent (independent of
             model_name). Default google/gemini-3-flash-preview.
@@ -397,7 +410,7 @@ def run_benchmark(
             all_results,
             model_name=model_name,
             dpi=dpi,
-            max_iterations=max_iterations,
+            max_requests=max_requests,
             force=force,
             retry_failed=retry_failed,
             enable_critic=enable_critic,
@@ -502,7 +515,12 @@ if __name__ == "__main__":
     parser.add_argument("--max-cases", type=int, default=None)
     parser.add_argument("--start-from", type=int, default=0)
     parser.add_argument("--dpi", type=int, default=200)
-    parser.add_argument("--max-iterations", type=int, default=12, help="Max agent turns per case")
+    parser.add_argument(
+        "--max-requests",
+        type=int,
+        default=30,
+        help="Max worker LLM requests (model calls) per case",
+    )
     parser.add_argument("--output-dir", default="results/benchmark")
     parser.add_argument(
         "--cases", nargs="+", default=None, help="Only run these specific case folder names"
@@ -545,16 +563,13 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    # Flag not passed → fall through to run_benchmark's production default
-    # (place-only). Flag passed (even as empty string) → use the requested
-    # kit explicitly, including the empty-string case for the full 6-tool kit.
     run_kwargs = dict(
         model_name=args.model,
         output_dir=args.output_dir,
         max_cases=args.max_cases,
         start_from=args.start_from,
         dpi=args.dpi,
-        max_iterations=args.max_iterations,
+        max_requests=args.max_requests,
         only_cases=args.cases,
         force=args.force,
         retry_failed=args.retry_failed,

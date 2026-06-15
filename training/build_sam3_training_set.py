@@ -18,7 +18,6 @@ balanced fold sizes while keeping these "stay-together" groups intact:
 
 Re-running the script is idempotent (same input → bit-identical output).
 """
-from __future__ import annotations
 
 import json
 import re
@@ -36,22 +35,29 @@ N_FOLDS = 5
 # them across folds would leak. Each member maps to a canonical group key.
 _EXPLICIT_GROUPS: list[list[str]] = [
     ["12:00141:ART4", "12:00117:ART4"],
-    ["095AB379-F04E-473A-BC0D-8948B58E4090",
-     "3DA282A7-E829-47CF-B842-E03E0C704072",
-     "4AB36890-E52B-4CCC-9CDE-FB1476FCEB82",
-     "B9CDCF90-EC6A-4B66-A967-DEBF3B72D58D",
-     "DE5A30DA-29A4-45BE-B60A-C201A5F11C6F",
-     "FDBC0FDC-D090-4778-A123-232EB71DF3C6"],
+    [
+        "095AB379-F04E-473A-BC0D-8948B58E4090",
+        "3DA282A7-E829-47CF-B842-E03E0C704072",
+        "4AB36890-E52B-4CCC-9CDE-FB1476FCEB82",
+        "B9CDCF90-EC6A-4B66-A967-DEBF3B72D58D",
+        "DE5A30DA-29A4-45BE-B60A-C201A5F11C6F",
+        "FDBC0FDC-D090-4778-A123-232EB71DF3C6",
+    ],
 ]
 EXPLICIT_MAP: dict[str, str] = {m: g[0] for g in _EXPLICIT_GROUPS for m in g}
 
 # Case names with ':' or other punctuation become filenames; sanitise.
 _FILENAME_SAFE_RE = re.compile(r"[^A-Za-z0-9._-]")
+
+
 def _safe_filename(s: str) -> str:
     return _FILENAME_SAFE_RE.sub("_", s)
 
+
 # Strip trailing _p<N> page-split suffix so A108P_p4/p5/p6 → "A108P".
 _PAGE_SUFFIX_RE = re.compile(r"_p\d+$")
+
+
 def _group_key(case_name: str) -> str:
     if case_name in EXPLICIT_MAP:
         return EXPLICIT_MAP[case_name]
@@ -69,8 +75,7 @@ def _assign_folds_balanced(group_to_members: dict, n_folds: int) -> dict:
     """
     fold_sizes = [0] * n_folds
     assignment = {}
-    for gk, members in sorted(group_to_members.items(),
-                                key=lambda kv: (-len(kv[1]), kv[0])):
+    for gk, members in sorted(group_to_members.items(), key=lambda kv: (-len(kv[1]), kv[0])):
         best = min(range(n_folds), key=lambda f: (fold_sizes[f], f))
         assignment[gk] = best
         fold_sizes[best] += len(members)
@@ -88,7 +93,7 @@ def main() -> int:
     masks_out.mkdir(parents=True, exist_ok=True)
 
     # ── Pass 1: discover cases and bucket by group ──
-    case_records = []   # (case_name, safe_name, group_key, map_p, mask_p)
+    case_records = []  # (case_name, safe_name, group_key, map_p, mask_p)
     group_to_members = defaultdict(list)
     skipped = []
     for d in sorted(ANNOT_ROOT.iterdir()):
@@ -97,12 +102,13 @@ def main() -> int:
         map_p = d / "map.png"
         mask_p = d / "edited_mask.png"
         if not (map_p.exists() and mask_p.exists()):
-            skipped.append((d.name, f"missing {'map.png' if not map_p.exists() else 'edited_mask.png'}"))
+            skipped.append(
+                (d.name, f"missing {'map.png' if not map_p.exists() else 'edited_mask.png'}")
+            )
             continue
         case_name = d.name
         group_key = _group_key(case_name)
-        case_records.append((case_name, _safe_filename(case_name),
-                              group_key, map_p, mask_p))
+        case_records.append((case_name, _safe_filename(case_name), group_key, map_p, mask_p))
         group_to_members[group_key].append(case_name)
 
     # ── Pass 2: LPT bin-pack groups onto folds for balanced sizes ──
@@ -128,11 +134,9 @@ def main() -> int:
         canonical = case_name.replace(":", "_").replace("/", "_")
         for key in {case_name, canonical, safe_name}:
             fold_map[key] = fold
-        cases_summary.append({"case": case_name, "fold": fold,
-                               "group_key": group_key})
+        cases_summary.append({"case": case_name, "fold": fold, "group_key": group_key})
 
-    (OUT_ROOT / "fold_assignment.json").write_text(
-        json.dumps(fold_map, indent=2, sort_keys=True))
+    (OUT_ROOT / "fold_assignment.json").write_text(json.dumps(fold_map, indent=2, sort_keys=True))
 
     # ── Report ──
     by_fold = Counter(c["fold"] for c in cases_summary)
@@ -148,13 +152,15 @@ def main() -> int:
     for f in range(N_FOLDS):
         print(f"  fold {f}: {by_fold[f]} cases")
 
-    multi_groups = sorted(((g, m) for g, m in by_group.items() if len(m) > 1),
-                           key=lambda x: -len(x[1]))
+    multi_groups = sorted(
+        ((g, m) for g, m in by_group.items() if len(m) > 1), key=lambda x: -len(x[1])
+    )
     if multi_groups:
         print(f"\nMulti-member groups ({len(multi_groups)} total):")
         for gk, members in multi_groups:
             print(f"  fold {group_to_fold[gk]}  ({gk}): {len(members)} cases")
-            for m in members: print(f"      {m}")
+            for m in members:
+                print(f"      {m}")
 
     return 0
 

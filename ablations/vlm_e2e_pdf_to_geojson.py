@@ -33,8 +33,6 @@ Usage (from repo root):
     uv run python ablations/vlm_e2e_pdf_to_geojson.py --resume
 """
 
-from __future__ import annotations
-
 import argparse
 import csv
 import json
@@ -55,12 +53,13 @@ from pydantic_ai.usage import UsageLimits  # noqa: E402
 from geoplanagent.utils import resolve_model, resolve_model_name  # noqa: E402
 from geoplanagent.tools.pdf import resolve_case_pdf  # noqa: E402
 from geoplanagent.metrics import calculate_spatial_metrics, load_geojson  # noqa: E402
+from geoplanagent.paths import DATA_DIR  # noqa: E402
 
 load_dotenv()
 
 
 DEFAULT_SUBSET = REPO_ROOT / "ablations" / "vlm_e2e_pdf_to_geojson" / "subset_40.json"
-DEFAULT_EVAL_DIR = REPO_ROOT / "evaluation_data"
+DEFAULT_EVAL_DIR = DATA_DIR
 DEFAULT_VLM_MODEL = "gemini-flash"
 DEFAULT_OUT_ROOT = REPO_ROOT / "ablations" / "vlm_e2e_pdf_to_geojson"
 DEFAULT_PROMPT_DUMP = REPO_ROOT / "ablations" / "prompts" / "vlm_e2e_pdf_to_geojson_prompt.md"

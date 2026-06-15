@@ -681,7 +681,7 @@ def run_locate(
 
     `usage_sink`: optional list. If supplied, one dict per invocation is
     appended:
-       {request_tokens, response_tokens}
+       {request_tokens, response_tokens}  (plus an "error" key on agent failure)
     The locate ablation harness doesn't pass it; the worker tool
     (``geoplanagent.tools.positioning.propose_centers``) does, so per-case cost
     telemetry survives in ``state.locate_calls``.

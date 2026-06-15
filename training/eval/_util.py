@@ -1,14 +1,11 @@
 """Shared helpers for the held-out k-fold validators."""
 
-from __future__ import annotations
-
 import json
 from pathlib import Path
 from typing import Any, Dict
 
 
-def write_predictions_json(predictions: Dict[str, Any],
-                           output_path: Path) -> None:
+def write_predictions_json(predictions: Dict[str, Any], output_path: Path) -> None:
     """Write per-case predictions to ``output_path`` as a sorted JSON file.
 
     Creates parent directories if needed. Used by both
@@ -16,7 +13,8 @@ def write_predictions_json(predictions: Dict[str, Any],
     ``eval_sam_kfold.py`` (per-case (fold, sem_iou, inst_iou) tuples).
     """
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(
-        json.dumps(predictions, indent=2, sort_keys=True))
-    print(f"\nWrote {len(predictions)} predictions to "
-          f"{output_path.relative_to(output_path.parent.parent.parent)}")
+    output_path.write_text(json.dumps(predictions, indent=2, sort_keys=True))
+    print(
+        f"\nWrote {len(predictions)} predictions to "
+        f"{output_path.relative_to(output_path.parent.parent.parent)}"
+    )

@@ -1,7 +1,5 @@
 """Offline UK geocoding from OS Open Names, Code-Point Open, the National Grid, and OS BoundaryLine."""
 
-from __future__ import annotations
-
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 import pandas as pd
@@ -406,24 +404,29 @@ def lookup_postcode(postcode: str) -> Optional[Dict]:
 
 # OS Grid Reference → WGS84
 
-# OS National Grid: 2-letter prefix → (easting, northing) base in metres.
-# Standard formula: each letter is 0-24 (A-Z skipping I).
-_OS_GRID_LETTERS = {}
-for _first_char in range(26):
-    if _first_char == 8:
-        continue  # skip I
-    _first_index = _first_char - (1 if _first_char > 8 else 0)  # 0-24 index
-    for _second_char in range(26):
-        if _second_char == 8:
-            continue
-        _second_index = _second_char - (1 if _second_char > 8 else 0)
-        _grid_east = ((_first_index - 2) % 5) * 5 + (_second_index % 5)
-        _grid_north = 19 - 5 * (_first_index // 5) - (_second_index // 5)
-        if 0 <= _grid_east <= 9 and 0 <= _grid_north <= 24:  # valid GB range
-            _OS_GRID_LETTERS[chr(_first_char + 65) + chr(_second_char + 65)] = (
-                _grid_east * 100000,
-                _grid_north * 100000,
-            )
+def _build_os_grid_letters() -> dict:
+    """OS National Grid 2-letter prefix → (easting, northing) base in metres.
+    Standard formula: each letter is 0-24 (A-Z skipping I)."""
+    letters = {}
+    for first_char in range(26):
+        if first_char == 8:
+            continue  # skip I
+        first_index = first_char - (1 if first_char > 8 else 0)  # 0-24 index
+        for second_char in range(26):
+            if second_char == 8:
+                continue
+            second_index = second_char - (1 if second_char > 8 else 0)
+            grid_east = ((first_index - 2) % 5) * 5 + (second_index % 5)
+            grid_north = 19 - 5 * (first_index // 5) - (second_index // 5)
+            if 0 <= grid_east <= 9 and 0 <= grid_north <= 24:  # valid GB range
+                letters[chr(first_char + 65) + chr(second_char + 65)] = (
+                    grid_east * 100000,
+                    grid_north * 100000,
+                )
+    return letters
+
+
+_OS_GRID_LETTERS = _build_os_grid_letters()
 
 
 _EASTING_NORTHING_RE = re.compile(r"(\d{4,7})\s*E\s*(\d{4,7})\s*N", re.IGNORECASE)
@@ -525,6 +528,8 @@ def os_grid_ref_to_latlon(grid_ref: str) -> Optional[Tuple[float, float]]:
     # 2-digit north as a 3-digit north, shifting the centroid by ~450m
     # on the shorter axis for asymmetric refs like "TR 206 48".
     def _centroid_pad(digits: str) -> str:
+        """Pad a partial BNG digit-string to 5 (1m precision) at the CENTRE of
+        its cell: '21' -> '21500' (centroid of the 21000-21999m band)."""
         if len(digits) >= 5:
             return digits
         return digits + "5" + "0" * (5 - len(digits) - 1)

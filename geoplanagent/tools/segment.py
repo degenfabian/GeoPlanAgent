@@ -119,13 +119,18 @@ def load_sam3_ft() -> dict:
     for correct segmentation, so we fail loudly rather than silently
     running base SAM3.
     """
-    import os
+    from huggingface_hub import get_token
 
-    hf_token = os.environ.get("HF_TOKEN")
+    # HF token from the HF_TOKEN env var (.env is loaded at the entry point) or
+    # a `huggingface-cli login` cached credential. It is required to fetch the
+    # gated facebook/sam3 base, so fail loud here rather than later with a
+    # confusing download error.
+    hf_token = get_token()
     if not hf_token:
-        print(
-            "  WARNING: HF_TOKEN not set. SAM3 download may fail if model "
-            "is gated. Set: export HF_TOKEN=hf_xxx"
+        raise RuntimeError(
+            "No Hugging Face token found. The gated facebook/sam3 base model "
+            "requires authentication: set HF_TOKEN (e.g. in .env) or run "
+            "`huggingface-cli login`."
         )
 
     device = torch.device(
@@ -181,7 +186,8 @@ def extract_boundary_sam3_semantic(
     # (the default value of `query`). Other phrasings still work via the
     # underlying SAM3 + CLIP, but slot quality is best on the trained
     # phrase. Offline callers (e.g. the prompt-search ablation) may
-    # override the default — we just truncate to fit CLIP's 32-token limit.
+    # override the default — we cap at 6 words, comfortably under CLIP's
+    # ~32-token limit.
     if isinstance(query, str):
         words = query.split()
         if len(words) > 6:

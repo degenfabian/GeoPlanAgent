@@ -35,8 +35,6 @@ Usage (from repo root):
   uv run python ablations/locate_only_eval.py --only-cases A4D4A1
 """
 
-from __future__ import annotations
-
 import argparse
 import csv
 import json
@@ -61,10 +59,11 @@ from geoplanagent.agents.locate import run_locate  # noqa: E402
 from geoplanagent.tools.pdf import resolve_case_pdf  # noqa: E402
 from geoplanagent.tools.pdf import render_map_page  # noqa: E402
 from geoplanagent.metrics import load_geojson  # noqa: E402
+from geoplanagent.paths import DATA_DIR  # noqa: E402
 
 
 DEFAULT_CACHE = REPO_ROOT / "ablations" / "cached_pdf_info_for_locate_ablations.json"
-DEFAULT_EVAL_DIR = REPO_ROOT / "evaluation_data"
+DEFAULT_EVAL_DIR = DATA_DIR
 DEFAULT_LOCATE_MODEL = "gemini-flash"
 DEFAULT_OUT_ROOT = REPO_ROOT / "ablations" / "locate_only_eval"
 

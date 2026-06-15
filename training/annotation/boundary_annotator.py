@@ -17,7 +17,7 @@ The "edited" geojson is written in IMAGE-PIXEL space, not WGS84. A later
 script `annotate_export.py` will project image-pixel rings back to WGS84
 via the same affine that was used to project them in.
 """
-from __future__ import annotations
+
 import json
 import sys
 from pathlib import Path
@@ -46,14 +46,18 @@ def list_cases():
         return jsonify({"error": "Run training/annotation/boundary_prerender.py first"}), 500
     cases = []
     for d in sorted(WORK.iterdir()):
-        if not d.is_dir(): continue
+        if not d.is_dir():
+            continue
         init_p = d / "initial.json"
-        if not init_p.exists(): continue
-        cases.append({
-            "case_id": d.name,
-            "has_edit": (d / "edited.json").exists(),
-            "has_map":  (d / "map.png").exists(),
-        })
+        if not init_p.exists():
+            continue
+        cases.append(
+            {
+                "case_id": d.name,
+                "has_edit": (d / "edited.json").exists(),
+                "has_map": (d / "map.png").exists(),
+            }
+        )
     return jsonify(cases)
 
 
@@ -68,7 +72,8 @@ def _case_dir(case_id: str) -> Path:
 def case_map(case_id):
     d = _case_dir(case_id)
     p = d / "map.png"
-    if not p.exists(): abort(404)
+    if not p.exists():
+        abort(404)
     return send_file(str(p), mimetype="image/png")
 
 
@@ -76,7 +81,8 @@ def case_map(case_id):
 def case_initial(case_id):
     d = _case_dir(case_id)
     p = d / "initial.json"
-    if not p.exists(): abort(404)
+    if not p.exists():
+        abort(404)
     return send_file(str(p), mimetype="application/json")
 
 
@@ -99,10 +105,15 @@ def save_edit(case_id):
 
     # Save the JSON
     out_json = d / "edited.json"
-    out_json.write_text(json.dumps({
-        "case_id": case_id,
-        "rings": rings,
-    }, indent=2))
+    out_json.write_text(
+        json.dumps(
+            {
+                "case_id": case_id,
+                "rings": rings,
+            },
+            indent=2,
+        )
+    )
 
     # Rasterise to a mask PNG at the same size as map.png
     map_path = d / "map.png"
@@ -111,9 +122,9 @@ def save_edit(case_id):
         h, w = img.shape[:2]
         mask = np.zeros((h, w), dtype=np.uint8)
         for ring in rings:
-            if not ring or len(ring) < 3: continue
-            pts = np.array([[int(round(x)), int(round(y))] for x, y in ring],
-                           dtype=np.int32)
+            if not ring or len(ring) < 3:
+                continue
+            pts = np.array([[int(round(x)), int(round(y))] for x, y in ring], dtype=np.int32)
             cv2.fillPoly(mask, [pts], 255)
         cv2.imwrite(str(d / "edited_mask.png"), mask)
 
@@ -122,6 +133,7 @@ def save_edit(case_id):
 
 def main():
     import argparse
+
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=5050)
     ap.add_argument("--host", default="127.0.0.1")

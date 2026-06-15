@@ -8,17 +8,17 @@ from PIL import Image
 
 # BGR palette for boundary recoloring.
 BOUNDARY_COLORS_BGR = [
-    (0, 0, 255),       # red
-    (0, 0, 200),       # dark red
-    (0, 0, 150),       # maroon
-    (30, 30, 30),      # black
-    (60, 60, 60),      # dark gray
-    (255, 0, 0),       # blue
-    (0, 128, 0),       # green
-    (0, 100, 0),       # dark green
-    (200, 0, 200),     # magenta
-    (0, 140, 255),     # orange
-    (100, 50, 50),     # dark blue
+    (0, 0, 255),  # red
+    (0, 0, 200),  # dark red
+    (0, 0, 150),  # maroon
+    (30, 30, 30),  # black
+    (60, 60, 60),  # dark gray
+    (255, 0, 0),  # blue
+    (0, 128, 0),  # green
+    (0, 100, 0),  # dark green
+    (200, 0, 200),  # magenta
+    (0, 140, 255),  # orange
+    (100, 50, 50),  # dark blue
 ]
 
 # Boundary styles
@@ -28,18 +28,16 @@ BOUNDARY_STYLES = [
     "thin_outline",
     "dashed",
     "dotted",
-    "filled_transparent",   # semi-transparent fill (like the original but diff color)
-    "filled_opaque",        # opaque fill
-    "hatched",              # diagonal hatching
+    "filled_transparent",  # semi-transparent fill (like the original but diff color)
+    "filled_opaque",  # opaque fill
+    "hatched",  # diagonal hatching
 ]
 
 
 def _extract_contours(mask):
     """Extract contours from a binary mask."""
     binary = (mask > 127).astype(np.uint8) * 255
-    contours, hierarchy = cv2.findContours(
-        binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-    )
+    contours, hierarchy = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     return contours
 
 
@@ -74,8 +72,9 @@ def _fade_boundary(image_bgr, mask):
         alpha = random.uniform(0.3, 0.7)
         mask_float = binary[:, :, None].astype(np.float32)
         bg_layer = np.full_like(result, bg_mean, dtype=np.float32)
-        result = (result.astype(np.float32) * (1 - mask_float * alpha) +
-                  bg_layer * mask_float * alpha).astype(np.uint8)
+        result = (
+            result.astype(np.float32) * (1 - mask_float * alpha) + bg_layer * mask_float * alpha
+        ).astype(np.uint8)
 
     return result
 
@@ -206,21 +205,20 @@ def _roughen_boundary(image, drawn_mask):
     blur_mask = cv2.dilate(drawn_mask, np.ones((3, 3), np.uint8), iterations=1)
     blur_float = (blur_mask > 0).astype(np.float32)
     blur_float = cv2.GaussianBlur(blur_float, (5, 5), 1.5)
-    result = (blurred * blur_float[:, :, None] +
-              result * (1 - blur_float[:, :, None])).astype(np.uint8)
+    result = (blurred * blur_float[:, :, None] + result * (1 - blur_float[:, :, None])).astype(
+        np.uint8
+    )
 
     # 2. Add noise to boundary pixels (scan artifacts)
     if random.random() > 0.3:
-        noise = np.random.normal(0, random.uniform(5, 20),
-                                 result.shape).astype(np.float32)
+        noise = np.random.normal(0, random.uniform(5, 20), result.shape).astype(np.float32)
         noisy = np.clip(result.astype(np.float32) + noise, 0, 255)
         result[mask_bool] = noisy[mask_bool].astype(np.uint8)
 
     # 3. Random fade/lighten (old ink, faded boundary)
     if random.random() > 0.4:
         fade = random.uniform(0.5, 0.9)
-        faded = (result.astype(np.float32) * fade +
-                 255.0 * (1 - fade)).astype(np.uint8)
+        faded = (result.astype(np.float32) * fade + 255.0 * (1 - fade)).astype(np.uint8)
         result[mask_bool] = faded[mask_bool]
 
     # 4. Slight morphological roughening (uneven edges)
@@ -325,8 +323,7 @@ def style_transfer_augment(image_pil, mask_pil, p=0.5):
     elif style == "hatched":
         hatch_thickness = random.randint(1, 3)
         before = result.copy()
-        result = _draw_hatching(result, contours, mask, color,
-                                thickness=hatch_thickness)
+        result = _draw_hatching(result, contours, mask, color, thickness=hatch_thickness)
         drawn_mask = (np.any(result != before, axis=2) * 255).astype(np.uint8)
 
     # Roughen the drawn boundary to mimic scan artefacts.
@@ -460,8 +457,7 @@ def copy_paste_augment(image_pil, mask_pil, donor_image_pil, donor_mask_pil, p=0
     elif style == "hatched":
         hatch_thickness = random.randint(1, 3)
         before = result.copy()
-        result = _draw_hatching(result, scaled_contours, new_mask, color,
-                                thickness=hatch_thickness)
+        result = _draw_hatching(result, scaled_contours, new_mask, color, thickness=hatch_thickness)
         drawn_mask = (np.any(result != before, axis=2) * 255).astype(np.uint8)
 
     # Roughen to look like a real scan
@@ -512,8 +508,12 @@ if __name__ == "__main__":
             aug_img, aug_mask = copy_paste_augment(img, mask, donor_img, donor_mask, p=1.0)
             aug_bgr = cv2.cvtColor(np.array(aug_img), cv2.COLOR_RGB2BGR)
             aug_m = np.array(aug_mask)
-            cv2.imwrite(str(out_dir / f"cp_{files[recipient_idx][:-4]}_d{donor_idx}_v{v}.png"), aug_bgr)
-            cv2.imwrite(str(out_dir / f"cp_{files[recipient_idx][:-4]}_d{donor_idx}_v{v}_mask.png"), aug_m)
+            cv2.imwrite(
+                str(out_dir / f"cp_{files[recipient_idx][:-4]}_d{donor_idx}_v{v}.png"), aug_bgr
+            )
+            cv2.imwrite(
+                str(out_dir / f"cp_{files[recipient_idx][:-4]}_d{donor_idx}_v{v}_mask.png"), aug_m
+            )
         print(f"  {files[recipient_idx]} + donor {files[donor_idx]}: 3 variants saved")
 
     print(f"\nAll saved to {out_dir}")

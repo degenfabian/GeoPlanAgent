@@ -3,8 +3,6 @@ evaluation-case PDF resolution, and worker map-page preparation including
 the k-fold ResNet50 auto-rotation classifier with 4-way TTA.
 """
 
-from __future__ import annotations
-
 import cv2
 import numpy as np
 from pdf2image import convert_from_path
@@ -100,8 +98,9 @@ def render_map_page(
     Returns:
         (map_bgr, rotation_info) on success, or None if rendering failed
         (e.g. page index out of range). rotation_info is the dict returned by
-        auto_rotate — the caller can read rotation_info["applied"] to know
-        whether rotation was performed.
+        auto_rotate (or a minimal {"applied": False} if auto_rotate raised);
+        the caller can read rotation_info["applied"] to know whether rotation
+        was performed.
     """
     page_index = max(0, int(page_1based) - 1)
     try:

@@ -16,8 +16,6 @@ pages) so it's easy to see whether the model is doing well on the
 ~90% upright cases or also on the ~10% rotated ones.
 """
 
-from __future__ import annotations
-
 import argparse
 import csv
 import json
@@ -34,27 +32,38 @@ sys.path.insert(0, str(REPO))
 
 from training.eval._util import write_predictions_json  # noqa: E402
 from training.train_rotation import (  # noqa: E402
-    CLASS_DEGREES, RotationClassifier,
-    KFoldRotationDataset, load_labels, fold_for, OUTPUT_DIR, SAM3_FOLD_ASSIGNMENT,
+    CLASS_DEGREES,
+    RotationClassifier,
+    KFoldRotationDataset,
+    load_labels,
+    fold_for,
+    OUTPUT_DIR,
+    SAM3_FOLD_ASSIGNMENT,
 )
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument(
-        "--tta", action="store_true",
-        help=("Use 4-way test-time augmentation: predict on each of the "
-              "image's 4 rotations and average the logits (re-rotating "
-              "the class space to the original frame for each). "
-              "Default is off — single-view prediction. Production "
-              "inference uses TTA, so the TTA accuracy is the "
-              "operationally relevant number."),
+        "--tta",
+        action="store_true",
+        help=(
+            "Use 4-way test-time augmentation: predict on each of the "
+            "image's 4 rotations and average the logits (re-rotating "
+            "the class space to the original frame for each). "
+            "Default is off — single-view prediction. Production "
+            "inference uses TTA, so the TTA accuracy is the "
+            "operationally relevant number."
+        ),
     )
     args = ap.parse_args()
 
-    if torch.cuda.is_available(): device = "cuda"
-    elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available(): device = "mps"
-    else: device = "cpu"
+    if torch.cuda.is_available():
+        device = "cuda"
+    elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+        device = "mps"
+    else:
+        device = "cpu"
     print(f"Device: {device}  TTA: {args.tta}")
 
     labels = load_labels()
@@ -67,7 +76,8 @@ def main() -> int:
     for fold_k in sorted(set(case_to_fold.values())):
         ckpt_path = OUTPUT_DIR / f"fold_{fold_k}" / "best.pt"
         if not ckpt_path.exists():
-            print(f"fold {fold_k}: missing {ckpt_path}, skipping"); continue
+            print(f"fold {fold_k}: missing {ckpt_path}, skipping")
+            continue
         ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
         img_size = ckpt["config"]["img_size"]
 
@@ -92,7 +102,8 @@ def main() -> int:
                 # class space back to the original frame; average logits.
                 accum = torch.zeros(4, device=device)
                 for k in (0, 90, 180, 270):
-                    if k not in views: continue
+                    if k not in views:
+                        continue
                     x, _label = ds[views[k]]
                     x = x.unsqueeze(0).to(device)
                     with torch.no_grad():
@@ -118,10 +129,13 @@ def main() -> int:
         elapsed = time.time() - t0
         n_val_fold = len(val_cases)
         fold_acc = n_match / n_val_fold if n_val_fold > 0 else 0.0
-        fold_stats.append({"fold": fold_k, "n_val": n_val_fold,
-                           "n_correct": n_match, "val_acc": fold_acc})
-        print(f"fold {fold_k}: {n_match}/{n_val_fold} correct on val "
-              f"({100*fold_acc:.1f}%, {elapsed:.0f}s)")
+        fold_stats.append(
+            {"fold": fold_k, "n_val": n_val_fold, "n_correct": n_match, "val_acc": fold_acc}
+        )
+        print(
+            f"fold {fold_k}: {n_match}/{n_val_fold} correct on val "
+            f"({100 * fold_acc:.1f}%, {elapsed:.0f}s)"
+        )
 
     out_name = "rotation_kfold_tta.json" if args.tta else "rotation_kfold.json"
     write_predictions_json(predictions, THIS / "predictions" / out_name)
@@ -133,19 +147,23 @@ def main() -> int:
     correct, correct_up, correct_rot = 0, 0, 0
     n_up, n_rot = 0, 0
     for c, gt_v in labels.items():
-        if c not in predictions: continue
+        if c not in predictions:
+            continue
         pred = predictions[c]
-        if pred == gt_v: correct += 1
+        if pred == gt_v:
+            correct += 1
         if gt_v == 0:
             n_up += 1
-            if pred == gt_v: correct_up += 1
+            if pred == gt_v:
+                correct_up += 1
         else:
             n_rot += 1
-            if pred == gt_v: correct_rot += 1
+            if pred == gt_v:
+                correct_rot += 1
     print()
-    print(f"  overall:     {correct}/{total} ({100*correct/max(1,total):.1f}%)")
-    print(f"  on upright:  {correct_up}/{n_up} ({100*correct_up/max(1,n_up):.1f}%)")
-    print(f"  on rotated:  {correct_rot}/{n_rot} ({100*correct_rot/max(1,n_rot):.1f}%)")
+    print(f"  overall:     {correct}/{total} ({100 * correct / max(1, total):.1f}%)")
+    print(f"  on upright:  {correct_up}/{n_up} ({100 * correct_up / max(1, n_up):.1f}%)")
+    print(f"  on rotated:  {correct_rot}/{n_rot} ({100 * correct_rot / max(1, n_rot):.1f}%)")
     print(f"  GT split:    upright={gt_upright}/{total}  rotated={gt_rotated}/{total}")
 
     # cv_summary{_tta}.{json,csv} — paper-table source
@@ -169,9 +187,11 @@ def main() -> int:
         "overall_acc": overall_acc,
         "tta": args.tta,
         "source": "training/eval/eval_rotation_kfold.py",
-        "notes": ("Per-fold val_acc is held-out accuracy of fold k's "
-                  "best.pt on cases assigned to fold k. mean/std are over "
-                  "the 5 folds (fold-weighted, not case-weighted)."),
+        "notes": (
+            "Per-fold val_acc is held-out accuracy of fold k's "
+            "best.pt on cases assigned to fold k. mean/std are over "
+            "the 5 folds (fold-weighted, not case-weighted)."
+        ),
     }
     suffix = "_tta" if args.tta else ""
     cv_json = OUTPUT_DIR / f"cv_summary{suffix}.json"
@@ -181,8 +201,7 @@ def main() -> int:
         w = csv.writer(fh)
         w.writerow(["fold", "n_val", "n_correct", "val_acc"])
         for f in fold_stats:
-            w.writerow([f["fold"], f["n_val"], f["n_correct"],
-                        f"{f['val_acc']:.4f}"])
+            w.writerow([f["fold"], f["n_val"], f["n_correct"], f"{f['val_acc']:.4f}"])
     print(f"\nWrote {cv_json}")
     print(f"Wrote {cv_csv}")
     return 0

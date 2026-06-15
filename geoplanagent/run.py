@@ -40,7 +40,7 @@ def run_agent(
     pdf_path: str,
     models_state: dict,
     model_name: str = "google/gemini-3-flash-preview",
-    max_iterations: int = 12,
+    max_requests: int = 30,
     dpi: int = 200,
     verbose: bool = True,
     case_name: Optional[str] = None,
@@ -105,13 +105,13 @@ def run_agent(
         )
 
     if verbose:
-        print(f"  Running agent ({model_name}, max {max_iterations} turns)")
+        print(f"  Running agent ({model_name}, max {max_requests} requests)")
 
     # Phase 2: invoke the worker
     result = None
     outcome: Optional[BoundaryOutcome] = None  # may stay None on exception path
     try:
-        result = invoke_worker(state, user_parts, model_name, max_iterations)
+        result = invoke_worker(state, user_parts, model_name, max_requests)
     except (UnexpectedModelBehavior, UsageLimitExceeded) as e:
         if verbose:
             print(f"  Agent loop ended: {type(e).__name__}: {str(e)}")
@@ -386,16 +386,21 @@ def invoke_worker(
     state: AgentState,
     user_parts: list,
     model_name: str,
-    max_iterations: int,
+    max_requests: int,
 ):
-    """Run the worker tool loop. Returns the pydantic-ai result or raises."""
+    """Run the worker tool loop. Returns the pydantic-ai result or raises.
+
+    ``max_requests`` is pydantic-ai's request_limit: the cap on worker model
+    calls (LLM requests) for the case. Real cases use ~4 (median) to ~14 (max);
+    the default leaves comfortable headroom while still bounding a runaway loop.
+    """
     model = resolve_model(model_name)
     return run_sync_with_retry(
         _worker_agent,
         user_parts,
         deps=state,
         model=model,
-        usage_limits=UsageLimits(request_limit=max(max_iterations * 4, 25)),
+        usage_limits=UsageLimits(request_limit=max_requests),
         label="worker",
     )
 

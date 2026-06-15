@@ -1,7 +1,5 @@
 """MINIMA-LoFTR registration of a planning map against OS tiles, plus match-quality rewards."""
 
-from __future__ import annotations
-
 import heapq
 import math
 import os

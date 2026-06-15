@@ -13,8 +13,6 @@ Usage:
 Sections: table1 table2 table4 table9 table11 table12 fig3 fig4 costs dataset
 """
 
-from __future__ import annotations
-
 import argparse
 import csv
 import json
@@ -25,12 +23,14 @@ from pathlib import Path
 import numpy as np
 
 REPO = Path(__file__).resolve().parent.parent
-EVAL = REPO / "evaluation_data"
 DEFAULT_RUN = REPO / "results/benchmark_std_post_fix/gemini-flash"
 sys.path.insert(0, str(REPO))
 
 from _pricing import PRICES  # noqa: E402 (scripts/ on sys.path when run as a file)
 from geoplanagent.metrics import feret_diameter_m, aggregate_spatial_metrics  # noqa: E402
+from geoplanagent.paths import DATA_DIR, DATASET_XLSX, DATASET_SHEET  # noqa: E402
+
+EVAL = DATA_DIR
 
 
 # ---------------------------------------------------------------- geometry
@@ -373,10 +373,10 @@ def fig4(run_dir: Path):
     print("\n=== Figure 4: IoU by document attribute (final, with critic) ===")
     import pandas as pd
 
-    df = pd.read_excel(EVAL / "new_updated.xlsx", sheet_name="Cleaned_up_208_planning_dataset")
-    merged = pd.read_excel(EVAL / "new_updated.xlsx", sheet_name="Merged cases")
+    df = pd.read_excel(DATASET_XLSX, sheet_name=DATASET_SHEET)
+    merged = pd.read_excel(DATASET_XLSX, sheet_name="Merged cases")
     bridge = dict(zip(merged["Unnamed: 5"].astype(str), merged["Merged folder"].astype(str)))
-    df["folder"] = df["Unique ID (Folder_Name)"].astype(str).map(lambda x: bridge.get(x, x))
+    df["folder"] = df["Folder Name"].astype(str).map(lambda x: bridge.get(x, x))
 
     metrics = read_metrics(run_dir)
     df["iou"] = df["folder"].map(lambda f: metrics.get(f, {}).get("iou"))
@@ -460,8 +460,8 @@ def dataset():
     print("\n=== Dataset statistics (Table 3 / Appendix A) ===")
     import pandas as pd
 
-    xlsx = EVAL / "new_updated.xlsx"
-    df = pd.read_excel(xlsx, sheet_name="Cleaned_up_208_planning_dataset")
+    xlsx = DATASET_XLSX
+    df = pd.read_excel(xlsx, sheet_name=DATASET_SHEET)
     norm = lambda col: df[col].astype(str).str.strip().str.lower()
 
     print(f"  cases: {len(df)} (paper: 208)")

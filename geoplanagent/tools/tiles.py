@@ -262,7 +262,7 @@ def _render_canvas_bulk(
         # Casings underneath, then fills on top, so neighbouring roads share a clean edge.
         for _, row in all_roads.iterrows():
             road_type = row.get("type", "Local Street")
-            fill_width, casing_width = ROAD_WIDTHS_Z17.get(road_type, (1.5, 2.5))
+            _, casing_width = ROAD_WIDTHS_Z17.get(road_type, (1.5, 2.5))
             _draw_line(
                 canvas,
                 _geom_to_pixels(row.geometry),
@@ -272,7 +272,7 @@ def _render_canvas_bulk(
 
         for _, row in all_roads.iterrows():
             road_type = row.get("type", "Local Street")
-            fill_width, casing_width = ROAD_WIDTHS_Z17.get(road_type, (1.5, 2.5))
+            fill_width, _ = ROAD_WIDTHS_Z17.get(road_type, (1.5, 2.5))
             if road_type == "Motorway":
                 color = STYLE["motorway"]
             elif road_type == "A Road":

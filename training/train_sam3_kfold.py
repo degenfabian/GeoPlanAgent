@@ -20,8 +20,6 @@ Usage:
 Wall: ~1.5–2 h per fold on Apple MPS with bf16.
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import random
@@ -139,6 +137,7 @@ def seed_everything(seed: int) -> torch.Generator:
 
 # Loss components
 
+
 def compute_signed_distance_map(mask_np):
     mask_bool = mask_np > 0.5
     if mask_bool.all() or (~mask_bool).all():
@@ -210,9 +209,16 @@ def _downsample_gt_to(target_hw: Tuple[int, int], gt: torch.Tensor) -> torch.Ten
     than upsampling predictions to GT resolution."""
     if gt.shape[-2:] == target_hw:
         return gt
-    g = F.interpolate(gt.float().unsqueeze(0).unsqueeze(0),
-                       size=target_hw, mode="bilinear",
-                       align_corners=False).squeeze(0).squeeze(0)
+    g = (
+        F.interpolate(
+            gt.float().unsqueeze(0).unsqueeze(0),
+            size=target_hw,
+            mode="bilinear",
+            align_corners=False,
+        )
+        .squeeze(0)
+        .squeeze(0)
+    )
     return g
 
 
@@ -285,13 +291,19 @@ def instance_loss(pred_masks, pred_logits, presence_logits, gt_mask):
     # 1. Mask loss on matched slot — UPSAMPLED to GT resolution. Only
     # one slot is upsampled (cheap), preserving thin-boundary detail.
     best_native = pred_masks[best_idx]
-    best_up = F.interpolate(
-        best_native.unsqueeze(0).unsqueeze(0),
-        size=gt_mask.shape[-2:], mode="bilinear",
-        align_corners=False).squeeze(0).squeeze(0)
+    best_up = (
+        F.interpolate(
+            best_native.unsqueeze(0).unsqueeze(0),
+            size=gt_mask.shape[-2:],
+            mode="bilinear",
+            align_corners=False,
+        )
+        .squeeze(0)
+        .squeeze(0)
+    )
     fl = sigmoid_focal_loss(
-        best_up.unsqueeze(0), gt_mask.unsqueeze(0),
-        alpha=0.25, gamma=2.0).mean()
+        best_up.unsqueeze(0), gt_mask.unsqueeze(0), alpha=0.25, gamma=2.0
+    ).mean()
     dl = dice_loss(best_up.unsqueeze(0), gt_mask.unsqueeze(0))
     mask_l = LOSS_WEIGHT_INST_FOCAL * fl + LOSS_WEIGHT_INST_DICE * dl
 
@@ -312,16 +324,16 @@ def instance_loss(pred_masks, pred_logits, presence_logits, gt_mask):
         # loud rather than silently zeroing the cls supervision.
         cls_flat = pred_logits.reshape(-1)
         assert cls_flat.shape[0] == N, (
-            f"pred_logits expected shape ({N},), got {tuple(pred_logits.shape)}")
+            f"pred_logits expected shape ({N},), got {tuple(pred_logits.shape)}"
+        )
         with torch.no_grad():
             cls_target = torch.zeros_like(cls_flat)
             # Soft positive target = prob^0.25 * iou^0.75
             best_iou = float(iou[best_idx].clamp(min=0.0, max=1.0).item())
             best_prob = float(torch.sigmoid(cls_flat[best_idx]).item())
-            soft_t = max(0.01, (best_prob ** 0.25) * (best_iou ** 0.75))
+            soft_t = max(0.01, (best_prob**0.25) * (best_iou**0.75))
             cls_target[best_idx] = soft_t
-        cls_focal = sigmoid_focal_loss(
-            cls_flat, cls_target, alpha=0.25, gamma=2.0)
+        cls_focal = sigmoid_focal_loss(cls_flat, cls_target, alpha=0.25, gamma=2.0)
         cls_l = LOSS_WEIGHT_INST_CLS * cls_focal.mean()
 
     # 3. Image-level presence BCE — concept always present in our training data
@@ -330,7 +342,8 @@ def instance_loss(pred_masks, pred_logits, presence_logits, gt_mask):
         pl = presence_logits.view(-1)
         target = torch.ones_like(pl)
         pres_l = LOSS_WEIGHT_INST_PRES * F.binary_cross_entropy_with_logits(
-            pl, target, reduction="mean")
+            pl, target, reduction="mean"
+        )
 
     return mask_l + cls_l + pres_l, best_idx
 
@@ -345,8 +358,7 @@ def _safe_filename(s: str) -> str:
     return _FILENAME_SAFE_RE.sub("_", s)
 
 
-def _build_manifest_from_disk(dataset_dir: Path,
-                               fold_map: Dict[str, int]) -> List[Dict]:
+def _build_manifest_from_disk(dataset_dir: Path, fold_map: Dict[str, int]) -> List[Dict]:
     """Return [{case, filename, fold}, ...] from `maps/` + fold_assignment.
 
     ``case`` is the original case name (matching benchmark_runner's
@@ -369,16 +381,20 @@ def _build_manifest_from_disk(dataset_dir: Path,
         if fold is None:
             continue
         case = safe_to_original.get(png.stem, png.stem)
-        manifest.append({"case": case,
-                          "filename": png.name,
-                          "fold": int(fold)})
+        manifest.append({"case": case, "filename": png.name, "fold": int(fold)})
     return manifest
 
 
 class FoldDataset(Dataset):
-    def __init__(self, dataset_dir: Path, manifest: List[Dict],
-                  fold: int, split: str, processor: Sam3Processor,
-                  oversample: int = 2):
+    def __init__(
+        self,
+        dataset_dir: Path,
+        manifest: List[Dict],
+        fold: int,
+        split: str,
+        processor: Sam3Processor,
+        oversample: int = 2,
+    ):
         self.dataset_dir = dataset_dir
         self.processor = processor
         self.split = split
@@ -387,8 +403,10 @@ class FoldDataset(Dataset):
             self.entries = [r for r in manifest if r["fold"] != fold]
         else:
             self.entries = [r for r in manifest if r["fold"] == fold]
-        print(f"  fold {fold} {split}: {len(self.entries)} cases"
-              + (f" × {oversample} oversample" if split == "train" else ""))
+        print(
+            f"  fold {fold} {split}: {len(self.entries)} cases"
+            + (f" × {oversample} oversample" if split == "train" else "")
+        )
 
     def __len__(self):
         return len(self.entries) * (self.oversample if self.split == "train" else 1)
@@ -415,10 +433,8 @@ class FoldDataset(Dataset):
             if random.random() > 0.5:
                 img = ImageEnhance.Contrast(img).enhance(0.8 + random.random() * 0.4)
 
-        inputs = self.processor(images=img, text=DEFAULT_QUERY,
-                                  return_tensors="pt")
-        inputs = {k: v.squeeze(0) if isinstance(v, torch.Tensor) else v
-                   for k, v in inputs.items()}
+        inputs = self.processor(images=img, text=DEFAULT_QUERY, return_tensors="pt")
+        inputs = {k: v.squeeze(0) if isinstance(v, torch.Tensor) else v for k, v in inputs.items()}
 
         gt = np.asarray(mask, dtype=np.float32) / 255.0
         gt_t = torch.from_numpy(gt)
@@ -441,11 +457,12 @@ def collate(batch):
 
 # Train one fold
 
+
 def _ensure_pred_mask_on_gt(pred, gt):
     if pred.shape[-2:] != gt.shape[-2:]:
-        pred = F.interpolate(pred.unsqueeze(0).unsqueeze(0),
-                              size=gt.shape[-2:],
-                              mode="bilinear", align_corners=False).squeeze()
+        pred = F.interpolate(
+            pred.unsqueeze(0).unsqueeze(0), size=gt.shape[-2:], mode="bilinear", align_corners=False
+        ).squeeze()
     return pred
 
 
@@ -459,6 +476,7 @@ def _autocast_ctx(device: str, enabled: bool):
     if not enabled:
         # null context manager
         from contextlib import nullcontext
+
         return nullcontext()
     if device == "cuda":
         return torch.amp.autocast("cuda", dtype=torch.bfloat16)
@@ -467,36 +485,46 @@ def _autocast_ctx(device: str, enabled: bool):
     return torch.amp.autocast("cpu", dtype=torch.bfloat16)
 
 
-def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
-                device: str) -> Dict:
+def train_fold(
+    fold: int, args, manifest: List[Dict], processor: Sam3Processor, device: str
+) -> Dict:
     out_dir = OUTPUT_BASE / f"fold_{fold}"
     out_dir.mkdir(parents=True, exist_ok=True)
-    print(f"\n{'='*70}\n=== FOLD {fold} → {out_dir}\n{'='*70}")
+    print(f"\n{'=' * 70}\n=== FOLD {fold} → {out_dir}\n{'=' * 70}")
 
     # Per-fold seeding so each fold's RNG state is deterministic, but
     # different folds explore different augmentation sequences.
     g = seed_everything(args.seed + fold)
 
     # Datasets
-    train_ds = FoldDataset(DATASET_DIR, manifest, fold, "train", processor,
-                            oversample=args.oversample)
+    train_ds = FoldDataset(
+        DATASET_DIR, manifest, fold, "train", processor, oversample=args.oversample
+    )
     val_ds = FoldDataset(DATASET_DIR, manifest, fold, "valid", processor)
 
-    train_loader = DataLoader(train_ds, batch_size=args.batch_size,
-                                shuffle=True, num_workers=args.num_workers,
-                                collate_fn=collate, generator=g,
-                                worker_init_fn=_worker_init_fn,
-                                persistent_workers=(args.num_workers > 0))
-    val_loader = DataLoader(val_ds, batch_size=1, shuffle=False,
-                              num_workers=0, collate_fn=collate)
+    train_loader = DataLoader(
+        train_ds,
+        batch_size=args.batch_size,
+        shuffle=True,
+        num_workers=args.num_workers,
+        collate_fn=collate,
+        generator=g,
+        worker_init_fn=_worker_init_fn,
+        persistent_workers=(args.num_workers > 0),
+    )
+    val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=0, collate_fn=collate)
 
     # Fresh model + LoRA per fold
     base = Sam3Model.from_pretrained(MODEL_ID)
     # Heads fully trained alongside LoRA — see HEAD_MODULES at module scope.
-    lora_cfg = LoraConfig(r=args.rank, lora_alpha=args.rank * 2,
-                            target_modules=LORA_TARGET_MODULES,
-                            lora_dropout=0.05, bias="none",
-                            modules_to_save=HEAD_MODULES)
+    lora_cfg = LoraConfig(
+        r=args.rank,
+        lora_alpha=args.rank * 2,
+        target_modules=LORA_TARGET_MODULES,
+        lora_dropout=0.05,
+        bias="none",
+        modules_to_save=HEAD_MODULES,
+    )
     model = get_peft_model(base, lora_cfg).to(device)
     model.print_trainable_parameters()
 
@@ -504,7 +532,8 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
     optim = torch.optim.AdamW(trainable, lr=args.lr, weight_decay=0.01)
     total_steps = len(train_loader) * args.epochs // args.grad_accum
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optim, T_max=max(1, total_steps), eta_min=args.lr * 0.05)
+        optim, T_max=max(1, total_steps), eta_min=args.lr * 0.05
+    )
 
     # Resume from PEFT-format latest dir (LoRA + heads adapter + a small
     # trainer_state.pt with optimizer/scheduler/epoch/etc.). Total ~150 MB
@@ -521,25 +550,26 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
         # produces, which the trainer's LoraConfig guarantees.
         from peft import set_peft_model_state_dict
         from safetensors.torch import load_file
+
         adapter_state = load_file(latest_dir / "adapter_model.safetensors")
         # set_peft_model_state_dict adapts loaded keys to the model's
         # current adapter_name ("default"); strict in spirit since any
         # missing/unexpected key indicates a config drift.
         res = set_peft_model_state_dict(model, adapter_state)
         if res.unexpected_keys:
-            raise RuntimeError(f"Resume: unexpected keys "
-                                f"{res.unexpected_keys[:5]} — config drift")
+            raise RuntimeError(f"Resume: unexpected keys {res.unexpected_keys[:5]} — config drift")
         # Restore optimizer + scheduler + bookkeeping from the sidecar.
-        ts = torch.load(latest_dir / "trainer_state.pt",
-                        map_location="cpu", weights_only=False)
+        ts = torch.load(latest_dir / "trainer_state.pt", map_location="cpu", weights_only=False)
         optim.load_state_dict(ts["optim"])
         sched.load_state_dict(ts["sched"])
         start_epoch = ts["epoch"] + 1
         best_val_iou = ts.get("best_val_iou", 0.0)
         epochs_since_best = ts.get("epochs_since_best", 0)
         history = ts.get("history") or []
-        print(f"  Resumed at epoch {start_epoch}, best_val_iou={best_val_iou:.3f}, "
-              f"epochs_since_best={epochs_since_best}")
+        print(
+            f"  Resumed at epoch {start_epoch}, best_val_iou={best_val_iou:.3f}, "
+            f"epochs_since_best={epochs_since_best}"
+        )
 
     global_step = (start_epoch * len(train_loader)) // args.grad_accum
 
@@ -547,12 +577,13 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
         model.train()
         t0 = time.time()
         ep_losses = {"total": [], "sem": [], "inst": []}
-        pbar = tqdm(train_loader, desc=f"fold{fold} ep{epoch+1}/{args.epochs}")
+        pbar = tqdm(train_loader, desc=f"fold{fold} ep{epoch + 1}/{args.epochs}")
         optim.zero_grad()
 
         for step, (inputs, gts, dms) in enumerate(pbar):
-            inputs = {k: v.to(device) if isinstance(v, torch.Tensor) else v
-                       for k, v in inputs.items()}
+            inputs = {
+                k: v.to(device) if isinstance(v, torch.Tensor) else v for k, v in inputs.items()
+            }
             gts_d = [g.to(device) for g in gts]
             dms_d = [d.to(device) for d in dms]
 
@@ -580,14 +611,22 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
 
             for b in range(B):
                 pred_b = _ensure_pred_mask_on_gt(sem_pred[b], gts_d[b])
-                dm_b = (dms_d[b] if dms_d[b].shape == gts_d[b].shape
-                         else F.interpolate(dms_d[b].unsqueeze(0).unsqueeze(0),
-                                              size=gts_d[b].shape[-2:],
-                                              mode="bilinear",
-                                              align_corners=False).squeeze())
+                dm_b = (
+                    dms_d[b]
+                    if dms_d[b].shape == gts_d[b].shape
+                    else F.interpolate(
+                        dms_d[b].unsqueeze(0).unsqueeze(0),
+                        size=gts_d[b].shape[-2:],
+                        mode="bilinear",
+                        align_corners=False,
+                    ).squeeze()
+                )
                 sem_l_total = sem_l_total + semantic_loss(
-                    pred_b.unsqueeze(0), gts_d[b].unsqueeze(0),
-                    dist_map=dm_b.unsqueeze(0), epoch=epoch)
+                    pred_b.unsqueeze(0),
+                    gts_d[b].unsqueeze(0),
+                    dist_map=dm_b.unsqueeze(0),
+                    epoch=epoch,
+                )
 
                 if inst_masks is not None and inst_masks.numel() > 0:
                     inst_b = inst_masks[b]
@@ -615,10 +654,10 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
                 tot=f"{loss.item():.3f}",
                 sem=f"{sem_l.item():.3f}",
                 inst=f"{inst_l.item():.3f}",
-                lr=f"{sched.get_last_lr()[0]:.2e}")
+                lr=f"{sched.get_last_lr()[0]:.2e}",
+            )
 
-        avg_train = {k: (sum(v) / len(v) if v else 0.0)
-                     for k, v in ep_losses.items()}
+        avg_train = {k: (sum(v) / len(v) if v else 0.0) for k, v in ep_losses.items()}
 
         # Validation: measure both heads. Gate on the SEMANTIC head (the
         # user-facing metric for the paper). Per-case precision/recall/F1
@@ -630,8 +669,9 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
         inst_losses = []
         with torch.no_grad():
             for inputs, gts, dms in val_loader:
-                inputs = {k: v.to(device) if isinstance(v, torch.Tensor) else v
-                            for k, v in inputs.items()}
+                inputs = {
+                    k: v.to(device) if isinstance(v, torch.Tensor) else v for k, v in inputs.items()
+                }
                 with _autocast_ctx(device, args.bf16):
                     outputs = model(**inputs)
 
@@ -646,18 +686,25 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
                         slots = inst_masks[b]
                         if slots.dim() == 4:
                             slots = slots.view(-1, slots.shape[-2], slots.shape[-1])
-                        cls_b = cls_logits[b].view(-1)[:slots.shape[0]]
+                        cls_b = cls_logits[b].view(-1)[: slots.shape[0]]
                         top_idx = int(cls_b.argmax().item())
-                        pred_up = F.interpolate(
-                            slots[top_idx].unsqueeze(0).unsqueeze(0),
-                            size=g.shape[-2:], mode="bilinear",
-                            align_corners=False).squeeze(0).squeeze(0)
+                        pred_up = (
+                            F.interpolate(
+                                slots[top_idx].unsqueeze(0).unsqueeze(0),
+                                size=g.shape[-2:],
+                                mode="bilinear",
+                                align_corners=False,
+                            )
+                            .squeeze(0)
+                            .squeeze(0)
+                        )
                         fl = sigmoid_focal_loss(
-                            pred_up.unsqueeze(0), g.unsqueeze(0),
-                            alpha=0.25, gamma=2.0).mean()
+                            pred_up.unsqueeze(0), g.unsqueeze(0), alpha=0.25, gamma=2.0
+                        ).mean()
                         dl = dice_loss(pred_up.unsqueeze(0), g.unsqueeze(0))
-                        inst_losses.append((LOSS_WEIGHT_INST_FOCAL * fl
-                                              + LOSS_WEIGHT_INST_DICE * dl).item())
+                        inst_losses.append(
+                            (LOSS_WEIGHT_INST_FOCAL * fl + LOSS_WEIGHT_INST_DICE * dl).item()
+                        )
                         p_bin = (torch.sigmoid(pred_up) > 0.5).float()
                         g_bin = (g > 0.5).float()
                         inter = (p_bin * g_bin).sum().item()
@@ -682,12 +729,12 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
                     rec = inter / g_sum if g_sum > 0 else 0.0
                     sem_precisions.append(prec)
                     sem_recalls.append(rec)
-                    sem_f1s.append(2 * prec * rec / (prec + rec)
-                                   if (prec + rec) > 0 else 0.0)
-                    sem_dices.append(2 * inter / (p_sum + g_sum)
-                                     if (p_sum + g_sum) > 0 else 0.0)
+                    sem_f1s.append(2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0.0)
+                    sem_dices.append(2 * inter / (p_sum + g_sum) if (p_sum + g_sum) > 0 else 0.0)
 
-        def _mean(xs): return sum(xs) / len(xs) if xs else 0.0
+        def _mean(xs):
+            return sum(xs) / len(xs) if xs else 0.0
+
         avg_inst_iou = _mean(inst_ious)
         avg_sem_iou = _mean(sem_ious)
         avg_sem_prec = _mean(sem_precisions)
@@ -700,22 +747,28 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
         avg_val = avg_inst_loss
 
         elapsed = time.time() - t0
-        history.append({"epoch": epoch, "wall_s": round(elapsed, 1),
-                          **{f"train_{k}": round(v, 4)
-                              for k, v in avg_train.items()},
-                          "val_loss": round(avg_val, 4),
-                          "val_iou": round(avg_iou, 4),
-                          "val_inst_iou": round(avg_inst_iou, 4),
-                          "val_sem_iou": round(avg_sem_iou, 4),
-                          "val_sem_precision": round(avg_sem_prec, 4),
-                          "val_sem_recall": round(avg_sem_rec, 4),
-                          "val_sem_f1": round(avg_sem_f1, 4),
-                          "val_sem_dice": round(avg_sem_dice, 4)})
+        history.append(
+            {
+                "epoch": epoch,
+                "wall_s": round(elapsed, 1),
+                **{f"train_{k}": round(v, 4) for k, v in avg_train.items()},
+                "val_loss": round(avg_val, 4),
+                "val_iou": round(avg_iou, 4),
+                "val_inst_iou": round(avg_inst_iou, 4),
+                "val_sem_iou": round(avg_sem_iou, 4),
+                "val_sem_precision": round(avg_sem_prec, 4),
+                "val_sem_recall": round(avg_sem_rec, 4),
+                "val_sem_f1": round(avg_sem_f1, 4),
+                "val_sem_dice": round(avg_sem_dice, 4),
+            }
+        )
         sem_str = f"  sem_iou={avg_sem_iou:.3f}  sem_f1={avg_sem_f1:.3f}"
-        print(f"  ep{epoch+1}: train={avg_train['total']:.3f} "
-              f"(sem={avg_train['sem']:.3f} inst={avg_train['inst']:.3f})  "
-              f"inst_iou={avg_inst_iou:.3f}{sem_str}  "
-              f"val_loss={avg_val:.3f}  wall={elapsed:.0f}s")
+        print(
+            f"  ep{epoch + 1}: train={avg_train['total']:.3f} "
+            f"(sem={avg_train['sem']:.3f} inst={avg_train['inst']:.3f})  "
+            f"inst_iou={avg_inst_iou:.3f}{sem_str}  "
+            f"val_loss={avg_val:.3f}  wall={elapsed:.0f}s"
+        )
 
         # Update epochs_since_best BEFORE the checkpoint save so resumed
         # runs see the correct counter (otherwise the saved value lags by
@@ -733,31 +786,38 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
         #               (~150 MB; deletable after training completes)
         # `<fold dir>`  best-IoU adapter: ships as the publication artifact
         #               (~76 MB; what gets uploaded to HuggingFace/GH Release)
-        config = {"rank": args.rank, "lr": args.lr,
-                  "epochs": args.epochs, "batch_size": args.batch_size,
-                  "grad_accum": args.grad_accum,
-                  "oversample": args.oversample,
-                  "num_workers": args.num_workers,
-                  "seed": args.seed,
-                  "bf16": bool(args.bf16),
-                  "patience": args.patience}
+        config = {
+            "rank": args.rank,
+            "lr": args.lr,
+            "epochs": args.epochs,
+            "batch_size": args.batch_size,
+            "grad_accum": args.grad_accum,
+            "oversample": args.oversample,
+            "num_workers": args.num_workers,
+            "seed": args.seed,
+            "bf16": bool(args.bf16),
+            "patience": args.patience,
+        }
 
         # Latest: PEFT adapter + a small sidecar for optimizer/scheduler/
         # bookkeeping. PEFT save_pretrained writes the adapter; torch.save
         # writes the sidecar.
         latest_dir = out_dir / "latest"
         model.save_pretrained(str(latest_dir))
-        torch.save({
-            "optim": optim.state_dict(),
-            "sched": sched.state_dict(),
-            "epoch": epoch,
-            "global_step": global_step,
-            "best_val_iou": best_val_iou,
-            "epochs_since_best": epochs_since_best,
-            "history": history,
-            "fold": fold,
-            "config": config,
-        }, latest_dir / "trainer_state.pt")
+        torch.save(
+            {
+                "optim": optim.state_dict(),
+                "sched": sched.state_dict(),
+                "epoch": epoch,
+                "global_step": global_step,
+                "best_val_iou": best_val_iou,
+                "epochs_since_best": epochs_since_best,
+                "history": history,
+                "fold": fold,
+                "config": config,
+            },
+            latest_dir / "trainer_state.pt",
+        )
 
         if new_best:
             # Best-IoU adapter — what the eval script + production loader
@@ -767,14 +827,19 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
             model.save_pretrained(str(out_dir))
             # save_pretrained drops epoch/val_iou/config; preserve them so
             # eval + cv_summary can still report which epoch produced this.
-            (out_dir / "training_meta.json").write_text(json.dumps({
-                "epoch": epoch,
-                "global_step": global_step,
-                "best_val_iou": best_val_iou,
-                "epochs_since_best": epochs_since_best,
-                "fold": fold,
-                "config": config,
-            }, indent=2))
+            (out_dir / "training_meta.json").write_text(
+                json.dumps(
+                    {
+                        "epoch": epoch,
+                        "global_step": global_step,
+                        "best_val_iou": best_val_iou,
+                        "epochs_since_best": epochs_since_best,
+                        "fold": fold,
+                        "config": config,
+                    },
+                    indent=2,
+                )
+            )
             print(f"    new best val_iou={best_val_iou:.3f}, saved PEFT adapter")
         (out_dir / "history.json").write_text(json.dumps(history, indent=2))
 
@@ -782,8 +847,10 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
         # stop this fold. Saves wall on the back end of training where
         # the model has converged but we'd otherwise keep going.
         if args.patience > 0 and epochs_since_best >= args.patience:
-            print(f"    early stopping: no val_iou improvement for "
-                  f"{args.patience} epochs (best={best_val_iou:.3f})")
+            print(
+                f"    early stopping: no val_iou improvement for "
+                f"{args.patience} epochs (best={best_val_iou:.3f})"
+            )
             break
 
     # Final summary — pull the best epoch's row from history (the row whose
@@ -796,11 +863,11 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
     # for cv_summary is training/eval/eval_sam_kfold.py, which loads the
     # saved checkpoint directly; this fix keeps the trainer-side meta
     # consistent for offline debugging.
-    best_row = next((r for r in history
-                     if r.get("val_sem_iou") == round(best_val_iou, 4)),
-                    history[-1] if history else {})
-    print(f"\n=== fold {fold} done. best val_iou={best_val_iou:.3f}. "
-          f"checkpoints in {out_dir}")
+    best_row = next(
+        (r for r in history if r.get("val_sem_iou") == round(best_val_iou, 4)),
+        history[-1] if history else {},
+    )
+    print(f"\n=== fold {fold} done. best val_iou={best_val_iou:.3f}. checkpoints in {out_dir}")
     return {
         "fold": fold,
         "best_val_iou": best_val_iou,
@@ -819,40 +886,66 @@ def train_fold(fold: int, args, manifest: List[Dict], processor: Sam3Processor,
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset-dir", default=str(DATASET_DIR))
-    ap.add_argument("--folds", default="0,1,2,3,4",
-                    help="Comma-separated fold indices to train")
-    ap.add_argument("--epochs", type=int, default=20,
-                    help="Max epochs per fold. Lowered from 30 because "
-                         "early stopping (patience 6) usually fires sooner.")
+    ap.add_argument("--folds", default="0,1,2,3,4", help="Comma-separated fold indices to train")
+    ap.add_argument(
+        "--epochs",
+        type=int,
+        default=20,
+        help="Max epochs per fold. Lowered from 30 because "
+        "early stopping (patience 6) usually fires sooner.",
+    )
     ap.add_argument("--rank", type=int, default=16)
     ap.add_argument("--lr", type=float, default=2e-4)
     ap.add_argument("--batch-size", type=int, default=1)
     ap.add_argument("--grad-accum", type=int, default=4)
-    ap.add_argument("--grad-clip", type=float, default=0.1,
-                    help="Gradient clip norm. SAM3 authors clip at 0.1 in "
-                         "their eval_base config; 1.0 (the previous default) "
-                         "rarely clipped given our high loss-weight magnitudes.")
-    ap.add_argument("--oversample", type=int, default=2,
-                    help="Each train sample is seen this many times per "
-                         "epoch (with fresh augmentation each time). 2 is "
-                         "right for a 92-case training pool; the legacy "
-                         "23-case setup used 8.")
-    ap.add_argument("--num-workers", type=int, default=2,
-                    help="DataLoader worker count for image decode + "
-                         "augmentation. 0 = main-thread only (slow). "
-                         "2-4 typical.")
-    ap.add_argument("--resume", action="store_true",
-                    help="Resume each fold from its latest.pt if present")
-    ap.add_argument("--bf16", action=argparse.BooleanOptionalAction, default=True,
-                    help="Mixed precision (bf16 on CUDA, fp16 on MPS). "
-                         "Default on. Use --no-bf16 to disable.")
-    ap.add_argument("--patience", type=int, default=6,
-                    help="Early-stop fold if val IoU doesn't improve for "
-                         "this many epochs. 0 = disabled.")
-    ap.add_argument("--seed", type=int, default=42,
-                    help="Master seed. Per-fold seed = seed + fold_idx, so "
-                         "two runs of the same fold are reproducible (modulo "
-                         "bf16 float-rounding).")
+    ap.add_argument(
+        "--grad-clip",
+        type=float,
+        default=0.1,
+        help="Gradient clip norm. SAM3 authors clip at 0.1 in "
+        "their eval_base config; 1.0 (the previous default) "
+        "rarely clipped given our high loss-weight magnitudes.",
+    )
+    ap.add_argument(
+        "--oversample",
+        type=int,
+        default=2,
+        help="Each train sample is seen this many times per "
+        "epoch (with fresh augmentation each time). 2 is "
+        "right for a 92-case training pool; the legacy "
+        "23-case setup used 8.",
+    )
+    ap.add_argument(
+        "--num-workers",
+        type=int,
+        default=2,
+        help="DataLoader worker count for image decode + "
+        "augmentation. 0 = main-thread only (slow). "
+        "2-4 typical.",
+    )
+    ap.add_argument(
+        "--resume", action="store_true", help="Resume each fold from its latest.pt if present"
+    )
+    ap.add_argument(
+        "--bf16",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Mixed precision (bf16 on CUDA, fp16 on MPS). Default on. Use --no-bf16 to disable.",
+    )
+    ap.add_argument(
+        "--patience",
+        type=int,
+        default=6,
+        help="Early-stop fold if val IoU doesn't improve for this many epochs. 0 = disabled.",
+    )
+    ap.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Master seed. Per-fold seed = seed + fold_idx, so "
+        "two runs of the same fold are reproducible (modulo "
+        "bf16 float-rounding).",
+    )
     args = ap.parse_args()
 
     DATASET_DIR_ = Path(args.dataset_dir)
@@ -860,8 +953,11 @@ def main() -> int:
 
     fold_assignment_path = DATASET_DIR_ / "fold_assignment.json"
     if not fold_assignment_path.exists():
-        print(f"ERROR: missing {fold_assignment_path}. Run "
-              f"training/build_sam3_training_set.py first.", file=sys.stderr)
+        print(
+            f"ERROR: missing {fold_assignment_path}. Run "
+            f"training/build_sam3_training_set.py first.",
+            file=sys.stderr,
+        )
         return 1
     fold_map = json.loads(fold_assignment_path.read_text())
     # Build the per-case manifest in-place from the maps/ + fold assignment.
@@ -877,7 +973,8 @@ def main() -> int:
     # Mirror fold_assignment.json into the training-output dir so production
     # can find it next to the checkpoints.
     (OUTPUT_BASE / "fold_assignment.json").write_text(
-        json.dumps(fold_map, indent=2, sort_keys=True))
+        json.dumps(fold_map, indent=2, sort_keys=True)
+    )
 
     # Device
     if torch.cuda.is_available():
@@ -904,23 +1001,40 @@ def main() -> int:
 
         def _agg(key):
             vals = [s.get(key) for s in summary if s.get(key) is not None]
-            if not vals: return None, None
+            if not vals:
+                return None, None
             m = sum(vals) / len(vals)
             sd = (sum((v - m) ** 2 for v in vals) / len(vals)) ** 0.5
             return m, sd
 
-        metric_keys = ["val_sem_iou", "val_sem_precision", "val_sem_recall",
-                        "val_sem_f1", "val_sem_dice", "val_inst_iou"]
+        metric_keys = [
+            "val_sem_iou",
+            "val_sem_precision",
+            "val_sem_recall",
+            "val_sem_f1",
+            "val_sem_dice",
+            "val_inst_iou",
+        ]
         means = {k: _agg(k)[0] for k in metric_keys}
         stds = {k: _agg(k)[1] for k in metric_keys}
         n_total_val = sum((s.get("n_val") or 0) for s in summary)
 
         cv = {
             "folds": [
-                {k: s.get(k) for k in
-                 ["fold", "best_epoch", "n_val",
-                  "val_sem_iou", "val_sem_precision", "val_sem_recall",
-                  "val_sem_f1", "val_sem_dice", "val_inst_iou"]}
+                {
+                    k: s.get(k)
+                    for k in [
+                        "fold",
+                        "best_epoch",
+                        "n_val",
+                        "val_sem_iou",
+                        "val_sem_precision",
+                        "val_sem_recall",
+                        "val_sem_f1",
+                        "val_sem_dice",
+                        "val_inst_iou",
+                    ]
+                }
                 for s in summary
             ],
             "mean": means,
@@ -929,39 +1043,58 @@ def main() -> int:
             "gate_metric": "val_sem_iou",
             "dataset_dir": str(DATASET_DIR_),
             "model_dir": str(OUTPUT_BASE),
-            "config": {"rank": args.rank, "lr": args.lr,
-                       "epochs": args.epochs, "batch_size": args.batch_size,
-                       "grad_accum": args.grad_accum,
-                       "oversample": args.oversample,
-                       "seed": args.seed, "bf16": bool(args.bf16),
-                       "patience": args.patience},
+            "config": {
+                "rank": args.rank,
+                "lr": args.lr,
+                "epochs": args.epochs,
+                "batch_size": args.batch_size,
+                "grad_accum": args.grad_accum,
+                "oversample": args.oversample,
+                "seed": args.seed,
+                "bf16": bool(args.bf16),
+                "patience": args.patience,
+            },
         }
         (OUTPUT_BASE / "cv_summary.json").write_text(json.dumps(cv, indent=2))
         with open(OUTPUT_BASE / "cv_summary.csv", "w", newline="") as fh:
-            w = _csv.DictWriter(fh, fieldnames=[
-                "fold", "best_epoch", "n_val",
-                "val_sem_iou", "val_sem_precision", "val_sem_recall",
-                "val_sem_f1", "val_sem_dice", "val_inst_iou"])
+            w = _csv.DictWriter(
+                fh,
+                fieldnames=[
+                    "fold",
+                    "best_epoch",
+                    "n_val",
+                    "val_sem_iou",
+                    "val_sem_precision",
+                    "val_sem_recall",
+                    "val_sem_f1",
+                    "val_sem_dice",
+                    "val_inst_iou",
+                ],
+            )
             w.writeheader()
-            for row in cv["folds"]: w.writerow(row)
+            for row in cv["folds"]:
+                w.writerow(row)
 
         print("\n=== 5-fold summary (sem-gated) ===")
         for s in summary:
-            print(f"  fold {s['fold']:>1d} (n_val={s.get('n_val','?'):>3}, "
-                  f"best_ep={s.get('best_epoch')}): "
-                  f"sem_iou={s.get('val_sem_iou', 0) or 0:.3f}  "
-                  f"prec={s.get('val_sem_precision', 0) or 0:.3f}  "
-                  f"rec={s.get('val_sem_recall', 0) or 0:.3f}  "
-                  f"f1={s.get('val_sem_f1', 0) or 0:.3f}  "
-                  f"dice={s.get('val_sem_dice', 0) or 0:.3f}  "
-                  f"inst_iou={s.get('val_inst_iou', 0) or 0:.3f}")
+            print(
+                f"  fold {s['fold']:>1d} (n_val={s.get('n_val', '?'):>3}, "
+                f"best_ep={s.get('best_epoch')}): "
+                f"sem_iou={s.get('val_sem_iou', 0) or 0:.3f}  "
+                f"prec={s.get('val_sem_precision', 0) or 0:.3f}  "
+                f"rec={s.get('val_sem_recall', 0) or 0:.3f}  "
+                f"f1={s.get('val_sem_f1', 0) or 0:.3f}  "
+                f"dice={s.get('val_sem_dice', 0) or 0:.3f}  "
+                f"inst_iou={s.get('val_inst_iou', 0) or 0:.3f}"
+            )
         print(f"\n  Paper-grade aggregates (n_total_val={n_total_val}):")
         for k in metric_keys:
             label = k.replace("val_", "").replace("_", " ")
-            if means[k] is None: continue
+            if means[k] is None:
+                continue
             print(f"    {label:22s}  {means[k]:.4f} ± {stds[k]:.4f}")
-        print(f"\n  Wrote {OUTPUT_BASE/'cv_summary.json'}")
-        print(f"  Wrote {OUTPUT_BASE/'cv_summary.csv'}")
+        print(f"\n  Wrote {OUTPUT_BASE / 'cv_summary.json'}")
+        print(f"  Wrote {OUTPUT_BASE / 'cv_summary.csv'}")
     return 0
 
 

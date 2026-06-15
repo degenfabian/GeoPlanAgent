@@ -16,8 +16,6 @@ Keyboard shortcuts: 0 / 1 / 2 / 3 for 0° / 90° / 180° / 270°, S to skip,
 LeftArrow to go back, RightArrow to skip forward without annotating.
 """
 
-from __future__ import annotations
-
 import json
 import time
 from pathlib import Path
@@ -265,16 +263,24 @@ def summary():
     annotated_cases = set(real.keys())
     unannotated = [c for c in cases if c not in annotated_cases]
 
-    lines = ["<h2>Annotation summary</h2>",
-             f"<p>{len(annotated_cases)} / {len(cases)} cases annotated.</p>",
-             "<table border=1 cellpadding=6><tr><th>Label</th><th>Count</th></tr>"]
+    lines = [
+        "<h2>Annotation summary</h2>",
+        f"<p>{len(annotated_cases)} / {len(cases)} cases annotated.</p>",
+        "<table border=1 cellpadding=6><tr><th>Label</th><th>Count</th></tr>",
+    ]
     for k, v in by_rot.items():
         lines.append(f"<tr><td>{k}</td><td>{v}</td></tr>")
     lines.append("</table>")
     if unannotated:
-        lines.append(f"<p><b>Unannotated:</b> {len(unannotated)} cases. "
-                     f"<a href='/?idx={cases.index(unannotated[0])}'>Jump to first unannotated</a></p>")
-    return "<html><body style='font-family:sans-serif;padding:24px;'>" + "\n".join(lines) + "</body></html>"
+        lines.append(
+            f"<p><b>Unannotated:</b> {len(unannotated)} cases. "
+            f"<a href='/?idx={cases.index(unannotated[0])}'>Jump to first unannotated</a></p>"
+        )
+    return (
+        "<html><body style='font-family:sans-serif;padding:24px;'>"
+        + "\n".join(lines)
+        + "</body></html>"
+    )
 
 
 if __name__ == "__main__":

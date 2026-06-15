@@ -22,21 +22,21 @@ Usage (from repo root):
     uv run python ablations/extract_pdf_info_cache.py
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+from geoplanagent.paths import DATA_DIR  # noqa: E402
 
 DEFAULT_SRC = REPO_ROOT / "results" / "benchmark_std_post_fix"
 DEFAULT_MODEL_SUBDIR = "gemini-flash"
-# Canonical case list comes from the on-disk evaluation_data folders.
-# The xlsx has rows that never had case folders created and would
-# inflate the "missing" count with non-issues.
-DEFAULT_EVAL_DIR = REPO_ROOT / "evaluation_data"
+# Canonical case list comes from the on-disk data/ folders. The xlsx has
+# rows that never had case folders created and would inflate the "missing"
+# count with non-issues.
+DEFAULT_EVAL_DIR = DATA_DIR
 
 OUT_CACHE = REPO_ROOT / "ablations" / "cached_pdf_info_for_locate_ablations.json"
 OUT_MISSING = REPO_ROOT / "ablations" / "locate_ablation_missing_cases.txt"

@@ -24,8 +24,6 @@ Usage (from repo root):
     uv run python ablations/build_vlm_e2e_subset.py --dry-run
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import math
@@ -36,12 +34,15 @@ from pathlib import Path
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_XLSX = REPO_ROOT / "evaluation_data" / "new_updated.xlsx"
+sys.path.insert(0, str(REPO_ROOT))
+from geoplanagent.paths import DATA_DIR, DATASET_XLSX, DATASET_SHEET  # noqa: E402
+
+DEFAULT_XLSX = DATASET_XLSX
 DEFAULT_BENCHMARK_SUMMARY = (
     REPO_ROOT / "results" / "benchmark_v_post_refactor" / "gemini-flash" / "summary.json"
 )
 DEFAULT_OUT_DIR = REPO_ROOT / "ablations" / "vlm_e2e_pdf_to_geojson"
-DEFAULT_EVAL_DIR = REPO_ROOT / "evaluation_data"
+DEFAULT_EVAL_DIR = DATA_DIR
 
 
 # Excel-label folder name → benchmark folder name. The Excel labels the merged
@@ -62,8 +63,8 @@ def load_labels(xlsx_path: Path, include_ambiguous: bool = False) -> pd.DataFram
     'yes - across' merged). When ``include_ambiguous=True``, returns all
     208 rows including the 8 with ambiguous/broken GT
     ('yes - almost', 'almost', 'yes - shape not outlined in pdf')."""
-    df = pd.read_excel(xlsx_path, sheet_name="Cleaned_up_208_planning_dataset")
-    df = df.rename(columns={"Unique ID (Folder_Name)": "folder"})
+    df = pd.read_excel(xlsx_path, sheet_name=DATASET_SHEET)
+    df = df.rename(columns={"Folder Name": "folder"})
     for col in ("Document Quality", "Shape Complexity", "Shape Matches correctly"):
         df[col] = df[col].astype(str).str.strip().str.lower()
     df["Boundary Shape"] = df["Boundary Shape"].astype(str).str.strip()

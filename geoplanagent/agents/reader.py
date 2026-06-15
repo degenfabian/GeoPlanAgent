@@ -1,7 +1,5 @@
 """Phase 1 reader Agent: one multimodal call over the raw PDF -> PDFInfo."""
 
-from __future__ import annotations
-
 import os
 
 from dotenv import load_dotenv

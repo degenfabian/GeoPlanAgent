@@ -24,7 +24,6 @@ Outputs per case under ``boundary_annotations/<case_id>/``:
   map.png            -- rendered map (production DPI, no crop)
   initial.json       -- polygon(s) in image-pixel coords + affine source tag
 """
-from __future__ import annotations
 
 import json
 import os
@@ -39,10 +38,11 @@ REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO))
 
 from geoplanagent.tools.pdf import render_pdf_page
+from geoplanagent.paths import DATA_DIR
 
 
 OUT_ROOT = REPO / "boundary_annotations"
-EVAL_ROOT = REPO / "evaluation_data"
+EVAL_ROOT = DATA_DIR
 
 # Cached-affine source priority — pick the freshest run that has an affine_H.
 AFFINE_SOURCES = ["benchmark_v20", "benchmark_v17"]
@@ -50,8 +50,7 @@ AFFINE_SOURCES = ["benchmark_v20", "benchmark_v17"]
 
 def _list_cases() -> List[str]:
     return sorted(
-        c for c in os.listdir(EVAL_ROOT)
-        if (EVAL_ROOT / c).is_dir() and not c.endswith(".xlsx")
+        c for c in os.listdir(EVAL_ROOT) if (EVAL_ROOT / c).is_dir() and not c.endswith(".xlsx")
     )
 
 
@@ -101,8 +100,10 @@ def _pdf_info(case_id: str) -> Optional[Dict[str, Any]]:
         p = REPO / "results" / src / "gemini-flash" / case_id / "pdf_info.json"
         if not p.exists():
             continue
-        try: pi = json.loads(p.read_text())
-        except Exception: continue
+        try:
+            pi = json.loads(p.read_text())
+        except Exception:
+            continue
         if pi.get("map_pages"):  # non-empty → win
             return pi
         if best is None:  # fallback only if nothing better seen
@@ -128,11 +129,12 @@ def _latlon_to_tile_px(lat: float, lon: float, tile_info: Dict[str, Any]) -> Tup
     """WGS84 → pixel in the OS tile canvas (used at match time).
     Web-Mercator slippy tile math; matches geoplanagent.tools.tiles convention."""
     import math
+
     z = tile_info["zoom"]
     tx_min = tile_info["tx_min"]
     ty_min = tile_info["ty_min"]
     tile_size = tile_info.get("tile_size", 256)
-    n = 2.0 ** z
+    n = 2.0**z
     x_tile = (lon + 180.0) / 360.0 * n
     lat_rad = math.radians(lat)
     y_tile = (1.0 - math.asinh(math.tan(lat_rad)) / math.pi) / 2.0 * n
@@ -183,7 +185,10 @@ def _project_gt_to_image(
 
 
 def _projection_lands_inside_image(
-    rings: List[List[List[float]]], w: int, h: int, min_frac: float = 0.5,
+    rings: List[List[List[float]]],
+    w: int,
+    h: int,
+    min_frac: float = 0.5,
 ) -> bool:
     """Sanity: at least `min_frac` of the projected polygon's points must
     fall inside [0,w]×[0,h]. When the cached affine was computed in an
@@ -201,8 +206,9 @@ def _projection_lands_inside_image(
     return inside / n_pts >= min_frac
 
 
-def _centered_initial(image_shape: Tuple[int, int],
-                      gt_geojson: Dict[str, Any]) -> List[List[List[float]]]:
+def _centered_initial(
+    image_shape: Tuple[int, int], gt_geojson: Dict[str, Any]
+) -> List[List[List[float]]]:
     """Fallback when no affine is available — place the GT polygon centered,
     scaled to ~40% of the image's smaller dimension, no rotation."""
     h, w = image_shape[:2]
@@ -271,13 +277,18 @@ def render_one(case_id: str, force: bool = False) -> Dict[str, Any]:
 
     gt = _gt_geojson(case_id)
     if gt is None:
-        init_json.write_text(json.dumps({
-            "case_id": case_id,
-            "image_size": [w, h],
-            "rings": [],
-            "affine_source": None,
-            "note": "no GT geojson on disk",
-        }, indent=2))
+        init_json.write_text(
+            json.dumps(
+                {
+                    "case_id": case_id,
+                    "image_size": [w, h],
+                    "rings": [],
+                    "affine_source": None,
+                    "note": "no GT geojson on disk",
+                },
+                indent=2,
+            )
+        )
         return {"case_id": case_id, "status": "ok_no_gt"}
 
     cached = _cached_affine(case_id)
@@ -295,14 +306,18 @@ def render_one(case_id: str, force: bool = False) -> Dict[str, Any]:
         rings = _centered_initial((h, w), gt)
         src_tag = "centered_fallback"
 
-    init_json.write_text(json.dumps({
-        "case_id": case_id,
-        "image_size": [w, h],
-        "rings": rings,
-        "affine_source": src_tag,
-    }, indent=2))
-    return {"case_id": case_id, "status": "ok", "src": src_tag,
-            "n_rings": len(rings)}
+    init_json.write_text(
+        json.dumps(
+            {
+                "case_id": case_id,
+                "image_size": [w, h],
+                "rings": rings,
+                "affine_source": src_tag,
+            },
+            indent=2,
+        )
+    )
+    return {"case_id": case_id, "status": "ok", "src": src_tag, "n_rings": len(rings)}
 
 
 def main():
@@ -313,12 +328,14 @@ def main():
     for i, c in enumerate(cases, 1):
         r = render_one(c, force=force)
         s = r["status"]
-        if s.startswith("ok"): n_ok += 1
-        elif s == "cached":   n_skip += 1
-        else:                 n_err += 1
+        if s.startswith("ok"):
+            n_ok += 1
+        elif s == "cached":
+            n_skip += 1
+        else:
+            n_err += 1
         if i % 25 == 0 or i == len(cases):
-            print(f"  [{i}/{len(cases)}] ok={n_ok} cached={n_skip} err={n_err}",
-                  flush=True)
+            print(f"  [{i}/{len(cases)}] ok={n_ok} cached={n_skip} err={n_err}", flush=True)
         if not s.startswith(("ok", "cached")):
             print(f"    !! {c}: {s}", flush=True)
     print(f"\nDone. Outputs under {OUT_ROOT}/")

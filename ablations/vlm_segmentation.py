@@ -22,7 +22,6 @@ Full run (all manifest cases, all folds):
     uv run python ablations/vlm_segmentation.py --model gemini-flash
 """
 
-from __future__ import annotations
 import argparse
 import io
 import json

@@ -11,6 +11,7 @@ evaluation_data/<case>/, so nothing heavy needs to be kept on disk:
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -22,6 +23,8 @@ from shapely.geometry import shape
 from shapely.ops import unary_union
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+from geoplanagent.paths import DATA_DIR  # noqa: E402
 
 # Fraction of the combined bounding box added on each side of the plot.
 _VIZ_PADDING = 1.5
@@ -100,7 +103,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run-dir", required=True, help="benchmark run dir, e.g. results/benchmark_v1/gemini-flash")
     parser.add_argument("--case", required=True, help="case folder name")
-    parser.add_argument("--eval-dir", default=str(REPO_ROOT / "evaluation_data"))
+    parser.add_argument("--eval-dir", default=str(DATA_DIR))
     parser.add_argument("-o", "--output", default=None, help="output PNG (default: <run-dir>/<case>/viz_comparison.png)")
     args = parser.parse_args()
 

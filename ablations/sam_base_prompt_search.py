@@ -21,8 +21,6 @@ Usage:
         --prompts "planning boundary" "site boundary"
 """
 
-from __future__ import annotations
-
 import argparse
 import contextlib
 import csv
