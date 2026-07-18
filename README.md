@@ -7,7 +7,7 @@ Reconstruction from Planning Records*](https://arxiv.org/abs/2606.02747).
 [**Paper**](https://arxiv.org/abs/2606.02747) ·
 [**Project page**](https://odeb1.github.io/Plan2Map_Project_Page/) ·
 **Dataset** (coming soon) ·
-[**Model weights**](https://huggingface.co/degenfabian/GeoPlanAgent)
+[**Model weights**](https://huggingface.co/fabiandegen/GeoPlanAgent)
 
 <p align="center"><img src="figures/agent.png" width="90%" alt="GeoPlanAgent overview"></p>
 
@@ -112,11 +112,11 @@ cd MINIMA/weights && bash download.sh && cd ../..
 
 **4. Fine-tuned weights** — the SAM3-LoRA adapters (5 folds × 76 MB, PEFT
 format) and rotation-classifier checkpoints (5 folds × 94 MB) are downloaded
-from [degenfabian/GeoPlanAgent](https://huggingface.co/degenfabian/GeoPlanAgent)
+from [fabiandegen/GeoPlanAgent](https://huggingface.co/fabiandegen/GeoPlanAgent)
 straight into `models/` (run from the repository root):
 
 ```bash
-hf download degenfabian/GeoPlanAgent --include "sam3_lora/*" "rotation_classifier_kfold/*" --local-dir models
+hf download fabiandegen/GeoPlanAgent --include "sam3_lora/*" "rotation_classifier_kfold/*" --local-dir models
 ```
 
 **5. OS OpenData** — one script fetches and unpacks everything the pipeline
